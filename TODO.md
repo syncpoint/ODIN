@@ -1,27 +1,5 @@
 ### Issues
 
-### Release April 2019 - Map
-* Map (Leaflet) with Raster Tiles
-* Pan/Zoom (keyboard/mouse)
-* EPSG 3857 (Web Mercator)
-* Tile Provider configuration file (tile-providers.json)
-* Tile Provider -> application menu (with shortcuts)
-* Map scale/ruler (exact, e.g. 1 : 48721 instead of 1 : 50000)
-* directly choose scale (zoom factor), e.g. 1 : 50000, 1 : 25000
-* location search (online only, https://wiki.openstreetmap.org/wiki/Nominatim)
-* - right (temporary) side bar
-* - spotlight-like: text input, result list, map preview (pan/zoom enabled)
-* user settings: coordinate display format (latitude/longitude, decimal degrees, UTM, UTMREF, MRGS)
-* goto coordinate (multiple formats, marker temporarily marks position)
-* pick coordinate (copy to clipboard as text in configured display format)
-* named bookmarks (center, zoom): create, goto, delete (overwrite existing)
-* additional user settings:
-* - map zoom/center (last position)
-* - brightness (and other display filters)
-* - current tile provider
-* - bookmarks
-* - location search history
-
 ### On-deck
 * APP-6 (C), MIL-STD-2525 (C)
 * Cut, Copy Paste, Delete
