@@ -1,5 +1,5 @@
 const assert = require('assert')
-const Timed = require('../lib/timed')
+const Timed = require('../js/renderer/common/timed')
 
 describe('timed', function() {
   it('timer should run out without refresh', function(done) {

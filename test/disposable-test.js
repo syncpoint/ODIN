@@ -1,5 +1,5 @@
 const assert = require('assert')
-const Disposable = require('../lib/disposable')
+const Disposable = require('../js/renderer/common/disposable')
 
 describe('disposable', function() {
   it('should update state correctly', function() {
