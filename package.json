@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "electron .",
-    "verify": "standard --fix",
+    "verify": "standard",
     "test": "mocha"
   },
   "repository": {

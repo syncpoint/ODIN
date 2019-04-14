@@ -16,11 +16,10 @@ function createWindow (name) {
   }, bounds)
 
   win = K(new BrowserWindow(options))(window => {
-    
-    //workaround for windows; see issue 10862 on electron github
+    // workaround for windows; see issue 10862 on electron github
     if (process.platform === 'win32') {
       window.setBounds(Object.assign({}, { x: 0, y: 0 }, bounds))
-    } 
+    }
 
     window.loadFile('index.html')
     window.on('closed', () => (win = null))
@@ -30,7 +29,7 @@ function createWindow (name) {
     ;['resize', 'move', 'close'].forEach(event => window.on(event, () => {
       const state = K(window.getBounds())(state => {
         // NOTE: setting fullscreen option to false disables fullscreen toggle.
-        if(window.isFullScreen()) state.fullscreen = true
+        if (window.isFullScreen()) state.fullscreen = true
       })
       settings.set(`windowState.${name}`, state)
     }))

@@ -3,7 +3,7 @@ const of = (initialDelay, callback) => object => {
   let timeout = null
 
   const clear = () => {
-    if(timeout) clearTimeout(timeout)
+    if (timeout) clearTimeout(timeout)
     timeout = null
   }
 

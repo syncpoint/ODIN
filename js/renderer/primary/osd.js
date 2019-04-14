@@ -5,7 +5,7 @@
 
 const map = require('./map')
 
-const {ipcRenderer} = require('electron')
+const { ipcRenderer } = require('electron')
 const R = require('ramda')
 const { K, noop } = require('../../shared/predef')
 const Disposable = require('../common/disposable')
@@ -18,24 +18,24 @@ const descriptors = {
   contrast: { label: 'Contrast', value: 100, min: 0, max: 200, delta: 5, unit: '%' },
   grayscale: { label: 'Grayscale', value: 0, min: 0, max: 100, delta: 5, unit: '%' },
   // TODO: remove when no longer needed.
-  "hue-rotate": { label: 'Hue', value: 0, min: 0, max: 360, delta: 10, unit: 'deg', display: '°' },
+  'hue-rotate': { label: 'Hue', value: 0, min: 0, max: 360, delta: 10, unit: 'deg', display: '°' },
   invert: { label: 'Invert', value: 0, min: 0, max: 100, delta: 5, unit: '%' },
-  sepia: { label: 'Sepia', value: 0, min: 0, max: 100, delta: 5, unit: '%' },
+  sepia: { label: 'Sepia', value: 0, min: 0, max: 100, delta: 5, unit: '%' }
 }
 
 const defaultValues = () => Object.entries(descriptors)
-  .reduce((acc, [name, {value, unit}]) => K(acc)(acc => acc[name] = {value, unit}), {})
+  .reduce((acc, [name, { value, unit }]) => K(acc)(acc => (acc[name] = { value, unit })), {})
 
 const displayFilterControl = options => {
-  if(!options.key) return
-  const {key, descriptor, currentValue, update, apply, cancel} = options
+  if (!options.key) return
+  const { key, descriptor, currentValue, update, apply, cancel } = options
 
   const disposable = Disposable.of({})
   const timer = Timed.of(3000, R.compose(disposable.dispose, apply))({})
   const osdLabel = document.getElementsByClassName('odin-osd-temporary')[0]
 
   const refresh = value => {
-    if(value < descriptor.min || value > descriptor.max) return
+    if (value < descriptor.min || value > descriptor.max) return
     update(value)
     osdLabel.innerHTML = `${descriptor.label}: ${value}${descriptor.unit}`
     timer.refreshTimeout(2000)
@@ -51,7 +51,7 @@ const displayFilterControl = options => {
   }
 
   // Only mark those events as handled which are actually handled.
-  const {stopPropagation, preventDefault} = Events
+  const { stopPropagation, preventDefault } = Events
   const markHandled = R.compose(stopPropagation, preventDefault)
 
   const actions = {
@@ -76,7 +76,7 @@ const displayFilterControl = options => {
 
   disposable.addDisposable(timer.clearTimeout)
   disposable.addDisposable(() => osdLabel.removeEventListener('keydown', onkeydown))
-  disposable.addDisposable(() => osdLabel.style.display = 'none')
+  disposable.addDisposable(() => (osdLabel.style.display = 'none'))
   disposable.addDisposable(() => map.focus())
 
   return Object.assign({}, disposable, {
@@ -99,9 +99,9 @@ const toggle = key => {
       cancel: () => map.applyDisplayFilters(K(values)(values => (values[key].value = initialValue)))
     }
 
-    if(osd && !osd.disposed()) {
+    if (osd && !osd.disposed()) {
       osd.dispose()
-      if(osd.key === key) osd = null
+      if (osd.key === key) osd = null
       else osd = displayFilterControl(options)
     } else osd = displayFilterControl(options)
   })
