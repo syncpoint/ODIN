@@ -2,7 +2,7 @@ const { app, Menu } = require('electron')
 const tileProviders = require('./tile-providers')
 
 const sendMessage = (event, ...args) => (menuItem, focusedWindow) => {
-  if(!focusedWindow) return
+  if (!focusedWindow) return
   focusedWindow.send(event, ...args)
 }
 
@@ -10,13 +10,13 @@ const providerMenu = provider => ({
   label: provider.name,
   type: 'checkbox',
   click: (menuItem, focusedWindow) => {
-    menuItem.menu.items.filter(x => x !== menuItem).forEach(x => x.checked = false)
+    menuItem.menu.items.filter(x => x !== menuItem).forEach(x => (x.checked = false))
     sendMessage('COMMAND_MAP_TILE_PROVIDER', provider)(menuItem, focusedWindow)
   }
 })
 
 const providerAccelerator = (menu, index) => {
-  if(index < 9) menu.accelerator = 'CmdOrCtrl+' + (index + 1)
+  if (index < 9) menu.accelerator = 'CmdOrCtrl+' + (index + 1)
   return menu
 }
 
@@ -123,7 +123,7 @@ if (process.platform === 'darwin') {
 
   // Edit menu
   template[1].submenu.push(
-    { type: 'separator' },
+    { type: 'separator' }
   )
 
   // Window menu

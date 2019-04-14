@@ -1,6 +1,6 @@
 /* gateway to main process' user settings store. */
 
-const {ipcRenderer} = require('electron')
+const { ipcRenderer } = require('electron')
 
 const writeDisplayFilter = values => {
   ipcRenderer.send('SETTINGS_DISPLAY_FILTER_WRITE', values)
