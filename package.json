@@ -3,9 +3,12 @@
   "version": "0.2.1",
   "description": "ODIN Command and Control Information System",
   "main": "main.js",
+  "standard": {
+    "env": [ "mocha" ]
+  },
   "scripts": {
     "start": "electron .",
-    "verify": "standard",
+    "verify": "standard --fix",
     "test": "mocha"
   },
   "repository": {
