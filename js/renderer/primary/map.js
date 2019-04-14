@@ -1,4 +1,4 @@
-const { ipcRenderer } = require('electron')
+const { ipcRenderer, clipboard } = require('electron')
 const Leaflet = require('../common/leaflet')
 const { displayFilter, mapViewport } = require('./user-settings')
 const { K } = require('../../shared/predef')
@@ -50,6 +50,27 @@ const map = K(L.map(container, options))(map => {
     map.setView(L.latLng(viewport.lat, viewport.lng), viewport.zoom)
   })
 })
+
+// Pick/copy coordinate to clipboard
+;(() => {
+  const pickMode = event => event.ctrlKey && event.shiftKey
+  const cursor = event => pickMode(event) ? 'crosshair' : 'auto'
+  container.addEventListener('keydown', event => container.style.cursor = cursor(event))
+  container.addEventListener('keyup', event => container.style.cursor = cursor(event))
+
+  // NOTE: 'preclick' and 'click' are not fired when ctrl key is pressed.
+  ;['mouseup'].forEach(type => map.on(type, event => {
+    if(pickMode(event.originalEvent)) {
+      // TODO: give visual feedback that something happend
+      const pointXY = L.point(event.layerPoint.x, event.layerPoint.y)
+      const latlng = map.layerPointToLatLng(pointXY).wrap()
+      // TODO: get coordinate format from user setting (once implemented)
+      clipboard.writeText(`${latlng.lat} ${latlng.lng}`)
+    }
+  }))
+})()
+
+
 
 // Apply display filter values from user settings.
 displayFilter.read({}).then(applyDisplayFilters(map))
