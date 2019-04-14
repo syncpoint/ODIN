@@ -73,7 +73,7 @@ const map = K(L.map(container, options))(map => {
       setTimeout(reset, 50)
 
       const label = document.getElementsByClassName('odin-osd-temporary')[0]
-      label.innerHTML = 'Copied coodinate to clipboard'
+      label.innerHTML = 'Copied coordinate to clipboard'
       label.style.display = 'block'
       setTimeout(() => {
         label.style.display = 'none'
