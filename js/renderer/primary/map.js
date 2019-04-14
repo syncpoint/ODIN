@@ -61,11 +61,16 @@ const map = K(L.map(container, options))(map => {
   // NOTE: 'preclick' and 'click' are not fired when ctrl key is pressed.
   ;['mouseup'].forEach(type => map.on(type, event => {
     if(pickMode(event.originalEvent)) {
-      // TODO: give visual feedback that something happend
+      new Audio('assets/double-click.wav').play()
       const pointXY = L.point(event.layerPoint.x, event.layerPoint.y)
       const latlng = map.layerPointToLatLng(pointXY).wrap()
       // TODO: get coordinate format from user setting (once implemented)
       clipboard.writeText(`${latlng.lat} ${latlng.lng}`)
+
+      const originalFilter = container.style.filter
+      reset = () => container.style.filter = originalFilter
+      container.style.filter = 'invert(100%)'
+      setTimeout(reset, 50)
     }
   }))
 })()
