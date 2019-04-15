@@ -1,18 +1,25 @@
 const { ipcMain } = require('electron')
-const settings = require('electron-settings')
+const { properties } = require('./user-settings')
+const { DISPLAY_FILTER, MAP_VIEWPORT, TILE_PROVIDER } = require('./user-settings')
+
+const reply = (event, channel) => values => event.sender.send(channel, values)
 
 ipcMain.on('SETTINGS_DISPLAY_FILTER_READ', event => {
-  event.sender.send('SETTINGS_DISPLAY_FILTER', settings.get('displayFilter'))
+  properties(DISPLAY_FILTER).read().then(reply(event, 'SETTINGS_DISPLAY_FILTER'))
 })
 
 ipcMain.on('SETTINGS_DISPLAY_FILTER_WRITE', (_, values) => {
-  settings.set('displayFilter', values)
+  properties(DISPLAY_FILTER).write(values)
 })
 
 ipcMain.on('SETTINGS_MAP_VIEWPORT_READ', event => {
-  event.sender.send('SETTINGS_MAP_VIEWPORT', settings.get('mapViewport'))
+  properties(MAP_VIEWPORT).read().then(reply(event, 'SETTINGS_MAP_VIEWPORT'))
 })
 
 ipcMain.on('SETTINGS_MAP_VIEWPORT_WRITE', (_, values) => {
-  settings.set('mapViewport', values)
+  properties(MAP_VIEWPORT).write(values)
+})
+
+ipcMain.on('SETTINGS_TILE_PROVIDER_READ', event => {
+  properties(TILE_PROVIDER).read().then(reply(event, 'SETTINGS_TILE_PROVIDER'))
 })
