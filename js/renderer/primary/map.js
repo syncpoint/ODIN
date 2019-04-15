@@ -1,6 +1,6 @@
 const { ipcRenderer, clipboard } = require('electron')
 const Leaflet = require('../common/leaflet')
-const { displayFilter, mapViewport } = require('./user-settings')
+const { displayFilter, mapViewport, tileProvider } = require('./user-settings')
 const { K } = require('../../shared/predef')
 
 const applyDisplayFilters = map => values => {
@@ -17,31 +17,41 @@ const focus = container => () => container.focus()
 const options = {
   zoomControl: false,
   boxZoom: true,
+  // TODO: should be aligned with viewport if available
   center: L.latLng(48.65400545105681, 15.319061279296877),
   zoom: 13,
   attributionControl: true
 }
 
-const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  id: 'OpenStreetMap.Mapnik',
-  detectRetina: false,
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-})
+const tileLayer = () => {
+  const defaultOptions = {
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    maxZoom: 19,
+    id: 'OpenStreetMap.Mapnik',
+    detectRetina: false,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }
+
+  return tileProvider.read()
+    .then(options => options || defaultOptions)
+    .then(options => L.tileLayer(options.url, options))
+}
 
 const container = document.getElementsByClassName('odin-map')[0]
 
+// TODO: map creation should probably be async
 const map = K(L.map(container, options))(map => {
-  tileLayer.addTo(map)
-  map.on('moveend', () => {
-    const { lat, lng } = map.getCenter()
-    const viewport = { lat, lng, zoom: map.getZoom() }
-    mapViewport.write(viewport)
-  })
+  tileLayer().then(layer => layer.addTo(map))
 
   mapViewport.read().then(viewport => {
     if (!viewport) return
     map.setView(L.latLng(viewport.lat, viewport.lng), viewport.zoom)
+  })
+
+  map.on('moveend', () => {
+    const { lat, lng } = map.getCenter()
+    const viewport = { lat, lng, zoom: map.getZoom() }
+    mapViewport.write(viewport)
   })
 })
 

@@ -20,6 +20,11 @@ const readMapViewport = () => new Promise(resolve => {
   ipcRenderer.send('SETTINGS_MAP_VIEWPORT_READ')
 })
 
+const readTileProvider = () => new Promise(resolve => {
+  ipcRenderer.once('SETTINGS_TILE_PROVIDER', (_, viewport) => resolve(viewport))
+  ipcRenderer.send('SETTINGS_TILE_PROVIDER_READ')
+})
+
 module.exports = {
   displayFilter: {
     read: readDisplayFilter,
@@ -29,5 +34,9 @@ module.exports = {
   mapViewport: {
     read: readMapViewport,
     write: writeMapViewport
+  },
+
+  tileProvider: {
+    read: readTileProvider
   }
 }

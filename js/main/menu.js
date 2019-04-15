@@ -1,5 +1,6 @@
 const { app, Menu } = require('electron')
 const tileProviders = require('./tile-providers')
+const { properties, TILE_PROVIDER } = require('./user-settings')
 
 const sendMessage = (event, ...args) => (menuItem, focusedWindow) => {
   if (!focusedWindow) return
@@ -7,11 +8,13 @@ const sendMessage = (event, ...args) => (menuItem, focusedWindow) => {
 }
 
 const providerMenu = provider => ({
+  id: provider.id,
   label: provider.name,
   type: 'checkbox',
   click: (menuItem, focusedWindow) => {
     menuItem.menu.items.filter(x => x !== menuItem).forEach(x => (x.checked = false))
     sendMessage('COMMAND_MAP_TILE_PROVIDER', provider)(menuItem, focusedWindow)
+    properties(TILE_PROVIDER).write(provider)
   }
 })
 
