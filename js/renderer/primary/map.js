@@ -23,9 +23,10 @@ const options = {
 }
 
 const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 18,
+  maxZoom: 19,
   id: 'OpenStreetMap.Mapnik',
-  detectRetina: false
+  detectRetina: false,
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 })
 
 const container = document.getElementsByClassName('odin-map')[0]
