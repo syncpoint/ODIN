@@ -4,11 +4,35 @@
     <meta charset="UTF-8">
     <title>ODIN - C2IS</title>
     <link rel="stylesheet" href="node_modules/leaflet/dist/leaflet.css"/>
+    <script src="node_modules/leaflet/dist/leaflet.js"></script>
+    <style>
+      #map {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        overflow: clip;
+      }
+    </style>
   </head>
   <body>
-    <p>hey, there!</p>
+    <div id="map"></div>
     <script>
-      console.log('hello, react...')
+      const map = L.map('map', {
+        center: L.latLng(48.65400545105681, 15.319061279296877),
+        zoomControl: false, // default: true
+        zoom: 13
+      })
+
+      const url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+      const tileLayer = L.tileLayer(url, {
+        "name": "OpenStreetMap",
+        "maxZoom": 19,
+        "attribution": "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
+      })
+
+      tileLayer.addTo(map)
     </script>
   </body>
 </html>
