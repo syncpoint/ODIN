@@ -2,7 +2,7 @@
   "name": "odin-c2is",
   "version": "0.2.2",
   "description": "ODIN Command and Control Information System",
-  "main": "main.js",
+  "main": "src/main/main.js",
   "scripts": {
     "start": "electron ."
   },
