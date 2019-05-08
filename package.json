@@ -2,9 +2,10 @@
   "name": "odin-c2is",
   "version": "0.2.2",
   "description": "ODIN Command and Control Information System",
-  "main": "src/main/main.js",
+  "main": "dist/main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "webpack --mode production"
   },
   "repository": {
     "type": "git",
@@ -16,10 +17,20 @@
   "author": "Syncpoint GmbH",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^5.0.1"
+    "@babel/core": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.5",
+    "css-loader": "^2.1.1",
+    "electron": "^5.0.1",
+    "electron-builder": "^20.39.0",
+    "file-loader": "^3.0.1",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.1"
   },
   "dependencies": {
-    "leaflet": "^1.5.0",
+    "leaflet": "1.4.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   }

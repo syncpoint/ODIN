@@ -1,7 +1,6 @@
-const { app, BrowserWindow } = require('electron')
+import { app, BrowserWindow } from 'electron'
+import { K, noop } from '../shared/combinators'
 
-const K = value => fn => { fn(value); return value }
-const noop = () => {}
 const on = emitter => ([event, handler]) => emitter.on(event, handler)
 
 let mainWindow
@@ -25,7 +24,7 @@ const createWindow = () => {
 
     // TODO: use `app.isPackaged` to enable HMR.
 
-    window.loadFile('src/renderer/index.html')
+    window.loadFile('dist/index.html')
     window.on('close', () => {
       clearInterval(interval)
       mainWindow = null
