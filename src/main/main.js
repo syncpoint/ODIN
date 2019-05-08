@@ -25,7 +25,7 @@ const createWindow = () => {
 
     // TODO: use `app.isPackaged` to enable HMR.
 
-    window.loadFile('index.html')
+    window.loadFile('src/renderer/index.html')
     window.on('close', () => {
       clearInterval(interval)
       mainWindow = null
