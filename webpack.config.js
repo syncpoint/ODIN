@@ -18,11 +18,6 @@ const RULES = {
     use: ['style-loader', 'css-loader' ]
   },
 
-  // html: {
-  //   test: /\.html$/,
-  //   loader: "file-loader?name=[name].[ext]",
-  // },
-
   image: {
     test: /\.(png|svg|jpg|gif)$/,
     use: [{
