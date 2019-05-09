@@ -1,5 +1,6 @@
 const path = require('path')
 const { spawn } = require('child_process')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 const RULES = {
   javascript: {
@@ -17,10 +18,10 @@ const RULES = {
     use: ['style-loader', 'css-loader' ]
   },
 
-  html: {
-    test: /\.html$/,
-    loader: "file-loader?name=[name].[ext]",
-  },
+  // html: {
+  //   test: /\.html$/,
+  //   loader: "file-loader?name=[name].[ext]",
+  // },
 
   image: {
     test: /\.(png|svg|jpg|gif)$/,
@@ -47,12 +48,14 @@ const rendererConfig = (env, argv) => ({
   module: { rules: rules() },
   entry: {
     renderer: './index.js',
-    html: './index.html'
+    // html: './index.html'
   },
 
   plugins: [
     // TODO: remove index.html
-    // new HtmlWebpackPlugin()
+    new HtmlWebpackPlugin({
+      title: 'ODIN - C2IS'
+    })
   ]
 })
 
