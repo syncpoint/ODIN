@@ -1,0 +1,13 @@
+directories:
+  output: binaries
+  buildResources: build
+appId: io.syncpoint.odin
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+        - ia32
+files:
+  - 'dist'
+electronVersion: 5.0.0

@@ -7,7 +7,11 @@
     "start": "electron . --noDevServer",
     "hot": "webpack-dev-server --hot",
     "webpack": "webpack",
-    "webpack:production": "webpack --env.production"
+    "webpack:production": "webpack --env.production",
+    "builder": "electron-builder",
+    "builder:dir": "electron-builder --dir",
+    "builder:mac": "electron-builder --mac",
+    "builder:win": "electron-builder --win"
   },
   "repository": {
     "type": "git",
