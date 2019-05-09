@@ -4,9 +4,10 @@
   "description": "ODIN Command and Control Information System",
   "main": "dist/main.js",
   "scripts": {
-    "start": "webpack-dev-server --hot --config=webpack.development.js",
-    "webpack:production": "webpack --config webpack.production.js",
-    "webpack:development": "webpack --config webpack.development.js"
+    "start": "electron . --noDevServer",
+    "hot": "webpack-dev-server --hot",
+    "webpack": "webpack",
+    "webpack:production": "webpack --env.production"
   },
   "repository": {
     "type": "git",
