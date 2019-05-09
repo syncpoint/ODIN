@@ -1,14 +1,18 @@
+const { spawn } = require('child_process')
 const path = require('path')
 
+// TODO: DRY - combine development and production configurations
+
 const renderer = {
+  target: 'electron-renderer',
+  mode: 'development', // controls webpack-internal optimizations
+  devtool: 'cheap-source-map',
   context: path.resolve(__dirname, 'src/renderer'),
   entry: {
     renderer: './index.js',
     html: './index.html'
   },
 
-  target: 'electron-renderer',
-  devtool: 'source-map', // source-map: production quality (slow)
   module: {
     rules: [
       {
@@ -27,18 +31,44 @@ const renderer = {
       {
         test: /\.html$/,
         loader: "file-loader?name=[name].[ext]",
+      },
+      {
+        test: /\.(png|svg|jpg|gif)$/,
+        use: [{
+          loader: 'file-loader',
+          options: {
+            name: 'img/[name]_[hash:7].[ext]',
+          }
+        }]
       }
-    ]
-  }
+   ]
+  },
+
+  devServer: {
+    contentBase: path.resolve(__dirname, 'dist'),
+    before() {
+      spawn(
+        'electron',
+        ['.'],
+        { shell: true, env: process.env, stdio: 'inherit' }
+      )
+      .on('close', code => process.exit(code))
+      .on('error', error => console.error(error))
+    }
+  },
+
+  plugins: [
+    // TODO: check for more recent alternatives
+  ]
 }
 
 const main = {
+  target: 'electron-main',
+  mode: 'development',
   context: path.resolve(__dirname, 'src/main'),
   entry: {
     main: './main.js'
-  },
-
-  target: 'electron-main'
+  }
 }
 
 module.exports = [renderer, main]
