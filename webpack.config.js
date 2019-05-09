@@ -26,6 +26,11 @@ const RULES = {
         name:'img/[name]_[hash:7].[ext]',
       }
     }]
+  },
+
+  font: {
+    test: /\.(eot|svg|ttf|woff|woff2)$/,
+    use: [{ loader: 'file-loader?name=font/[name]__[hash:base64:5].[ext]' }]
   }
 }
 
