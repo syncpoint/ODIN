@@ -33,6 +33,7 @@ const createWindow = () => {
     //       the file is probable not there.
 
     // TODO: use `app.isPackaged` to enable HMR.
+    console.log('app-path', app.getAppPath())
 
     const indexURL = (hotDeployment() && devServer()) ?
       url.format({
@@ -43,10 +44,11 @@ const createWindow = () => {
       }) :
       url.format({
         protocol: 'file:',
-        pathname: path.join(__dirname, 'dist', 'index.html'),
+        pathname: path.join(app.getAppPath(), 'dist', 'index.html'),
         slashes: true
       })
 
+    console.log('indexURL', indexURL)
     window.loadURL(indexURL)
     window.on('close', () => {
       clearInterval(interval)
