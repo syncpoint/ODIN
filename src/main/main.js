@@ -1,3 +1,5 @@
+const path = require('path')
+const url = require('url')
 import { app, BrowserWindow } from 'electron'
 import { K, noop } from '../shared/combinators'
 
@@ -19,12 +21,33 @@ const createWindow = () => {
 
   mainWindow = K(new BrowserWindow(options))(window => {
 
+    // hot deployment in development mode
+    const hotDeployment = () =>
+      process.defaultApp ||
+      /[\\/]electron-prebuilt[\\/]/.test(process.execPath) ||
+      /[\\/]electron[\\/]/.test(process.execPath)
+
+    const devServer = () => process.argv.indexOf('--noDevServer') === -1
+
     // NOTE: If browser complains about 'Not allowed to load local resource',
     //       the file is probable not there.
 
     // TODO: use `app.isPackaged` to enable HMR.
 
-    window.loadFile('dist/index.html')
+    const indexURL = (hotDeployment() && devServer()) ?
+      url.format({
+        protocol: 'http:',
+        host: 'localhost:8080',
+        pathname: 'index.html',
+        slashes: true
+      }) :
+      url.format({
+        protocol: 'file:',
+        pathname: path.join(__dirname, 'dist', 'index.html'),
+        slashes: true
+      })
+
+    window.loadURL(indexURL)
     window.on('close', () => {
       clearInterval(interval)
       mainWindow = null
