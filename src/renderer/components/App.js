@@ -18,7 +18,6 @@ const tileProvider = {
 
 const App = props =>
   <div>
-    {/* <p>Hellö?!</p> */}
     <Map
       id='map'
       className='map'

@@ -2,6 +2,8 @@ const path = require('path')
 const { spawn } = require('child_process')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
+const hash = 'hash:base64:8'
+
 const RULES = {
   javascript: {
     test: /\.js$/,
@@ -23,14 +25,14 @@ const RULES = {
     use: [{
       loader: 'file-loader',
       options: {
-        name:'img/[name]_[hash:7].[ext]',
+        name: `img/[name]__[${hash}].[ext]`,
       }
     }]
   },
 
   font: {
     test: /\.(eot|svg|ttf|woff|woff2)$/,
-    use: [{ loader: 'file-loader?name=font/[name]__[hash:base64:5].[ext]' }]
+    use: [{ loader: `file-loader?name=font/[name]__[${hash}].[ext]` }]
   }
 }
 
@@ -47,12 +49,10 @@ const rendererConfig = (env, argv) => ({
   mode: mode(env),
   module: { rules: rules() },
   entry: {
-    renderer: './index.js',
-    // html: './index.html'
+    renderer: './index.js'
   },
 
   plugins: [
-    // TODO: remove index.html
     new HtmlWebpackPlugin({
       title: 'ODIN - C2IS'
     })
@@ -95,9 +95,15 @@ const devtool = env => {
 
 module.exports = (env, argv) => {
   env = env || {}
-  return [
-    // Merge development server and devtool to renderer configuration when necessary:
-    Object.assign({}, rendererConfig(env, argv), devServer(env), devtool(env)),
-    mainConfig(env, argv)
-  ]
+
+  // Merge development server and devtool to renderer configuration when necessary:
+  const renderer = Object.assign(
+    {},
+    rendererConfig(env, argv),
+    devServer(env),
+    devtool(env)
+  )
+
+  const main = mainConfig(env, argv)
+  return [renderer, main]
 }
