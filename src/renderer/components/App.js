@@ -59,7 +59,6 @@ class App extends React.Component {
     }, 1000)
   }
 
-
   render() {
     return (
       <div>
