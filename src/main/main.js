@@ -32,9 +32,6 @@ const createWindow = () => {
     // NOTE: If browser complains about 'Not allowed to load local resource',
     //       the file is probable not there.
 
-    // TODO: use `app.isPackaged` to enable HMR.
-    console.log('app-path', app.getAppPath())
-
     const indexURL = (hotDeployment() && devServer()) ?
       url.format({
         protocol: 'http:',
