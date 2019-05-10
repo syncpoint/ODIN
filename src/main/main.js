@@ -1,23 +1,23 @@
 const path = require('path')
 const url = require('url')
 import { app, BrowserWindow } from 'electron'
+const settings = require('electron-settings')
 import { K, noop } from '../shared/combinators'
 
 const on = emitter => ([event, handler]) => emitter.on(event, handler)
 
 let mainWindow
 
-const createWindow = () => {
+const createWindow = name => {
+  const bounds = settings.get(`windowState.${name}`) || { width: 800, height: 600 }
+
   const options = {
-    width: 800,
-    height: 600,
+    ...bounds,
     show: false,
     webPreferences: {
       nodeIntegration: true
     }
   }
-
-  let interval;
 
   mainWindow = K(new BrowserWindow(options))(window => {
 
@@ -28,9 +28,6 @@ const createWindow = () => {
       /[\\/]electron[\\/]/.test(process.execPath)
 
     const devServer = () => process.argv.indexOf('--noDevServer') === -1
-
-    // NOTE: If browser complains about 'Not allowed to load local resource',
-    //       the file is probable not there.
 
     const indexURL = (hotDeployment() && devServer()) ?
       url.format({
@@ -45,24 +42,26 @@ const createWindow = () => {
         slashes: true
       })
 
-    console.log('indexURL', indexURL)
     window.loadURL(indexURL)
-    window.on('close', () => {
-      clearInterval(interval)
-      mainWindow = null
-    })
-
+    window.on('close', () => (mainWindow = null))
     window.once('ready-to-show', () => window.show())
-    window.once('show', () => {
-      // Show that IPC does work:
-      interval = setInterval(() => window.webContents.send('time', new Date()), 1000)
-    })
+
+    // track and store window size and position:
+    ;['resize', 'move', 'close'].forEach(event => window.on(event, () => {
+      const bounds = K(window.getBounds())(bounds => {
+        // NOTE: setting fullscreen option to false disables fullscreen toggle.
+        if (window.isFullScreen()) bounds.fullscreen = true
+      })
+
+      console.log('current bounds', bounds)
+      settings.set(`windowState.${name}`, bounds)
+    }))
   })
 }
 
 ;(() => {
   const quit = process.platform !== 'darwin' ? app.quit : noop
-  const activate = mainWindow === null ? createWindow : noop
+  const activate = mainWindow === null ? () => createWindow('main') : noop
 
   Object.entries({
     'ready': createWindow,
