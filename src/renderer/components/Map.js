@@ -1,8 +1,19 @@
 import React from 'react'
 import L from 'leaflet'
+import { withStyles } from '@material-ui/core/styles'
 import { K } from '../../shared/combinators'
 import 'leaflet/dist/leaflet.css'
-import './Map.css'
+
+const styles = {
+  root: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    zIndex: 10
+  }
+}
 
 
 // https://github.com/PaulLeCam/react-leaflet/issues/255
@@ -29,8 +40,12 @@ class Map extends React.Component {
   }
 
   render() {
-    return <div id={ this.props.id } className={ this.props.className }></div>
+    return <div
+      id={ this.props.id }
+      className={ this.props.classes.root }
+    >
+    </div>
   }
 }
 
-export default Map
+export default withStyles(styles)(Map)
