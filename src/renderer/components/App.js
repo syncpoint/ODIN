@@ -33,14 +33,6 @@ const mapOptions = {
   zoom: 13
 }
 
-const tileProvider = {
-  "id": "OpenStreetMap.Mapnik",
-  "name": "OpenStreetMap",
-  "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  "maxZoom": 19,
-  "attribution": "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
-}
-
 class App extends React.Component {
   constructor(props) {
     super(props)
@@ -65,7 +57,6 @@ class App extends React.Component {
         <Map
           id='map'
           className='map'
-          tileProvider={ tileProvider }
           options={ mapOptions }
         />
         <div className={ this.props.classes.overlay }>

@@ -2,9 +2,17 @@ import React from 'react'
 import L from 'leaflet'
 import { withStyles } from '@material-ui/core/styles'
 import { ipcRenderer } from 'electron'
+import settings from 'electron-settings'
+import path from 'path'
 import { K } from '../../shared/combinators'
 import 'leaflet/dist/leaflet.css'
 import Leaflet from '../leaflet'
+
+// Dedicated file for map settings:
+settings.setPath(path.format({
+  dir: path.dirname(settings.file()),
+  base: 'MapSettings'
+}))
 
 const styles = {
   root: {
@@ -32,10 +40,22 @@ L.Icon.Default.mergeOptions({
     shadowUrl: markerShadow
 })
 
+const defautTileProvider = {
+  "id": "OpenStreetMap.Mapnik",
+  "name": "OpenStreetMap",
+  "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  "maxZoom": 19,
+  "attribution": "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
+}
+
+
 class Map extends React.Component {
 
   componentDidMount() {
-    const {id, options, tileProvider} = this.props
+
+    const tileProvider = settings.get('tileProvider') || defautTileProvider
+
+    const {id, options} = this.props
     this.map = K(L.map(id, options))(map => {
       L.tileLayer(tileProvider.url, tileProvider).addTo(map)
     })
@@ -45,6 +65,8 @@ class Map extends React.Component {
         .filter(layer => layer instanceof L.TileLayer)
         .forEach(layer => this.map.removeLayer(layer))
         L.tileLayer(options.url, options).addTo(this.map)
+
+      settings.set('tileProvider', options)
     })
   }
 
