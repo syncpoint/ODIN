@@ -1,8 +1,10 @@
 import React from 'react'
 import L from 'leaflet'
 import { withStyles } from '@material-ui/core/styles'
+import { ipcRenderer } from 'electron'
 import { K } from '../../shared/combinators'
 import 'leaflet/dist/leaflet.css'
+import Leaflet from '../leaflet'
 
 const styles = {
   root: {
@@ -36,6 +38,13 @@ class Map extends React.Component {
     const {id, options, tileProvider} = this.props
     this.map = K(L.map(id, options))(map => {
       L.tileLayer(tileProvider.url, tileProvider).addTo(map)
+    })
+
+    ipcRenderer.on('COMMAND_MAP_TILE_PROVIDER', (event, options) => {
+      Leaflet.layers(this.map)
+        .filter(layer => layer instanceof L.TileLayer)
+        .forEach(layer => this.map.removeLayer(layer))
+        L.tileLayer(options.url, options).addTo(this.map)
     })
   }
 
