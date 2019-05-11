@@ -7,14 +7,18 @@ const sendMessage = (event, ...args) => (menuItem, focusedWindow) => {
   focusedWindow.send(event, ...args)
 }
 
+// Get last provider (if any) to check corresponding menu item:
+const lastProviderId = settings.get('tileProvider')
+
 const providerMenu = provider => ({
   id: provider.id,
   label: provider.name,
   type: 'checkbox',
+  checked: provider.id === lastProviderId,
   click: (menuItem, focusedWindow) => {
     menuItem.menu.items.filter(x => x !== menuItem).forEach(x => (x.checked = false))
     sendMessage('COMMAND_MAP_TILE_PROVIDER', provider)(menuItem, focusedWindow)
-    settings.set('tileProvider', provider)
+    settings.set('tileProvider', provider.id)
   }
 })
 
