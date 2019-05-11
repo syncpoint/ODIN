@@ -53,7 +53,6 @@ const createWindow = name => {
         if (window.isFullScreen()) bounds.fullscreen = true
       })
 
-      console.log('current bounds', bounds)
       settings.set(`windowState.${name}`, bounds)
     }))
   })
