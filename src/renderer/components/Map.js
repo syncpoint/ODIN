@@ -53,9 +53,16 @@ class Map extends React.Component {
 
   componentDidMount() {
 
-    const tileProvider = settings.get('tileProvider') || defautTileProvider
-
     const {id, options} = this.props
+    const tileProvider = settings.get('tileProvider') || defautTileProvider
+    const viewPort = settings.get('viewPort')
+
+    // Override center/zoom if available from settings:
+    if(viewPort) {
+      options.center = L.latLng(viewPort.lat, viewPort.lng)
+      options.zoom = viewPort.zoom
+    }
+
     this.map = K(L.map(id, options))(map => {
       L.tileLayer(tileProvider.url, tileProvider).addTo(map)
     })
@@ -67,6 +74,12 @@ class Map extends React.Component {
         L.tileLayer(options.url, options).addTo(this.map)
 
       settings.set('tileProvider', options)
+    })
+
+    this.map.on('moveend', () => {
+      const { lat, lng } = this.map.getCenter()
+      const zoom = this.map.getZoom()
+      settings.set('viewPort', { lat, lng, zoom })
     })
   }
 
