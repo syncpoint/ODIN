@@ -2,6 +2,7 @@ import React from 'react'
 import Map from './Map'
 import { withStyles } from '@material-ui/core/styles'
 import OSD from './OSD'
+import Spotlight from './Spotlight'
 import { currentDateTime } from '../../shared/datetime'
 
 const styles = {
@@ -20,9 +21,16 @@ const styles = {
   },
 
   contentPanel: {
-    background: 'rgba(100, 100, 0, 0.4)',
     gridRowStart: 2,
-    gridColumnStart: 1
+    gridColumnStart: 1,
+    display: 'grid',
+    gridTemplateColumns: '1fr 2fr 1fr',
+    gridTemplateRows: '1fr 3fr',
+    gridGap: '1em',
+    gridTemplateAreas: `
+      "L . R"
+      "L B R"
+    `
   }
 }
 
@@ -38,6 +46,7 @@ class App extends React.Component {
     super(props)
 
     this.state = {
+      center,
       osd: {
         C1: currentDateTime()
       }
@@ -45,10 +54,16 @@ class App extends React.Component {
   }
 
   componentDidMount(prevProps, prevState) {
+    // FIXME: changing OSD.C1 every second constantly updates the whole App
     const osd = { ...this.state.osd, C1: currentDateTime() }
     this.clockInterval = setInterval(() => {
       this.setState({ ...this.state, osd })
     }, 1000)
+
+  }
+
+  handleMoveTo(latlng) {
+    this.setState({ ...this.state, center: latlng })
   }
 
   render() {
@@ -58,10 +73,15 @@ class App extends React.Component {
           id='map'
           className='map'
           options={ mapOptions }
+          center = { this.state.center }
         />
         <div className={ this.props.classes.overlay }>
           <OSD osd={ this.state.osd }/>
-          <div className={ this.props.classes.contentPanel }></div>
+          <div className={ this.props.classes.contentPanel }>
+            <Spotlight
+              onMoveTo={ latLng => this.handleMoveTo(latLng) }
+            />
+          </div>
         </div>
       </div>
     )
