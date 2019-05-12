@@ -3,7 +3,6 @@ import Map from './Map'
 import { withStyles } from '@material-ui/core/styles'
 import OSD from './OSD'
 import Spotlight from './Spotlight'
-import { currentDateTime } from '../../shared/datetime'
 
 const styles = {
   overlay: {
@@ -46,20 +45,8 @@ class App extends React.Component {
     super(props)
 
     this.state = {
-      center,
-      osd: {
-        C1: currentDateTime()
-      }
+      center
     }
-  }
-
-  componentDidMount(prevProps, prevState) {
-    // FIXME: changing OSD.C1 every second constantly updates the whole App
-    const osd = { ...this.state.osd, C1: currentDateTime() }
-    this.clockInterval = setInterval(() => {
-      this.setState({ ...this.state, osd })
-    }, 1000)
-
   }
 
   handleMoveTo(latlng) {
