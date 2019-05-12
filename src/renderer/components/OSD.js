@@ -1,7 +1,7 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 
-// Prepare 3 x 3 OSD slot styles.
+// OSD slots: Prepare styles for 3 columns x 3 rows.
 const osdSlots = () => {
   const columns = {
     "A": { justifySelf: 'start' },

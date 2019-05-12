@@ -52,7 +52,6 @@ const defautTileProvider = {
 class Map extends React.Component {
 
   componentDidMount() {
-
     const {id, options} = this.props
     const tileProvider = settings.get('tileProvider') || defautTileProvider
     const viewPort = settings.get('viewPort')
@@ -76,12 +75,22 @@ class Map extends React.Component {
       settings.set('tileProvider', options)
     })
 
+    ipcRenderer.on('COMMAND_ADJUST', (_, filter) => {
+      console.log('COMMAND_ADJUST', filter)
+    })
+
     this.map.on('moveend', () => {
       const { lat, lng } = this.map.getCenter()
       const zoom = this.map.getZoom()
       settings.set('viewPort', { lat, lng, zoom })
     })
   }
+
+  componentDidUpdate(prevProps) {
+    const { center } = this.props
+    if(center && !center.equals(prevProps.center)) this.map.panTo(center)
+  }
+
 
   render() {
     return <div
