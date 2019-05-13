@@ -50,6 +50,10 @@ class App extends React.Component {
       console.log('COMMAND_GOTO_BOOKMARK')
     })
 
+    ipcRenderer.on("COPY_COORDINATES", (_, args) => {
+      console.log('COMMAND_GOTO_BOOKMARK')
+    })
+
     ipcRenderer.on('COMMAND_GOTO_PLACE', (_, args) => {
       const searchOptions = {
         // limit: 7,
