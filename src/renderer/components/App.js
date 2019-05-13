@@ -2,7 +2,7 @@ import React from 'react'
 import Map from './Map'
 import { withStyles } from '@material-ui/core/styles'
 import OSD from './OSD'
-import Spotlight from './Spotlight'
+import Spotlight from './spotlight/Spotlight'
 
 const styles = {
   overlay: {
@@ -66,7 +66,8 @@ class App extends React.Component {
           <OSD osd={ this.state.osd }/>
           <div className={ this.props.classes.contentPanel }>
             <Spotlight
-              onMoveTo={ latLng => this.handleMoveTo(latLng) }
+              onSelect={ latLng => this.handleMoveTo(latLng) }
+              onClose={ () => console.log('close') }
             />
           </div>
         </div>
