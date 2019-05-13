@@ -5,12 +5,6 @@ import SearchField from './SearchField'
 import ResultList from './ResultList'
 
 
-/**
- * TODO: design interface (filter mode and search mode, input mode)
- * - Events: close, focus, select, input
- * - Functions: search, filter
- * - Factories: listItem, preview
- */
 class Spotlight extends React.Component {
 
   constructor(props) {
@@ -20,18 +14,8 @@ class Spotlight extends React.Component {
     }
   }
 
-  handleUpdate(xs) {
-    // TODO: order results by euclidean distance to current map center
-    const rows = xs.map(row => ({
-      key: row.place_id,
-      name: row.display_name,
-      type: row.type,
-      box: row.boundingbox,
-      lat: row.lat,
-      lon: row.lon
-    }))
-
-    this.setState({...this.state, rows})
+  handleUpdate(rows) {
+    this.setState({...this.state, rows: rows.map(this.props.options.mapRow)})
   }
 
   render() {
@@ -43,13 +27,12 @@ class Spotlight extends React.Component {
         elevation={ 4 }
       >
         <SearchField
-          search={ this.props.search }
-          onUpdate={ xs => this.handleUpdate(xs) }
+          options={ this.props.options }
+          onUpdate={ rows => this.handleUpdate(rows) }
         />
         <ResultList
           rows={ this.state.rows }
-          onSelect={ this.props.onSelect }
-          onClose={ this.props.onClose }
+          options={ this.props.options }
         />
         {/* <Preview></Preview> */}
       </Paper>

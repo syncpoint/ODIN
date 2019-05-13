@@ -2,8 +2,6 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
-import L from 'leaflet'
 import { noop } from '../../../shared/combinators'
 
 class ResultList extends React.Component {
@@ -21,18 +19,15 @@ class ResultList extends React.Component {
   }
 
   handleClick(key) {
-    const onSelect = this.props.onSelect || noop
+    const onSelect = this.props.options.onSelect || noop
     this.props.rows
       .filter(row => row.key === key)
-      // TODO: drop dependency to Leaflet (L.latLng())
-      .map(row => L.latLng(row.lat, row.lon))
       .forEach(onSelect)
   }
 
   handleDoubleClick(key) {
     this.handleClick(key)
-    const onClose = this.props.onClose || noop
-    onClose()
+    ;(this.props.options.onClose || noop)()
   }
 
   render() {
@@ -46,10 +41,7 @@ class ResultList extends React.Component {
         onClick={ () => this.handleClick(row.key) }
         onDoubleClick={ () => this.handleDoubleClick(row.key) }
       >
-        <ListItemText
-          primary={ row.name }
-          // secondary={ row.type }
-        />
+        { this.props.options.listItemText(row) }
       </ListItem>
     ))
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import TextField from '@material-ui/core/TextField'
 import { withStyles } from '@material-ui/core/styles'
-import search from './nominatim'
+import { noop } from '../../../shared/combinators'
 
 class SearchField extends React.Component {
 
@@ -9,22 +9,13 @@ class SearchField extends React.Component {
     super(props)
   }
 
-  // <TextField/>
   handleKeyPress(event) {
-    const searchOptions = {
-      // limit: 7,
-      addressdetails: 1,
-      namedetails: 0
-      // TODO: supply filter
-      // TODO: supply sorter
-    }
-
     switch(event.key) {
-      case 'Enter': {
-        search(searchOptions)(event.target.value)
-          .then(searchResult => this.props.onUpdate(searchResult))
+      case 'Enter':
+        const search = this.props.options.search || noop
+        const onUpdate = result => (this.props.onUpdate || noop)(result)
+        search(event.target.value).then(onUpdate)
         break
-      }
       default:
         break
     }
@@ -33,8 +24,9 @@ class SearchField extends React.Component {
   render() {
     return (
       <TextField
-        label="Place or address"
+        label={ this.props.options.label }
         type="search"
+        autoFocus
         className={ this.props.classes.searchField }
         margin="normal"
         // variant="outlined"

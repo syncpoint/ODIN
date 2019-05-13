@@ -95,6 +95,26 @@ const template = [
     ]
   },
   {
+    label: 'Go',
+    submenu: [
+      {
+        label: 'Add bookmark',
+        accelerator: 'CmdOrCtrl+B',
+        click: sendMessage('COMMAND_ADD_BOOKMARK')
+      },
+      {
+        label: 'Go to bookmark',
+        accelerator: 'CmdOrCtrl+G',
+        click: sendMessage('COMMAND_GOTO_BOOKMARK')
+      },
+      {
+        label: 'Goto to place',
+        accelerator: 'CmdOrCtrl+F',
+        click: sendMessage('COMMAND_GOTO_PLACE')
+      }
+    ]
+  },
+  {
     role: 'window',
     submenu: [
       { role: 'minimize' },
@@ -134,7 +154,7 @@ if (process.platform === 'darwin') {
   )
 
   // Window menu
-  template[3].submenu = [
+  template[4].submenu = [
     { role: 'close' },
     { role: 'minimize' },
     { role: 'zoom' },
