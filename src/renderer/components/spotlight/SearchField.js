@@ -16,8 +16,15 @@ class SearchField extends React.Component {
         const onUpdate = result => (this.props.onUpdate || noop)(result)
         search(event.target.value).then(onUpdate)
         break
-      default:
-        break
+    }
+  }
+
+  handleKeyDown(event) {
+    if(event.key !== 'Escape') return
+    if(event.target.value) {
+      const onUpdate = result => (this.props.onUpdate || noop)(result)
+      event.stopPropagation()
+      onUpdate([])
     }
   }
 
@@ -29,8 +36,8 @@ class SearchField extends React.Component {
         autoFocus
         className={ this.props.classes.searchField }
         margin="normal"
-        // variant="outlined"
         onKeyPress={ event => this.handleKeyPress(event) }
+        onKeyDown={ event => this.handleKeyDown(event) }
       />
     )
   }

@@ -11,11 +11,10 @@ class ResultList extends React.Component {
   }
 
   handleKeyDown(event) {
-    switch(event.key) {
-      case 'Escape':
-        // TODO: clear result list on 'Escape'; set focus to text field
-        return
-    }
+    if(event.key !== 'Escape') return
+    event.stopPropagation()
+    const onUpdate = result => (this.props.onUpdate || noop)(result)
+    onUpdate([])
   }
 
   handleClick(key) {
