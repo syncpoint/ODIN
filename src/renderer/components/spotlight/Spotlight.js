@@ -15,7 +15,10 @@ class Spotlight extends React.Component {
   }
 
   handleUpdate(rows) {
-    this.setState({...this.state, rows: rows.map(this.props.options.mapRow)})
+    this.setState({
+      ...this.state,
+      rows: rows.map(this.props.options.mapRow),
+    })
   }
 
   render() {
@@ -33,6 +36,7 @@ class Spotlight extends React.Component {
         <ResultList
           rows={ this.state.rows }
           options={ this.props.options }
+          onUpdate={ rows => this.handleUpdate(rows) }
         />
         {/* <Preview></Preview> */}
       </Paper>
