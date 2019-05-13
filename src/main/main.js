@@ -1,8 +1,9 @@
 const path = require('path')
 const url = require('url')
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, Menu } from 'electron'
 const settings = require('electron-settings')
 import { K, noop } from '../shared/combinators'
+import { buildFromTemplate } from '../main/menu'
 
 const on = emitter => ([event, handler]) => emitter.on(event, handler)
 
@@ -53,9 +54,10 @@ const createWindow = name => {
         if (window.isFullScreen()) bounds.fullscreen = true
       })
 
-      console.log('current bounds', bounds)
       settings.set(`windowState.${name}`, bounds)
     }))
+
+    Menu.setApplicationMenu(buildFromTemplate())
   })
 }
 
