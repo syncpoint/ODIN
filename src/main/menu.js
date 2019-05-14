@@ -54,27 +54,27 @@ const template = [
         submenu: [
           {
             label: 'Brightness',
-            click: sendMessage('COMMAND_ADJUST', 'BRIGHTNESS')
+            click: sendMessage('COMMAND_ADJUST', 'brightness')
           },
           {
             label: 'Contrast',
-            click: sendMessage('COMMAND_ADJUST', 'CONTRAST')
+            click: sendMessage('COMMAND_ADJUST', 'contrast')
           },
           {
             label: 'Grayscale',
-            click: sendMessage('COMMAND_ADJUST', 'GRAYSCALE')
+            click: sendMessage('COMMAND_ADJUST', 'grayscale')
           },
           {
             label: 'Hue',
-            click: sendMessage('COMMAND_ADJUST', 'HUE_ROTATE')
+            click: sendMessage('COMMAND_ADJUST', 'hue-rotate')
           },
           {
             label: 'Invert',
-            click: sendMessage('COMMAND_ADJUST', 'INVERT')
+            click: sendMessage('COMMAND_ADJUST', 'invert')
           },
           {
             label: 'Sepia',
-            click: sendMessage('COMMAND_ADJUST', 'SEPIA')
+            click: sendMessage('COMMAND_ADJUST', 'sepia')
           },
           {
             label: 'Tile Providers',

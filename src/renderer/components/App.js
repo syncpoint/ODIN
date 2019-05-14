@@ -3,6 +3,7 @@ import Map from './Map'
 import ListItemText from '@material-ui/core/ListItemText'
 import { withStyles } from '@material-ui/core/styles'
 import { ipcRenderer } from 'electron'
+import EventEmitter from 'events'
 import L from 'leaflet'
 import OSD from './OSD'
 import Spotlight from './spotlight/Spotlight'
@@ -19,6 +20,7 @@ class App extends React.Component {
   constructor(props) {
     super(props)
 
+    this.eventBus = new EventEmitter()
     this.state = {
       center,
       panels: {}
@@ -94,9 +96,13 @@ class App extends React.Component {
           className='map'
           options={ mapOptions }
           center = { this.state.center }
+          eventBus={ this.eventBus}
         />
         <div className={ this.props.classes.overlay }>
-          <OSD osd={ this.state.osd }/>
+          <OSD
+            eventBus={ this.eventBus}
+            osd={ this.state.osd }
+          />
           <div className={ this.props.classes.contentPanel }>
             { spotlight }
           </div>
