@@ -95,8 +95,8 @@ class App extends React.Component {
           id='map'
           className='map'
           options={ mapOptions }
-          center = { this.state.center }
-          eventBus={ this.eventBus}
+          center={ this.state.center }
+          eventBus={ this.eventBus }
         />
         <div className={ this.props.classes.overlay }>
           <OSD

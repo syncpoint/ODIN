@@ -126,31 +126,24 @@ class Map extends React.Component {
 
         const decrease = () => refresh(currentValues[filter].value - descriptor.delta)
         const increase = () => refresh(currentValues[filter].value + descriptor.delta)
-
-        // Make HTML event API somewhat more composable (i.e. functions with side-effects).
-        const Events = {
-          stopPropagation: event => K(event)(event => event.stopPropagation()),
-          preventDefault: event => K(event)(event => event.preventDefault())
-        }
-
-        // Only mark those events as handled which are actually handled.
-        const { stopPropagation, preventDefault } = Events
-        const markHandled = R.compose(stopPropagation, preventDefault)
+        const stopPropagation = event => K(event)(event => event.stopPropagation())
 
         const actions = {
-          'ArrowLeft': R.compose(decrease, markHandled),
-          'ArrowDown': R.compose(decrease, markHandled),
-          'ArrowRight': R.compose(increase, markHandled),
-          'ArrowUp': R.compose(increase, markHandled),
-          'Escape': R.compose(disposable.dispose, cancel, markHandled),
-          'Enter': R.compose(disposable.dispose, apply, markHandled)
+          'ArrowLeft': R.compose(decrease, stopPropagation),
+          'ArrowDown': R.compose(decrease, stopPropagation),
+          'ArrowRight': R.compose(increase, stopPropagation),
+          'ArrowUp': R.compose(increase, stopPropagation),
+          'Escape': R.compose(disposable.dispose, cancel, stopPropagation),
+          'Enter': R.compose(disposable.dispose, apply, stopPropagation)
         }
 
+        // NOTE: To prevent panning, we capture keydown events so that they don't reach the map (while tickling down).
         const onkeydown = event => (actions[event.key] || noop)(event)
-        document.addEventListener('keydown', onkeydown)
+        const useCapture = true
+        document.addEventListener('keydown', onkeydown, useCapture)
 
         disposable.addDisposable(timer.clearTimeout)
-        disposable.addDisposable(() => document.removeEventListener('keydown', onkeydown))
+        disposable.addDisposable(() => document.removeEventListener('keydown', onkeydown, useCapture))
         disposable.addDisposable(() => eventBus.emit('OSD_MESSAGE', { message: '' }))
         disposable.addDisposable(() => map.focus())
 
