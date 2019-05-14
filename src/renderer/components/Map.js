@@ -96,27 +96,36 @@ class Map extends React.Component {
       settings.set('tileProvider', options)
     })
 
+    ipcRenderer.on('COMMAND_RESET_FILTERS', (_, args) => {
+      const values = defaultValues()
+      settings.set('displayFilters', values)
+      this.updateDisplayFilters(values)
+    })
+
     ipcRenderer.on('COMMAND_ADJUST', (_, filter) => {
       const { eventBus } = this.props
       if(this.filterControl) this.filterControl.dispose()
 
       this.filterControl = (() => {
+        const descriptor = descriptors[filter]
         const currentValues = settings.get('displayFilters') || defaultValues()
         const apply = () => settings.set('displayFilters', currentValues)
         const cancel = () => this.updateDisplayFilters(settings.get('displayFilters') || defaultValues())
         const disposable = Disposable.of({})
         const timer = Timed.of(3000, R.compose(disposable.dispose, apply))({})
 
+        eventBus.emit('OSD_MESSAGE', { message: `${descriptor.label}: ${currentValues[filter].value}${descriptor.unit}` })
+
         const refresh = value => {
-          if (value < descriptors[filter].min || value > descriptors[filter].max) return
+          if (value < descriptor.min || value > descriptor.max) return
           currentValues[filter].value = value
-          eventBus.emit('OSD_MESSAGE', { message: `${descriptors[filter].label}: ${value}${descriptors[filter].unit}` })
+          eventBus.emit('OSD_MESSAGE', { message: `${descriptor.label}: ${value}${descriptor.unit}` })
           timer.refreshTimeout(2000)
           this.updateDisplayFilters(currentValues)
         }
 
-        const decrease = () => refresh(currentValues[filter].value - descriptors[filter].delta)
-        const increase = () => refresh(currentValues[filter].value + descriptors[filter].delta)
+        const decrease = () => refresh(currentValues[filter].value - descriptor.delta)
+        const increase = () => refresh(currentValues[filter].value + descriptor.delta)
 
         // Make HTML event API somewhat more composable (i.e. functions with side-effects).
         const Events = {

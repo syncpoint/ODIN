@@ -53,28 +53,44 @@ const template = [
         label: 'Map',
         submenu: [
           {
-            label: 'Brightness',
-            click: sendMessage('COMMAND_ADJUST', 'brightness')
-          },
-          {
-            label: 'Contrast',
-            click: sendMessage('COMMAND_ADJUST', 'contrast')
-          },
-          {
-            label: 'Grayscale',
-            click: sendMessage('COMMAND_ADJUST', 'grayscale')
-          },
-          {
-            label: 'Hue',
-            click: sendMessage('COMMAND_ADJUST', 'hue-rotate')
-          },
-          {
-            label: 'Invert',
-            click: sendMessage('COMMAND_ADJUST', 'invert')
-          },
-          {
-            label: 'Sepia',
-            click: sendMessage('COMMAND_ADJUST', 'sepia')
+            label: 'Filter',
+            submenu: [
+              {
+                label: 'Brightness',
+                click: sendMessage('COMMAND_ADJUST', 'brightness'),
+                accelerator: 'CmdOrCtrl+Alt+1'
+              },
+              {
+                label: 'Contrast',
+                click: sendMessage('COMMAND_ADJUST', 'contrast'),
+                accelerator: 'CmdOrCtrl+Alt+2'
+              },
+              {
+                label: 'Grayscale',
+                click: sendMessage('COMMAND_ADJUST', 'grayscale'),
+                accelerator: 'CmdOrCtrl+Alt+3'
+              },
+              {
+                label: 'Hue',
+                click: sendMessage('COMMAND_ADJUST', 'hue-rotate'),
+                accelerator: 'CmdOrCtrl+Alt+4'
+              },
+              {
+                label: 'Invert',
+                click: sendMessage('COMMAND_ADJUST', 'invert'),
+                accelerator: 'CmdOrCtrl+Alt+5'
+              },
+              {
+                label: 'Sepia',
+                click: sendMessage('COMMAND_ADJUST', 'sepia'),
+                accelerator: 'CmdOrCtrl+Alt+6'
+              },
+              {
+                label: 'Reset',
+                click: sendMessage('COMMAND_RESET_FILTERS'),
+                accelerator: 'CmdOrCtrl+Alt+0'
+              }
+            ],
           },
           {
             label: 'Tile Providers',
