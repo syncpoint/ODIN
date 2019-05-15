@@ -137,7 +137,7 @@ class Map extends React.Component {
           'Enter': R.compose(disposable.dispose, apply, stopPropagation)
         }
 
-        // NOTE: To prevent panning, we capture keydown events so that they don't reach the map (while tickling down).
+        // NOTE: To prevent panning, we capture keydown events so that they don't reach the map (while trickling down).
         const onkeydown = event => (actions[event.key] || noop)(event)
         const useCapture = true
         document.addEventListener('keydown', onkeydown, useCapture)
