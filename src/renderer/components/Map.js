@@ -111,7 +111,7 @@ class Map extends React.Component {
       settings.set('tileProvider', options)
     })
     
-    ipcRenderer.on('COMMAND_COPY_COODRDS', (_,args) => {
+    ipcRenderer.on('COMMAND_COPY_COORDS', (_,args) => {
       if(mapDiv.style.cursor === ''){
         mapDiv.style.cursor = 'crosshair'
         mapDiv.addEventListener('click', onClick)
