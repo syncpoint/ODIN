@@ -61,6 +61,7 @@ class App extends React.Component {
         namedetails: 0
       }
 
+      // Prepare spotlight options:
       const spotlight = {
         search: search(searchOptions),
         label: 'Place or address',
@@ -83,6 +84,7 @@ class App extends React.Component {
   }
 
   render () {
+    // Is spotlight currently visible?
     const spotlight = this.state.panels.spotlight
       ? (<Spotlight options={ this.state.panels.spotlight } />)
       : null
@@ -96,6 +98,7 @@ class App extends React.Component {
           options={ mapOptions }
           center={ this.state.center }
           eventBus={ this.eventBus }
+          onClick= { () => this.closeSpotlight() }
         />
         <div className={ this.props.classes.overlay }>
           <OSD

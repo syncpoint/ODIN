@@ -86,6 +86,8 @@ class Map extends React.Component {
 
     this.updateDisplayFilters(displayFilters)
 
+    this.map.on('click', () => this.props.onClick())
+
     ipcRenderer.on('COMMAND_MAP_TILE_PROVIDER', (_, options) => {
       Leaflet.layers(this.map)
         .filter(layer => layer instanceof L.TileLayer)
@@ -178,7 +180,8 @@ Map.propTypes = {
   options: PropTypes.object.isRequired,
   id: PropTypes.string.isRequired,
   center: PropTypes.any.isRequired,
-  eventBus: PropTypes.instanceOf(EventEmitter).isRequired
+  eventBus: PropTypes.instanceOf(EventEmitter).isRequired,
+  onClick: PropTypes.func.isRequired
 }
 
 const styles = {
