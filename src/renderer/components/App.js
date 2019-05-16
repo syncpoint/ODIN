@@ -1,3 +1,4 @@
+import { hot } from 'react-hot-loader/root'
 import React from 'react'
 import Map from './Map'
 import ListItemText from '@material-ui/core/ListItemText'
@@ -143,4 +144,4 @@ const styles = {
   }
 }
 
-export default withStyles(styles)(App)
+export default hot(withStyles(styles)(App))

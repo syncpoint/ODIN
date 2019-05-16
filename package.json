@@ -5,13 +5,14 @@
   "main": "dist/main.js",
   "scripts": {
     "start": "electron . --noDevServer",
-    "hot": "webpack-dev-server --hot",
+    "hot": "webpack-dev-server --hot --inline",
     "webpack": "webpack",
     "webpack:production": "webpack --env.production",
     "builder": "electron-builder",
     "builder:dir": "electron-builder --dir",
     "builder:mac": "electron-builder --mac",
-    "builder:win": "electron-builder --win"
+    "builder:win": "electron-builder --win",
+    "eslint": "eslint src/"
   },
   "repository": {
     "type": "git",
@@ -55,6 +56,7 @@
     "ramda": "^0.26.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-hot-loader": "^4.8.5",
     "typeface-roboto": "0.0.54"
   }
 }
