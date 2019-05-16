@@ -50,7 +50,7 @@ const rendererConfig = (env, argv) => ({
   stats: 'errors-only',
   module: { rules: rules() },
   entry: {
-    renderer: './index.js'
+    renderer: ['react-hot-loader/patch', './index.js']
   },
 
   plugins: [
@@ -70,6 +70,7 @@ const mainConfig = (env, argv) => ({
   }
 })
 
+/* eslint-disable no-console */
 const devServer = env => {
   if (env.production) return ({}) // no development server for production
   return ({
@@ -87,6 +88,7 @@ const devServer = env => {
     }
   })
 }
+/* eslint-enable no-console */
 
 const devtool = env => {
   if (env.production) return ({}) // no source maps for production
