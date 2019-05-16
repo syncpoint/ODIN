@@ -2,7 +2,7 @@ import React from 'react'
 import L from 'leaflet'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
-import { ipcRenderer } from 'electron'
+import { ipcRenderer, clipboard } from 'electron'
 import EventEmitter from 'events'
 import settings from 'electron-settings'
 import path from 'path'
@@ -73,6 +73,7 @@ class Map extends React.Component {
     const tileProvider = settings.get('tileProvider') || defautTileProvider
     const displayFilters = settings.get('displayFilters') || defaultValues()
     const viewPort = settings.get('viewPort')
+    const { eventBus } = this.props
 
     // Override center/zoom if available from settings:
     if (viewPort) {
@@ -94,6 +95,32 @@ class Map extends React.Component {
         .forEach(layer => this.map.removeLayer(layer))
       L.tileLayer(options.url, options).addTo(this.map)
       settings.set('tileProvider', options)
+    })
+
+    ipcRenderer.on('COMMAND_COPY_COORDS', (_, args) => {
+      const container = document.getElementById('map')
+      const originalCursor = container.style.cursor
+
+      const onClick = event => {
+        container.style.cursor = originalCursor
+        container.removeEventListener('click', onClick)
+
+        const pointXY = L.point(event.layerX, event.layerY)
+        const latlng = this.map.layerPointToLatLng(pointXY).wrap()
+
+        // TODO: get coordinate format from user setting (once implemented)
+        clipboard.writeText(`${latlng.lat} ${latlng.lng}`)
+        const originalFilter = container.style.filter
+        const reset = () => (container.style.filter = originalFilter)
+        container.style.filter = 'invert(100%)'
+        setTimeout(reset, 50)
+        eventBus.emit('OSD_MESSAGE', { message: `Coordinates Copied`, duration: 1500 })
+      }
+
+      if (container.style.cursor === '') {
+        container.style.cursor = 'crosshair'
+        container.addEventListener('click', onClick)
+      }
     })
 
     ipcRenderer.on('COMMAND_RESET_FILTERS', (_, args) => {
