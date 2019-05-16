@@ -131,7 +131,7 @@ const styles = {
     gridRowStart: 2,
     gridColumnStart: 1,
     display: 'grid',
-    gridTemplateColumns: '1fr 2fr 1fr',
+    gridTemplateColumns: '20em 2fr 20em',
     gridTemplateRows: '1fr 3fr',
     gridGap: '1em',
     gridTemplateAreas: `
