@@ -1,38 +1,35 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
+import PropTypes from 'prop-types'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import { noop } from '../../../shared/combinators'
 
 class ResultList extends React.Component {
-
-  constructor(props) {
-    super(props)
-  }
-
-  handleKeyDown(event) {
-    if(event.key !== 'Escape') return
+  handleKeyDown (event) {
+    if (event.key !== 'Escape') return
     event.stopPropagation()
     const onUpdate = result => (this.props.onUpdate || noop)(result)
     onUpdate([])
   }
 
-  handleClick(key) {
+  handleClick (key) {
     const onSelect = this.props.options.onSelect || noop
     this.props.rows
       .filter(row => row.key === key)
       .forEach(onSelect)
   }
 
-  handleDoubleClick(key) {
+  handleDoubleClick (key) {
     this.handleClick(key)
     ;(this.props.options.onClose || noop)()
   }
 
-  render() {
-    const { classes } = this.props
+  render () {
+    const { classes, rows, options } = this.props
+    const { listItemText } = options
 
-    const rows = () => (this.props.rows || []).map(row => (
+    const listItems = () => (rows || []).map(row => (
       <ListItem
         button
         divider={ true }
@@ -40,7 +37,7 @@ class ResultList extends React.Component {
         onClick={ () => this.handleClick(row.key) }
         onDoubleClick={ () => this.handleDoubleClick(row.key) }
       >
-        { this.props.options.listItemText(row) }
+        { listItemText(row) }
       </ListItem>
     ))
 
@@ -50,10 +47,17 @@ class ResultList extends React.Component {
         className={ classes.list }
         onKeyDown={ event => this.handleKeyDown(event) }
       >
-        { rows() }
+        { listItems() }
       </List>
     )
   }
+}
+
+ResultList.propTypes = {
+  classes: PropTypes.any.isRequired,
+  options: PropTypes.any.isRequired,
+  rows: PropTypes.array.isRequired,
+  onUpdate: PropTypes.func.isRequired
 }
 
 const styles = theme => ({

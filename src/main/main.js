@@ -1,7 +1,7 @@
-const path = require('path')
-const url = require('url')
+import path from 'path'
+import url from 'url'
 import { app, BrowserWindow, Menu } from 'electron'
-const settings = require('electron-settings')
+import settings from 'electron-settings'
 import { K, noop } from '../shared/combinators'
 import { buildFromTemplate } from '../main/menu'
 
@@ -21,7 +21,6 @@ const createWindow = name => {
   }
 
   mainWindow = K(new BrowserWindow(options))(window => {
-
     // hot deployment in development mode
     const hotDeployment = () =>
       process.defaultApp ||
@@ -30,14 +29,14 @@ const createWindow = name => {
 
     const devServer = () => process.argv.indexOf('--noDevServer') === -1
 
-    const indexURL = (hotDeployment() && devServer()) ?
-      url.format({
+    const indexURL = (hotDeployment() && devServer())
+      ? url.format({
         protocol: 'http:',
         host: 'localhost:8080',
         pathname: 'index.html',
         slashes: true
-      }) :
-      url.format({
+      })
+      : url.format({
         protocol: 'file:',
         pathname: path.join(app.getAppPath(), 'dist', 'index.html'),
         slashes: true

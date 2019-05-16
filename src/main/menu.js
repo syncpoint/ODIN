@@ -1,5 +1,5 @@
 import { app, Menu } from 'electron'
-const settings = require('electron-settings')
+import settings from 'electron-settings'
 import tileProviders from './tile-providers'
 
 const sendMessage = (event, ...args) => (menuItem, focusedWindow) => {
@@ -90,7 +90,7 @@ const template = [
                 click: sendMessage('COMMAND_RESET_FILTERS'),
                 accelerator: 'CmdOrCtrl+Alt+0'
               }
-            ],
+            ]
           },
           {
             label: 'Tile Providers',

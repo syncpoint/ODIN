@@ -1,7 +1,9 @@
 import React from 'react'
 import L from 'leaflet'
 import { withStyles } from '@material-ui/core/styles'
+import PropTypes from 'prop-types'
 import { ipcRenderer } from 'electron'
+import EventEmitter from 'events'
 import settings from 'electron-settings'
 import path from 'path'
 import * as R from 'ramda'
@@ -10,13 +12,6 @@ import Timed from '../../shared/timed'
 import Disposable from '../../shared/disposable'
 import 'leaflet/dist/leaflet.css'
 import Leaflet from '../leaflet'
-
-// Dedicated file for map settings:
-settings.setPath(path.format({
-  dir: path.dirname(settings.file()),
-  base: 'MapSettings'
-}))
-
 
 // https://github.com/PaulLeCam/react-leaflet/issues/255
 // ==> Stupid hack so that leaflet's images work after going through webpack.
@@ -27,19 +22,25 @@ import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 delete L.Icon.Default.prototype._getIconUrl
 
 L.Icon.Default.mergeOptions({
-    iconRetinaUrl: marker2x,
-    iconUrl: marker,
-    shadowUrl: markerShadow
+  iconRetinaUrl: marker2x,
+  iconUrl: marker,
+  shadowUrl: markerShadow
 })
 
 // <== Stupid hack: end.
 
+// Dedicated file for map settings:
+settings.setPath(path.format({
+  dir: path.dirname(settings.file()),
+  base: 'MapSettings'
+}))
+
 const defautTileProvider = {
-  "id": "OpenStreetMap.Mapnik",
-  "name": "OpenStreetMap",
-  "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  "maxZoom": 19,
-  "attribution": "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
+  id: 'OpenStreetMap.Mapnik',
+  name: 'OpenStreetMap',
+  url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  maxZoom: 19,
+  attribution: `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors`
 }
 
 const descriptors = {
@@ -54,10 +55,8 @@ const descriptors = {
 const defaultValues = () => Object.entries(descriptors)
   .reduce((acc, [name, { value, unit }]) => K(acc)(acc => (acc[name] = { value, unit })), {})
 
-
 class Map extends React.Component {
-
-  updateDisplayFilters(filterValues) {
+  updateDisplayFilters (filterValues) {
     const styles = Leaflet
       .panes(layer => layer instanceof L.TileLayer)(this.map)
       .map(pane => pane.style)
@@ -69,14 +68,14 @@ class Map extends React.Component {
     styles.forEach(style => (style.filter = filter))
   }
 
-  componentDidMount() {
-    const {id, options} = this.props
+  componentDidMount () {
+    const { id, options } = this.props
     const tileProvider = settings.get('tileProvider') || defautTileProvider
     const displayFilters = settings.get('displayFilters') || defaultValues()
     const viewPort = settings.get('viewPort')
 
     // Override center/zoom if available from settings:
-    if(viewPort) {
+    if (viewPort) {
       options.center = L.latLng(viewPort.lat, viewPort.lng)
       options.zoom = viewPort.zoom
     }
@@ -91,8 +90,7 @@ class Map extends React.Component {
       Leaflet.layers(this.map)
         .filter(layer => layer instanceof L.TileLayer)
         .forEach(layer => this.map.removeLayer(layer))
-        L.tileLayer(options.url, options).addTo(this.map)
-
+      L.tileLayer(options.url, options).addTo(this.map)
       settings.set('tileProvider', options)
     })
 
@@ -104,7 +102,7 @@ class Map extends React.Component {
 
     ipcRenderer.on('COMMAND_ADJUST', (_, filter) => {
       const { eventBus } = this.props
-      if(this.filterControl) this.filterControl.dispose()
+      if (this.filterControl) this.filterControl.dispose()
 
       this.filterControl = (() => {
         const descriptor = descriptors[filter]
@@ -145,7 +143,7 @@ class Map extends React.Component {
         disposable.addDisposable(timer.clearTimeout)
         disposable.addDisposable(() => document.removeEventListener('keydown', onkeydown, useCapture))
         disposable.addDisposable(() => eventBus.emit('OSD_MESSAGE', { message: '' }))
-        disposable.addDisposable(() => map.focus())
+        disposable.addDisposable(() => this.map._container.focus())
 
         return disposable
       })()
@@ -158,13 +156,13 @@ class Map extends React.Component {
     })
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate (prevProps) {
     const { center } = this.props
-    if(center && !center.equals(prevProps.center)) this.map.panTo(center)
+    if (center && !center.equals(prevProps.center)) this.map.panTo(center)
   }
 
-  render() {
-    const { id, classes } = this.props
+  render () {
+    const { classes, id } = this.props
     return (
       <div
         id={ id }
@@ -173,6 +171,14 @@ class Map extends React.Component {
       </div>
     )
   }
+}
+
+Map.propTypes = {
+  classes: PropTypes.any.isRequired,
+  options: PropTypes.object.isRequired,
+  id: PropTypes.string.isRequired,
+  center: PropTypes.any.isRequired,
+  eventBus: PropTypes.instanceOf(EventEmitter).isRequired
 }
 
 const styles = {
