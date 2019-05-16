@@ -52,9 +52,16 @@ class OSD extends React.Component {
   }
 
   componentDidMount() {
+    const {eventBus} = this.props
+
     this.clockInterval = setInterval(() => {
       this.setState({ ...this.state, C1: currentDateTime() })
     }, 1000)
+
+    eventBus.on('OSD_MESSAGE', ({ message, duration }) => {
+      this.setState({ ...this.state, B1: message })
+      if(duration) setTimeout(() => this.setState({ ...this.state, B1: '' }), duration)
+    })
   }
 
   render() {
