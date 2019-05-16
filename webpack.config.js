@@ -8,7 +8,7 @@ const RULES = {
   javascript: {
     test: /\.js$/,
     exclude: /node_modules/,
-    use: ['babel-loader']
+    use: ['babel-loader', 'eslint-loader']
   },
 
   css: {
@@ -47,6 +47,7 @@ const rendererConfig = (env, argv) => ({
   // no additional plugins necessary.
   // For advanced options: babel-minify-webpack-plugin: https://webpack.js.org/plugins/babel-minify-webpack-plugin
   mode: mode(env),
+  stats: 'errors-only',
   module: { rules: rules() },
   entry: {
     renderer: './index.js'
@@ -63,6 +64,7 @@ const mainConfig = (env, argv) => ({
   context: path.resolve(__dirname, 'src/main'),
   target: 'electron-main',
   mode: mode(env),
+  stats: 'errors-only',
   entry: {
     main: './main.js'
   }
