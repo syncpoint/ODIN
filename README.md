@@ -1,6 +1,7 @@
 # ODIN - C2IS (Open Source)
 
 [![Build Status: Linux](https://travis-ci.org/syncpoint/ODIN.svg?branch=develop)](https://travis-ci.org/syncpoint/ODIN.svg?branch=develop)
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 While currently in its early infancy, ODIN wants to become an Open Source alternative to industry-led commercial Command and Control Information Systems. Our main goal is __simplicity__. Coming from a military background, we think it's time for a paradigm shift. Together with a vibrant community, we want to lead the way towards lightweight and user-friendly systems.
 
@@ -10,12 +11,23 @@ If you are interested in raising ODIN to become big and strong, there are severa
 Please also see our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Getting started
-For now, the application can only be started from source.
-Clone repository, install dependencies then start the application.
+Clone repository, install dependencies then build and start the application.
 
 1. `git clone https://github.com/syncpoint/ODIN.git`
 2. `npm install`
-3. `npm start`
+3. `npm webpack; npm start`
+
+### Binaries
+To create Windows or macOS binaries, webpack first for production, then build package with electron-builder.
+
+1. `npm run webpack:production`
+2. `npm run builder:win` or `npm run builder:mac`
+
+### Development mode (hot deployment for renderer only)
+Create main and renderer bundles first, then start development server (for renderer only).
+
+1. `npm run webpack`
+2. `npm run hot`
 
 ## License
 
