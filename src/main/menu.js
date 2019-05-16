@@ -82,11 +82,6 @@ const template = [
           }
         ]
       },
-      {
-        label: 'Copy Coordinates',
-        accelerator: 'Alt+C',
-        click: sendMessage("COPY_COORDINATES")
-      },
       { type: 'separator' },
       { role: 'reload' },
       { role: 'forcereload' },
