@@ -28,16 +28,25 @@ class SearchField extends React.Component {
     }
   }
 
+  componentDidUpdate() {
+    if(!this.props.value) this.input.focus()
+  }
+
   render() {
+    const { classes, options, value, onChange } = this.props
+
     return (
       <TextField
-        label={ this.props.options.label }
+        label={ options.label }
         type="search"
+        value={ value }
         autoFocus
-        className={ this.props.classes.searchField }
+        className={ classes.searchField }
         margin="normal"
         onKeyPress={ event => this.handleKeyPress(event) }
         onKeyDown={ event => this.handleKeyDown(event) }
+        onChange={ event => onChange(event.target.value) }
+        inputRef={ input => (this.input = input) }
       />
     )
   }
