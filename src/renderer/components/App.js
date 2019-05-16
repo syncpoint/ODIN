@@ -2,6 +2,7 @@ import React from 'react'
 import Map from './Map'
 import ListItemText from '@material-ui/core/ListItemText'
 import { withStyles } from '@material-ui/core/styles'
+import PropTypes from 'prop-types'
 import { ipcRenderer } from 'electron'
 import EventEmitter from 'events'
 import L from 'leaflet'
@@ -17,7 +18,7 @@ const mapOptions = {
 }
 
 class App extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
 
     this.eventBus = new EventEmitter()
@@ -27,29 +28,29 @@ class App extends React.Component {
     }
   }
 
-  handleKeyDown(event) {
-    switch(event.key) {
+  handleKeyDown (event) {
+    switch (event.key) {
       case 'Escape': return this.closeSpotlight()
     }
   }
 
-  closeSpotlight() {
+  closeSpotlight () {
     // TODO: set focus to map
     const panels = delete this.state.panels.spotlight
     this.setState({ ...this.state, panels })
   }
 
-  setCenter(latlng) {
+  setCenter (latlng) {
     this.setState({ ...this.state, center: latlng })
   }
 
-  componentDidMount() {
+  componentDidMount () {
     ipcRenderer.on('COMMAND_ADD_BOOKMARK', (_, args) => {
-      console.log('COMMAND_ADD_BOOKMARK')
+      // TODO: implement
     })
 
     ipcRenderer.on('COMMAND_GOTO_BOOKMARK', (_, args) => {
-      console.log('COMMAND_GOTO_BOOKMARK')
+      // TODO: implement
     })
 
     ipcRenderer.on('COMMAND_GOTO_PLACE', (_, args) => {
@@ -57,13 +58,11 @@ class App extends React.Component {
         // limit: 7,
         addressdetails: 1,
         namedetails: 0
-        // TODO: supply filter
-        // TODO: supply sorter
       }
 
       const spotlight = {
         search: search(searchOptions),
-        label: "Place or address",
+        label: 'Place or address',
         mapRow: row => ({
           key: row.place_id, // mandatory
           name: row.display_name,
@@ -77,16 +76,15 @@ class App extends React.Component {
         onClose: () => this.closeSpotlight()
       }
 
-      const panels = { ...this.state.panels, spotlight}
+      const panels = { ...this.state.panels, spotlight }
       this.setState({ ...this.state, panels })
     })
   }
 
-  render() {
-    const spotlight = this.state.panels.spotlight ?
-      <Spotlight
-        options={ this.state.panels.spotlight }
-      /> : null
+  render () {
+    const spotlight = this.state.panels.spotlight
+      ? (<Spotlight options={ this.state.panels.spotlight } />)
+      : null
 
     return (
       <div
@@ -110,6 +108,10 @@ class App extends React.Component {
       </div>
     )
   }
+}
+
+App.propTypes = {
+  classes: PropTypes.any.isRequired
 }
 
 const styles = {

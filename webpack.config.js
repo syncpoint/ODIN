@@ -8,7 +8,7 @@ const RULES = {
   javascript: {
     test: /\.js$/,
     exclude: /node_modules/,
-    use: ["babel-loader"]
+    use: ['babel-loader']
   },
 
   css: {
@@ -17,7 +17,7 @@ const RULES = {
     // Note: loaders are applied from right to left, i.e. css-loader -> style-loader
     //
     test: /\.css$/,
-    use: ['style-loader', 'css-loader' ]
+    use: ['style-loader', 'css-loader']
   },
 
   image: {
@@ -25,7 +25,7 @@ const RULES = {
     use: [{
       loader: 'file-loader',
       options: {
-        name: `img/[name]__[${hash}].[ext]`,
+        name: `img/[name]__[${hash}].[ext]`
       }
     }]
   },
@@ -69,26 +69,26 @@ const mainConfig = (env, argv) => ({
 })
 
 const devServer = env => {
-  if(env.production) return ({}) // no development server for production
-  else return ({
+  if (env.production) return ({}) // no development server for production
+  return ({
     devServer: {
       contentBase: path.resolve(__dirname, 'dist'),
-      before() {
+      before () {
         spawn(
           'electron',
           ['.'],
           { shell: true, env: process.env, stdio: 'inherit' }
         )
-        .on('close', code => process.exit(code))
-        .on('error', error => console.error(error))
+          .on('close', code => process.exit(code))
+          .on('error', error => console.error(error))
       }
     }
   })
 }
 
 const devtool = env => {
-  if(env.production) return ({}) // no source maps for production
-  else return ({
+  if (env.production) return ({}) // no source maps for production
+  return ({
     devtool: 'cheap-source-map'
   })
 }

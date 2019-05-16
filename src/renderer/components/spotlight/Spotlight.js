@@ -1,13 +1,12 @@
 import React from 'react'
 import Paper from '@material-ui/core/Paper'
 import { withStyles } from '@material-ui/core/styles'
+import PropTypes from 'prop-types'
 import SearchField from './SearchField'
 import ResultList from './ResultList'
 
-
 class Spotlight extends React.Component {
-
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       value: '',
@@ -15,23 +14,23 @@ class Spotlight extends React.Component {
     }
   }
 
-  handleUpdate(rows) {
+  handleUpdate (rows) {
     const value = rows.length ? this.state.value : ''
     this.setState({
       ...this.state,
       value,
-      rows: rows.map(this.props.options.mapRow),
+      rows: rows.map(this.props.options.mapRow)
     })
   }
 
-  handleChange(value) {
+  handleChange (value) {
     this.setState({
       ...this.state,
       value
     })
   }
 
-  render() {
+  render () {
     const { classes } = this.props
 
     return (
@@ -65,5 +64,10 @@ const styles = theme => ({
     background: 'rgba(252, 252, 255, 0.9)'
   }
 })
+
+Spotlight.propTypes = {
+  classes: PropTypes.any.isRequired,
+  options: PropTypes.any.isRequired
+}
 
 export default withStyles(styles)(Spotlight)
