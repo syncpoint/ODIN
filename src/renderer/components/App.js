@@ -8,6 +8,7 @@ import L from 'leaflet'
 import OSD from './OSD'
 import Spotlight from './spotlight/Spotlight'
 import search from './nominatim'
+import { noop } from '../../shared/combinators'
 
 const center = L.latLng(48.65400545105681, 15.319061279296877)
 const mapOptions = {

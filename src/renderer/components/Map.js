@@ -1,7 +1,7 @@
 import React from 'react'
 import L from 'leaflet'
 import { withStyles } from '@material-ui/core/styles'
-import { ipcRenderer } from 'electron'
+import { ipcRenderer, clipboard } from 'electron'
 import settings from 'electron-settings'
 import path from 'path'
 import * as R from 'ramda'
@@ -74,7 +74,22 @@ class Map extends React.Component {
     const tileProvider = settings.get('tileProvider') || defautTileProvider
     const displayFilters = settings.get('displayFilters') || defaultValues()
     const viewPort = settings.get('viewPort')
+    const mapDiv = document.getElementById('map')
+    const { eventBus } = this.props
+    const onClick = event => {
+        mapDiv.style.cursor = ''
+        mapDiv.removeEventListener('click', onClick)
 
+        const pointXY = L.point(event.layerX, event.layerY)
+        const latlng = this.map.layerPointToLatLng(pointXY).wrap()
+      // TODO: get coordinate format from user setting (once implemented)
+        clipboard.writeText(`${latlng.lat} ${latlng.lng}`)
+        const originalFilter = mapDiv.style.filter
+        const reset = () => (mapDiv.style.filter = originalFilter)
+        mapDiv.style.filter = 'invert(100%)'
+        setTimeout(reset, 50)
+        eventBus.emit('OSD_MESSAGE', { message: `Coordinates Copied`, duration: 1500  })
+    }
     // Override center/zoom if available from settings:
     if(viewPort) {
       options.center = L.latLng(viewPort.lat, viewPort.lng)
@@ -94,6 +109,13 @@ class Map extends React.Component {
         L.tileLayer(options.url, options).addTo(this.map)
 
       settings.set('tileProvider', options)
+    })
+    
+    ipcRenderer.on('COMMAND_COPY_COODRDS', (_,args) => {
+      if(mapDiv.style.cursor === ''){
+        mapDiv.style.cursor = 'crosshair'
+        mapDiv.addEventListener('click', onClick)
+      }
     })
 
     ipcRenderer.on('COMMAND_RESET_FILTERS', (_, args) => {
