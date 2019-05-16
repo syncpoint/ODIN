@@ -101,7 +101,7 @@ const template = [
       {
         label: 'Copy Coordinates',
         accelerator: 'ALT + C',
-        click: sendMessage('COMMAND_COPY_COODRDS')
+        click: sendMessage('COMMAND_COPY_COORDS')
       },
       { type: 'separator' },
       { role: 'reload' },
