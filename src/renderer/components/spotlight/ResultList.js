@@ -6,11 +6,15 @@ import ListItem from '@material-ui/core/ListItem'
 import { noop } from '../../../shared/combinators'
 
 class ResultList extends React.Component {
-  handleKeyDown (event) {
-    if (event.key !== 'Escape') return
-    event.stopPropagation()
-    const onUpdate = result => (this.props.onUpdate || noop)(result)
-    onUpdate([])
+  handleListKeyDown (event) {
+    switch (event.key) {
+      case 'Escape': {
+        event.stopPropagation()
+        const onUpdate = result => (this.props.onUpdate || noop)(result)
+        onUpdate([])
+        break
+      }
+    }
   }
 
   handleClick (key) {
@@ -25,6 +29,15 @@ class ResultList extends React.Component {
     ;(this.props.options.onClose || noop)()
   }
 
+  handleItemKeyDown (key) {
+    switch (event.key) {
+      case 'Enter': {
+        this.handleClick(key)
+        return (this.props.options.onClose || noop)()
+      }
+    }
+  }
+
   render () {
     const { classes, rows, options } = this.props
     const { listItemText } = options
@@ -36,6 +49,7 @@ class ResultList extends React.Component {
         key={ row.key }
         onClick={ () => this.handleClick(row.key) }
         onDoubleClick={ () => this.handleDoubleClick(row.key) }
+        onKeyDown={ () => this.handleItemKeyDown(row.key) }
       >
         { listItemText(row) }
       </ListItem>
@@ -45,7 +59,7 @@ class ResultList extends React.Component {
       <List
         dense={ true }
         className={ classes.list }
-        onKeyDown={ event => this.handleKeyDown(event) }
+        onKeyDown={ event => this.handleListKeyDown(event) }
       >
         { listItems() }
       </List>
