@@ -62,9 +62,24 @@ class App extends React.Component {
         namedetails: 0
       }
 
+      const { lat, lng } = this.state.center
+
       // Prepare spotlight options:
       const spotlight = {
         search: search(searchOptions),
+        sort: (a, b) => {
+          const da = Math.sqrt(
+            Math.pow((lat - Number.parseFloat(a.lat)), 2) +
+            Math.pow((lng - Number.parseFloat(a.lon)), 2)
+          )
+
+          const db = Math.sqrt(
+            Math.pow((lat - Number.parseFloat(b.lat)), 2) +
+            Math.pow((lng - Number.parseFloat(b.lon)), 2)
+          )
+
+          return da - db
+        },
         label: 'Place or address',
         mapRow: row => ({
           key: row.place_id, // mandatory

@@ -42,6 +42,8 @@ class ResultList extends React.Component {
     const { classes, rows, options } = this.props
     const { listItemText } = options
 
+    if (options.sort) rows.sort(options.sort)
+
     const listItems = () => (rows || []).map(row => (
       <ListItem
         button
