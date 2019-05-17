@@ -15,7 +15,8 @@ const center = L.latLng(48.65400545105681, 15.319061279296877)
 const mapOptions = {
   center,
   zoomControl: false, // default: true
-  zoom: 13
+  zoom: 13,
+  minZoom: 3 // 1:70 million
 }
 
 class App extends React.Component {
