@@ -23,6 +23,8 @@ class OSD extends React.Component {
     eventBus.on('OSD_MESSAGE', ({ message, duration, slot }) => {
       slot = slot || 'B1'
       const update = Object.assign({}, this.state)
+      /* eslint-disable */
+      console.log('update', update)
       update[slot] = message
       this.setState(update)
       if (!duration) return
@@ -33,6 +35,8 @@ class OSD extends React.Component {
         this.setState(update)
       }, duration)
     })
+
+    eventBus.emit('OSD_MOUNTED')
   }
 
   render () {
