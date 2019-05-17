@@ -20,9 +20,18 @@ class OSD extends React.Component {
       this.setState({ ...this.state, C1: currentDateTime() })
     }, 1000)
 
-    eventBus.on('OSD_MESSAGE', ({ message, duration }) => {
-      this.setState({ ...this.state, B1: message })
-      if (duration) setTimeout(() => this.setState({ ...this.state, B1: '' }), duration)
+    eventBus.on('OSD_MESSAGE', ({ message, duration, slot }) => {
+      slot = slot || 'B1'
+      const update = Object.assign({}, this.state)
+      update[slot] = message
+      this.setState(update)
+      if (!duration) return
+
+      setTimeout(() => {
+        const update = Object.assign({}, this.state)
+        update[slot] = ''
+        this.setState(update)
+      }, duration)
     })
   }
 
