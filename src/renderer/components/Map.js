@@ -3,7 +3,8 @@ import L from 'leaflet'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { ipcRenderer, clipboard } from 'electron'
-import EventEmitter from 'events'
+// import EventEmitter from 'events'
+import evented from '../evented'
 import 'leaflet/dist/leaflet.css'
 import * as R from 'ramda'
 import { K, noop } from '../../shared/combinators'
@@ -23,7 +24,7 @@ const defautTileProvider = {
   attribution: `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors`
 }
 
-const commandHandlers = eventBus => ({
+const commandHandlers = {
 
   // DEPENDENCIES:
   // * this.map (state change: layer)
@@ -58,7 +59,7 @@ const commandHandlers = eventBus => ({
       const reset = () => (container.style.filter = originalFilter)
       container.style.filter = 'invert(100%)'
       setTimeout(reset, 50)
-      eventBus.emit('OSD_MESSAGE', { message: `Coordinates Copied`, duration: 1500 })
+      evented.emit('OSD_MESSAGE', { message: `Coordinates Copied`, duration: 1500 })
     }
 
     if (container.style.cursor === '') {
@@ -79,13 +80,13 @@ const commandHandlers = eventBus => ({
 
   // DEPENDENCIES:
   //
-  // * settings [R/W: current, apply / cancel]
-  // * eventBus (OSD_MESSAGE)
-  // * descriptors / defaultValues()
-  // * filter (descriptor key)
-  // * this.filterControl (singleton module state?)
-  // * this.updateDisplayFilters() [eventBus: message -> map]
-  // * this.map (focus) [eventBus: message -> map]
+  // REMOVE:  settings [R/W: current, apply / cancel]
+  // OPTION:  eventBus (OSD_MESSAGE)
+  // OPTION:  descriptors / defaultValues()
+  // OPTION:  filter (descriptor key)
+  // REMOVE:  this.filterControl (singleton module state?)
+  // EVENT:   this.updateDisplayFilters() [eventBus: message -> map]
+  // COMMAND: this.map (focus) [eventBus: message -> map]
   //
   COMMAND_ADJUST: function (filter) {
     if (this.filterControl) this.filterControl.dispose()
@@ -98,12 +99,12 @@ const commandHandlers = eventBus => ({
       const disposable = Disposable.of({})
       const timer = Timed.of(3000, R.compose(disposable.dispose, apply))({})
 
-      eventBus.emit('OSD_MESSAGE', { message: `${descriptor.label}: ${currentValues[filter].value}${descriptor.unit}` })
+      evented.emit('OSD_MESSAGE', { message: `${descriptor.label}: ${currentValues[filter].value}${descriptor.unit}` })
 
       const refresh = value => {
         if (value < descriptor.min || value > descriptor.max) return
         currentValues[filter].value = value
-        eventBus.emit('OSD_MESSAGE', { message: `${descriptor.label}: ${value}${descriptor.unit}` })
+        evented.emit('OSD_MESSAGE', { message: `${descriptor.label}: ${value}${descriptor.unit}` })
         timer.refreshTimeout(2000)
         this.updateDisplayFilters(currentValues)
       }
@@ -128,13 +129,13 @@ const commandHandlers = eventBus => ({
 
       disposable.addDisposable(timer.clearTimeout)
       disposable.addDisposable(() => document.removeEventListener('keydown', onkeydown, useCapture))
-      disposable.addDisposable(() => eventBus.emit('OSD_MESSAGE', { message: '' }))
+      disposable.addDisposable(() => evented.emit('OSD_MESSAGE', { message: '' }))
       disposable.addDisposable(() => this.map._container.focus())
 
       return disposable
     })()
   }
-})
+}
 
 /**
  * this.map:
@@ -167,7 +168,7 @@ class Map extends React.Component {
   }
 
   componentDidMount () {
-    const { id, options, eventBus } = this.props
+    const { id, options } = this.props
     const tileProvider = settings.get('tileProvider') || defautTileProvider
     const viewPort = settings.get('viewPort')
 
@@ -186,10 +187,10 @@ class Map extends React.Component {
 
     const updateScale = () => {
       const scale = zoomLevels[this.map.getZoom()].scale || ''
-      eventBus.emit('OSD_MESSAGE', { slot: 'C2', message: scale })
+      evented.emit('OSD_MESSAGE', { slot: 'C2', message: scale })
     }
 
-    eventBus.on('OSD_MOUNTED', updateScale)
+    evented.on('OSD_MOUNTED', updateScale)
 
     this.map.on('click', () => this.props.onClick())
 
@@ -202,7 +203,7 @@ class Map extends React.Component {
     this.map.on('zoom', updateScale)
 
     // Bind command handlers after map was initialized:
-    Object.entries(commandHandlers(eventBus)).map(([channel, handler]) => {
+    Object.entries(commandHandlers).map(([channel, handler]) => {
       ipcRenderer.on(channel, (_, args) => handler.bind(this)(args))
     })
   }
@@ -229,7 +230,7 @@ Map.propTypes = {
   options: PropTypes.object.isRequired,
   id: PropTypes.string.isRequired,
   center: PropTypes.any.isRequired,
-  eventBus: PropTypes.instanceOf(EventEmitter).isRequired,
+  // eventBus: PropTypes.instanceOf(EventEmitter).isRequired,
   onClick: PropTypes.func.isRequired
 }
 

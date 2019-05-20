@@ -11,3 +11,4 @@ export const descriptors = {
 
 export const defaultValues = () => Object.entries(descriptors)
   .reduce((acc, [name, { value, unit }]) => K(acc)(acc => (acc[name] = { value, unit })), {})
+

@@ -2,7 +2,7 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { currentDateTime } from '../../shared/datetime'
-import { EventEmitter } from 'events'
+import evented from '../evented'
 
 class OSD extends React.Component {
   constructor (props) {
@@ -13,30 +13,32 @@ class OSD extends React.Component {
     }
   }
 
-  componentDidMount () {
-    const { eventBus } = this.props
+  handleOSDMessage ({ message, duration, slot }) {
+    slot = slot || 'B1'
+    const update = Object.assign({}, this.state)
 
+    update[slot] = message
+    this.setState(update)
+    if (!duration) return
+
+    setTimeout(() => {
+      const update = Object.assign({}, this.state)
+      update[slot] = ''
+      this.setState(update)
+    }, duration)
+  }
+
+  componentDidMount () {
     this.clockInterval = setInterval(() => {
       this.setState({ ...this.state, C1: currentDateTime() })
     }, 1000)
 
-    eventBus.on('OSD_MESSAGE', ({ message, duration, slot }) => {
-      slot = slot || 'B1'
-      const update = Object.assign({}, this.state)
-      /* eslint-disable */
-      console.log('update', update)
-      update[slot] = message
-      this.setState(update)
-      if (!duration) return
+    evented.on('OSD_MESSAGE', this.handleOSDMessage.bind(this))
+    evented.emit('OSD_MOUNTED')
+  }
 
-      setTimeout(() => {
-        const update = Object.assign({}, this.state)
-        update[slot] = ''
-        this.setState(update)
-      }, duration)
-    })
-
-    eventBus.emit('OSD_MOUNTED')
+  componentWillUnmount () {
+    evented.removeListener('OSD_MESSAGE', this.handleOSDMessage)
   }
 
   render () {
@@ -56,8 +58,7 @@ class OSD extends React.Component {
 }
 
 OSD.propTypes = {
-  classes: PropTypes.any.isRequired,
-  eventBus: PropTypes.instanceOf(EventEmitter).isRequired
+  classes: PropTypes.any.isRequired
 }
 
 // OSD slots: Prepare styles for 3 columns x 3 rows.
