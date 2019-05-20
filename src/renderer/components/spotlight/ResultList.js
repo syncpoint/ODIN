@@ -78,7 +78,7 @@ ResultList.propTypes = {
 
 const styles = theme => ({
   list: {
-    overflow: 'scroll',
+    overflow: 'auto',
     maxHeight: 'fill-available',
     flexGrow: 1
   }
