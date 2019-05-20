@@ -5,35 +5,15 @@ import PropTypes from 'prop-types'
 import { ipcRenderer, clipboard } from 'electron'
 import EventEmitter from 'events'
 import 'leaflet/dist/leaflet.css'
-import path from 'path'
 import * as R from 'ramda'
 import { K, noop } from '../../shared/combinators'
 import Timed from '../../shared/timed'
 import Disposable from '../../shared/disposable'
 import Leaflet from '../leaflet'
+import { descriptors, defaultValues } from './Map.display-filters'
+import { zoomLevels } from './Map.zoom-levels'
+import './Map.leaflet-icons'
 import settings from './Map.settings'
-
-// https://github.com/PaulLeCam/react-leaflet/issues/255
-// ==> Stupid hack so that leaflet's images work after going through webpack.
-import marker from 'leaflet/dist/images/marker-icon.png'
-import marker2x from 'leaflet/dist/images/marker-icon-2x.png'
-import markerShadow from 'leaflet/dist/images/marker-shadow.png'
-
-delete L.Icon.Default.prototype._getIconUrl
-
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: marker2x,
-  iconUrl: marker,
-  shadowUrl: markerShadow
-})
-
-// <== Stupid hack: end.
-
-// Dedicated file for map settings:
-settings.setPath(path.format({
-  dir: path.dirname(settings.file()),
-  base: 'MapSettings'
-}))
 
 const defautTileProvider = {
   id: 'OpenStreetMap.Mapnik',
@@ -43,43 +23,12 @@ const defautTileProvider = {
   attribution: `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors`
 }
 
-const descriptors = {
-  brightness: { label: 'Brightness', value: 100, min: 0, max: 100, delta: 5, unit: '%' },
-  contrast: { label: 'Contrast', value: 100, min: 0, max: 200, delta: 5, unit: '%' },
-  grayscale: { label: 'Grayscale', value: 0, min: 0, max: 100, delta: 5, unit: '%' },
-  'hue-rotate': { label: 'Hue', value: 0, min: 0, max: 360, delta: 10, unit: 'deg', display: '°' },
-  invert: { label: 'Invert', value: 0, min: 0, max: 100, delta: 5, unit: '%' },
-  sepia: { label: 'Sepia', value: 0, min: 0, max: 100, delta: 5, unit: '%' }
-}
-
-const defaultValues = () => Object.entries(descriptors)
-  .reduce((acc, [name, { value, unit }]) => K(acc)(acc => (acc[name] = { value, unit })), {})
-
-const zoomLevels = {
-  0: { tiles: 1, tileWidth: 360, meterPerPixel: 156412, scale: '1:500 million', areas: 'whole world' },
-  1: { tiles: 4, tileWidth: 180, meterPerPixel: 78206, scale: '1:250 million' },
-  2: { tiles: 16, tileWidth: 90, meterPerPixel: 39103, scale: '1:150 million', areas: 'subcontinental area' },
-  3: { tiles: 64, tileWidth: 45, meterPerPixel: 19551, scale: '1:70 million', areas: 'largest country' },
-  4: { tiles: 256, tileWidth: 22.5, meterPerPixel: 9776, scale: '1:35 million', areas: 'largest country' },
-  5: { tiles: 1024, tileWidth: 11.25, meterPerPixel: 4888, scale: '1:15 million', areas: 'large African country' },
-  6: { tiles: 4096, tileWidth: 5.625, meterPerPixel: 2444, scale: '1:10 million', areas: 'large European country' },
-  7: { tiles: 16384, tileWidth: 2.813, meterPerPixel: 1222, scale: '1:4 million', areas: 'small country, US state' },
-  8: { tiles: 65536, tileWidth: 1.406, meterPerPixel: 610.984, scale: '1:2 million' },
-  9: { tiles: 262144, tileWidth: 0.703, meterPerPixel: 305.492, scale: '1:1 million', areas: 'wide area, large metropolitan area' },
-  10: { tiles: 1048576, tileWidth: 0.352, meterPerPixel: 152.746, scale: '1:500 thousand', areas: 'metropolitan area' },
-  11: { tiles: 4194304, tileWidth: 0.176, meterPerPixel: 76.373, scale: '1:250 thousand', areas: 'city' },
-  12: { tiles: 16777216, tileWidth: 0.088, meterPerPixel: 38.187, scale: '1:150 thousand', areas: 'town, or city district' },
-  13: { tiles: 67108864, tileWidth: 0.044, meterPerPixel: 19.093, scale: '1:70 thousand', areas: 'village, or suburb' },
-  14: { tiles: 268435456, tileWidth: 0.022, meterPerPixel: 9.547, scale: '1:35 thousand' },
-  15: { tiles: 1073741824, tileWidth: 0.011, meterPerPixel: 4.773, scale: '1:15 thousand', areas: 'small road' },
-  16: { tiles: 4294967296, tileWidth: 0.005, meterPerPixel: 2.387, scale: '1:8 thousand', areas: 'street' },
-  17: { tiles: 17179869184, tileWidth: 0.003, meterPerPixel: 1.193, scale: '1:4 thousand', areas: 'block, park, addresses' },
-  18: { tiles: 68719476736, tileWidth: 0.001, meterPerPixel: 0.596, scale: '1:2 thousand', areas: 'some buildings, trees' },
-  19: { tiles: 274877906944, tileWidth: 0.0005, meterPerPixel: 0.298, scale: '1:1 thousand', areas: 'local highway and crossing details' }
-}
-
 const commandHandlers = eventBus => ({
 
+  // DEPENDENCIES:
+  // * this.map (state change: layer)
+  // * settings (R/O)
+  //
   COMMAND_MAP_TILE_PROVIDER: function (options) {
     Leaflet.layers(this.map)
       .filter(layer => layer instanceof L.TileLayer)
@@ -88,6 +37,10 @@ const commandHandlers = eventBus => ({
     settings.set('tileProvider', options)
   },
 
+  // DEPENDENCIES:
+  // this.map (QUERY: layerPointToLatLng())
+  // eventBus (OSD_MESSAGE)
+  //
   COMMAND_COPY_COORDS: function () {
     const container = document.getElementById('map')
     const originalCursor = container.style.cursor
@@ -114,12 +67,26 @@ const commandHandlers = eventBus => ({
     }
   },
 
+  // DEPENDENCIES:
+  // * defaultValues()
+  // * this.updateDisplayFilters [eventBus: message -> map]
+  // * settings (W/O)
   COMMAND_RESET_FILTERS: function () {
     const values = defaultValues()
     settings.set('displayFilters', values)
     this.updateDisplayFilters(values)
   },
 
+  // DEPENDENCIES:
+  //
+  // * settings [R/W: current, apply / cancel]
+  // * eventBus (OSD_MESSAGE)
+  // * descriptors / defaultValues()
+  // * filter (descriptor key)
+  // * this.filterControl (singleton module state?)
+  // * this.updateDisplayFilters() [eventBus: message -> map]
+  // * this.map (focus) [eventBus: message -> map]
+  //
   COMMAND_ADJUST: function (filter) {
     if (this.filterControl) this.filterControl.dispose()
 
@@ -169,6 +136,23 @@ const commandHandlers = eventBus => ({
   }
 })
 
+/**
+ * this.map:
+ * - property: _container
+ *
+ * - query: Leaflet.panes()
+ * - query: Leaflet.layers()
+ * - query: getZoom()
+ * - query: getCenter()
+ * - query: layerPointToLatLng()
+ *
+ * - command: removeLayer()
+ * - command: panTo()
+ *
+ * - event: click
+ * - event: moveend
+ * - event: zoom
+ */
 class Map extends React.Component {
   updateDisplayFilters (filterValues) {
     const styles = Leaflet
@@ -185,10 +169,9 @@ class Map extends React.Component {
   componentDidMount () {
     const { id, options, eventBus } = this.props
     const tileProvider = settings.get('tileProvider') || defautTileProvider
-    const displayFilters = settings.get('displayFilters') || defaultValues()
     const viewPort = settings.get('viewPort')
 
-    // Override center/zoom if available from settings:
+    // Override center/zoom options if available from settings:
     if (viewPort) {
       options.center = L.latLng(viewPort.lat, viewPort.lng)
       options.zoom = viewPort.zoom
@@ -198,6 +181,7 @@ class Map extends React.Component {
       L.tileLayer(tileProvider.url, tileProvider).addTo(map)
     })
 
+    const displayFilters = settings.get('displayFilters') || defaultValues()
     this.updateDisplayFilters(displayFilters)
 
     const updateScale = () => {
@@ -206,11 +190,8 @@ class Map extends React.Component {
     }
 
     eventBus.on('OSD_MOUNTED', updateScale)
-    this.map.on('click', () => this.props.onClick())
 
-    Object.entries(commandHandlers(eventBus)).map(([channel, handler]) => {
-      ipcRenderer.on(channel, (_, args) => handler.bind(this)(args))
-    })
+    this.map.on('click', () => this.props.onClick())
 
     this.map.on('moveend', () => {
       const { lat, lng } = this.map.getCenter()
@@ -219,6 +200,11 @@ class Map extends React.Component {
     })
 
     this.map.on('zoom', updateScale)
+
+    // Bind command handlers after map was initialized:
+    Object.entries(commandHandlers(eventBus)).map(([channel, handler]) => {
+      ipcRenderer.on(channel, (_, args) => handler.bind(this)(args))
+    })
   }
 
   componentDidUpdate (prevProps) {
