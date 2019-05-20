@@ -70,7 +70,6 @@ const mainConfig = (env, argv) => ({
   }
 })
 
-/* eslint-disable no-console */
 const devServer = env => {
   if (env.production) return ({}) // no development server for production
   return ({
@@ -88,7 +87,6 @@ const devServer = env => {
     }
   })
 }
-/* eslint-enable no-console */
 
 const devtool = env => {
   if (env.production) return ({}) // no source maps for production
