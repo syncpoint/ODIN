@@ -35,6 +35,9 @@ settings.setPath(path.format({
   base: 'MapSettings'
 }))
 
+/*eslint-disable*/
+console.log(settings.getPath())
+
 const defautTileProvider = {
   id: 'OpenStreetMap.Mapnik',
   name: 'OpenStreetMap',
@@ -182,6 +185,19 @@ class Map extends React.Component {
       const { lat, lng } = this.map.getCenter()
       const zoom = this.map.getZoom()
       settings.set('viewPort', { lat, lng, zoom })
+    })
+
+    eventBus.on('SAVE_BOOKMARK', ({ id }) => {
+      const { lat, lng } = this.map.getCenter()
+      const zoom = this.map.getZoom()
+      const loadedbookmarks = settings.get('bookmarks')
+      /*eslint-disable*/
+      console.log(loadedbookmarks)
+      const filteredBookmarks = typeof loadedbookmarks === 'undefined' ? [{ id, lat, lng, zoom }] : loadedbookmarks.filter(item => item.name !== id)
+      const uniqueBookmaks = filteredBookmarks.slice()
+      
+      
+      settings.set('bookmarks', uniqueBookmaks)
     })
   }
 

@@ -47,7 +47,20 @@ class App extends React.Component {
 
   componentDidMount () {
     ipcRenderer.on('COMMAND_ADD_BOOKMARK', (_, args) => {
-      // TODO: implement
+      // Prepare spotlight options:
+      const spotlight = {
+        paperCSS: this.props.classes.paperSearchBar,
+        resultSCC: this.props.classes.none,
+        accept: (bookmark) => {
+          this.eventBus.emit('OSD_MESSAGE', { message: 'Bookmark ' + bookmark + ' Saved', duration: 1500 })
+          this.eventBus.emit('SAVE_BOOKMARK', { id: bookmark })
+        },
+        label: 'Add Bookmark',
+        onClose: () => this.closeSpotlight()
+      }
+
+      const panels = { ...this.state.panels, spotlight }
+      this.setState({ ...this.state, panels })
     })
 
     ipcRenderer.on('COMMAND_GOTO_BOOKMARK', (_, args) => {
@@ -60,9 +73,10 @@ class App extends React.Component {
         addressdetails: 1,
         namedetails: 0
       }
-
       // Prepare spotlight options:
       const spotlight = {
+        paperCSS: this.props.classes.paperAll,
+        resultSCC: this.props.classes.list,
         search: search(searchOptions),
         label: 'Place or address',
         mapRow: row => ({
@@ -144,7 +158,35 @@ const styles = {
       "L . R"
       "L B R"
     `
+  },
+
+  paperAll: {
+    display: 'flex',
+    flexDirection: 'column',
+    pointerEvents: 'auto',
+    gridArea: 'R',
+    background: 'rgba(252, 252, 255, 0.9)'
+  },
+
+  paperSearchBar: {
+    display: 'flex',
+    flexDirection: 'column',
+    maxHeight: '5em',
+    gridArea: 'R',
+    background: 'rgba(252, 252, 255, 0.9)',
+    pointerEvents: 'auto'
+  },
+
+  list: {
+    overflow: 'scroll',
+    maxHeight: 'fill-available',
+    flexGrow: 1
+  },
+
+  none: {
+    display: 'none'
   }
+
 }
 
 export default hot(withStyles(styles)(App))
