@@ -28,6 +28,7 @@ module.exports = {
   ],
   "rules": {
     "no-console": "off",
-    "no-multiple-empty-lines": "off"
+    "no-multiple-empty-lines": "off",
+    "padded-blocks": "off",
   }
 }
