@@ -23,6 +23,14 @@ class SearchField extends React.Component {
           break
         }
       }
+    } else {
+      switch (event.key) {
+        case 'Enter': {
+          const accept = event.target.value.trim() !== '' ? this.props.options.accept : noop
+          accept(event.target.value)
+          break
+        }
+      }
     }
   }
 

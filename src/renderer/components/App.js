@@ -1,4 +1,3 @@
-import { hot } from 'react-hot-loader/root'
 import React from 'react'
 import Map from './Map'
 import ListItemText from '@material-ui/core/ListItemText'
@@ -15,7 +14,8 @@ const center = L.latLng(48.65400545105681, 15.319061279296877)
 const mapOptions = {
   center,
   zoomControl: false, // default: true
-  zoom: 13
+  zoom: 13,
+  minZoom: 3 // 1:70 million
 }
 
 class App extends React.Component {
@@ -64,7 +64,26 @@ class App extends React.Component {
     })
 
     ipcRenderer.on('COMMAND_GOTO_BOOKMARK', (_, args) => {
-      // TODO: implement
+      // Prepare spotlight options:
+      const spotlight = {
+        paperCSS: this.props.classes.paperAll,
+        resultSCC: this.props.classes.list,
+        label: 'Filter Bookmarks',
+        mapRow: row => ({
+          key: row.place_id, // mandatory
+          name: row.display_name,
+          type: row.type,
+          box: row.boundingbox,
+          lat: row.lat,
+          lon: row.lon
+        }),
+        listItemText: row => <ListItemText primary={ row.name } />,
+        onSelect: row => this.setCenter(L.latLng(row.lat, row.lon)),
+        onClose: () => this.closeSpotlight()
+      }
+
+      const panels = { ...this.state.panels, spotlight }
+      this.setState({ ...this.state, panels })
     })
 
     ipcRenderer.on('COMMAND_GOTO_PLACE', (_, args) => {
@@ -73,11 +92,27 @@ class App extends React.Component {
         addressdetails: 1,
         namedetails: 0
       }
+
+      const { lat, lng } = this.state.center
+
       // Prepare spotlight options:
       const spotlight = {
         paperCSS: this.props.classes.paperAll,
         resultSCC: this.props.classes.list,
         search: search(searchOptions),
+        sort: (a, b) => {
+          const da = Math.sqrt(
+            Math.pow((lat - Number.parseFloat(a.lat)), 2) +
+            Math.pow((lng - Number.parseFloat(a.lon)), 2)
+          )
+
+          const db = Math.sqrt(
+            Math.pow((lat - Number.parseFloat(b.lat)), 2) +
+            Math.pow((lng - Number.parseFloat(b.lon)), 2)
+          )
+
+          return da - db
+        },
         label: 'Place or address',
         mapRow: row => ({
           key: row.place_id, // mandatory
@@ -189,4 +224,4 @@ const styles = {
 
 }
 
-export default hot(withStyles(styles)(App))
+export default withStyles(styles)(App)
