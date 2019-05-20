@@ -50,7 +50,7 @@ const rendererConfig = (env, argv) => ({
   stats: 'errors-only',
   module: { rules: rules() },
   entry: {
-    renderer: ['react-hot-loader/patch', './index.js']
+    renderer: ['./index.js']
   },
 
   plugins: [
