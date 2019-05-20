@@ -4,7 +4,6 @@ import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { ipcRenderer, clipboard } from 'electron'
 import EventEmitter from 'events'
-import settings from 'electron-settings'
 import 'leaflet/dist/leaflet.css'
 import path from 'path'
 import * as R from 'ramda'
@@ -12,6 +11,7 @@ import { K, noop } from '../../shared/combinators'
 import Timed from '../../shared/timed'
 import Disposable from '../../shared/disposable'
 import Leaflet from '../leaflet'
+import settings from './Map.settings'
 
 // https://github.com/PaulLeCam/react-leaflet/issues/255
 // ==> Stupid hack so that leaflet's images work after going through webpack.
