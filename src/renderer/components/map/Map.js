@@ -3,7 +3,6 @@ import L from 'leaflet'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { ipcRenderer } from 'electron'
-import { LatLon } from 'geodesy/mgrs.js'
 import evented from '../../evented'
 import 'leaflet/dist/leaflet.css'
 import './leaflet-icons'
@@ -13,6 +12,7 @@ import { zoomLevels } from './zoom-levels'
 import { defaultValues, COMMAND_ADJUST, COMMAND_RESET_FILTERS } from './display-filters'
 import { COMMAND_MAP_TILE_PROVIDER } from './tile-provider'
 import { COMMAND_COPY_COORDS } from './clipboard'
+import formatLatLng from '../../coord-format'
 import mapSettings from './settings'
 
 const defautTileProvider = {
@@ -53,9 +53,10 @@ const updateDisplayFilter = map => values => {
 }
 
 const updateCoordinateDisplay = ({ latlng }) => {
-  const { lat, lng } = latlng
-  const mgrs = new LatLon(lat, lng).toUtm().toMgrs().toString()
-  evented.emit('OSD_MESSAGE', { slot: 'C3', message: `${mgrs}` })
+  // const { lat, lng } = latlng
+  // const mgrs = new LatLon(lat, lng).toUtm().toMgrs().toString()
+  // evented.emit('OSD_MESSAGE', { slot: 'C3', message: `${mgrs}` })
+  evented.emit('OSD_MESSAGE', { slot: 'C3', message: `${formatLatLng(latlng)}` })
 }
 
 class Map extends React.Component {

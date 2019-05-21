@@ -44,6 +44,7 @@ class App extends React.Component {
   }
 
   componentDidMount () {
+
     ipcRenderer.on('COMMAND_ADD_BOOKMARK', (_, args) => {
       // TODO: implement
     })
