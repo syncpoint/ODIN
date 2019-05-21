@@ -83,8 +83,10 @@ const osdSlots = () => {
 
 const styles = Object.assign({
   osdPanel: {
+    color: '#333',
     fontFamily: 'Roboto, sans-serif',
-    fontSize: '120%',
+    fontWeight: '300', // bolder, lighter
+    lineHeight: 1.6,
     userSelect: 'none',
     gridRowStart: 1,
     gridColumnStart: 1,
