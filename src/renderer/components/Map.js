@@ -29,27 +29,29 @@ const ipcHandlers = {
   COMMAND_COPY_COORDS
 }
 
-/**
- * this.map:
- * - property: _container
- *
- * - query: Leaflet.panes()
- * - query: Leaflet.layers()
- * - query: getZoom()
- * - query: getCenter()
- * - query: layerPointToLatLng()
- *
- * - command: removeLayer()
- * - command: panTo()
- *
- * - event: click
- * - event: moveend
- * - event: zoom
- */
-class Map extends React.Component {
-  updateDisplayFilters (filterValues) {
-  }
+const updateScaleDisplay = map => () => {
+  const scale = zoomLevels[map.getZoom()].scale || ''
+  evented.emit('OSD_MESSAGE', { slot: 'C2', message: scale })
+}
 
+const saveViewPort = map => () => {
+  const { lat, lng } = map.getCenter()
+  const zoom = map.getZoom()
+  mapSettings.set('viewPort', { lat, lng, zoom })
+}
+
+const updateDisplayFilter = map => values => {
+  const filter = Object.entries(values)
+    .map(([name, { value, unit }]) => `${name}(${value}${unit})`)
+    .join(' ')
+
+  Leaflet
+    .panes(layer => layer instanceof L.TileLayer)(map)
+    .map(pane => pane.style)
+    .forEach(style => (style.filter = filter))
+}
+
+class Map extends React.Component {
   componentDidMount () {
     const { id, options } = this.props
     const tileProvider = mapSettings.get('tileProvider') || defautTileProvider
@@ -63,37 +65,14 @@ class Map extends React.Component {
 
     this.map = K(L.map(id, options))(map => {
       L.tileLayer(tileProvider.url, tileProvider).addTo(map)
+      map.on('click', () => this.props.onClick())
+      map.on('moveend', saveViewPort(map))
+      map.on('zoom', updateScaleDisplay(map))
     })
 
-    const updateScale = () => {
-      const scale = zoomLevels[this.map.getZoom()].scale || ''
-      evented.emit('OSD_MESSAGE', { slot: 'C2', message: scale })
-    }
-
-    evented.on('OSD_MOUNTED', updateScale)
-    evented.on('MAP:DISPLAY_FILTER_CHANGED', values => {
-      const styles = Leaflet
-        .panes(layer => layer instanceof L.TileLayer)(this.map)
-        .map(pane => pane.style)
-
-      const filter = Object.entries(values)
-        .map(([name, { value, unit }]) => `${name}(${value}${unit})`)
-        .join(' ')
-
-      styles.forEach(style => (style.filter = filter))
-    })
-
+    evented.on('OSD_MOUNTED', updateScaleDisplay(this.map))
+    evented.on('MAP:DISPLAY_FILTER_CHANGED', updateDisplayFilter(this.map))
     evented.emit('MAP:DISPLAY_FILTER_CHANGED', mapSettings.get('displayFilters') || defaultValues())
-
-    this.map.on('click', () => this.props.onClick())
-
-    this.map.on('moveend', () => {
-      const { lat, lng } = this.map.getCenter()
-      const zoom = this.map.getZoom()
-      mapSettings.set('viewPort', { lat, lng, zoom })
-    })
-
-    this.map.on('zoom', updateScale)
 
     // Bind command handlers after map was initialized:
     const context = { map: this.map }
