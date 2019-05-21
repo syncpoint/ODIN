@@ -1,6 +1,6 @@
 import L from 'leaflet'
-import Leaflet from '../leaflet'
-import mapSettings from './Map.settings'
+import Leaflet from '../../leaflet'
+import mapSettings from './settings'
 
 export const COMMAND_MAP_TILE_PROVIDER = ({ map }) => options => {
   Leaflet.layers(map)

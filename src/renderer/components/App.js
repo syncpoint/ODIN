@@ -1,5 +1,5 @@
 import React from 'react'
-import Map from './Map'
+import Map from './map/Map'
 import ListItemText from '@material-ui/core/ListItemText'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
