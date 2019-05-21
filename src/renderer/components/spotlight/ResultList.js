@@ -40,7 +40,7 @@ class ResultList extends React.Component {
 
   render () {
     const { rows, options } = this.props
-    const { listItemText } = options
+    const listItemText = options.listItemText || noop
 
     if (options.sort) rows.sort(options.sort)
 

@@ -10,7 +10,7 @@ class Spotlight extends React.Component {
     super(props)
     this.state = {
       value: '',
-      rows: []
+      rows: this.props.options.rows || []
     }
   }
 

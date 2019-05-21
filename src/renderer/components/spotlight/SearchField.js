@@ -23,14 +23,10 @@ class SearchField extends React.Component {
           break
         }
       }
-    } else {
-      switch (event.key) {
-        case 'Enter': {
-          const accept = event.target.value.trim() !== '' ? this.props.options.accept : noop
-          accept(event.target.value)
-          break
-        }
-      }
+    } else if (this.props.options.filter) {
+      const filter = this.props.options.filter || noop
+      const onUpdate = (this.props.onUpdate || noop)
+      onUpdate(filter(event.target.value))
     }
   }
 

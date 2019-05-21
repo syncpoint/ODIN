@@ -9,6 +9,7 @@ import L from 'leaflet'
 import OSD from './OSD'
 import Spotlight from './spotlight/Spotlight'
 import search from './nominatim'
+import settings from './Map.settings'
 
 const center = L.latLng(48.65400545105681, 15.319061279296877)
 const mapOptions = {
@@ -42,9 +43,12 @@ class App extends React.Component {
   }
 
   setCenter (latlng) {
-    this.setState({ ...this.state, center: latlng })
+    this.eventBus.emit('panTo', { latlng })
   }
 
+  setViewPort (zoom, latlng) {
+    this.eventBus.emit('flyTo', { zoom, latlng })
+  }
   componentDidMount () {
     ipcRenderer.on('COMMAND_ADD_BOOKMARK', (_, args) => {
       // Prepare spotlight options:
@@ -64,21 +68,28 @@ class App extends React.Component {
     })
 
     ipcRenderer.on('COMMAND_GOTO_BOOKMARK', (_, args) => {
+      const bookmarks = settings.get('bookmarks')
+      const filterBookmarks = (value) => {
+        const names = Object.keys(bookmarks)
+        return names.filter(name => name.includes(value))
+      }
+      const mapItem = item => ({
+        key: item, // mandatory
+        name: item
+      })
       // Prepare spotlight options:
       const spotlight = {
         paperCSS: this.props.classes.paperAll,
         resultSCC: this.props.classes.list,
         label: 'Filter Bookmarks',
-        mapRow: row => ({
-          key: row.place_id, // mandatory
-          name: row.display_name,
-          type: row.type,
-          box: row.boundingbox,
-          lat: row.lat,
-          lon: row.lon
-        }),
+        filter: value => filterBookmarks(value),
+        mapRow: mapItem,
         listItemText: row => <ListItemText primary={ row.name } />,
-        onSelect: row => this.setCenter(L.latLng(row.lat, row.lon)),
+        rows: filterBookmarks('').map(row => mapItem(row)),
+        onSelect: row => {
+          const bookmark = bookmarks[row.name]
+          this.setViewPort(bookmark.zoom, L.latLng(bookmark.lat, bookmark.lng))
+        },
         onClose: () => this.closeSpotlight()
       }
 
@@ -146,6 +157,7 @@ class App extends React.Component {
           className='map'
           options={ mapOptions }
           center={ this.state.center }
+          zoom={ this.state.zoom }
           eventBus={ this.eventBus }
           onClick= { () => this.closeSpotlight() }
         />

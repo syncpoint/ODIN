@@ -223,15 +223,17 @@ class Map extends React.Component {
       const zoom = this.map.getZoom()
       const currentBookmarks = settings.get('bookmarks') || {}
       currentBookmarks[id] = { lat, lng, zoom }
-      console.log(Object.keys(currentBookmarks).length + ' lenght')
       settings.set('bookmarks', currentBookmarks)
     })
-    this.map.on('zoom', updateScale)
-  }
+    eventBus.on('flyTo', ({ zoom, latlng }) => {
+      this.map.setView(latlng, zoom)
+    })
 
-  componentDidUpdate (prevProps) {
-    const { center } = this.props
-    if (center && !center.equals(prevProps.center)) this.map.panTo(center)
+    eventBus.on('panTo', ({ latlng }) => {
+      this.map.panTo(latlng)
+    })
+
+    this.map.on('zoom', updateScale)
   }
 
   render () {
