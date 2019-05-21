@@ -1,3 +1,6 @@
+
+// see: https://wiki.openstreetmap.org/wiki/Zoom_levels
+
 export const zoomLevels = {
   0: { tiles: 1, tileWidth: 360, meterPerPixel: 156412, scale: '1:500 million', areas: 'whole world' },
   1: { tiles: 4, tileWidth: 180, meterPerPixel: 78206, scale: '1:250 million' },

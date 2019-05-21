@@ -1,9 +1,9 @@
 import * as R from 'ramda'
-import Disposable from '../../shared/disposable'
-import Timed from '../../shared/timed'
-import { K, noop } from '../../shared/combinators'
-import evented from '../evented'
-import mapSettings from './Map.settings'
+import Disposable from '../../../shared/disposable'
+import Timed from '../../../shared/timed'
+import { K, noop } from '../../../shared/combinators'
+import evented from '../../evented'
+import mapSettings from './settings'
 
 export const descriptors = {
   brightness: { label: 'Brightness', value: 100, min: 0, max: 100, delta: 5, unit: '%', display: '%' },
@@ -19,7 +19,7 @@ export const defaultValues = () => Object.entries(descriptors)
 
 let state = null
 
-export const COMMAND_ADJUST = context => filter => {
+export const COMMAND_ADJUST = _ => filter => {
   if (state) state.dispose()
   state = (() => {
     const disposable = Disposable.of({})

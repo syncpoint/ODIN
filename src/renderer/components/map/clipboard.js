@@ -1,6 +1,6 @@
 import { clipboard } from 'electron'
 import L from 'leaflet'
-import evented from '../evented'
+import evented from '../../evented'
 
 export const COMMAND_COPY_COORDS = ({ map }) => () => {
   const container = document.getElementById('map')
