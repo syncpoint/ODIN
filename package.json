@@ -12,7 +12,8 @@
     "builder:dir": "electron-builder --dir",
     "builder:mac": "electron-builder --mac",
     "builder:win": "electron-builder --win",
-    "eslint": "eslint src/"
+    "eslint": "eslint src/",
+    "test": "mocha --require esm"
   },
   "repository": {
     "type": "git",
@@ -40,8 +41,10 @@
     "eslint-plugin-promise": "^4.1.1",
     "eslint-plugin-react": "^7.13.0",
     "eslint-plugin-standard": "^4.0.0",
+    "esm": "^3.2.25",
     "file-loader": "^3.0.1",
     "html-webpack-plugin": "^3.2.0",
+    "mocha": "^6.1.4",
     "style-loader": "^0.23.1",
     "webpack": "^4.30.0",
     "webpack-cli": "^3.3.1",

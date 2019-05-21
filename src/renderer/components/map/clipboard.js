@@ -1,6 +1,7 @@
 import { clipboard } from 'electron'
 import L from 'leaflet'
 import evented from '../../evented'
+import formatLatLng from '../../coord-format'
 
 export const COMMAND_COPY_COORDS = ({ map }) => () => {
   const container = document.getElementById('map')
@@ -12,9 +13,7 @@ export const COMMAND_COPY_COORDS = ({ map }) => () => {
 
     const pointXY = L.point(event.layerX, event.layerY)
     const latlng = map.layerPointToLatLng(pointXY).wrap()
-
-    // TODO: get coordinate format from user setting (once implemented)
-    clipboard.writeText(`${latlng.lat} ${latlng.lng}`)
+    clipboard.writeText(formatLatLng(latlng))
     const originalFilter = container.style.filter
     const reset = () => (container.style.filter = originalFilter)
     container.style.filter = 'invert(100%)'
