@@ -1,3 +1,19 @@
+import Mgrs from 'geodesy/mgrs'
+import Utm from 'geodesy/utm'
+import { K } from '../../shared/combinators'
+
+// Try to parse term as MGRS/UTM and use resulting Lat/Long as search term.
+const latLng = term => {
+  try {
+    return Mgrs.parse(term).toUtm().toLatLon()
+  } catch (err) {
+    try {
+      return Utm.parse(term).toLatLon()
+    } catch (err) {
+      /* don't care */
+    }
+  }
+}
 
 /* eslint-disable */
 // XMLHttpRequest.readyState.
@@ -8,7 +24,6 @@ const LOADING          = 3 // Downloading; responseText holds partial data.
 const DONE             = 4 // The operation is complete.
 /* eslint-enable */
 
-const K = value => fn => { fn(value); return value }
 
 const search = options => term => {
   return new Promise((resolve) => K(new XMLHttpRequest())(xhr => {
@@ -23,6 +38,10 @@ const search = options => term => {
     const params = Object.entries(options)
       .reduce((acc, [key, value]) => acc.concat([`${key}=${value}`]), ['format=json'])
       .join('&')
+
+    // Replace search term if in MGRS/UTM format:
+    const ll = latLng(term)
+    if (ll) term = `${ll._lat} ${ll._lon}`
 
     const url = `https://nominatim.openstreetmap.org/search/${term}?${params}`
     const async = true
