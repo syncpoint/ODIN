@@ -3,8 +3,6 @@ import Dms from 'geodesy/dms.js'
 import { LatLon } from 'geodesy/mgrs.js'
 import mapSettings from './components/map/settings'
 
-console.log('Dms', Dms)
-
 /* eslint-disable no-unused-vars */
 // Default separator is U+202F ‘narrow no-break space’.
 const defaultSeparator = Dms.separator
