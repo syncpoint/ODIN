@@ -3,6 +3,7 @@ import L from 'leaflet'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { ipcRenderer } from 'electron'
+import { LatLon } from 'geodesy/mgrs.js'
 import evented from '../../evented'
 import 'leaflet/dist/leaflet.css'
 import './leaflet-icons'
@@ -51,6 +52,12 @@ const updateDisplayFilter = map => values => {
     .forEach(style => (style.filter = filter))
 }
 
+const updateCoordinateDisplay = ({ latlng }) => {
+  const { lat, lng } = latlng
+  const mgrs = new LatLon(lat, lng).toUtm().toMgrs().toString()
+  evented.emit('OSD_MESSAGE', { slot: 'C3', message: `${mgrs}` })
+}
+
 class Map extends React.Component {
   componentDidMount () {
     const { id, options } = this.props
@@ -68,6 +75,7 @@ class Map extends React.Component {
       map.on('click', () => this.props.onClick())
       map.on('moveend', saveViewPort(map))
       map.on('zoom', updateScaleDisplay(map))
+      map.on('mousemove', updateCoordinateDisplay)
     })
 
     evented.on('OSD_MOUNTED', updateScaleDisplay(this.map))
