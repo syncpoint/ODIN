@@ -5,9 +5,11 @@ import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { ipcRenderer } from 'electron'
 import L from 'leaflet'
+import evented from '../evented'
 import OSD from './OSD'
 import Spotlight from './spotlight/Spotlight'
 import search from './nominatim'
+import mapSettings from './map/settings'
 
 const center = L.latLng(48.65400545105681, 15.319061279296877)
 const mapOptions = {
@@ -40,17 +42,62 @@ class App extends React.Component {
   }
 
   setCenter (latlng) {
-    this.setState({ ...this.state, center: latlng })
+    evented.emit('panTo', { latlng })
+  }
+
+  setViewPort (zoom, latlng) {
+    evented.emit('flyTo', { zoom, latlng })
   }
 
   componentDidMount () {
 
     ipcRenderer.on('COMMAND_ADD_BOOKMARK', (_, args) => {
-      // TODO: implement
+      // Prepare spotlight options:
+      const spotlight = {
+        paperCSS: this.props.classes.paperSearchBar,
+        resultSCC: this.props.classes.none,
+        accept: (bookmark) => {
+          evented.emit('OSD_MESSAGE', { message: 'Bookmark saved', duration: 1500 })
+          evented.emit('SAVE_BOOKMARK', { id: bookmark })
+          this.closeSpotlight()
+        },
+        label: 'Add Bookmark',
+        onClose: () => this.closeSpotlight()
+      }
+
+      const panels = { ...this.state.panels, spotlight }
+      this.setState({ ...this.state, panels })
     })
 
     ipcRenderer.on('COMMAND_GOTO_BOOKMARK', (_, args) => {
-      // TODO: implement
+      const bookmarks = mapSettings.get('bookmarks')
+      const filterBookmarks = (value) => {
+        const names = Object.keys(bookmarks)
+        return names.filter(name => name.includes(value))
+      }
+      const mapItem = item => ({
+        key: item, // mandatory
+        name: item
+      })
+      // Prepare spotlight options:
+      const spotlight = {
+        // FIXME: CSS should not be necessary
+        paperCSS: this.props.classes.paperAll,
+        resultSCC: this.props.classes.list,
+        label: 'Filter Bookmarks',
+        filter: value => filterBookmarks(value),
+        mapRow: mapItem,
+        listItemText: row => <ListItemText primary={ row.name } />,
+        rows: filterBookmarks('').map(row => mapItem(row)),
+        onSelect: row => {
+          const bookmark = bookmarks[row.name]
+          this.setViewPort(bookmark.zoom, L.latLng(bookmark.lat, bookmark.lng))
+        },
+        onClose: () => this.closeSpotlight()
+      }
+
+      const panels = { ...this.state.panels, spotlight }
+      this.setState({ ...this.state, panels })
     })
 
     ipcRenderer.on('COMMAND_GOTO_PLACE', (_, args) => {
@@ -64,6 +111,8 @@ class App extends React.Component {
 
       // Prepare spotlight options:
       const spotlight = {
+        paperCSS: this.props.classes.paperAll,
+        resultSCC: this.props.classes.list,
         search: search(searchOptions),
         sort: (a, b) => {
           const da = Math.sqrt(
@@ -111,6 +160,7 @@ class App extends React.Component {
           className='map'
           options={ mapOptions }
           center={ this.state.center }
+          zoom={ this.state.zoom }
           onClick= { () => this.closeSpotlight() }
         />
         <div className={ this.props.classes.overlay }>
@@ -156,6 +206,33 @@ const styles = {
       "L . R"
       "L B R"
     `
+  },
+
+  paperAll: {
+    display: 'flex',
+    flexDirection: 'column',
+    pointerEvents: 'auto',
+    gridArea: 'R',
+    background: 'rgba(252, 252, 255, 0.9)'
+  },
+
+  paperSearchBar: {
+    display: 'flex',
+    flexDirection: 'column',
+    maxHeight: '5em',
+    gridArea: 'R',
+    background: 'rgba(252, 252, 255, 0.9)',
+    pointerEvents: 'auto'
+  },
+
+  list: {
+    overflow: 'scroll',
+    maxHeight: 'fill-available',
+    flexGrow: 1
+  },
+
+  none: {
+    display: 'none'
   }
 }
 

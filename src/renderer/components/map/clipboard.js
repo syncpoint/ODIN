@@ -18,7 +18,7 @@ export const COMMAND_COPY_COORDS = ({ map }) => () => {
     const reset = () => (container.style.filter = originalFilter)
     container.style.filter = 'invert(100%)'
     setTimeout(reset, 50)
-    evented.emit('OSD_MESSAGE', { message: `Coordinates Copied`, duration: 1500 })
+    evented.emit('OSD_MESSAGE', { message: `Coordinates copied`, duration: 1500 })
   }
 
   if (container.style.cursor === '') {

@@ -39,8 +39,8 @@ class ResultList extends React.Component {
   }
 
   render () {
-    const { classes, rows, options } = this.props
-    const { listItemText } = options
+    const { rows, options } = this.props
+    const listItemText = options.listItemText || noop
 
     if (options.sort) rows.sort(options.sort)
 
@@ -60,7 +60,7 @@ class ResultList extends React.Component {
     return (
       <List
         dense={ true }
-        className={ classes.list }
+        className={ options.resultSCC }
         onKeyDown={ event => this.handleListKeyDown(event) }
       >
         { listItems() }
@@ -77,11 +77,6 @@ ResultList.propTypes = {
 }
 
 const styles = theme => ({
-  list: {
-    overflow: 'auto',
-    maxHeight: 'fill-available',
-    flexGrow: 1
-  }
 })
 
 export default withStyles(styles)(ResultList)

@@ -6,13 +6,27 @@ import { noop } from '../../../shared/combinators'
 
 class SearchField extends React.Component {
   handleKeyPress (event) {
-    switch (event.key) {
-      case 'Enter': {
-        const search = this.props.options.search || noop
-        const onUpdate = result => (this.props.onUpdate || noop)(result)
-        search(event.target.value).then(onUpdate)
-        break
+    if (this.props.options.search) {
+      switch (event.key) {
+        case 'Enter': {
+          const search = this.props.options.search || noop
+          const onUpdate = result => (this.props.onUpdate || noop)(result)
+          search(event.target.value).then(onUpdate)
+          break
+        }
       }
+    } else if (this.props.options.accept) {
+      switch (event.key) {
+        case 'Enter': {
+          const accept = event.target.value.trim() !== '' ? this.props.options.accept : noop
+          accept(event.target.value)
+          break
+        }
+      }
+    } else if (this.props.options.filter) {
+      const filter = this.props.options.filter || noop
+      const onUpdate = (this.props.onUpdate || noop)
+      onUpdate(filter(event.target.value))
     }
   }
 

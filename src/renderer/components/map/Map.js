@@ -53,9 +53,6 @@ const updateDisplayFilter = map => values => {
 }
 
 const updateCoordinateDisplay = ({ latlng }) => {
-  // const { lat, lng } = latlng
-  // const mgrs = new LatLon(lat, lng).toUtm().toMgrs().toString()
-  // evented.emit('OSD_MESSAGE', { slot: 'C3', message: `${mgrs}` })
   evented.emit('OSD_MESSAGE', { slot: 'C3', message: `${formatLatLng(latlng)}` })
 }
 
@@ -82,6 +79,22 @@ class Map extends React.Component {
     evented.on('OSD_MOUNTED', updateScaleDisplay(this.map))
     evented.on('MAP:DISPLAY_FILTER_CHANGED', updateDisplayFilter(this.map))
     evented.emit('MAP:DISPLAY_FILTER_CHANGED', mapSettings.get('displayFilters') || defaultValues())
+
+    evented.on('SAVE_BOOKMARK', ({ id }) => {
+      const { lat, lng } = this.map.getCenter()
+      const zoom = this.map.getZoom()
+      const currentBookmarks = mapSettings.get('bookmarks') || {}
+      currentBookmarks[id] = { lat, lng, zoom }
+      mapSettings.set('bookmarks', currentBookmarks)
+    })
+
+    evented.on('flyTo', ({ zoom, latlng }) => {
+      this.map.setView(latlng, zoom)
+    })
+
+    evented.on('panTo', ({ latlng }) => {
+      this.map.panTo(latlng)
+    })
 
     // Bind command handlers after map was initialized:
     const context = { map: this.map }
