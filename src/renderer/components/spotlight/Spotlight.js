@@ -31,22 +31,25 @@ class Spotlight extends React.Component {
   }
 
   render () {
-    const { classes } = this.props
+    const { classes, options } = this.props
+    const { value, rows } = this.state
+    const height = rows.length ? 'auto' : 'max-content'
 
     return (
       <Paper
         className={ classes.paper }
         elevation={ 4 }
+        style={{ height }}
       >
         <SearchField
           options={ this.props.options }
           onUpdate={ rows => this.handleUpdate(rows) }
           onChange={ value => this.handleChange(value) }
-          value={ this.state.value }
+          value={ value }
         />
         <ResultList
-          rows={ this.state.rows }
-          options={ this.props.options }
+          rows={ rows }
+          options={ options }
           onUpdate={ rows => this.handleUpdate(rows) }
         />
         {/* <Preview></Preview> */}
@@ -57,11 +60,21 @@ class Spotlight extends React.Component {
 
 const styles = theme => ({
   paper: {
-    display: 'flex',
-    flexDirection: 'column',
+    // Padding:
+    // ...theme.mixins.gutters(), // padding-left/right: 16px
     pointerEvents: 'auto',
     gridArea: 'R',
-    background: 'rgba(252, 252, 255, 0.9)'
+    background: 'rgba(252, 252, 255, 0.9)',
+
+    // Layout:
+    display: 'grid',
+    gridTemplateRows: 'max-content auto',
+    gridTemplateAreas: `
+      "input"
+      "content"
+    `,
+
+    borderRadius: '6px' // default: 4px
   }
 })
 
