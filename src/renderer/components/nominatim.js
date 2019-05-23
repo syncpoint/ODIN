@@ -1,3 +1,4 @@
+import { remote } from 'electron'
 import Mgrs from 'geodesy/mgrs'
 import Utm from 'geodesy/utm'
 import { K } from '../../shared/combinators'
@@ -25,27 +26,36 @@ const DONE             = 4 // The operation is complete.
 /* eslint-enable */
 
 
-const search = options => term => {
-  return new Promise((resolve) => K(new XMLHttpRequest())(xhr => {
+const search = options => searchTerm => {
+
+  // Replace search term if in MGRS/UTM format:
+  const ll = latLng(searchTerm)
+  const term = ll ? `${ll._lat} ${ll._lon}` : searchTerm
+  const map = ll ? row => K(row)(row => (row.poi = searchTerm)) : row => row
+
+  return new Promise((resolve, reject) => K(new XMLHttpRequest())(xhr => {
     xhr.addEventListener('readystatechange', event => {
       const request = event.target
-      const readyState = request.readyState
-      if (readyState !== DONE) return
-      // TODO: catch/handle possible parse error
-      resolve(JSON.parse(request.responseText))
+
+      switch (request.readyState) {
+        case DONE: {
+          try {
+            resolve(JSON.parse(request.responseText).map(map))
+          } catch (err) {
+            reject(err)
+          }
+        }
+      }
     })
 
     const params = Object.entries(options)
       .reduce((acc, [key, value]) => acc.concat([`${key}=${value}`]), ['format=json'])
       .join('&')
 
-    // Replace search term if in MGRS/UTM format:
-    const ll = latLng(term)
-    if (ll) term = `${ll._lat} ${ll._lon}`
-
     const url = `https://nominatim.openstreetmap.org/search/${term}?${params}`
     const async = true
     xhr.open('GET', url, async)
+    xhr.setRequestHeader('Accept-Language', remote.app.getLocale())
     xhr.send()
   }))
 }
