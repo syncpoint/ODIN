@@ -15,7 +15,7 @@ Clone repository, install dependencies then build and start the application.
 
 1. `git clone https://github.com/syncpoint/ODIN.git`
 2. `npm install`
-3. `npm webpack; npm start`
+3. `npm run webpack; npm start`
 
 ### Binaries
 To create Windows or macOS binaries, webpack first for production, then build package with electron-builder.
