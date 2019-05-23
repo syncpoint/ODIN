@@ -7,7 +7,8 @@ import mapSettings from './map/settings'
 const searchOptions = {
   // limit: 7,
   addressdetails: 1,
-  namedetails: 0
+  namedetails: 0,
+  dedupe: 1
 }
 
 const places = options => term => nominatim(searchOptions)(term).then(rows => {
