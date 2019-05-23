@@ -1,13 +1,12 @@
 import React from 'react'
 import Map from './map/Map'
-import ListItemText from '@material-ui/core/ListItemText'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { ipcRenderer } from 'electron'
 import L from 'leaflet'
 import OSD from './OSD'
 import Spotlight from './spotlight/Spotlight'
-import search from './nominatim'
+import spotlightOptions from './App.spotlight'
 
 const center = L.latLng(48.65400545105681, 15.319061279296877)
 const mapOptions = {
@@ -54,45 +53,13 @@ class App extends React.Component {
     })
 
     ipcRenderer.on('COMMAND_GOTO_PLACE', (_, args) => {
-      const searchOptions = {
-        // limit: 7,
-        addressdetails: 1,
-        namedetails: 0
-      }
-
-      const { lat, lng } = this.state.center
-
-      // Prepare spotlight options:
-      const spotlight = {
-        search: search(searchOptions),
-        sort: (a, b) => {
-          const da = Math.sqrt(
-            Math.pow((lat - Number.parseFloat(a.lat)), 2) +
-            Math.pow((lng - Number.parseFloat(a.lon)), 2)
-          )
-
-          const db = Math.sqrt(
-            Math.pow((lat - Number.parseFloat(b.lat)), 2) +
-            Math.pow((lng - Number.parseFloat(b.lon)), 2)
-          )
-
-          return da - db
-        },
-        label: 'Place or address',
-        mapRow: row => ({
-          key: row.place_id, // mandatory
-          name: row.display_name,
-          type: row.type,
-          box: row.boundingbox,
-          lat: row.lat,
-          lon: row.lon
-        }),
-        listItemText: row => <ListItemText primary={ row.name } />,
+      const options = spotlightOptions({
+        center: this.state.center,
         onSelect: row => this.setCenter(L.latLng(row.lat, row.lon)),
         onClose: () => this.closeSpotlight()
-      }
+      })
 
-      const panels = { ...this.state.panels, spotlight }
+      const panels = { ...this.state.panels, spotlight: options }
       this.setState({ ...this.state, panels })
     })
   }
