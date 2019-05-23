@@ -43,6 +43,7 @@ class App extends React.Component {
   }
 
   openSpotlight (options) {
+    options.onClose = () => this.closeSpotlight()
     const panels = { ...this.state.panels, spotlight: options }
     this.setState({ ...this.state, panels })
   }
@@ -55,25 +56,23 @@ class App extends React.Component {
     this.setState({ ...this.state, zoom })
   }
 
-  componentDidMount () {
+  setViewPort (center, zoom) {
+    this.setState({ ...this.state, center, zoom })
+  }
 
+  componentDidMount () {
     ipcRenderer.on('COMMAND_ADD_BOOKMARK', (_, args) => {
       this.openSpotlight(addBookmarkOptions({
+        context: this,
         center: this.state.center,
-        zoom: this.state.zoom,
-        onClose: () => this.closeSpotlight()
+        zoom: this.state.zoom
       }))
-    })
-
-    ipcRenderer.on('COMMAND_GOTO_BOOKMARK', (_, args) => {
-      // TODO: implement
     })
 
     ipcRenderer.on('COMMAND_GOTO_PLACE', (_, args) => {
       this.openSpotlight(spotlightOptions({
-        center: this.state.center,
-        onSelect: row => this.setCenter(L.latLng(row.lat, row.lon)),
-        onClose: () => this.closeSpotlight()
+        context: this,
+        center: this.state.center
       }))
     })
   }
