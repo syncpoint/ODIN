@@ -23,13 +23,7 @@ class Spotlight extends React.Component {
 
   handleChange (value) {
     const { items } = this.props.options
-
-    if (items) {
-      items(value).then(items => {
-        console.log('items', items)
-        this.handleUpdate(items)
-      })
-    }
+    if (items) items(value).then(items => this.handleUpdate(items))
 
     this.setState({
       ...this.state,
