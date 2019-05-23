@@ -9,10 +9,12 @@ import Spotlight from './spotlight/Spotlight'
 import spotlightOptions from './App.spotlight'
 
 const center = L.latLng(48.65400545105681, 15.319061279296877)
+const zoom = 13
+
 const mapOptions = {
   center,
+  zoom,
   zoomControl: false, // default: true
-  zoom: 13,
   minZoom: 3 // 1:70 million
 }
 
@@ -22,6 +24,7 @@ class App extends React.Component {
 
     this.state = {
       center,
+      zoom,
       panels: {}
     }
   }
@@ -40,6 +43,10 @@ class App extends React.Component {
 
   setCenter (latlng) {
     this.setState({ ...this.state, center: latlng })
+  }
+
+  setZoom (zoom) {
+    this.setState({ ...this.state, zoom })
   }
 
   componentDidMount () {
@@ -78,7 +85,9 @@ class App extends React.Component {
           className='map'
           options={ mapOptions }
           center={ this.state.center }
+          zoom={ this.state.zoom }
           onMoveend={ (latlng) => this.setCenter(latlng) }
+          onZoomend={ zoom => this.setZoom(zoom) }
           onClick= { () => this.closeSpotlight() }
         />
         <div className={ this.props.classes.overlay }>

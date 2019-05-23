@@ -58,7 +58,7 @@ const updateCoordinateDisplay = ({ latlng }) => {
 
 class Map extends React.Component {
   componentDidMount () {
-    const { id, options, onClick, onMoveend } = this.props
+    const { id, options, onClick, onMoveend, onZoomend } = this.props
     const tileProvider = mapSettings.get('tileProvider') || defautTileProvider
     const viewPort = mapSettings.get('viewPort')
 
@@ -74,6 +74,7 @@ class Map extends React.Component {
       map.on('moveend', saveViewPort)
       map.on('moveend', event => onMoveend(event.target.getCenter()))
       map.on('zoom', updateScaleDisplay(map))
+      map.on('zoomend', event => onZoomend(event.target.getZoom()))
       map.on('mousemove', updateCoordinateDisplay)
     })
 
@@ -89,10 +90,14 @@ class Map extends React.Component {
   }
 
   componentDidUpdate (prevProps) {
-    const { center } = this.props
+    const { center, zoom } = this.props
     if (center && !prevProps.center.equals(center)) {
       this.map.panTo(center)
       this.map._container.focus()
+    }
+
+    if (zoom && prevProps.zoom !== zoom) {
+      this.map.setZoom(zoom)
     }
   }
 
@@ -113,8 +118,10 @@ Map.propTypes = {
   options: PropTypes.object.isRequired,
   id: PropTypes.string.isRequired,
   center: PropTypes.any.isRequired,
+  zoom: PropTypes.any.isRequired,
   onClick: PropTypes.func.isRequired,
-  onMoveend: PropTypes.func.isRequired
+  onMoveend: PropTypes.func.isRequired,
+  onZoomend: PropTypes.func.isRequired
 }
 
 const styles = {
