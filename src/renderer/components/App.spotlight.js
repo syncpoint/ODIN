@@ -5,7 +5,7 @@ import nominatim from './nominatim'
 import mapSettings from './map/settings'
 
 const searchOptions = {
-  // limit: 7,
+  limit: 15, // default: 10, maximum: 50
   addressdetails: 1,
   namedetails: 0,
   dedupe: 1
@@ -25,7 +25,14 @@ const places = options => term => nominatim(searchOptions)(term).then(rows => {
     .map(row => ({
       key: row.place_id, // mandatory
       text: <ListItemText primary={ row.display_name } secondary={ 'Place' }/>,
-      action: () => context.setCenter(L.latLng(row.lat, row.lon))
+      action: () => {
+        context.setCenter(L.latLng(row.lat, row.lon))
+        if (row.poi) {
+          const pois = mapSettings.get('pois') || {}
+          pois[row.poi] = { lat: row.lat, lng: row.lon }
+          mapSettings.set('pois', pois)
+        }
+      }
     }))
 })
 
@@ -48,8 +55,27 @@ const bookmarks = options => term => {
   return Promise.resolve(items)
 }
 
+const pois = options => term => {
+  const { context } = options
+  const items = Object.entries((mapSettings.get('pois') || {}))
+    .filter(([id, _]) => id.search(new RegExp(term, 'i')) !== -1)
+    .map(([id, poi]) => ({
+      key: id,
+      text: <ListItemText primary={ id } secondary={ 'POI' }/>,
+      action: () => context.setCenter(L.latLng(poi.lat, poi.lng)),
+      delete: () => {
+        const pois = mapSettings.get('pois')
+        delete pois[id]
+        mapSettings.set('pois', pois)
+      }
+    }))
+
+  return Promise.resolve(items)
+}
+
 // Available providers (order matter):
 const itemProviders = [
+  pois,
   bookmarks,
   places
 ]
