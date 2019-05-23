@@ -6,7 +6,8 @@ import PropTypes from 'prop-types'
 class SearchField extends React.Component {
 
   handleKeyDown (event) {
-    const { value, onChange } = this.props
+    const { value, onChange, options } = this.props
+    const { accept } = options
 
     switch (event.key) {
       case 'Escape': {
@@ -18,6 +19,9 @@ class SearchField extends React.Component {
         /* let event bubble up to close spotlight. */
         break
       }
+      case 'Enter': {
+        if (accept) accept(value)
+      }
     }
   }
 
@@ -26,13 +30,13 @@ class SearchField extends React.Component {
   }
 
   render () {
-    const { classes, value, onChange } = this.props
+    const { classes, value, options, onChange } = this.props
 
     return (
       <InputBase
         className={ classes.searchField }
         autoFocus
-        placeholder={ 'Spotlight Search'}
+        placeholder={ options.placeholder }
         value={ value }
         onChange={ event => onChange(event.target.value) }
         inputRef={ input => (this.input = input) }

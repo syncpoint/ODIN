@@ -7,6 +7,7 @@ import L from 'leaflet'
 import OSD from './OSD'
 import Spotlight from './spotlight/Spotlight'
 import spotlightOptions from './App.spotlight'
+import addBookmarkOptions from './App.bookmark'
 
 const center = L.latLng(48.65400545105681, 15.319061279296877)
 const zoom = 13
@@ -41,6 +42,11 @@ class App extends React.Component {
     this.setState({ ...this.state, panels })
   }
 
+  openSpotlight (options) {
+    const panels = { ...this.state.panels, spotlight: options }
+    this.setState({ ...this.state, panels })
+  }
+
   setCenter (latlng) {
     this.setState({ ...this.state, center: latlng })
   }
@@ -52,7 +58,11 @@ class App extends React.Component {
   componentDidMount () {
 
     ipcRenderer.on('COMMAND_ADD_BOOKMARK', (_, args) => {
-      // TODO: implement
+      this.openSpotlight(addBookmarkOptions({
+        center: this.state.center,
+        zoom: this.state.zoom,
+        onClose: () => this.closeSpotlight()
+      }))
     })
 
     ipcRenderer.on('COMMAND_GOTO_BOOKMARK', (_, args) => {
@@ -60,14 +70,11 @@ class App extends React.Component {
     })
 
     ipcRenderer.on('COMMAND_GOTO_PLACE', (_, args) => {
-      const options = spotlightOptions({
+      this.openSpotlight(spotlightOptions({
         center: this.state.center,
         onSelect: row => this.setCenter(L.latLng(row.lat, row.lon)),
         onClose: () => this.closeSpotlight()
-      })
-
-      const panels = { ...this.state.panels, spotlight: options }
-      this.setState({ ...this.state, panels })
+      }))
     })
   }
 
