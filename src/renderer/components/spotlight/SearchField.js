@@ -2,26 +2,22 @@ import React from 'react'
 import { InputBase } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
-import { noop } from '../../../shared/combinators'
 
 class SearchField extends React.Component {
-  handleKeyPress (event) {
-    switch (event.key) {
-      case 'Enter': {
-        const search = this.props.options.search || noop
-        const onUpdate = result => (this.props.onUpdate || noop)(result)
-        search(event.target.value).then(onUpdate)
-        break
-      }
-    }
-  }
 
   handleKeyDown (event) {
-    if (event.key !== 'Escape') return
-    if (event.target.value) {
-      const onUpdate = result => (this.props.onUpdate || noop)(result)
-      event.stopPropagation()
-      onUpdate([])
+    const { value, onChange } = this.props
+
+    switch (event.key) {
+      case 'Escape': {
+        if (value) {
+          // Reset value, but prevent spotlight from closing:
+          event.stopPropagation()
+          onChange('')
+        }
+        /* let event bubble up to close spotlight. */
+        break
+      }
     }
   }
 
@@ -40,7 +36,6 @@ class SearchField extends React.Component {
         value={ value }
         onChange={ event => onChange(event.target.value) }
         inputRef={ input => (this.input = input) }
-        onKeyPress={ event => this.handleKeyPress(event) }
         onKeyDown={ event => this.handleKeyDown(event) }
       />
     )
@@ -51,7 +46,6 @@ SearchField.propTypes = {
   classes: PropTypes.any.isRequired,
   options: PropTypes.any.isRequired,
   value: PropTypes.string.isRequired,
-  onUpdate: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired
 }
 

@@ -6,12 +6,14 @@ import ListItem from '@material-ui/core/ListItem'
 import { noop } from '../../../shared/combinators'
 
 class ResultList extends React.Component {
+
   handleListKeyDown (event) {
+    const { onChange } = this.props
+
     switch (event.key) {
       case 'Escape': {
         event.stopPropagation()
-        const onUpdate = result => (this.props.onUpdate || noop)(result)
-        onUpdate([])
+        onChange('')
         break
       }
     }
@@ -75,7 +77,7 @@ ResultList.propTypes = {
   classes: PropTypes.any.isRequired,
   options: PropTypes.any.isRequired,
   rows: PropTypes.array.isRequired,
-  onUpdate: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired
 }
 
 const styles = theme => ({
