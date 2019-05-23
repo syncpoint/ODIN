@@ -90,9 +90,12 @@ class Map extends React.Component {
     })
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate () {
     const { center } = this.props
-    if (center && !center.equals(prevProps.center)) this.map.panTo(center)
+    if (center) {
+      this.map.panTo(center)
+      this.map._container.focus()
+    }
   }
 
   render () {

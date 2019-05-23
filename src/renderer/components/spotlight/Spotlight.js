@@ -15,15 +15,21 @@ class Spotlight extends React.Component {
   }
 
   handleUpdate (rows) {
-    const value = rows.length ? this.state.value : ''
     this.setState({
       ...this.state,
-      value,
       rows: rows.map(this.props.options.mapRow)
     })
   }
 
   handleChange (value) {
+    const { search } = this.props.options
+
+    if (search) {
+      search(value).then(rows => {
+        this.handleUpdate(rows)
+      })
+    }
+
     this.setState({
       ...this.state,
       value
@@ -43,14 +49,13 @@ class Spotlight extends React.Component {
       >
         <SearchField
           options={ this.props.options }
-          onUpdate={ rows => this.handleUpdate(rows) }
           onChange={ value => this.handleChange(value) }
           value={ value }
         />
         <ResultList
           rows={ rows }
           options={ options }
-          onUpdate={ rows => this.handleUpdate(rows) }
+          onChange={ value => this.handleChange(value) }
         />
         {/* <Preview></Preview> */}
       </Paper>
