@@ -10,7 +10,7 @@ class Spotlight extends React.Component {
     super(props)
     this.state = {
       value: '',
-      rows: this.props.options.rows || []
+      rows: []
     }
   }
 
@@ -31,10 +31,11 @@ class Spotlight extends React.Component {
   }
 
   render () {
-    const { options } = this.props
+    const { classes } = this.props
+
     return (
       <Paper
-        className={ options.paperCSS }
+        className={ classes.paper }
         elevation={ 4 }
       >
         <SearchField
@@ -55,6 +56,13 @@ class Spotlight extends React.Component {
 }
 
 const styles = theme => ({
+  paper: {
+    display: 'flex',
+    flexDirection: 'column',
+    pointerEvents: 'auto',
+    gridArea: 'R',
+    background: 'rgba(252, 252, 255, 0.9)'
+  }
 })
 
 Spotlight.propTypes = {
