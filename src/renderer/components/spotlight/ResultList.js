@@ -20,10 +20,9 @@ class ResultList extends React.Component {
   }
 
   handleClick (key) {
-    const onSelect = this.props.options.onSelect || noop
     this.props.rows
       .filter(row => row.key === key)
-      .forEach(onSelect)
+      .forEach(row => row.action())
   }
 
   handleDoubleClick (key) {
@@ -41,11 +40,8 @@ class ResultList extends React.Component {
   }
 
   render () {
-    const { classes, rows, options } = this.props
-    const { listItemText } = options
+    const { classes, rows } = this.props
     const display = rows.length ? 'inline' : 'none'
-
-    if (options.sort) rows.sort(options.sort)
 
     const listItems = () => (rows || []).map(row => (
       <ListItem
@@ -56,13 +52,13 @@ class ResultList extends React.Component {
         onDoubleClick={ () => this.handleDoubleClick(row.key) }
         onKeyDown={ () => this.handleItemKeyDown(row.key) }
       >
-        { listItemText(row) }
+        { row.text }
       </ListItem>
     ))
 
     return (
       <List
-        dense={ true }
+        // dense={ true }
         className={ classes.list }
         style={ { display } }
         onKeyDown={ event => this.handleListKeyDown(event) }

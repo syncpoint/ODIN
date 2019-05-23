@@ -17,16 +17,17 @@ class Spotlight extends React.Component {
   handleUpdate (rows) {
     this.setState({
       ...this.state,
-      rows: rows.map(this.props.options.mapRow)
+      rows
     })
   }
 
   handleChange (value) {
-    const { search } = this.props.options
+    const { items } = this.props.options
 
-    if (search) {
-      search(value).then(rows => {
-        this.handleUpdate(rows)
+    if (items) {
+      items(value).then(items => {
+        console.log('items', items)
+        this.handleUpdate(items)
       })
     }
 

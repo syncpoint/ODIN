@@ -155,12 +155,7 @@ const template = [
         click: sendMessage('COMMAND_ADD_BOOKMARK')
       },
       {
-        label: 'Go to bookmark',
-        accelerator: 'CmdOrCtrl+G',
-        click: sendMessage('COMMAND_GOTO_BOOKMARK')
-      },
-      {
-        label: 'Goto to place',
+        label: 'Find ...',
         accelerator: 'CmdOrCtrl+F',
         click: sendMessage('COMMAND_GOTO_PLACE')
       }
