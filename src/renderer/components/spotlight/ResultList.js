@@ -36,6 +36,9 @@ class ResultList extends React.Component {
         this.handleClick(key)
         return (this.props.options.close || noop)()
       }
+      case 'Delete': {
+        return this.props.onDelete(key)
+      }
     }
   }
 
@@ -58,7 +61,6 @@ class ResultList extends React.Component {
 
     return (
       <List
-        // dense={ true }
         className={ classes.list }
         style={ { display } }
         onKeyDown={ event => this.handleListKeyDown(event) }
@@ -73,7 +75,8 @@ ResultList.propTypes = {
   classes: PropTypes.any.isRequired,
   options: PropTypes.any.isRequired,
   rows: PropTypes.array.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired
 }
 
 const styles = theme => ({

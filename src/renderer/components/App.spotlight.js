@@ -35,7 +35,12 @@ const bookmarks = options => term => {
     .map(([id, bookmark]) => ({
       key: id,
       text: <ListItemText primary={ id } secondary={ 'Bookmark' }/>,
-      action: () => context.setViewPort(L.latLng(bookmark.lat, bookmark.lng), bookmark.zoom)
+      action: () => context.setViewPort(L.latLng(bookmark.lat, bookmark.lng), bookmark.zoom),
+      delete: () => {
+        const bookmarks = mapSettings.get('bookmarks')
+        delete bookmarks[id]
+        mapSettings.set('bookmarks', bookmarks)
+      }
     }))
 
   return Promise.resolve(items)

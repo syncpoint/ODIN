@@ -74,7 +74,7 @@ const osdSlots = () => {
       acc[`osd${key}${name}`] = {
         gridArea: `${key}${name}`,
         justifySelf: value.justifySelf,
-        background: 'rgba(250, 250, 250, 0.6)'
+        background: 'rgba(250, 250, 250, 0.9)'
       }
       return acc
     }, acc)
