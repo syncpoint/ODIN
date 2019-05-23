@@ -31,8 +31,8 @@ const ipcHandlers = {
 }
 
 const updateScaleDisplay = map => () => {
-  const scale = zoomLevels[map.getZoom()].scale || ''
-  evented.emit('OSD_MESSAGE', { slot: 'C2', message: scale })
+  const level = zoomLevels[map.getZoom()]
+  if (level) evented.emit('OSD_MESSAGE', { slot: 'C2', message: level.scale })
 }
 
 const saveViewPort = ({ target }) => {
@@ -91,14 +91,16 @@ class Map extends React.Component {
 
   componentDidUpdate (prevProps) {
     const { center, zoom } = this.props
-    if (center && !prevProps.center.equals(center)) {
-      this.map.panTo(center)
-      this.map._container.focus()
+    const centerChanged = center && !prevProps.center.equals(center)
+    const zoomChanged = zoom && prevProps.zoom !== zoom
+
+    if (centerChanged && zoomChanged) this.map.flyTo(center, zoom)
+    else {
+      if (centerChanged) this.map.panTo(center)
+      if (zoomChanged) this.map.setZoom(zoom)
     }
 
-    if (zoom && prevProps.zoom !== zoom) {
-      this.map.setZoom(zoom)
-    }
+    if (centerChanged || zoomChanged) this.map._container.focus()
   }
 
   render () {
