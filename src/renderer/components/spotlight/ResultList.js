@@ -36,9 +36,8 @@ class ResultList extends React.Component {
         this.handleClick(key)
         return (this.props.options.close || noop)()
       }
-      case 'Delete': {
-        return this.props.onDelete(key)
-      }
+      case 'Delete': return this.props.onDelete(key)
+      case 'Backspace': if (event.metaKey) return this.props.onDelete(key)
     }
   }
 
