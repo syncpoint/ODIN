@@ -44,8 +44,13 @@ class Spotlight extends React.Component {
   }
 
   componentDidMount () {
+    const { options } = this.props
+
     // Populate with initials list:
-    this.props.options.items('').then(rows => this.handleUpdate(rows))
+    if (options) {
+      const { items } = options
+      if (items) items('').then(rows => this.handleUpdate(rows))
+    }
   }
 
   render () {

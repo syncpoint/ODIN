@@ -3,6 +3,7 @@ import L from 'leaflet'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { ipcRenderer } from 'electron'
+import ms from 'milsymbol'
 import evented from '../../evented'
 import 'leaflet/dist/leaflet.css'
 import './leaflet-icons'
@@ -56,6 +57,42 @@ const updateCoordinateDisplay = ({ latlng }) => {
   evented.emit('OSD_MESSAGE', { slot: 'C3', message: `${formatLatLng(latlng)}` })
 }
 
+const poiLayer = () => {
+  const features = Object.entries(mapSettings.get('pois') || {}).map(([id, poi]) => ({
+    type: 'Feature',
+    geometry: {
+      type: 'Point',
+      coordinates: [poi.lng, poi.lat]
+    },
+    properties: {
+      id,
+      sidc: 'GFGPGPRI----'
+    }
+  }))
+
+  const geojson = {
+    type: 'FeatureCollection',
+    features
+  }
+
+  return L.geoJSON(geojson, {
+    pointToLayer: function (feature, latlng) {
+      const symbol = K(new ms.Symbol(
+        feature.properties.sidc, {
+          uniqueDesignation: feature.properties.id
+        }))(symbol => symbol.setOptions({ size: 40 }))
+
+      const icon = L.divIcon({
+        className: '',
+        html: symbol.asSVG(),
+        iconAnchor: new L.Point(symbol.getAnchor().x, symbol.getAnchor().y)
+      })
+
+      return L.marker(latlng, { icon, draggable: false })
+    }
+  })
+}
+
 class Map extends React.Component {
   componentDidMount () {
     const { id, options, onClick, onMoveend, onZoomend } = this.props
@@ -70,6 +107,8 @@ class Map extends React.Component {
 
     this.map = K(L.map(id, options))(map => {
       L.tileLayer(tileProvider.url, tileProvider).addTo(map)
+      poiLayer().addTo(map)
+
       map.on('click', () => onClick())
       map.on('moveend', saveViewPort)
       map.on('moveend', event => onMoveend(event.target.getCenter()))
@@ -77,6 +116,7 @@ class Map extends React.Component {
       map.on('zoomend', event => onZoomend(event.target.getZoom()))
       map.on('mousemove', updateCoordinateDisplay)
     })
+
 
     evented.on('OSD_MOUNTED', updateScaleDisplay(this.map))
     evented.on('MAP:DISPLAY_FILTER_CHANGED', updateDisplayFilter(this.map))
