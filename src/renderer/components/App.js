@@ -43,7 +43,7 @@ class App extends React.Component {
   }
 
   openSpotlight (options) {
-    options.onClose = () => this.closeSpotlight()
+    options.close = () => this.closeSpotlight()
     const panels = { ...this.state.panels, spotlight: options }
     this.setState({ ...this.state, panels })
   }

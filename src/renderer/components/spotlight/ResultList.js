@@ -27,14 +27,14 @@ class ResultList extends React.Component {
 
   handleDoubleClick (key) {
     this.handleClick(key)
-    ;(this.props.options.onClose || noop)()
+    ;(this.props.options.close || noop)()
   }
 
   handleItemKeyDown (key) {
     switch (event.key) {
       case 'Enter': {
         this.handleClick(key)
-        return (this.props.options.onClose || noop)()
+        return (this.props.options.close || noop)()
       }
     }
   }
