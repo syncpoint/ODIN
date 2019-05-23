@@ -44,7 +44,7 @@ class ResultList extends React.Component {
 
   render () {
     const { classes, rows } = this.props
-    const display = rows.length ? 'inline' : 'none'
+    const display = rows.length ? 'block' : 'none'
 
     const listItems = () => (rows || []).map(row => (
       <ListItem
@@ -81,6 +81,7 @@ ResultList.propTypes = {
 
 const styles = theme => ({
   list: {
+    maxHeight: 'fill-available',
     gridArea: 'content',
     overflow: 'auto'
   }
