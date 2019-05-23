@@ -46,7 +46,7 @@ const preferences = {
           click: sendMessage('COMMAND_COORD_FORMAT', 'dm')
         },
         {
-          label: 'Decimal degrees - 40°26′46″N 79°58′56″W',
+          label: 'Decimal degrees - 40.446° N 79.982° W',
           click: sendMessage('COMMAND_COORD_FORMAT', 'd')
         },
         {
