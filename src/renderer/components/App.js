@@ -78,6 +78,7 @@ class App extends React.Component {
           className='map'
           options={ mapOptions }
           center={ this.state.center }
+          onMoveend={ (latlng) => this.setCenter(latlng) }
           onClick= { () => this.closeSpotlight() }
         />
         <div className={ this.props.classes.overlay }>

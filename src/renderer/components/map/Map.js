@@ -35,9 +35,9 @@ const updateScaleDisplay = map => () => {
   evented.emit('OSD_MESSAGE', { slot: 'C2', message: scale })
 }
 
-const saveViewPort = map => () => {
-  const { lat, lng } = map.getCenter()
-  const zoom = map.getZoom()
+const saveViewPort = ({ target }) => {
+  const { lat, lng } = target.getCenter()
+  const zoom = target.getZoom()
   mapSettings.set('viewPort', { lat, lng, zoom })
 }
 
@@ -53,15 +53,12 @@ const updateDisplayFilter = map => values => {
 }
 
 const updateCoordinateDisplay = ({ latlng }) => {
-  // const { lat, lng } = latlng
-  // const mgrs = new LatLon(lat, lng).toUtm().toMgrs().toString()
-  // evented.emit('OSD_MESSAGE', { slot: 'C3', message: `${mgrs}` })
   evented.emit('OSD_MESSAGE', { slot: 'C3', message: `${formatLatLng(latlng)}` })
 }
 
 class Map extends React.Component {
   componentDidMount () {
-    const { id, options } = this.props
+    const { id, options, onClick, onMoveend } = this.props
     const tileProvider = mapSettings.get('tileProvider') || defautTileProvider
     const viewPort = mapSettings.get('viewPort')
 
@@ -73,8 +70,9 @@ class Map extends React.Component {
 
     this.map = K(L.map(id, options))(map => {
       L.tileLayer(tileProvider.url, tileProvider).addTo(map)
-      map.on('click', () => this.props.onClick())
-      map.on('moveend', saveViewPort(map))
+      map.on('click', () => onClick())
+      map.on('moveend', saveViewPort)
+      map.on('moveend', event => onMoveend(event.target.getCenter()))
       map.on('zoom', updateScaleDisplay(map))
       map.on('mousemove', updateCoordinateDisplay)
     })
@@ -90,9 +88,9 @@ class Map extends React.Component {
     })
   }
 
-  componentDidUpdate () {
+  componentDidUpdate (prevProps) {
     const { center } = this.props
-    if (center) {
+    if (center && !prevProps.center.equals(center)) {
       this.map.panTo(center)
       this.map._container.focus()
     }
@@ -115,7 +113,8 @@ Map.propTypes = {
   options: PropTypes.object.isRequired,
   id: PropTypes.string.isRequired,
   center: PropTypes.any.isRequired,
-  onClick: PropTypes.func.isRequired
+  onClick: PropTypes.func.isRequired,
+  onMoveend: PropTypes.func.isRequired
 }
 
 const styles = {
