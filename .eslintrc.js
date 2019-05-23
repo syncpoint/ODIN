@@ -31,5 +31,6 @@ module.exports = {
     "no-console": "off",
     "no-multiple-empty-lines": "off",
     "padded-blocks": "off",
+    "react/display-name": "off"
   }
 }
