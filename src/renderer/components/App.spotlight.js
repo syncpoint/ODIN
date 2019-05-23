@@ -37,7 +37,7 @@ const spotlightOptions = options => {
     sort,
     mapRow,
     search: search(searchOptions),
-    label: 'Place or address',
+    placeholder: 'Spotlight Search',
     listItemText: row => <ListItemText primary={ row.name } />,
     onSelect: options.onSelect,
     onClose: options.onClose
