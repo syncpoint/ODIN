@@ -1,5 +1,5 @@
 import React from 'react'
-import TextField from '@material-ui/core/TextField'
+import { InputBase } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { noop } from '../../../shared/combinators'
@@ -30,20 +30,18 @@ class SearchField extends React.Component {
   }
 
   render () {
-    const { classes, options, value, onChange } = this.props
+    const { classes, value, onChange } = this.props
 
     return (
-      <TextField
-        label={ options.label }
-        type="search"
-        value={ value }
-        autoFocus
+      <InputBase
         className={ classes.searchField }
-        margin="normal"
-        onKeyPress={ event => this.handleKeyPress(event) }
-        onKeyDown={ event => this.handleKeyDown(event) }
+        autoFocus
+        placeholder={ 'Spotlight Search'}
+        value={ value }
         onChange={ event => onChange(event.target.value) }
         inputRef={ input => (this.input = input) }
+        onKeyPress={ event => this.handleKeyPress(event) }
+        onKeyDown={ event => this.handleKeyDown(event) }
       />
     )
   }
@@ -59,8 +57,12 @@ SearchField.propTypes = {
 
 const styles = theme => ({
   searchField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit
+    paddingLeft: '12px',
+    paddingRight: '8px',
+    paddingTop: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit,
+    fontSize: '120%',
+    gridArea: 'input'
   }
 })
 

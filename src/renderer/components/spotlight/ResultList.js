@@ -41,6 +41,7 @@ class ResultList extends React.Component {
   render () {
     const { classes, rows, options } = this.props
     const { listItemText } = options
+    const display = rows.length ? 'inline' : 'none'
 
     if (options.sort) rows.sort(options.sort)
 
@@ -61,6 +62,7 @@ class ResultList extends React.Component {
       <List
         dense={ true }
         className={ classes.list }
+        style={ { display } }
         onKeyDown={ event => this.handleListKeyDown(event) }
       >
         { listItems() }
@@ -78,9 +80,8 @@ ResultList.propTypes = {
 
 const styles = theme => ({
   list: {
-    overflow: 'auto',
-    maxHeight: 'fill-available',
-    flexGrow: 1
+    gridArea: 'content',
+    overflow: 'auto'
   }
 })
 
