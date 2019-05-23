@@ -21,6 +21,18 @@ class Spotlight extends React.Component {
     })
   }
 
+  handleDelete (key) {
+    const index = this.state.rows.findIndex(row => row.key === key && row.delete)
+    if (index !== -1) {
+      this.state.rows[index].delete()
+      this.state.rows.splice(index, 1)
+      this.setState({
+        ...this.state,
+        rows: this.state.rows
+      })
+    }
+  }
+
   handleChange (value) {
     const { items } = this.props.options
     if (items) items(value).then(items => this.handleUpdate(items))
@@ -51,6 +63,7 @@ class Spotlight extends React.Component {
           rows={ rows }
           options={ options }
           onChange={ value => this.handleChange(value) }
+          onDelete={ key => this.handleDelete(key) }
         />
         {/* <Preview></Preview> */}
       </Paper>
