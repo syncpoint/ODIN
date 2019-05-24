@@ -5,7 +5,7 @@ import nominatim from './nominatim'
 import mapSettings from './map/settings'
 
 const searchOptions = {
-  // limit: 7,
+  limit: 15, // default: 10, maximun: 50
   addressdetails: 1,
   namedetails: 0,
   dedupe: 1
