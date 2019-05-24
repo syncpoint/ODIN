@@ -5,7 +5,7 @@ import nominatim from './nominatim'
 import mapSettings from './map/settings'
 
 const searchOptions = {
-  limit: 15, // default: 10, maximum: 50
+  limit: 15, // default: 10, maximun: 50
   addressdetails: 1,
   namedetails: 0,
   dedupe: 1
@@ -13,7 +13,7 @@ const searchOptions = {
 
 const places = options => term => nominatim(searchOptions)(term).then(rows => {
   const { context, center } = options
-  const { lat, lng } = center
+  const { lat, lng } = center()
 
   const distance = x => Math.sqrt(
     Math.pow((lat - Number.parseFloat(x.lat)), 2) +
