@@ -76,6 +76,7 @@ class Map extends React.Component {
       map.on('zoom', updateScaleDisplay(map))
       map.on('zoomend', event => onZoomend(event.target.getZoom()))
       map.on('mousemove', updateCoordinateDisplay)
+      map._container.focus()
     })
 
     evented.on('OSD_MOUNTED', updateScaleDisplay(this.map))
