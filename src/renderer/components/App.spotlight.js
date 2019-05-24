@@ -13,7 +13,7 @@ const searchOptions = {
 
 const places = options => term => nominatim(searchOptions)(term).then(rows => {
   const { context, center } = options
-  const { lat, lng } = center
+  const { lat, lng } = center()
 
   const distance = x => Math.sqrt(
     Math.pow((lat - Number.parseFloat(x.lat)), 2) +
