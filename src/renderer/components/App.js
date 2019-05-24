@@ -64,15 +64,15 @@ class App extends React.Component {
     ipcRenderer.on('COMMAND_ADD_BOOKMARK', (_, args) => {
       this.openSpotlight(addBookmarkOptions({
         context: this,
-        center: this.state.center,
-        zoom: this.state.zoom
+        center: () => this.state.center,
+        zoom: () => this.state.zoom
       }))
     })
 
     ipcRenderer.on('COMMAND_GOTO_PLACE', (_, args) => {
       this.openSpotlight(spotlightOptions({
         context: this,
-        center: this.state.center
+        center: () => this.state.center
       }))
     })
   }
