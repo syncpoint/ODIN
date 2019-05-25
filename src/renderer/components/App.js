@@ -37,9 +37,9 @@ class App extends React.Component {
   }
 
   closeSpotlight () {
-    // TODO: set focus to map
     const panels = delete this.state.panels.spotlight
     this.setState({ ...this.state, panels })
+    document.getElementById('map').focus()
   }
 
   openSpotlight (options) {
