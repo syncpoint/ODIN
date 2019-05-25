@@ -10,4 +10,4 @@ win:
         - ia32
 files:
   - 'dist'
-electronVersion: 5.0.1
+electronVersion: 3.1.9

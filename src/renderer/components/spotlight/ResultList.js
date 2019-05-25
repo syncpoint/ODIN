@@ -32,7 +32,7 @@ class ResultList extends React.Component {
 
   handleItemKeyDown (key) {
     switch (event.key) {
-      // `onClick` is emitted implicitly.
+      // NOTE: click is triggered implicitly
       case 'Enter': return (this.props.options.close || noop)()
       case 'Delete': return this.props.onDelete(key)
       case 'Backspace': if (event.metaKey) return this.props.onDelete(key)

@@ -156,8 +156,6 @@ class Map extends React.Component {
       if (zoomChanged) map.setZoom(zoom)
     }
 
-    if (centerChanged || zoomChanged) map._container.focus()
-
     if (zoomChanged) {
       Leaflet.layers(map)
         .filter(layer => layer.id === 'POI_LAYER')
@@ -167,7 +165,6 @@ class Map extends React.Component {
         const poi = poiLayer(map.getZoom())
         poi.id = 'POI_LAYER'
         poi.addTo(map)
-
       }
     }
   }
