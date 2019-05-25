@@ -100,8 +100,6 @@ class Map extends React.Component {
       if (centerChanged) this.map.panTo(center)
       if (zoomChanged) this.map.setZoom(zoom)
     }
-
-    if (centerChanged || zoomChanged) this.map._container.focus()
   }
 
   render () {
