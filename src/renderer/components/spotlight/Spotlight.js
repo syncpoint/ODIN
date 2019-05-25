@@ -73,8 +73,6 @@ class Spotlight extends React.Component {
 
 const styles = theme => ({
   paper: {
-    // Padding:
-    // ...theme.mixins.gutters(), // padding-left/right: 16px
     pointerEvents: 'auto',
     gridArea: 'R',
     background: 'rgba(252, 252, 255, 0.9)',
