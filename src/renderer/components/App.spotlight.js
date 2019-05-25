@@ -3,6 +3,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import L from 'leaflet'
 import nominatim from './nominatim'
 import mapSettings from './map/settings'
+import poiStore from '../stores/poi-store'
 
 const searchOptions = {
   limit: 15, // default: 10, maximun: 50
@@ -26,11 +27,15 @@ const places = options => term => nominatim(searchOptions)(term).then(rows => {
       key: row.place_id, // mandatory
       text: <ListItemText primary={ row.display_name } secondary={ 'Place' }/>,
       action: () => {
+        console.log('poi-action')
         context.setCenter(L.latLng(row.lat, row.lon))
+
+        // If it is a result of a reverse search (i.e. POI), store it for later use.
         if (row.poi) {
           const pois = mapSettings.get('pois') || {}
           pois[row.poi] = { lat: row.lat, lng: row.lon }
           mapSettings.set('pois', pois)
+          poiStore.add({ id: row.poi, lat: row.lat, lng: row.lon })
         }
       }
     }))
