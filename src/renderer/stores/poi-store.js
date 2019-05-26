@@ -31,6 +31,7 @@ const reducer = value => {
   switch (value.event) {
     case 'added': return (model[value.poi.id] = { lat: value.poi.lat, lng: value.poi.lng })
     case 'removed': return delete model[value.id]
+    case 'moved': return (model[value.id] = { lat: value.lat, lng: value.lng })
     default: console.log('unhandled', value)
   }
 }
@@ -52,6 +53,7 @@ store.on('put', (_, value) => {
   switch (value.event) {
     case 'added': return evented.emit('added', value.poi)
     case 'removed': return evented.emit('removed', value.id)
+    case 'moved': break
   }
 })
 
@@ -76,6 +78,14 @@ const remove = id => {
   put(value)
 }
 
+const move = (id, latlng) => {
+  if (!model[id]) return
+  const { lat, lng } = latlng
+  const value = { event: 'moved', id, lat, lng }
+  reducer(value)
+  put(value)
+}
+
 const clean = () => {
   store.createReadStream().pipe(deleteStream({ key: chunk => chunk.key }))
   model = {}
@@ -87,6 +97,7 @@ const poiStore = {
   model: () => model,
   add,
   remove,
+  move,
   clean
 }
 
