@@ -27,16 +27,10 @@ const places = options => term => nominatim(searchOptions)(term).then(rows => {
       key: row.place_id, // mandatory
       text: <ListItemText primary={ row.display_name } secondary={ 'Place' }/>,
       action: () => {
-        console.log('poi-action')
         context.setCenter(L.latLng(row.lat, row.lon))
 
         // If it is a result of a reverse search (i.e. POI), store it for later use.
-        if (row.poi) {
-          const pois = mapSettings.get('pois') || {}
-          pois[row.poi] = { lat: row.lat, lng: row.lon }
-          mapSettings.set('pois', pois)
-          poiStore.add({ id: row.poi, lat: row.lat, lng: row.lon })
-        }
+        if (row.poi) poiStore.add({ id: row.poi, lat: row.lat, lng: row.lon })
       }
     }))
 })
@@ -62,17 +56,13 @@ const bookmarks = options => term => {
 
 const pois = options => term => {
   const { context } = options
-  const items = Object.entries((mapSettings.get('pois') || {}))
+  const items = Object.entries((poiStore.model()))
     .filter(([id, _]) => id.search(new RegExp(term, 'i')) !== -1)
     .map(([id, poi]) => ({
       key: id,
       text: <ListItemText primary={ id } secondary={ 'POI' }/>,
       action: () => context.setCenter(L.latLng(poi.lat, poi.lng)),
-      delete: () => {
-        const pois = mapSettings.get('pois')
-        delete pois[id]
-        mapSettings.set('pois', pois)
-      }
+      delete: () => poiStore.remove(id)
     }))
 
   return Promise.resolve(items)
