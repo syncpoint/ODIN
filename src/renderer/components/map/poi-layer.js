@@ -116,7 +116,11 @@ const poiLayer = map => {
     layer.addTo(map)
   })
 
-  poiStore.evented.on('added', poi => layer.addData(feature(poi)))
+  poiStore.evented.on('added', poi => {
+    layer.addData(feature(poi))
+    select(poi.id)
+  })
+
   poiStore.evented.on('removed', id => {
     if (featureLayers[id]) {
       layer.removeLayer(featureLayers[id].standard)
