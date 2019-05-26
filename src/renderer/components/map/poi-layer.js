@@ -36,7 +36,19 @@ const poiLayer = map => {
       iconAnchor: new L.Point(symbol.getAnchor().x, symbol.getAnchor().y)
     })
 
-    const marker = L.marker(latlng, { icon, draggable: false })
+    // Create marker layer:
+    const marker = L.marker(latlng, {
+      icon,
+      draggable: true, // default: false
+      autoPan: true,
+      autoPanSpeed: 10 // default 10
+    })
+
+    marker.on('moveend', event => {
+      const { lat, lng } = event.target.getLatLng()
+      poiStore.move(feature.properties.id, { lat, lng })
+    })
+
     return marker
   }
 
