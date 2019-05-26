@@ -33,6 +33,14 @@ const poiLayer = map => {
 
   map.on('click', deselect)
 
+  map.on('keydown', event => {
+    if (!selection) return
+
+    const { originalEvent } = event
+    if (originalEvent.key === 'Backspace' && originalEvent.metaKey) poiStore.remove(selection)
+    else if (originalEvent.key === 'Delete') poiStore.remove(selection)
+  })
+
   const pointToLayer = (feature, latlng) => {
     const { id, sidc } = feature.properties
     const size = sizes[zoom] || 40
@@ -54,6 +62,7 @@ const poiLayer = map => {
     const marker = icon => {
       const marker = L.marker(latlng, {
         icon,
+        keyboard: false, // default: true
         draggable: true, // default: false
         autoPan: true,
         autoPanSpeed: 10 // default 10
