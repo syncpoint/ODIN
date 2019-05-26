@@ -48,7 +48,7 @@ const updateDisplayFilter = map => values => {
     .join(' ')
 
   Leaflet
-    .panes(layer => layer instanceof L.TileLayer)(map)
+    .panes(layer => layer /* instanceof L.TileLayer */)(map)
     .map(pane => pane.style)
     .forEach(style => (style.filter = filter))
 }

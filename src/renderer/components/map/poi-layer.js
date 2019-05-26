@@ -39,6 +39,7 @@ const poiLayer = map => {
     const { originalEvent } = event
     if (originalEvent.key === 'Backspace' && originalEvent.metaKey) poiStore.remove(selection)
     else if (originalEvent.key === 'Delete') poiStore.remove(selection)
+    else if (originalEvent.key === 'Escape') deselect()
   })
 
   const pointToLayer = (feature, latlng) => {
