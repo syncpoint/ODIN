@@ -1,45 +1,46 @@
 import L from 'leaflet'
 import ms from 'milsymbol'
 import poiStore from '../../stores/poi-store'
+import selection from '../App.selection'
 
 const sizes = {
   '7': 20,
   '8': 25,
   '9': 30
-  // '10': 35,
-  // '11': 40,
-  // '12': 45
 }
 
 const poiLayer = map => {
   let layer = null
-  let selection
+  let selectedId
   const zoom = map.getZoom()
 
   // POI/id -> marker (layer)
   const featureLayers = {}
 
   const deselect = () => {
-    if (!selection) return
-    const layer = featureLayers[selection]
+    if (!selectedId) return
+    const layer = featureLayers[selectedId]
     layer.setIcon(layer.options.icons.standard)
-    selection = undefined
+    selectedId = undefined
   }
 
   const select = id => {
     deselect()
-    selection = id
-    const layer = featureLayers[selection]
+    selectedId = id
+    const layer = featureLayers[selectedId]
     layer.setIcon(layer.options.icons.highlighted)
+    selection.select(layer.feature)
   }
 
-  map.on('click', deselect)
+  selection.evented.on('deselected', deselect)
+
+  map.on('click', selection.deselect)
   map.on('keydown', event => {
-    if (!selection) return
+    if (!selectedId) return
     const { originalEvent } = event
-    if (originalEvent.key === 'Backspace' && originalEvent.metaKey) poiStore.remove(selection)
-    else if (originalEvent.key === 'Delete') poiStore.remove(selection)
-    else if (originalEvent.key === 'Escape') deselect()
+    if (originalEvent.key === 'Backspace' && originalEvent.metaKey) poiStore.remove(selectedId)
+    else if (originalEvent.key === 'Delete') poiStore.remove(selectedId)
+    else if (originalEvent.key === 'Escape') selection.deselect()
   })
 
   const pointToLayer = (feature, latlng) => {
@@ -83,7 +84,7 @@ const poiLayer = map => {
 
     marker.on('click', event => {
       const id = event.target.options.id
-      if (selection === id) return deselect(id)
+      if (selectedId === id) return selection.deselect()
       else select(id)
     })
 
@@ -119,9 +120,10 @@ const poiLayer = map => {
 
   poiStore.evented.on('removed', id => {
     if (featureLayers[id]) {
+      selection.deselect()
       layer.removeLayer(featureLayers[id])
       delete featureLayers[id]
-      if (selection === id) selection = undefined
+      if (selectedId === id) selectedId = undefined
     }
   })
 }

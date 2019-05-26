@@ -6,8 +6,10 @@ import { ipcRenderer } from 'electron'
 import L from 'leaflet'
 import OSD from './OSD'
 import Spotlight from './spotlight/Spotlight'
+import Properties from './Properties'
 import spotlightOptions from './App.spotlight'
 import addBookmarkOptions from './App.bookmark'
+import selection from './App.selection'
 
 const center = L.latLng(48.65400545105681, 15.319061279296877)
 const zoom = 13
@@ -43,6 +45,7 @@ class App extends React.Component {
   }
 
   openSpotlight (options) {
+    selection.deselect()
     options.close = () => this.closeSpotlight()
     const panels = { ...this.state.panels, spotlight: options }
     this.setState({ ...this.state, panels })
@@ -75,13 +78,24 @@ class App extends React.Component {
         center: () => this.state.center
       }))
     })
+
+    selection.evented.on('selected', object => {
+      this.setState({ ...this.state, panels: { properties: object } })
+    })
+
+    selection.evented.on('deselected', object => {
+      const panels = delete this.state.panels.properties
+      this.setState({ ...this.state, panels })
+    })
   }
 
   render () {
     // Is spotlight currently visible?
-    const spotlight = this.state.panels.spotlight
+    const rightSidebar = this.state.panels.spotlight
       ? (<Spotlight options={ this.state.panels.spotlight } />)
-      : null
+      : this.state.panels.properties
+        ? (<Properties options={ this.state.panels.properties } />)
+        : null
 
     return (
       <div
@@ -101,7 +115,7 @@ class App extends React.Component {
             osd={ this.state.osd }
           />
           <div className={ this.props.classes.contentPanel }>
-            { spotlight }
+            { rightSidebar }
           </div>
         </div>
       </div>

@@ -92,7 +92,7 @@ const clean = () => {
   evented.emit('cleaned')
 }
 
-const poiStore = {
+export default {
   evented,
   model: () => model,
   add,
@@ -100,5 +100,3 @@ const poiStore = {
   move,
   clean
 }
-
-export default poiStore
