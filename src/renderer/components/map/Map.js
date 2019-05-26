@@ -3,7 +3,6 @@ import L from 'leaflet'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { ipcRenderer } from 'electron'
-import ms from 'milsymbol'
 import evented from '../../evented'
 import 'leaflet/dist/leaflet.css'
 import './leaflet-icons'
@@ -15,6 +14,7 @@ import { COMMAND_MAP_TILE_PROVIDER } from './tile-provider'
 import { COMMAND_COPY_COORDS } from './clipboard'
 import formatLatLng from '../../coord-format'
 import mapSettings from './settings'
+import poiLayer from './poi-layer'
 
 const defautTileProvider = {
   id: 'OpenStreetMap.Mapnik',
@@ -57,51 +57,6 @@ const updateCoordinateDisplay = ({ latlng }) => {
   evented.emit('OSD_MESSAGE', { slot: 'C3', message: `${formatLatLng(latlng)}` })
 }
 
-const poiLayer = zoom => {
-  const features = Object.entries(mapSettings.get('pois') || {}).map(([id, poi]) => ({
-    type: 'Feature',
-    geometry: {
-      type: 'Point',
-      coordinates: [poi.lng, poi.lat]
-    },
-    properties: {
-      id,
-      sidc: 'GFGPGPRI----'
-    }
-  }))
-
-  const geojson = {
-    type: 'FeatureCollection',
-    features
-  }
-
-  const sizes = {
-    '7': 20,
-    '8': 25,
-    '9': 30,
-    '10': 35,
-    '11': 40,
-    '12': 45
-  }
-
-  return L.geoJSON(geojson, {
-    pointToLayer: function (feature, latlng) {
-      const options = {}
-      if (zoom > 9) options.uniqueDesignation = feature.properties.id
-      const size = sizes[zoom] || 50
-      const symbol = K(new ms.Symbol(feature.properties.sidc, options))(symbol => symbol.setOptions({ size }))
-
-      const icon = L.divIcon({
-        className: '',
-        html: symbol.asSVG(),
-        iconAnchor: new L.Point(symbol.getAnchor().x, symbol.getAnchor().y)
-      })
-
-      return L.marker(latlng, { icon, draggable: false })
-    }
-  })
-}
-
 class Map extends React.Component {
   componentDidMount () {
     const { id, options, onClick, onMoveend, onZoomend } = this.props
@@ -116,13 +71,7 @@ class Map extends React.Component {
 
     this.map = K(L.map(id, options))(map => {
       L.tileLayer(tileProvider.url, tileProvider).addTo(map)
-
-      if (map.getZoom() > 6) {
-        const poi = poiLayer(map.getZoom())
-        poi.id = 'POI_LAYER'
-        poi.addTo(map)
-      }
-
+      poiLayer(map)
 
       map.on('click', () => onClick())
       map.on('moveend', saveViewPort)
@@ -154,18 +103,6 @@ class Map extends React.Component {
     else {
       if (centerChanged) map.panTo(center)
       if (zoomChanged) map.setZoom(zoom)
-    }
-
-    if (zoomChanged) {
-      Leaflet.layers(map)
-        .filter(layer => layer.id === 'POI_LAYER')
-        .forEach(layer => map.removeLayer(layer))
-
-      if (map.getZoom() > 6) {
-        const poi = poiLayer(map.getZoom())
-        poi.id = 'POI_LAYER'
-        poi.addTo(map)
-      }
     }
   }
 
