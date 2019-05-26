@@ -1,6 +1,6 @@
 import L from 'leaflet'
 import ms from 'milsymbol'
-import poiStore from '../../stores/poi-store'
+import store from '../../stores/poi-store'
 import selection from '../App.selection'
 
 const sizes = {
@@ -32,14 +32,14 @@ const poiLayer = map => {
     selection.select(layer.feature)
   }
 
-  selection.evented.on('deselected', deselect)
+  selection.on('deselected', deselect)
 
   map.on('click', selection.deselect)
   map.on('keydown', event => {
     if (!selectedId) return
     const { originalEvent } = event
-    if (originalEvent.key === 'Backspace' && originalEvent.metaKey) poiStore.remove(selectedId)
-    else if (originalEvent.key === 'Delete') poiStore.remove(selectedId)
+    if (originalEvent.key === 'Backspace' && originalEvent.metaKey) store.remove(selectedId)
+    else if (originalEvent.key === 'Delete') store.remove(selectedId)
     else if (originalEvent.key === 'Escape') selection.deselect()
   })
 
@@ -78,7 +78,7 @@ const poiLayer = map => {
       const { target } = event
       const id = target.options.id
       const { lat, lng } = target.getLatLng()
-      poiStore.move(id, { lat, lng })
+      store.move(id, { lat, lng })
       select(id)
     })
 
@@ -101,7 +101,7 @@ const poiLayer = map => {
     properties: { id: poi.id, sidc: 'GFGPGPRI----' }
   })
 
-  poiStore.evented.on('ready', model => {
+  store.once('ready', model => {
     const features = Object.entries(model)
       .map(([id, poi]) => ({ id, ...poi }))
       .map(feature)
@@ -113,12 +113,12 @@ const poiLayer = map => {
     layer.addTo(map)
   })
 
-  poiStore.evented.on('added', poi => {
+  store.on('added', poi => {
     layer.addData(feature(poi))
     select(poi.id)
   })
 
-  poiStore.evented.on('removed', id => {
+  store.on('removed', id => {
     if (featureLayers[id]) {
       selection.deselect()
       layer.removeLayer(featureLayers[id])

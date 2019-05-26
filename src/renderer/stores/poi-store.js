@@ -36,17 +36,24 @@ const reducer = value => {
   }
 }
 
-const recoverStream = () => new Writable({
-  objectMode: true,
-  write (chunk, _, callback) {
-    reducer(chunk)
-    callback()
-  },
-  final (callback) {
-    evented.emit('ready', model)
-    callback()
-  }
-})
+const recoverStream = () => {
+  const now = Date.now() // latency: 252 ms
+  let count = 0
+
+  return new Writable({
+    objectMode: true,
+    write (chunk, _, callback) {
+      count += 1
+      reducer(chunk)
+      callback()
+    },
+    final (callback) {
+      evented.emit('ready', model)
+      console.log('recover', count, 'events', Date.now() - now, 'ms')
+      callback()
+    }
+  })
+}
 
 
 store.on('put', (_, value) => {
@@ -65,20 +72,20 @@ store.createReadStream({
 
 const put = event => store.put(`journal:${now()}`, event)
 
-const add = poi => {
+evented.add = poi => {
   const value = { event: 'added', poi }
   reducer(value)
   put(value)
 }
 
-const remove = id => {
+evented.remove = id => {
   if (!model[id]) return
   const value = { event: 'removed', id }
   reducer(value)
   put(value)
 }
 
-const move = (id, latlng) => {
+evented.move = (id, latlng) => {
   if (!model[id]) return
   const { lat, lng } = latlng
   const value = { event: 'moved', id, lat, lng }
@@ -86,17 +93,12 @@ const move = (id, latlng) => {
   put(value)
 }
 
-const clean = () => {
+evented.clean = () => {
   store.createReadStream().pipe(deleteStream({ key: chunk => chunk.key }))
   model = {}
   evented.emit('cleaned')
 }
 
-export default {
-  evented,
-  model: () => model,
-  add,
-  remove,
-  move,
-  clean
-}
+evented.model = () => model
+
+export default evented
