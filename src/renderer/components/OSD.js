@@ -3,21 +3,25 @@ import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { currentDateTime } from '../../shared/datetime'
 import evented from '../evented'
+import mapSettings from './map/settings'
+import { ipcRenderer } from 'electron'
 
 class OSD extends React.Component {
   constructor (props) {
     super(props)
-
+    this.osdOptions = mapSettings.get('osd-options') ||
+    ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
     this.state = {
-      C1: currentDateTime()
+      'C1': this.osdOptions.includes('C1') ? currentDateTime() : ''
     }
+    this.restore = {}
   }
 
   handleOSDMessage ({ message, duration, slot }) {
     slot = slot || 'B1'
     const update = Object.assign({}, this.state)
-
-    update[slot] = message
+    this.restore[slot] = message
+    update[slot] = this.osdOptions.includes(slot) ? message : ''
     this.setState(update)
     if (!duration) return
 
@@ -30,11 +34,19 @@ class OSD extends React.Component {
 
   componentDidMount () {
     this.clockInterval = setInterval(() => {
-      this.setState({ ...this.state, C1: currentDateTime() })
+      this.handleOSDMessage({ 'message': currentDateTime(), slot: 'C1' })
     }, 1000)
 
     evented.on('OSD_MESSAGE', this.handleOSDMessage.bind(this))
     evented.emit('OSD_MOUNTED')
+
+    ipcRenderer.on('COMMAND_TOGGLE_OSD_OPTIONS', (_, args) => {
+      this.osdOptions.includes(args)
+        ? this.osdOptions.splice(this.osdOptions.lastIndexOf(args), 1)
+        : this.osdOptions.push(args)
+      mapSettings.set('osd-options', this.osdOptions)
+      this.handleOSDMessage({ 'message': this.restore[args], 'slot': args })
+    })
   }
 
   componentWillUnmount () {
@@ -74,7 +86,7 @@ const osdSlots = () => {
       acc[`osd${key}${name}`] = {
         gridArea: `${key}${name}`,
         justifySelf: value.justifySelf,
-        background: 'rgba(250, 250, 250, 0.6)'
+        background: 'rgba(250, 250, 250, 0.9)'
       }
       return acc
     }, acc)
