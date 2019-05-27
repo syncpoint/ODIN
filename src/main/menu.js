@@ -147,7 +147,31 @@ const template = [
       { role: 'zoomin' },
       { role: 'zoomout' },
       { type: 'separator' },
-      { role: 'togglefullscreen' }
+      { role: 'togglefullscreen' },
+      { type: 'separator'},
+      {
+        label: 'Show',
+        submenu: [
+          {
+            label: 'Date and Time',
+            click: sendMessage('COMMAND_TOGGLE_OSD_OPTIONS', 'C1'),
+            type: 'checkbox',
+            checked: osdOptions.includes('C1')
+          },
+          {
+            label: 'Scale',
+            click: sendMessage('COMMAND_TOGGLE_OSD_OPTIONS', 'C2'),
+            type: 'checkbox',
+            checked: osdOptions.includes('C2')
+          },
+          {
+            label: 'Position',
+            click: sendMessage('COMMAND_TOGGLE_OSD_OPTIONS', 'C3'),
+            type: 'checkbox',
+            checked: osdOptions.includes('C3')
+          }
+        ]
+      },
     ]
   },
   {
@@ -167,29 +191,6 @@ const template = [
         label: 'Goto to place',
         accelerator: 'CmdOrCtrl+F',
         click: sendMessage('COMMAND_GOTO_PLACE')
-      }
-    ]
-  },
-  {
-    label: 'Show',
-    submenu: [
-      {
-        label: 'Date and Time',
-        click: sendMessage('COMMAND_TOGGLE_OSD_OPTIONS', 'C1'),
-        type: 'checkbox',
-        checked: osdOptions.includes('C1')
-      },
-      {
-        label: 'Scale',
-        click: sendMessage('COMMAND_TOGGLE_OSD_OPTIONS', 'C2'),
-        type: 'checkbox',
-        checked: osdOptions.includes('C2')
-      },
-      {
-        label: 'Position',
-        click: sendMessage('COMMAND_TOGGLE_OSD_OPTIONS', 'C3'),
-        type: 'checkbox',
-        checked: osdOptions.includes('C3')
       }
     ]
   },
