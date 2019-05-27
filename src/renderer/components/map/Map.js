@@ -68,7 +68,7 @@ class Map extends React.Component {
       options.zoom = viewPort.zoom
     }
 
-    this.map = K(L.map(id, { ...options, attributionControl: false }))(map => {
+    this.map = K(L.map(id, options))(map => {
       L.tileLayer(tileProvider.url, tileProvider).addTo(map)
       map.on('click', () => onClick())
       map.on('moveend', saveViewPort)
