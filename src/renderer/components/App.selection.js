@@ -1,13 +1,18 @@
 import EventEmitter from 'events'
 
-const selection = new EventEmitter()
+const evented = new EventEmitter()
+let selected
 
-selection.select = object => {
-  selection.emit('selected', object)
+evented.select = object => {
+  selected = object
+  evented.emit('selected', object)
 }
 
-selection.deselect = () => {
-  selection.emit('deselected')
+evented.deselect = () => {
+  selected = undefined
+  evented.emit('deselected')
 }
 
-export default selection
+evented.selected = () => selected
+
+export default evented

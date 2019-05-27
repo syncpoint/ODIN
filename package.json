@@ -58,6 +58,7 @@
     "level": "^5.0.1",
     "milsymbol": "^2.0.0",
     "moment": "^2.24.0",
+    "mousetrap": "^1.6.3",
     "nano-time": "^1.0.0",
     "prop-types": "^15.7.2",
     "ramda": "^0.26.1",
