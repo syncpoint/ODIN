@@ -1,4 +1,5 @@
 import { app, Menu } from 'electron'
+import mapSettings from '../renderer/components/map/settings'
 import settings from 'electron-settings'
 import tileProviders from './tile-providers'
 
@@ -6,6 +7,9 @@ const sendMessage = (event, ...args) => (menuItem, focusedWindow) => {
   if (!focusedWindow) return
   focusedWindow.send(event, ...args)
 }
+
+const osdOptions = mapSettings.get('osd-options') ||
+    ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
 
 // Get last provider (if any) to check corresponding menu item:
 const lastProviderId = settings.get('tileProvider')
@@ -143,7 +147,31 @@ const template = [
       { role: 'zoomin' },
       { role: 'zoomout' },
       { type: 'separator' },
-      { role: 'togglefullscreen' }
+      { role: 'togglefullscreen' },
+      { type: 'separator'},
+      {
+        label: 'Show',
+        submenu: [
+          {
+            label: 'Date and Time',
+            click: sendMessage('COMMAND_TOGGLE_OSD_OPTIONS', 'C1'),
+            type: 'checkbox',
+            checked: osdOptions.includes('C1')
+          },
+          {
+            label: 'Scale',
+            click: sendMessage('COMMAND_TOGGLE_OSD_OPTIONS', 'C2'),
+            type: 'checkbox',
+            checked: osdOptions.includes('C2')
+          },
+          {
+            label: 'Position',
+            click: sendMessage('COMMAND_TOGGLE_OSD_OPTIONS', 'C3'),
+            type: 'checkbox',
+            checked: osdOptions.includes('C3')
+          }
+        ]
+      },
     ]
   },
   {
