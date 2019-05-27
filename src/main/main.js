@@ -45,10 +45,7 @@ const createWindow = name => {
     window.loadURL(indexURL)
     window.on('close', () => (mainWindow = null))
     window.once('ready-to-show', () => window.show())
-    window.webContents.on('will-navigate', (event, url) => {
-      event.preventDefault()
-      shell.openExternal(url)
-    })
+    
     // track and store window size and position:
     ;['resize', 'move', 'close'].forEach(event => window.on(event, () => {
       const bounds = K(window.getBounds())(bounds => {
