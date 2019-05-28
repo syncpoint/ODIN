@@ -25,7 +25,8 @@ const mapOptions = {
   center,
   zoom,
   zoomControl: false, // default: true
-  minZoom: 3 // 1:70 million
+  minZoom: 3, // 1:70 million
+  attributionControl: false
 }
 
 class App extends React.Component {
