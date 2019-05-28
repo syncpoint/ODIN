@@ -13,6 +13,7 @@ const osdOptions = mapSettings.get('osd-options') ||
 
 // Get last provider (if any) to check corresponding menu item:
 const lastProviderId = settings.get('tileProvider')
+const hiDPISupport = mapSettings.get('hiDPISupport') || false
 
 const providerMenu = provider => ({
   id: provider.id,
@@ -134,6 +135,15 @@ const template = [
         ]
       },
       {
+        label: 'HiDPI Support',
+        type: 'checkbox',
+        checked: hiDPISupport,
+        click: (menuItem, focusedWindow) => {
+          settings.set('hiDPISupport', menuItem.checked)
+          sendMessage('COMMAND_HIDPI_SUPPORT', menuItem.checked)(menuItem, focusedWindow)
+        }
+      },
+      {
         label: 'Copy Coordinates',
         accelerator: 'ALT + C',
         click: sendMessage('COMMAND_COPY_COORDS')
@@ -148,7 +158,7 @@ const template = [
       { role: 'zoomout' },
       { type: 'separator' },
       { role: 'togglefullscreen' },
-      { type: 'separator'},
+      { type: 'separator' },
       {
         label: 'Show',
         submenu: [
