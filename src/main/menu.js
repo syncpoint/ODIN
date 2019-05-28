@@ -181,7 +181,7 @@ const template = [
             checked: osdOptions.includes('C3')
           }
         ]
-      },
+      }
     ]
   },
   {
