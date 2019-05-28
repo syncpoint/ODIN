@@ -93,37 +93,44 @@ const template = [
               {
                 label: 'Brightness',
                 click: sendMessage('COMMAND_ADJUST', 'brightness'),
-                accelerator: 'CmdOrCtrl+Alt+1'
+                accelerator: process.platform === 'darwin' 
+                  ? 'Alt+Cmd+1' : 'Ctrl+Shift+1'
               },
               {
                 label: 'Contrast',
                 click: sendMessage('COMMAND_ADJUST', 'contrast'),
-                accelerator: 'CmdOrCtrl+Alt+2'
+                accelerator: process.platform === 'darwin' 
+                  ? 'Alt+Cmd+2' : 'Ctrl+Shift+2'
               },
               {
                 label: 'Grayscale',
                 click: sendMessage('COMMAND_ADJUST', 'grayscale'),
-                accelerator: 'CmdOrCtrl+Alt+3'
+                accelerator: process.platform === 'darwin' 
+                  ? 'Alt+Cmd+3' : 'Ctrl+Shift+3'
               },
               {
                 label: 'Hue',
                 click: sendMessage('COMMAND_ADJUST', 'hue-rotate'),
-                accelerator: 'CmdOrCtrl+Alt+4'
+                accelerator: process.platform === 'darwin' 
+                  ? 'Alt+Cmd+4' : 'Ctrl+Shift+4'
               },
               {
                 label: 'Invert',
                 click: sendMessage('COMMAND_ADJUST', 'invert'),
-                accelerator: 'CmdOrCtrl+Alt+5'
+                accelerator: process.platform === 'darwin' 
+                  ? 'Alt+Cmd+5' : 'Ctrl+Shift+5'
               },
               {
                 label: 'Sepia',
                 click: sendMessage('COMMAND_ADJUST', 'sepia'),
-                accelerator: 'CmdOrCtrl+Alt+6'
+                accelerator: process.platform === 'darwin' 
+                  ? 'Alt+Cmd+6' : 'Ctrl+Shift+6'
               },
               {
                 label: 'Reset',
                 click: sendMessage('COMMAND_RESET_FILTERS'),
-                accelerator: 'CmdOrCtrl+Alt+0'
+                accelerator: process.platform === 'darwin' 
+                  ? 'Alt+Cmd+0' : 'Ctrl+Shift+9'
               }
             ]
           },
