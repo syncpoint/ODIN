@@ -13,6 +13,7 @@ const osdOptions = mapSettings.get('osd-options') ||
 
 // Get last provider (if any) to check corresponding menu item:
 const lastProviderId = settings.get('tileProvider')
+const hiDPISupport = mapSettings.get('hiDPISupport') || false
 
 const providerMenu = provider => ({
   id: provider.id,
@@ -66,6 +67,29 @@ const preferences = {
   ]
 }
 
+const mapFilters = [
+  { label: 'Brightness', command: 'brightness' },
+  { label: 'Contrast', command: 'contrast' },
+  { label: 'Grayscale', command: 'contrast' },
+  { label: 'Hue', command: 'hue-rotate' },
+  { label: 'Invert', command: 'invert' },
+  { label: 'Sepia', command: 'sepia' }
+].map(({ label, command }, index) => ({
+  label,
+  click: sendMessage('COMMAND_ADJUST', command),
+  accelerator: process.platform === 'darwin'
+    ? `Alt+Cmd+${index + 1}`
+    : `Ctrl+Shift+${index + 1}`
+}))
+
+mapFilters.push({
+  label: 'Reset',
+  click: sendMessage('COMMAND_RESET_FILTERS'),
+  accelerator: process.platform === 'darwin'
+    ? 'Alt+Cmd+9'
+    : 'Ctrl+Shift+9'
+})
+
 const template = [
   {
     label: 'Edit',
@@ -89,49 +113,22 @@ const template = [
         submenu: [
           {
             label: 'Filter',
-            submenu: [
-              {
-                label: 'Brightness',
-                click: sendMessage('COMMAND_ADJUST', 'brightness'),
-                accelerator: 'CmdOrCtrl+Alt+1'
-              },
-              {
-                label: 'Contrast',
-                click: sendMessage('COMMAND_ADJUST', 'contrast'),
-                accelerator: 'CmdOrCtrl+Alt+2'
-              },
-              {
-                label: 'Grayscale',
-                click: sendMessage('COMMAND_ADJUST', 'grayscale'),
-                accelerator: 'CmdOrCtrl+Alt+3'
-              },
-              {
-                label: 'Hue',
-                click: sendMessage('COMMAND_ADJUST', 'hue-rotate'),
-                accelerator: 'CmdOrCtrl+Alt+4'
-              },
-              {
-                label: 'Invert',
-                click: sendMessage('COMMAND_ADJUST', 'invert'),
-                accelerator: 'CmdOrCtrl+Alt+5'
-              },
-              {
-                label: 'Sepia',
-                click: sendMessage('COMMAND_ADJUST', 'sepia'),
-                accelerator: 'CmdOrCtrl+Alt+6'
-              },
-              {
-                label: 'Reset',
-                click: sendMessage('COMMAND_RESET_FILTERS'),
-                accelerator: 'CmdOrCtrl+Alt+0'
-              }
-            ]
+            submenu: mapFilters
           },
           {
             label: 'Tile Providers',
             submenu: tileProvidersMenu
           }
         ]
+      },
+      {
+        label: 'HiDPI Support',
+        type: 'checkbox',
+        checked: hiDPISupport,
+        click: (menuItem, focusedWindow) => {
+          settings.set('hiDPISupport', menuItem.checked)
+          sendMessage('COMMAND_HIDPI_SUPPORT', menuItem.checked)(menuItem, focusedWindow)
+        }
       },
       {
         label: 'Copy Coordinates',
@@ -148,7 +145,7 @@ const template = [
       { role: 'zoomout' },
       { type: 'separator' },
       { role: 'togglefullscreen' },
-      { type: 'separator'},
+      { type: 'separator' },
       {
         label: 'Show',
         submenu: [
@@ -171,7 +168,7 @@ const template = [
             checked: osdOptions.includes('C3')
           }
         ]
-      },
+      }
     ]
   },
   {
