@@ -70,7 +70,7 @@ const preferences = {
 const mapFilters = [
   { label: 'Brightness', command: 'brightness' },
   { label: 'Contrast', command: 'contrast' },
-  { label: 'Grayscale', command: 'contrast' },
+  { label: 'Grayscale', command: 'grayscale' },
   { label: 'Hue', command: 'hue-rotate' },
   { label: 'Invert', command: 'invert' },
   { label: 'Sepia', command: 'sepia' }
