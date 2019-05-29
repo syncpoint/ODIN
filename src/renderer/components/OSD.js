@@ -11,6 +11,8 @@ class OSD extends React.Component {
     super(props)
     this.osdOptions = mapSettings.get('osd-options') ||
     ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
+    this.isOsdVisible = mapSettings.get('is-osd-visible') === undefined
+      ? true : mapSettings.get('is-osd-visible')
     this.state = {
       'C1': this.osdOptions.includes('C1') ? currentDateTime() : ''
     }
@@ -19,6 +21,7 @@ class OSD extends React.Component {
 
   handleOSDMessage ({ message, duration, slot }) {
     slot = slot || 'B1'
+    if (!this.isOsdVisible && slot !== 'B1') message = ''
     const update = Object.assign({}, this.state)
     this.restore[slot] = message
     update[slot] = this.osdOptions.includes(slot) ? message : ''
@@ -47,8 +50,15 @@ class OSD extends React.Component {
       mapSettings.set('osd-options', this.osdOptions)
       this.handleOSDMessage({ 'message': this.restore[args], 'slot': args })
     })
-  }
 
+    ipcRenderer.on('COMMAND_TOGGLE_OSD', (_, args) => {
+      console.log(args)
+      this.isOsdVisible = args
+      this.osdOptions.filter(slot => {
+        this.handleOSDMessage({ 'message': '', 'slot': slot })
+      })
+    })
+  }
   componentWillUnmount () {
     evented.removeListener('OSD_MESSAGE', this.handleOSDMessage)
   }

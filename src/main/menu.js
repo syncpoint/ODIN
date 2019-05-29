@@ -8,6 +8,9 @@ const sendMessage = (event, ...args) => (menuItem, focusedWindow) => {
   focusedWindow.send(event, ...args)
 }
 
+const isOsdVisible = mapSettings.get('is-osd-visible') === undefined
+  ? true : mapSettings.get('is-osd-visible')
+
 const osdOptions = mapSettings.get('osd-options') ||
     ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
 
@@ -150,22 +153,38 @@ const template = [
         label: 'Show',
         submenu: [
           {
+            label: 'OSD INFO',
+            click: (menuItem, focusedWindow) => {
+                menuItem.menu.items.filter(x => x !== menuItem 
+                  && x.label !== 'Map')
+                    .forEach(x => (x.enabled = menuItem.checked))
+              sendMessage('COMMAND_TOGGLE_OSD', menuItem.checked)(menuItem, focusedWindow)
+              mapSettings.set('is-osd-visible', menuItem.checked)
+            },
+            type: 'checkbox',
+            checked: isOsdVisible
+          },
+          { type: 'separator' },
+          {
             label: 'Date and Time',
             click: sendMessage('COMMAND_TOGGLE_OSD_OPTIONS', 'C1'),
             type: 'checkbox',
-            checked: osdOptions.includes('C1')
+            checked: osdOptions.includes('C1'),
+            enabled: isOsdVisible
           },
           {
             label: 'Scale',
             click: sendMessage('COMMAND_TOGGLE_OSD_OPTIONS', 'C2'),
             type: 'checkbox',
-            checked: osdOptions.includes('C2')
+            checked: osdOptions.includes('C2'),
+            enabled: isOsdVisible
           },
           {
             label: 'Position',
             click: sendMessage('COMMAND_TOGGLE_OSD_OPTIONS', 'C3'),
             type: 'checkbox',
-            checked: osdOptions.includes('C3')
+            checked: osdOptions.includes('C3'),
+            enabled: isOsdVisible
           }
         ]
       }
