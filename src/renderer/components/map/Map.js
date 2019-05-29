@@ -10,24 +10,18 @@ import { K } from '../../../shared/combinators'
 import Leaflet from '../../leaflet'
 import { zoomLevels } from './zoom-levels'
 import { defaultValues, COMMAND_ADJUST, COMMAND_RESET_FILTERS } from './display-filters'
-import { COMMAND_MAP_TILE_PROVIDER } from './tile-provider'
+import { tileProvider, COMMAND_MAP_TILE_PROVIDER, COMMAND_HIDPI_SUPPORT } from './tile-provider'
 import { COMMAND_COPY_COORDS } from './clipboard'
 import formatLatLng from '../../coord-format'
 import mapSettings from './settings'
 import poiLayer from './poi-layer'
 
-const defautTileProvider = {
-  id: 'OpenStreetMap.Mapnik',
-  name: 'OpenStreetMap',
-  url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  maxZoom: 19,
-  attribution: `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors`
-}
 
 const ipcHandlers = {
   COMMAND_ADJUST,
   COMMAND_RESET_FILTERS,
   COMMAND_MAP_TILE_PROVIDER,
+  COMMAND_HIDPI_SUPPORT,
   COMMAND_COPY_COORDS
 }
 
@@ -60,7 +54,6 @@ const updateCoordinateDisplay = ({ latlng }) => {
 class Map extends React.Component {
   componentDidMount () {
     const { id, options, onClick, onMoveend, onZoomend } = this.props
-    const tileProvider = mapSettings.get('tileProvider') || defautTileProvider
     const viewPort = mapSettings.get('viewPort')
 
     // Override center/zoom options if available from settings:
@@ -70,7 +63,7 @@ class Map extends React.Component {
     }
 
     this.map = K(L.map(id, options))(map => {
-      L.tileLayer(tileProvider.url, tileProvider).addTo(map)
+      L.tileLayer(tileProvider().url, tileProvider()).addTo(map)
       poiLayer(map)
 
       map.on('click', () => onClick())
