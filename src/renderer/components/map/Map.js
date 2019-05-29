@@ -12,22 +12,28 @@ import { zoomLevels } from './zoom-levels'
 import { defaultValues, COMMAND_ADJUST, COMMAND_RESET_FILTERS } from './display-filters'
 import { COMMAND_MAP_TILE_PROVIDER } from './tile-provider'
 import { COMMAND_COPY_COORDS } from './clipboard'
+import { COMMAND_TOGGLE_MAP_VISIBILITY } from './map-visibility'
 import formatLatLng from '../../coord-format'
 import mapSettings from './settings'
 
-const defautTileProvider = {
-  id: 'OpenStreetMap.Mapnik',
-  name: 'OpenStreetMap',
-  url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  maxZoom: 19,
-  attribution: `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors`
+const defautTileProvider = () => {
+  const provider = {
+    id: 'OpenStreetMap.Mapnik',
+    name: 'OpenStreetMap',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    maxZoom: 19,
+    attribution: `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors`
+  }
+  mapSettings.set('tileProvider', provider)
+  return provider
 }
 
 const ipcHandlers = {
   COMMAND_ADJUST,
   COMMAND_RESET_FILTERS,
   COMMAND_MAP_TILE_PROVIDER,
-  COMMAND_COPY_COORDS
+  COMMAND_COPY_COORDS,
+  COMMAND_TOGGLE_MAP_VISIBILITY
 }
 
 const updateScaleDisplay = map => () => {
@@ -59,8 +65,11 @@ const updateCoordinateDisplay = ({ latlng }) => {
 class Map extends React.Component {
   componentDidMount () {
     const { id, options, onClick, onMoveend, onZoomend } = this.props
-    const tileProvider = mapSettings.get('tileProvider') || defautTileProvider
+    const tileProvider = mapSettings.get('tileProvider') || defautTileProvider()
     const viewPort = mapSettings.get('viewPort')
+    const mapIsVisible = mapSettings.get('map-is-visible') === undefined
+      ? true : mapSettings.get('map-is-visible')
+    console.log(mapIsVisible + ' is it')
 
     // Override center/zoom options if available from settings:
     if (viewPort) {
@@ -69,7 +78,7 @@ class Map extends React.Component {
     }
 
     this.map = K(L.map(id, options))(map => {
-      L.tileLayer(tileProvider.url, tileProvider).addTo(map)
+      if (mapIsVisible) L.tileLayer(tileProvider.url, tileProvider).addTo(map)
       map.on('click', () => onClick())
       map.on('moveend', saveViewPort)
       map.on('moveend', event => onMoveend(event.target.getCenter()))

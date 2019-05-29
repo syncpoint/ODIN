@@ -8,6 +8,9 @@ const sendMessage = (event, ...args) => (menuItem, focusedWindow) => {
   focusedWindow.send(event, ...args)
 }
 
+const isMapVisible = mapSettings.get('map-is-visible') === undefined
+      ? true : mapSettings.get('map-is-visible')
+
 const osdOptions = mapSettings.get('osd-options') ||
     ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
 
@@ -169,7 +172,17 @@ const template = [
             click: sendMessage('COMMAND_TOGGLE_OSD_OPTIONS', 'C3'),
             type: 'checkbox',
             checked: osdOptions.includes('C3')
+          },
+          { type: 'separator' },
+          {
+            label: 'Map',
+            click: (menuItem, focusedWindow) => {
+              sendMessage('COMMAND_TOGGLE_MAP_VISIBILITY', menuItem.checked)(menuItem, focusedWindow)
+            },
+            type: 'checkbox',
+            checked: isMapVisible
           }
+
         ]
       },
     ]
