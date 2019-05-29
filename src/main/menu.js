@@ -67,6 +67,29 @@ const preferences = {
   ]
 }
 
+const mapFilters = [
+  { label: 'Brightness', command: 'brightness' },
+  { label: 'Contrast', command: 'contrast' },
+  { label: 'Grayscale', command: 'contrast' },
+  { label: 'Hue', command: 'hue-rotate' },
+  { label: 'Invert', command: 'invert' },
+  { label: 'Sepia', command: 'sepia' }
+].map(({ label, command }, index) => ({
+  label,
+  click: sendMessage('COMMAND_ADJUST', command),
+  accelerator: process.platform === 'darwin'
+    ? `Alt+Cmd+${index + 1}`
+    : `Ctrl+Shift+${index + 1}`
+}))
+
+mapFilters.push({
+  label: 'Reset',
+  click: sendMessage('COMMAND_RESET_FILTERS'),
+  accelerator: process.platform === 'darwin'
+    ? 'Alt+Cmd+9'
+    : 'Ctrl+Shift+9'
+})
+
 const template = [
   {
     label: 'Edit',
@@ -90,50 +113,7 @@ const template = [
         submenu: [
           {
             label: 'Filter',
-            submenu: [
-              {
-                label: 'Brightness',
-                click: sendMessage('COMMAND_ADJUST', 'brightness'),
-                accelerator: process.platform === 'darwin' 
-                  ? 'Alt+Cmd+1' : 'Ctrl+Shift+1'
-              },
-              {
-                label: 'Contrast',
-                click: sendMessage('COMMAND_ADJUST', 'contrast'),
-                accelerator: process.platform === 'darwin' 
-                  ? 'Alt+Cmd+2' : 'Ctrl+Shift+2'
-              },
-              {
-                label: 'Grayscale',
-                click: sendMessage('COMMAND_ADJUST', 'grayscale'),
-                accelerator: process.platform === 'darwin' 
-                  ? 'Alt+Cmd+3' : 'Ctrl+Shift+3'
-              },
-              {
-                label: 'Hue',
-                click: sendMessage('COMMAND_ADJUST', 'hue-rotate'),
-                accelerator: process.platform === 'darwin' 
-                  ? 'Alt+Cmd+4' : 'Ctrl+Shift+4'
-              },
-              {
-                label: 'Invert',
-                click: sendMessage('COMMAND_ADJUST', 'invert'),
-                accelerator: process.platform === 'darwin' 
-                  ? 'Alt+Cmd+5' : 'Ctrl+Shift+5'
-              },
-              {
-                label: 'Sepia',
-                click: sendMessage('COMMAND_ADJUST', 'sepia'),
-                accelerator: process.platform === 'darwin' 
-                  ? 'Alt+Cmd+6' : 'Ctrl+Shift+6'
-              },
-              {
-                label: 'Reset',
-                click: sendMessage('COMMAND_RESET_FILTERS'),
-                accelerator: process.platform === 'darwin' 
-                  ? 'Alt+Cmd+0' : 'Ctrl+Shift+9'
-              }
-            ]
+            submenu: mapFilters
           },
           {
             label: 'Tile Providers',
