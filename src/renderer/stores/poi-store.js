@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 import EventEmitter from 'events'
 import { Writable } from 'stream'
 import level from 'level'
@@ -36,24 +34,18 @@ const reducer = value => {
   }
 }
 
-const recoverStream = () => {
-  const now = Date.now() // latency: 252 ms
-  let count = 0
-
-  return new Writable({
-    objectMode: true,
-    write (chunk, _, callback) {
-      count += 1
-      reducer(chunk)
-      callback()
-    },
-    final (callback) {
-      evented.emit('ready', model)
-      console.log('recover', count, 'events', Date.now() - now, 'ms')
-      callback()
-    }
-  })
-}
+const recoverStream = () => new Writable({
+  objectMode: true,
+  write (chunk, _, callback) {
+    this.now = this.now || Date.now()
+    reducer(chunk)
+    callback()
+  },
+  final (callback) {
+    evented.emit('ready', model)
+    callback()
+  }
+})
 
 
 store.on('put', (_, value) => {

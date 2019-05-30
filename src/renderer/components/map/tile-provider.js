@@ -12,7 +12,6 @@ const updateTileLayer = map => {
   Leaflet.layers(map)
     .filter(layer => layer instanceof L.TileLayer)
     .forEach(layer => map.removeLayer(layer))
-  console.log(tileProvider())
   L.tileLayer(tileProvider().url, tileProvider()).addTo(map)
 }
 

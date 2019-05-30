@@ -1,9 +1,12 @@
 import path from 'path'
 import url from 'url'
-import { app, BrowserWindow, Menu, shell } from 'electron'
+import { app, BrowserWindow, Menu } from 'electron'
 import settings from 'electron-settings'
 import { K, noop } from '../shared/combinators'
 import { buildFromTemplate } from '../main/menu'
+
+// Disable for production:
+process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
 const on = emitter => ([event, handler]) => emitter.on(event, handler)
 
@@ -45,7 +48,7 @@ const createWindow = name => {
     window.loadURL(indexURL)
     window.on('close', () => (mainWindow = null))
     window.once('ready-to-show', () => window.show())
-    
+
     // track and store window size and position:
     ;['resize', 'move', 'close'].forEach(event => window.on(event, () => {
       const bounds = K(window.getBounds())(bounds => {
