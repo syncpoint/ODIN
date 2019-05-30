@@ -9,7 +9,7 @@ const Properties = props =>
     elevation={ 4 }
   >
     <Typography variant="h5" component="h3">
-      { props.options.properties.id }
+      { props.options.id }
     </Typography>
   </Paper>
 

@@ -82,10 +82,11 @@ class App extends React.Component {
     })
 
     selection.on('selected', object => {
-      this.setState({ ...this.state, panels: { properties: object } })
+      const { properties } = object
+      this.setState({ ...this.state, panels: { properties } })
     })
 
-    selection.on('deselected', object => {
+    selection.on('deselected', () => {
       const panels = delete this.state.panels.properties
       this.setState({ ...this.state, panels })
     })

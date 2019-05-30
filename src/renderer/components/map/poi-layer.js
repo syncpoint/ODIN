@@ -1,7 +1,8 @@
 import L from 'leaflet'
 import ms from 'milsymbol'
 import store from '../../stores/poi-store'
-// import selection from '../App.selection'
+import selection from '../App.selection'
+import clipboard from '../App.clipboard'
 
 const featureLayers = {}
 let selected
@@ -11,6 +12,7 @@ const deselect = () => {
   const layer = featureLayers[selected]
   layer.setIcon(layer.options.icons.standard)
   selected = undefined
+  selection.deselect()
 }
 
 const select = id => {
@@ -18,6 +20,14 @@ const select = id => {
   selected = id
   const layer = featureLayers[selected]
   layer.setIcon(layer.options.icons.highlighted)
+
+  selection.select({
+    id,
+    layer,
+    type: 'poi',
+    feature: layer.feature,
+    properties: layer.feature.properties.poi
+  })
 }
 
 // feature: poi -> feature
@@ -60,7 +70,6 @@ const pointToLayer = (feature, latlng) => {
     const { id } = target.options
     const { lat, lng } = target.getLatLng()
     store.move(id, { lat, lng })
-    if (selected !== id) select(id)
   })
 
   marker.on('click', event => {
@@ -106,6 +115,50 @@ const poiLayer = map => {
     .map(([id, poi]) => ({ id, ...poi }))
     .forEach(add)
   )
+
+  clipboard.registerHandler({
+    copy: () => {
+      const selected = selection.selected()
+      if (!selected) return
+      return JSON.stringify({
+        id: selected.id,
+        lat: selected.layer.getLatLng().lat,
+        lng: selected.layer.getLatLng().lng
+      })
+    },
+
+    cut: () => {
+      const selected = selection.selected()
+      if (selected) {
+        const poi = {
+          id: selected.id,
+          lat: selected.layer.getLatLng().lat,
+          lng: selected.layer.getLatLng().lng
+        }
+        store.remove(selected.properties.id)
+        return JSON.stringify(poi)
+      }
+    },
+
+    paste: text => {
+      const poi = JSON.parse(text)
+
+      const id = (prefix, no) => {
+        if (featureLayers[`${prefix} ${no}`]) return id(prefix, no + 1)
+        else return `${prefix} ${no}`
+      }
+
+      if (featureLayers[poi.id]) {
+        store.add({
+          id: id(poi.id, 2),
+          lat: map.getCenter().lat,
+          lng: map.getCenter().lng
+        })
+      } else {
+        store.add(poi)
+      }
+    }
+  })
 }
 
 export default poiLayer
