@@ -10,13 +10,7 @@ import Properties from './Properties'
 import spotlightOptions from './App.spotlight'
 import addBookmarkOptions from './App.bookmark'
 import selection from './App.selection'
-import Mousetrap from 'mousetrap'
-
-Mousetrap.bind(['mod+c'], event => console.log('COPY', event))
-Mousetrap.bind(['mod+x'], event => console.log('CUT', event))
-Mousetrap.bind(['mod+v'], event => console.log('PASTE', event))
-Mousetrap.bind(['mod+z'], event => console.log('UNDO', event))
-Mousetrap.bind(['mod+shift+z'], event => console.log('REDO', event))
+import './App.clipboard'
 
 const center = L.latLng(48.65400545105681, 15.319061279296877)
 const zoom = 13
