@@ -16,7 +16,6 @@ import formatLatLng from '../../coord-format'
 import mapSettings from './settings'
 import poiLayer from './poi-layer'
 
-
 const ipcHandlers = {
   COMMAND_ADJUST,
   COMMAND_RESET_FILTERS,

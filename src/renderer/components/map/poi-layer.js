@@ -40,7 +40,7 @@ const feature = poi => ({
 // pointToLayer: feature -> latlng -> layer
 const pointToLayer = (feature, latlng) => {
   const { id, sidc } = feature.properties
-  const size = 40
+  const size = 34
   const symbol = options => new ms.Symbol(sidc, options)
   const icon = symbol => L.divIcon({
     className: '',
@@ -70,6 +70,7 @@ const pointToLayer = (feature, latlng) => {
     const { id } = target.options
     const { lat, lng } = target.getLatLng()
     store.move(id, { lat, lng })
+    select(id)
   })
 
   marker.on('click', event => {
@@ -78,7 +79,8 @@ const pointToLayer = (feature, latlng) => {
     if (selected !== id) select(id)
   })
 
-  marker.setIcon(marker.options.icons.standard)
+  const icons = marker.options.icons
+  marker.setIcon(selected === id ? icons.highlighted : icons.standard)
   featureLayers[id] = marker
   return marker
 }
@@ -99,7 +101,11 @@ const poiLayer = map => {
   layer.id = 'POI_LAYER'
   layer.addTo(map)
 
-  const add = poi => layer.addData(feature(poi))
+  const add = poi => {
+    if (!poi || !poi.id) return
+    layer.addData(feature(poi))
+  }
+
   const remove = id => {
     if (featureLayers[id]) {
       deselect(id)
@@ -108,8 +114,16 @@ const poiLayer = map => {
     }
   }
 
+  const renamed = (previousId, poi) => {
+    if (selected === previousId) selected = poi.id
+    layer.removeLayer(featureLayers[previousId])
+    delete featureLayers[previousId]
+    add(poi)
+  }
+
   store.on('added', add)
   store.on('removed', remove)
+  store.on('renamed', renamed)
 
   store.once('ready', model => Object.entries(model)
     .map(([id, poi]) => ({ id, ...poi }))
