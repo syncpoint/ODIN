@@ -6,7 +6,7 @@ import { ipcRenderer } from 'electron'
 import L from 'leaflet'
 import OSD from './OSD'
 import Spotlight from './spotlight/Spotlight'
-import Properties from './Properties'
+import POIProperties from './POIProperties'
 import spotlightOptions from './App.spotlight'
 import addBookmarkOptions from './App.bookmark'
 import selection from './App.selection'
@@ -40,10 +40,12 @@ class App extends React.Component {
     }
   }
 
+  // TODO: should cancel/close right side bar in general
   closeSpotlight () {
-    const panels = delete this.state.panels.spotlight
-    this.setState({ ...this.state, panels })
+    // const panels = delete this.state.panels.spotlight
+    this.setState({ ...this.state, panels: {} })
     document.getElementById('map').focus()
+    selection.deselect()
   }
 
   openSpotlight (options) {
@@ -82,8 +84,8 @@ class App extends React.Component {
     })
 
     selection.on('selected', object => {
-      const { properties } = object
-      this.setState({ ...this.state, panels: { properties } })
+      const { type, properties } = object
+      this.setState({ ...this.state, panels: { type, properties } })
     })
 
     selection.on('deselected', () => {
@@ -93,12 +95,17 @@ class App extends React.Component {
   }
 
   render () {
+    const properties = () => {
+      switch (this.state.panels.type) {
+        case 'poi': return <POIProperties options={ this.state.panels.properties } />
+        default: break
+      }
+    }
+
     // Is spotlight currently visible?
     const rightSidebar = this.state.panels.spotlight
       ? (<Spotlight options={ this.state.panels.spotlight } />)
-      : this.state.panels.properties
-        ? (<Properties options={ this.state.panels.properties } />)
-        : null
+      : properties()
 
     return (
       <div
