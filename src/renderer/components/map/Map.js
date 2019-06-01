@@ -63,7 +63,6 @@ class Map extends React.Component {
 
     this.map = K(L.map(id, options))(map => {
       const mapVisible = settings.map.visible()
-      console.log('mapVisible', mapVisible)
       if (mapVisible) L.tileLayer(tileProvider().url, tileProvider()).addTo(map)
 
       map.on('click', () => onClick())
