@@ -42,7 +42,6 @@ class App extends React.Component {
 
   // TODO: should cancel/close right side bar in general
   closeSpotlight () {
-    // const panels = delete this.state.panels.spotlight
     this.setState({ ...this.state, panels: {} })
     document.getElementById('map').focus()
     selection.deselect()
@@ -113,7 +112,8 @@ class App extends React.Component {
 
     return (
       <div
-        onKeyDown={ event => this.handleKeyDown(event) }>
+        onKeyDown={ event => this.handleKeyDown(event) }
+      >
         <Map
           id='map'
           className='map'
