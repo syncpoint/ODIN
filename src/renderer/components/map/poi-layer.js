@@ -96,7 +96,6 @@ const poiLayer = map => {
   layer.addTo(map)
 
   const add = poi => {
-    if (!poi || !poi.uuid) return
     layer.addData(feature(poi))
   }
 
