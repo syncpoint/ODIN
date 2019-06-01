@@ -1,127 +1,70 @@
-import EventEmitter from 'events'
 import { Writable } from 'stream'
-import level from 'level'
+import EventEmitter from 'events'
 import now from 'nano-time'
+import { db } from './db'
 
-// TODO: POI should have stable UUID as identifier (aggregate id)
-
-const store = level('poi-db', { valueEncoding: 'json' })
 const evented = new EventEmitter()
+const state = {}
 
-let model = {}
-
-const deleteStream = options => {
-  const batch = store.batch()
-  const key = (options && options.key) || (chunk => chunk)
-
-  return new Writable({
-    objectMode: true,
-    write (chunk, _, callback) {
-      batch.del(key(chunk))
-      callback()
-    },
-    final (callback) {
-      batch.write(callback)
-    }
-  })
+const handlers = {
+  added: ({ uuid, ...poi }) => (state[uuid] = poi),
+  moved: ({ uuid, lat, lng }) => (state[uuid] = { ...state[uuid], lat, lng }),
+  renamed: ({ uuid, name }) => (state[uuid].name = name),
+  removed: ({ uuid }) => delete state[uuid],
+  commented: ({ uuid, comment }) => (state[uuid].comment = comment)
 }
 
-const reducer = value => {
-  switch (value.event) {
-    case 'added': return (model[value.poi.id] = { lat: value.poi.lat, lng: value.poi.lng })
-    case 'removed': return delete model[value.id]
-    // TODO: propertyChanged event
-    // TODO: combine lat/lng as latlng or position
-    case 'moved': return (model[value.id] = { lat: value.lat, lng: value.lng })
+const reduce = ({ type, ...event }) => (handlers[type] || (() => {}))(event)
 
-    // TODO: propertyChanged event
-    case 'renamed':
-      model[value.id] = { ...model[value.previousId], id: value.id }
-      delete model[value.previousId]
-      break
-
-    // TODO: propertyChanged event
-    case 'commented': return (model[value.id] = { ...model[value.id], comment: value.comment })
-    default: console.log('unhandled', value)
-  }
+const persist = ({ type, ...event }) => {
+  db.put(`journal:poi:${now()}`, { type, ...event })
+  reduce({ type, ...event })
+  evented.emit(type, event)
 }
 
-const recoverStream = () => new Writable({
+const recoverStream = reduce => new Writable({
   objectMode: true,
   write (chunk, _, callback) {
-    reducer(chunk)
+    reduce(chunk)
     callback()
   },
   final (callback) {
-    evented.emit('ready', model)
+    evented.emit('ready', { ...state })
     callback()
-  }
-})
-
-store.on('put', (_, value) => {
-  switch (value.event) {
-    case 'added': return evented.emit('added', value.poi)
-    case 'removed': return evented.emit('removed', value.id)
-    case 'renamed': return evented.emit('renamed', value.previousId, model[value.id])
-    case 'commented': return evented.emit('commented', model[value.id])
-    case 'moved': break
   }
 })
 
 // recover journal events:
-store.createReadStream({
-  gte: 'journal:',
-  lte: 'journal:\xff',
+db.createReadStream({
+  gte: 'journal:poi',
+  lte: 'journal:poi\xff',
   keys: false
-}).pipe(recoverStream())
+}).pipe(recoverStream(reduce))
 
-// TODO: introduce aggregate id to make it possible to delete events for a removed aggregate
-// TODO: support snapshots
-const put = event => store.put(`journal:${now()}`, event)
 
-evented.add = poi => {
-  const value = { event: 'added', poi }
-  reducer(value)
-  put(value)
+evented.state = () => ({ ...state })
+
+evented.add = (uuid, poi) => persist({ type: 'added', uuid, ...poi })
+
+evented.remove = uuid => {
+  if (!state[uuid]) return
+  persist({ type: 'removed', uuid })
 }
 
-evented.remove = id => {
-  if (!model[id]) return
-  const value = { event: 'removed', id }
-  reducer(value)
-  put(value)
+evented.move = (uuid, { lat, lng }) => {
+  if (!state[uuid]) return
+  persist({ type: 'moved', uuid, lat, lng })
 }
 
-evented.move = (id, latlng) => {
-  if (!model[id]) return
-  const { lat, lng } = latlng
-  const value = { event: 'moved', id, lat, lng }
-  reducer(value)
-  put(value)
+evented.rename = (uuid, name) => {
+  if (!state[uuid]) return
+  if (state[uuid].name === name) return
+  persist({ type: 'renamed', uuid, name })
 }
 
-evented.rename = (previousId, id) => {
-  if (model[previousId]) {
-    const event = { event: 'renamed', previousId: previousId, id }
-    reducer(event)
-    put(event)
-  }
+evented.comment = (uuid, comment) => {
+  if (!state[uuid]) return
+  persist({ type: 'commented', uuid, comment })
 }
-
-evented.comment = (id, comment) => {
-  if (model[id]) {
-    const event = { event: 'commented', id, comment }
-    reducer(event)
-    put(event)
-  }
-}
-
-evented.clean = () => {
-  store.createReadStream().pipe(deleteStream({ key: chunk => chunk.key }))
-  model = {}
-  evented.emit('cleaned')
-}
-
-evented.model = () => model
 
 export default evented

@@ -1,6 +1,7 @@
 import React from 'react'
 import ListItemText from '@material-ui/core/ListItemText'
 import L from 'leaflet'
+import uuid from 'uuid-random'
 import nominatim from './nominatim'
 import mapSettings from './map/settings'
 import poiStore from '../stores/poi-store'
@@ -28,9 +29,9 @@ const places = options => term => nominatim(searchOptions)(term).then(rows => {
       text: <ListItemText primary={ row.display_name } secondary={ 'Place' }/>,
       action: () => {
         context.setCenter(L.latLng(row.lat, row.lon))
-
+        console.log(row.poi)
         // If it is a result of a reverse search (i.e. POI), store it for later use.
-        if (row.poi) poiStore.add({ id: row.poi, lat: row.lat, lng: row.lon })
+        if (row.poi) poiStore.add(uuid(), { name: row.poi, lat: row.lat, lng: row.lon })
       }
     }))
 })
@@ -56,13 +57,13 @@ const bookmarks = options => term => {
 
 const pois = options => term => {
   const { context } = options
-  const items = Object.entries((poiStore.model()))
-    .filter(([id, _]) => id.search(new RegExp(term, 'i')) !== -1)
-    .map(([id, poi]) => ({
-      key: id,
-      text: <ListItemText primary={ id } secondary={ 'POI' }/>,
+  const items = Object.entries((poiStore.state()))
+    .filter(([_, poi]) => poi.name.search(new RegExp(term, 'i')) !== -1)
+    .map(([uuid, poi]) => ({
+      key: uuid,
+      text: <ListItemText primary={ poi.name } secondary={ 'POI' }/>,
       action: () => context.setCenter(L.latLng(poi.lat, poi.lng)),
-      delete: () => poiStore.remove(id)
+      delete: () => poiStore.remove(uuid)
     }))
 
   return Promise.resolve(items)

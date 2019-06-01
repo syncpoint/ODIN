@@ -1,5 +1,6 @@
 import L from 'leaflet'
 import ms from 'milsymbol'
+import uuid from 'uuid-random'
 import store from '../../stores/poi-store'
 import selection from '../App.selection'
 import clipboard from '../App.clipboard'
@@ -15,31 +16,24 @@ const deselect = () => {
   selection.deselect()
 }
 
-const select = id => {
+const select = uuid => {
   deselect()
-  selected = id
+  selected = uuid
   const layer = featureLayers[selected]
   layer.setIcon(layer.options.icons.highlighted)
-
-  selection.select({
-    id,
-    layer,
-    type: 'poi',
-    feature: layer.feature,
-    properties: layer.feature.properties.poi
-  })
+  selection.select({ type: 'poi', uuid })
 }
 
 // feature: poi -> feature
 const feature = poi => ({
   type: 'Feature',
   geometry: { type: 'Point', coordinates: [poi.lng, poi.lat] },
-  properties: { poi, id: poi.id, sidc: 'GFGPGPRI----' }
+  properties: { name: poi.name, uuid: poi.uuid, sidc: 'GFGPGPRI----' }
 })
 
 // pointToLayer: feature -> latlng -> layer
 const pointToLayer = (feature, latlng) => {
-  const { id, sidc } = feature.properties
+  const { uuid, name, sidc } = feature.properties
   const size = 34
   const symbol = options => new ms.Symbol(sidc, options)
   const icon = symbol => L.divIcon({
@@ -48,9 +42,9 @@ const pointToLayer = (feature, latlng) => {
     iconAnchor: new L.Point(symbol.getAnchor().x, symbol.getAnchor().y)
   })
 
-  const options = { size, uniqueDesignation: id }
+  const options = { size, uniqueDesignation: name }
   const marker = L.marker(latlng, {
-    id,
+    uuid,
     icons: {
       standard: icon(symbol(options)),
       highlighted: icon(symbol({
@@ -67,21 +61,21 @@ const pointToLayer = (feature, latlng) => {
   })
 
   marker.on('moveend', ({ target }) => {
-    const { id } = target.options
+    const { uuid } = target.options
     const { lat, lng } = target.getLatLng()
-    store.move(id, { lat, lng })
-    select(id)
+    store.move(uuid, { lat, lng })
+    select(uuid)
   })
 
   marker.on('click', event => {
     const { target } = event
-    const { id } = target.options
-    if (selected !== id) select(id)
+    const { uuid } = target.options
+    if (selected !== uuid) select(uuid)
   })
 
   const icons = marker.options.icons
-  marker.setIcon(selected === id ? icons.highlighted : icons.standard)
-  featureLayers[id] = marker
+  marker.setIcon(selected === uuid ? icons.highlighted : icons.standard)
+  featureLayers[uuid] = marker
   return marker
 }
 
@@ -102,23 +96,22 @@ const poiLayer = map => {
   layer.addTo(map)
 
   const add = poi => {
-    if (!poi || !poi.id) return
+    if (!poi || !poi.uuid) return
     layer.addData(feature(poi))
   }
 
-  const remove = id => {
-    if (featureLayers[id]) {
-      deselect(id)
-      layer.removeLayer(featureLayers[id])
-      delete featureLayers[id]
+  const remove = ({ uuid }) => {
+    if (featureLayers[uuid]) {
+      deselect()
+      layer.removeLayer(featureLayers[uuid])
+      delete featureLayers[uuid]
     }
   }
 
-  const renamed = (previousId, poi) => {
-    if (selected === previousId) selected = poi.id
-    layer.removeLayer(featureLayers[previousId])
-    delete featureLayers[previousId]
-    add(poi)
+  const renamed = ({ uuid }) => {
+    layer.removeLayer(featureLayers[uuid])
+    delete featureLayers[uuid]
+    add({ uuid, ...store.state()[uuid] })
   }
 
   store.on('added', add)
@@ -126,7 +119,7 @@ const poiLayer = map => {
   store.on('renamed', renamed)
 
   store.once('ready', model => Object.entries(model)
-    .map(([id, poi]) => ({ id, ...poi }))
+    .map(([uuid, poi]) => ({ uuid, ...poi }))
     .forEach(add)
   )
 
@@ -134,43 +127,28 @@ const poiLayer = map => {
     copy: () => {
       const selected = selection.selected()
       if (!selected) return
-      return JSON.stringify({
-        id: selected.id,
-        lat: selected.layer.getLatLng().lat,
-        lng: selected.layer.getLatLng().lng
-      })
+      const poi = store.state()[selected.uuid]
+
+      // TODO: needs type or other identification
+      return JSON.stringify(poi)
     },
 
     cut: () => {
       const selected = selection.selected()
       if (selected) {
-        const poi = {
-          id: selected.id,
-          lat: selected.layer.getLatLng().lat,
-          lng: selected.layer.getLatLng().lng
-        }
-        store.remove(selected.properties.id)
+        const poi = store.state()[selected.uuid]
+        store.remove(selected.uuid)
+
+        // TODO: needs type or other identification
         return JSON.stringify(poi)
       }
     },
 
     paste: text => {
+      // TODO: Check if clipboard content is of expected type.
+      // TODO: Disambiguate name.
       const poi = JSON.parse(text)
-
-      const id = (prefix, no) => {
-        if (featureLayers[`${prefix} ${no}`]) return id(prefix, no + 1)
-        else return `${prefix} ${no}`
-      }
-
-      if (featureLayers[poi.id]) {
-        store.add({
-          id: id(poi.id, 2),
-          lat: map.getCenter().lat,
-          lng: map.getCenter().lng
-        })
-      } else {
-        store.add(poi)
-      }
+      store.add(uuid(), poi)
     }
   })
 }

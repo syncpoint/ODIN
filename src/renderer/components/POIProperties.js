@@ -8,26 +8,16 @@ import store from '../stores/poi-store'
 class POIProperties extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {
-      id: props.options.id,
-      oldId: props.options.id,
-      ...store.model()[props.options.id]
-    }
+    this.state = { ...store.state()[props.uuid] }
   }
 
   handleNameChange (value) {
-    this.setState({ ...this.state, id: value })
+    this.setState({ ...this.state, name: value })
   }
 
   handleNameBlur (value) {
-    console.log(this.state.oldId, value)
-    if (this.state.oldId === value) return
-    store.rename(this.state.oldId, value)
-    this.setState({ ...this.state, oldId: value })
-  }
-
-  handlePositionChange (value) {
-    this.setState({ ...this.state, id: value })
+    store.rename(this.props.uuid, value)
+    this.setState({ ...this.state, name: value })
   }
 
   handleCommentChange (value) {
@@ -35,11 +25,11 @@ class POIProperties extends React.Component {
   }
 
   handleCommentBlur (value) {
-    store.comment(this.state.id, value)
+    store.comment(this.props.uuid, value)
   }
 
   render () {
-    const { id, lat, lng, comment } = this.state
+    const { name, lat, lng, comment } = this.state
 
     return (
       <Paper
@@ -47,9 +37,9 @@ class POIProperties extends React.Component {
         elevation={ 4 }
       >
         <TextField
-          className={ this.props.classes.id }
+          className={ this.props.classes.name }
           label={ 'Name' }
-          value={ id }
+          value={ name }
           onChange={ event => this.handleNameChange(event.target.value) }
           onBlur={ event => this.handleNameBlur(event.target.value) }
         />
@@ -57,7 +47,6 @@ class POIProperties extends React.Component {
           className={ this.props.classes.position }
           label={ 'Position' }
           value={ latlng({ lat, lng }) }
-          onChange={ event => this.handlePositionChange(event.target.value) }
         />
         <Button
           className={ this.props.classes.pick }
@@ -92,13 +81,13 @@ const styles = theme => ({
     gridTemplatecolumns: 'auto auto',
     gridGap: '2em',
     gridTemplateAreas: `
-      "id id"
+      "name name"
       "position pick"
       "comment comment"
     `
   },
-  id: {
-    gridArea: 'id'
+  name: {
+    gridArea: 'name'
   },
   position: {
     gridArea: 'position'
@@ -114,7 +103,7 @@ const styles = theme => ({
 
 POIProperties.propTypes = {
   classes: PropTypes.any.isRequired,
-  options: PropTypes.any.isRequired
+  uuid: PropTypes.any.isRequired
 }
 
 export default withStyles(styles)(POIProperties)
