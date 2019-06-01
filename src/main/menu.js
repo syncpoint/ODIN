@@ -3,15 +3,13 @@ import mapSettings from '../renderer/components/map/settings'
 import settings from 'electron-settings'
 import tileProviders from './tile-providers'
 
-const sendMessage = (event, ...args) => (menuItem, focusedWindow) => {
+const sendMessage = (event, ...args) => (_, focusedWindow) => {
   if (!focusedWindow) return
   focusedWindow.send(event, ...args)
 }
 
-const isOsdVisible = mapSettings.get('is-osd-visible') === undefined
-  ? true : mapSettings.get('is-osd-visible')
-
-const osdOptions = mapSettings.get('osd-options') ||
+const osdVisible = mapSettings.has('osdVisible') ? mapSettings.get('osdVisible') : true
+const osdOptions = mapSettings.get('osdOptions') ||
     ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
 
 // Get last provider (if any) to check corresponding menu item:
@@ -153,16 +151,16 @@ const template = [
         label: 'Show',
         submenu: [
           {
-            label: 'OSD INFO',
+            label: 'On-Screen Display',
             click: (menuItem, focusedWindow) => {
-                menuItem.menu.items.filter(x => x !== menuItem 
-                  && x.label !== 'Map')
-                    .forEach(x => (x.enabled = menuItem.checked))
+              menuItem.menu.items
+                .filter(x => x !== menuItem && x.label !== 'Map')
+                .forEach(x => (x.enabled = menuItem.checked))
               sendMessage('COMMAND_TOGGLE_OSD', menuItem.checked)(menuItem, focusedWindow)
-              mapSettings.set('is-osd-visible', menuItem.checked)
+              mapSettings.set('osdVisible', menuItem.checked)
             },
             type: 'checkbox',
-            checked: isOsdVisible
+            checked: osdVisible
           },
           { type: 'separator' },
           {
@@ -170,21 +168,21 @@ const template = [
             click: sendMessage('COMMAND_TOGGLE_OSD_OPTIONS', 'C1'),
             type: 'checkbox',
             checked: osdOptions.includes('C1'),
-            enabled: isOsdVisible
+            enabled: osdVisible
           },
           {
             label: 'Scale',
             click: sendMessage('COMMAND_TOGGLE_OSD_OPTIONS', 'C2'),
             type: 'checkbox',
             checked: osdOptions.includes('C2'),
-            enabled: isOsdVisible
+            enabled: osdVisible
           },
           {
             label: 'Position',
             click: sendMessage('COMMAND_TOGGLE_OSD_OPTIONS', 'C3'),
             type: 'checkbox',
             checked: osdOptions.includes('C3'),
-            enabled: isOsdVisible
+            enabled: osdVisible
           }
         ]
       }
