@@ -3,7 +3,7 @@ import Disposable from '../../../shared/disposable'
 import Timed from '../../../shared/timed'
 import { K, noop } from '../../../shared/combinators'
 import evented from '../../evented'
-import mapSettings from './settings'
+import settings from './settings'
 
 export const descriptors = {
   brightness: { label: 'Brightness', value: 100, min: 0, max: 100, delta: 5, unit: '%', display: '%' },
@@ -24,9 +24,9 @@ export const COMMAND_ADJUST = _ => filter => {
   state = (() => {
     const disposable = Disposable.of({})
     const descriptor = descriptors[filter]
-    const values = () => mapSettings.get('displayFilters') || defaultValues()
+    const values = () => settings.map.getDisplayFilters(defaultValues())
     const currentValues = values()
-    const apply = () => mapSettings.set('displayFilters', currentValues)
+    const apply = () => settings.map.setDisplayFilters(currentValues)
     const cancel = () => evented.emit('MAP:DISPLAY_FILTER_CHANGED', values())
     const timer = Timed.of(3000, R.compose(disposable.dispose, apply))({})
     evented.emit('OSD_MESSAGE', { message: `${descriptor.label}: ${currentValues[filter].value}${descriptor.display}` })
@@ -68,6 +68,6 @@ export const COMMAND_ADJUST = _ => filter => {
 
 export const COMMAND_RESET_FILTERS = context => () => {
   const values = defaultValues()
-  mapSettings.set('displayFilters', values)
+  settings.map.setDisplayFilters(values)
   evented.emit('MAP:DISPLAY_FILTER_CHANGED', values)
 }

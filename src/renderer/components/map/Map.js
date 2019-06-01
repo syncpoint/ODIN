@@ -10,10 +10,10 @@ import { K } from '../../../shared/combinators'
 import Leaflet from '../../leaflet'
 import { zoomLevels } from './zoom-levels'
 import { defaultValues, COMMAND_ADJUST, COMMAND_RESET_FILTERS } from './display-filters'
-import { tileProvider, COMMAND_MAP_TILE_PROVIDER, COMMAND_HIDPI_SUPPORT } from './tile-provider'
+import { tileProvider, COMMAND_MAP_TILE_PROVIDER, COMMAND_HIDPI_SUPPORT, COMMAND_TOGGLE_MAP_VISIBILITY } from './tile-provider'
 import { COMMAND_COPY_COORDS } from './clipboard'
 import formatLatLng from '../../coord-format'
-import mapSettings from './settings'
+import settings from './settings'
 import poiLayer from './poi-layer'
 
 const ipcHandlers = {
@@ -21,7 +21,8 @@ const ipcHandlers = {
   COMMAND_RESET_FILTERS,
   COMMAND_MAP_TILE_PROVIDER,
   COMMAND_HIDPI_SUPPORT,
-  COMMAND_COPY_COORDS
+  COMMAND_COPY_COORDS,
+  COMMAND_TOGGLE_MAP_VISIBILITY
 }
 
 const updateScaleDisplay = map => () => {
@@ -32,7 +33,7 @@ const updateScaleDisplay = map => () => {
 const saveViewPort = ({ target }) => {
   const { lat, lng } = target.getCenter()
   const zoom = target.getZoom()
-  mapSettings.set('viewPort', { lat, lng, zoom })
+  settings.map.setViewPort({ lat, lng, zoom })
 }
 
 const updateDisplayFilter = map => values => {
@@ -53,7 +54,7 @@ const updateCoordinateDisplay = ({ latlng }) => {
 class Map extends React.Component {
   componentDidMount () {
     const { id, options, onClick, onMoveend, onZoomend } = this.props
-    const viewPort = mapSettings.get('viewPort')
+    const viewPort = settings.map.getViewPort()
 
     // Override center/zoom options if available from settings:
     if (viewPort) {
@@ -62,7 +63,8 @@ class Map extends React.Component {
     }
 
     this.map = K(L.map(id, options))(map => {
-      L.tileLayer(tileProvider().url, tileProvider()).addTo(map)
+      const mapVisible = settings.map.visible()
+      if (mapVisible) L.tileLayer(tileProvider().url, tileProvider()).addTo(map)
       poiLayer(map)
 
       map.on('click', () => onClick())
@@ -76,7 +78,7 @@ class Map extends React.Component {
 
     evented.on('OSD_MOUNTED', updateScaleDisplay(this.map))
     evented.on('MAP:DISPLAY_FILTER_CHANGED', updateDisplayFilter(this.map))
-    evented.emit('MAP:DISPLAY_FILTER_CHANGED', mapSettings.get('displayFilters') || defaultValues())
+    evented.emit('MAP:DISPLAY_FILTER_CHANGED', settings.map.getDisplayFilters(defaultValues()))
 
     // Bind command handlers after map was initialized:
     const context = { map: this.map }

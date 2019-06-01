@@ -3,49 +3,55 @@ import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { currentDateTime } from '../../shared/datetime'
 import evented from '../evented'
-import mapSettings from './map/settings'
+import settings from './map/settings'
 import { ipcRenderer } from 'electron'
 
 class OSD extends React.Component {
   constructor (props) {
     super(props)
-    this.osdOptions = mapSettings.get('osd-options') ||
-    ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
+
     this.state = {
-      'C1': this.osdOptions.includes('C1') ? currentDateTime() : ''
+      // OSD visible at all (except temporary message in B1):
+      osdVisible: settings.osd.visible(),
+
+      // List octive slots:
+      osdOptions: settings.osd.options(),
+      'C1': currentDateTime()
     }
-    this.restore = {}
   }
 
   handleOSDMessage ({ message, duration, slot }) {
     slot = slot || 'B1'
-    const update = Object.assign({}, this.state)
-    this.restore[slot] = message
-    update[slot] = this.osdOptions.includes(slot) ? message : ''
-    this.setState(update)
-    if (!duration) return
 
-    setTimeout(() => {
-      const update = Object.assign({}, this.state)
-      update[slot] = ''
-      this.setState(update)
-    }, duration)
+    const updateSlot = message => {
+      const state = { ...this.state }
+      state[slot] = message
+      this.setState(state)
+    }
+
+    updateSlot(message)
+    if (duration) setTimeout(() => updateSlot(''), duration)
   }
 
   componentDidMount () {
-    this.clockInterval = setInterval(() => {
+    setInterval(() => {
       this.handleOSDMessage({ 'message': currentDateTime(), slot: 'C1' })
     }, 1000)
 
     evented.on('OSD_MESSAGE', this.handleOSDMessage.bind(this))
     evented.emit('OSD_MOUNTED')
 
-    ipcRenderer.on('COMMAND_TOGGLE_OSD_OPTIONS', (_, args) => {
-      this.osdOptions.includes(args)
-        ? this.osdOptions.splice(this.osdOptions.lastIndexOf(args), 1)
-        : this.osdOptions.push(args)
-      mapSettings.set('osd-options', this.osdOptions)
-      this.handleOSDMessage({ 'message': this.restore[args], 'slot': args })
+    ipcRenderer.on('COMMAND_TOGGLE_OSD_OPTIONS', (_, slot) => {
+      const osdOptions = this.state.osdOptions.indexOf(slot) === -1
+        ? this.state.osdOptions.concat(slot)
+        : this.state.osdOptions.filter(x => x !== slot)
+
+      settings.osd.setOptions(osdOptions)
+      this.setState({ ...this.state, osdOptions })
+    })
+
+    ipcRenderer.on('COMMAND_TOGGLE_OSD', () => {
+      this.setState({ ...this.state, osdVisible: !this.state.osdVisible })
     })
   }
 
@@ -55,12 +61,19 @@ class OSD extends React.Component {
 
   render () {
     const { classes } = this.props
+    const { osdVisible, osdOptions } = this.state
+
+    const value = key => {
+      if (key !== 'B1' && !osdVisible) return ''
+      if (osdOptions.indexOf(key) === -1) return ''
+      return this.state[key]
+    }
 
     const slots = ['1', '2', '3'].reduce((acc, row) => {
       return ['A', 'B', 'C'].reduce((acc, column) => {
         const key = `${column}${row}`
         return acc.concat(
-          <div key={ key } className={ classes[`osd${key}`] }>{ this.state[key] }</div>
+          <div key={ key } className={ classes[`osd${key}`] }>{ value(key) }</div>
         )
       }, acc)
     }, [])
