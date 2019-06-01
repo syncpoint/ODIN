@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { currentDateTime } from '../../shared/datetime'
 import evented from '../evented'
-import mapSettings from './map/settings'
+import settings from './map/settings'
 import { ipcRenderer } from 'electron'
 
 class OSD extends React.Component {
@@ -12,10 +12,10 @@ class OSD extends React.Component {
 
     this.state = {
       // OSD visible at all (except temporary message in B1):
-      osdVisible: mapSettings.has('osdVisible') ? mapSettings.get('osdVisible') : true,
+      osdVisible: settings.osd.visible(),
 
       // List octive slots:
-      osdOptions: mapSettings.get('osdOptions') || ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'],
+      osdOptions: settings.osd.options(),
       'C1': currentDateTime()
     }
   }
@@ -46,7 +46,7 @@ class OSD extends React.Component {
         ? this.state.osdOptions.concat(slot)
         : this.state.osdOptions.filter(x => x !== slot)
 
-      mapSettings.set('osdOptions', osdOptions)
+      settings.osd.setOptions(osdOptions)
       this.setState({ ...this.state, osdOptions })
     })
 

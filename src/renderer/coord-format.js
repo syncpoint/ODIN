@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron'
 import Dms from 'geodesy/dms.js'
 import { LatLon } from 'geodesy/mgrs.js'
-import mapSettings from './components/map/settings'
+import settings from './components/map/settings'
 
 /* eslint-disable no-unused-vars */
 // Default separator is U+202F ‘narrow no-break space’.
@@ -26,10 +26,10 @@ const format = {
 }
 
 const defaultFormat = 'mgrs'
-let currentFormat = format[mapSettings.get('coordinateFormat') || defaultFormat]
+let currentFormat = format[settings.formats.coordinate.get(defaultFormat)]
 
 ipcRenderer.on('COMMAND_COORD_FORMAT', (_, args) => {
-  mapSettings.set('coordinateFormat', args)
+  settings.formats.coordinate.set(args)
   currentFormat = format[args] || format[defaultFormat]
 })
 
