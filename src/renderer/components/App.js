@@ -84,8 +84,11 @@ class App extends React.Component {
     })
 
     selection.on('selected', object => {
-      const { type, properties } = object
-      this.setState({ ...this.state, panels: { type, properties } })
+      const { type, uuid } = object
+
+      // POI properties panel:
+      const panels = { ...this.state.panels, properties: { type, uuid } }
+      this.setState({ ...this.state, panels })
     })
 
     selection.on('deselected', () => {
@@ -96,8 +99,9 @@ class App extends React.Component {
 
   render () {
     const properties = () => {
-      switch (this.state.panels.type) {
-        case 'poi': return <POIProperties options={ this.state.panels.properties } />
+      if (!this.state.panels.properties) return
+      switch (this.state.panels.properties.type) {
+        case 'poi': return <POIProperties uuid={ this.state.panels.properties.uuid } />
         default: break
       }
     }
