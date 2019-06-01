@@ -2,7 +2,7 @@ import React from 'react'
 import ListItemText from '@material-ui/core/ListItemText'
 import L from 'leaflet'
 import nominatim from './nominatim'
-import mapSettings from './map/settings'
+import settings from './map/settings'
 
 const searchOptions = {
   limit: 15, // default: 10, maximun: 50
@@ -31,7 +31,7 @@ const places = options => term => nominatim(searchOptions)(term).then(rows => {
 
 const bookmarks = options => term => {
   const { context } = options
-  const items = Object.entries((mapSettings.get('bookmarks') || {}))
+  const items = Object.entries((settings.bookmarks.get()))
     .filter(([id, _]) => id.search(new RegExp(term, 'i')) !== -1)
     .sort((a, b) => a[0].localeCompare(b[0]))
     .map(([id, bookmark]) => ({
@@ -39,9 +39,9 @@ const bookmarks = options => term => {
       text: <ListItemText primary={ id } secondary={ 'Bookmark' }/>,
       action: () => context.setViewPort(L.latLng(bookmark.lat, bookmark.lng), bookmark.zoom),
       delete: () => {
-        const bookmarks = mapSettings.get('bookmarks')
+        const bookmarks = settings.bookmarks.get()
         delete bookmarks[id]
-        mapSettings.set('bookmarks', bookmarks)
+        settings.bookmarks.set(bookmarks)
       }
     }))
 

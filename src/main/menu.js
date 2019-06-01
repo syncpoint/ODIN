@@ -1,5 +1,4 @@
 import { app, Menu } from 'electron'
-import mapSettings from '../renderer/components/map/settings'
 import settings from 'electron-settings'
 import tileProviders from './tile-providers'
 
@@ -8,13 +7,14 @@ const sendMessage = (event, ...args) => (_, focusedWindow) => {
   focusedWindow.send(event, ...args)
 }
 
-const osdVisible = mapSettings.has('osdVisible') ? mapSettings.get('osdVisible') : true
-const osdOptions = mapSettings.get('osdOptions') ||
+const mapVisible = settings.has('mapVisible') ? settings.get('mapVisible') : true
+const osdVisible = settings.has('osdVisible') ? settings.get('osdVisible') : true
+const osdOptions = settings.get('osdOptions') ||
     ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
 
 // Get last provider (if any) to check corresponding menu item:
 const lastProviderId = settings.get('tileProvider')
-const hiDPISupport = mapSettings.get('hiDPISupport') || false
+const hiDPISupport = settings.get('hiDPISupport') || false
 
 const providerMenu = provider => ({
   id: provider.id,
@@ -157,7 +157,7 @@ const template = [
                 .filter(x => x !== menuItem && x.label !== 'Map')
                 .forEach(x => (x.enabled = menuItem.checked))
               sendMessage('COMMAND_TOGGLE_OSD', menuItem.checked)(menuItem, focusedWindow)
-              mapSettings.set('osdVisible', menuItem.checked)
+              settings.set('osdVisible', menuItem.checked)
             },
             type: 'checkbox',
             checked: osdVisible
@@ -183,6 +183,15 @@ const template = [
             type: 'checkbox',
             checked: osdOptions.includes('C3'),
             enabled: osdVisible
+          },
+          { type: 'separator' },
+          {
+            label: 'Map',
+            click: (menuItem, focusedWindow) => {
+              sendMessage('COMMAND_TOGGLE_MAP_VISIBILITY', menuItem.checked)(menuItem, focusedWindow)
+            },
+            type: 'checkbox',
+            checked: mapVisible
           }
         ]
       }
