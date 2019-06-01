@@ -189,6 +189,7 @@ const template = [
             label: 'Map',
             click: (menuItem, focusedWindow) => {
               sendMessage('COMMAND_TOGGLE_MAP_VISIBILITY', menuItem.checked)(menuItem, focusedWindow)
+              settings.set('mapVisible', menuItem.checked)
             },
             type: 'checkbox',
             checked: mapVisible
