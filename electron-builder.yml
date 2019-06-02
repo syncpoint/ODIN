@@ -2,6 +2,8 @@ directories:
   output: binaries
   buildResources: build
 appId: io.syncpoint.odin
+publish:
+  - github
 win:
   target:
     - target: nsis
