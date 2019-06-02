@@ -148,6 +148,7 @@ const clipboardHandlers = {
   },
 
   paste: text => {
+    // TODO: check if content is JSON at all
     // TODO: Check if clipboard content is of expected type.
     // TODO: Disambiguate name.
     const poi = JSON.parse(text)
