@@ -5,24 +5,34 @@ import store from '../../stores/poi-store'
 import selection from '../App.selection'
 import clipboard from '../App.clipboard'
 
+// uuid -> marker/layer
 const featureLayers = {}
-let selected
 
-const deselect = () => {
-  if (!selected) return
-  const layer = featureLayers[selected]
-  layer.setIcon(layer.options.icons.standard)
-  selected = undefined
-  selection.deselect()
+const selected = () => {
+  if (!selection.selected()) return
+  const { type, uuid } = selection.selected()
+  if (type === 'poi') return uuid
 }
 
-const select = uuid => {
-  deselect()
-  selected = uuid
-  const layer = featureLayers[selected]
+const deselect = () => selection.deselect()
+
+const select = uuid => selected() !== uuid
+  ? selection.select({ type: 'poi', uuid })
+  : () => {}
+
+selection.on('selected', object => {
+  const { type, uuid } = object
+  if (type !== 'poi') return
+  const layer = featureLayers[uuid]
   layer.setIcon(layer.options.icons.highlighted)
-  selection.select({ type: 'poi', uuid })
-}
+})
+
+selection.on('deselected', object => {
+  const { type, uuid } = object
+  if (type !== 'poi') return
+  const layer = featureLayers[uuid]
+  layer.setIcon(layer.options.icons.standard)
+})
 
 // feature: poi -> feature
 const feature = poi => ({
@@ -70,23 +80,46 @@ const pointToLayer = (feature, latlng) => {
   marker.on('click', event => {
     const { target } = event
     const { uuid } = target.options
-    if (selected !== uuid) select(uuid)
+    select(uuid)
   })
 
   const icons = marker.options.icons
-  marker.setIcon(selected === uuid ? icons.highlighted : icons.standard)
+  marker.setIcon(selected() === uuid ? icons.highlighted : icons.standard)
   featureLayers[uuid] = marker
   return marker
 }
 
 const poiLayer = map => {
+
+  const add = poi => {
+    layer.addData(feature(poi))
+  }
+
+  const remove = ({ uuid }) => {
+    if (uuid && featureLayers[uuid]) {
+      deselect()
+      layer.removeLayer(featureLayers[uuid])
+      delete featureLayers[uuid]
+
+      // FIXME: cyclic call when triggered from store event 'removed':
+      store.remove(uuid)
+    }
+  }
+
+  const removeSelected = () => remove({ uuid: selected() })
+
+  const renamed = ({ uuid }) => {
+    layer.removeLayer(featureLayers[uuid])
+    delete featureLayers[uuid]
+    add({ uuid, ...store.state()[uuid] })
+  }
+
+
   map.on('click', () => deselect())
   map.on('keydown', event => {
     const { originalEvent } = event
-    const remove = () => selected && store.remove(selected)
-
-    if (originalEvent.key === 'Backspace' && originalEvent.metaKey) remove()
-    else if (originalEvent.key === 'Delete') remove()
+    if (originalEvent.key === 'Backspace' && originalEvent.metaKey) removeSelected()
+    else if (originalEvent.key === 'Delete') removeSelected()
     else if (originalEvent.key === 'Escape') deselect()
   })
 
@@ -95,23 +128,6 @@ const poiLayer = map => {
   layer.id = 'POI_LAYER'
   layer.addTo(map)
 
-  const add = poi => {
-    layer.addData(feature(poi))
-  }
-
-  const remove = ({ uuid }) => {
-    if (featureLayers[uuid]) {
-      deselect()
-      layer.removeLayer(featureLayers[uuid])
-      delete featureLayers[uuid]
-    }
-  }
-
-  const renamed = ({ uuid }) => {
-    layer.removeLayer(featureLayers[uuid])
-    delete featureLayers[uuid]
-    add({ uuid, ...store.state()[uuid] })
-  }
 
   store.on('added', add)
   store.on('removed', remove)
@@ -127,8 +143,6 @@ const poiLayer = map => {
       const selected = selection.selected()
       if (!selected) return
       const poi = store.state()[selected.uuid]
-
-      // TODO: needs type or other identification
       return JSON.stringify(poi)
     },
 
@@ -137,8 +151,6 @@ const poiLayer = map => {
       if (selected) {
         const poi = store.state()[selected.uuid]
         store.remove(selected.uuid)
-
-        // TODO: needs type or other identification
         return JSON.stringify(poi)
       }
     },
