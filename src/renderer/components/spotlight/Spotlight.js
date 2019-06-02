@@ -56,13 +56,15 @@ class Spotlight extends React.Component {
   render () {
     const { classes, options } = this.props
     const { value, rows } = this.state
-    const height = rows.length ? 'auto' : 'max-content'
+    const style = {
+      height: rows.length ? 'auto' : 'max-content'
+    }
 
     return (
       <Paper
         className={ classes.paper }
         elevation={ 4 }
-        style={{ height }}
+        style={ style }
       >
         <SearchField
           options={ this.props.options }
