@@ -15,6 +15,7 @@ import { COMMAND_COPY_COORDS } from './clipboard'
 import formatLatLng from '../../coord-format'
 import settings from './settings'
 import poiLayer from './poi-layer'
+import mouseInput from './mouse-input'
 
 const ipcHandlers = {
   COMMAND_ADJUST,
@@ -63,6 +64,8 @@ class Map extends React.Component {
     }
 
     this.map = K(L.map(id, options))(map => {
+      mouseInput.init(map)
+
       const mapVisible = settings.map.visible()
       if (mapVisible) L.tileLayer(tileProvider().url, tileProvider()).addTo(map)
       poiLayer(map)

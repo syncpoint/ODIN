@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import latlng from '../../renderer/coord-format'
 import store from '../stores/poi-store'
+// import mouseInput from '../components/map/mouse-input'
 
 class POIProperties extends React.Component {
   constructor (props) {
@@ -20,6 +21,20 @@ class POIProperties extends React.Component {
     this.setState({ ...this.state, name: value })
   }
 
+  handleClick () {
+    // FIXME: needs stackable map behaviour (keyboard, mouse)
+    // const callback = () => mouseInput.pickPoint({
+    //   prompt: 'Pick a new location...',
+    //   picked: latlng => {
+    //     store.move(this.props.uuid, latlng)
+    //     this.setState({ ...this.state, hidden: false })
+    //   }
+    // })
+
+    // // callback()
+    // this.setState({ ...this.state, hidden: true }, callback)
+  }
+
   handleCommentChange (value) {
     this.setState({ ...this.state, comment: value })
   }
@@ -29,11 +44,15 @@ class POIProperties extends React.Component {
   }
 
   render () {
-    const { name, lat, lng, comment } = this.state
+    const { name, lat, lng, comment, hidden } = this.state
+    const style = {
+      display: hidden ? 'none' : 'grid'
+    }
 
     return (
       <Paper
         className={ this.props.classes.paper }
+        style={ style }
         elevation={ 4 }
       >
         <TextField
@@ -51,6 +70,7 @@ class POIProperties extends React.Component {
         <Button
           className={ this.props.classes.pick }
           variant="outlined"
+          onClick={ event => this.handleClick(event) }
         >
           Pick
         </Button>
