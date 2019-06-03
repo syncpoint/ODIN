@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import latlng from '../../renderer/coord-format'
 import store from '../stores/poi-store'
+import selection from './App.selection'
 // import mouseInput from '../components/map/mouse-input'
 
 class POIProperties extends React.Component {
@@ -21,6 +22,11 @@ class POIProperties extends React.Component {
     this.setState({ ...this.state, name: value })
   }
 
+  handleKeyDown (event) {
+    switch (event.key) {
+      case 'Escape': return selection.deselect()
+    }
+  }
   handleClick () {
     // FIXME: needs stackable map behaviour (keyboard, mouse)
     // const callback = () => mouseInput.pickPoint({
@@ -54,6 +60,7 @@ class POIProperties extends React.Component {
         className={ this.props.classes.paper }
         style={ style }
         elevation={ 4 }
+        onKeyDown={ event => this.handleKeyDown(event) }
       >
         <TextField
           className={ this.props.classes.name }
