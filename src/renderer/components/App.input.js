@@ -1,4 +1,5 @@
 import Mousetrap from 'mousetrap'
+import { clipboard } from 'electron'
 import selection from './App.selection'
 
 // Behavior is defined through these callbacks:
@@ -43,12 +44,27 @@ const init = map => {
     dispatch('click', event)
   })
 
+  // Clipbaord.
+
+  Mousetrap.bind(['mod+c'], () => {
+    if (!selection.selected()) return
+    if (!selection.selected().copy) return
+    const text = selection.selected().copy()
+    clipboard.writeText(text)
+  })
+
+  Mousetrap.bind(['mod+x'], () => {
+    if (!selection.selected()) return
+    if (!selection.selected().cut) return
+    const text = selection.selected().cut()
+    clipboard.writeText(text)
+  })
+
   push({
     context: 'DEFAULT',
     escape: () => selection.deselect(),
     delete: () => {
       // When selection has delete interface -> do it!
-      console.log(selection.selected())
       if (!selection.selected()) return
       if (!selection.selected().delete) return
       selection.selected().delete()

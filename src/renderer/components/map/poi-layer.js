@@ -115,22 +115,6 @@ const pointToLayer = (feature, latlng) => {
 }
 
 const clipboardHandlers = {
-  copy: () => {
-    const selected = selection.selected()
-    if (!selected) return
-    const poi = store.state()[selected.uuid]
-    return JSON.stringify(poi)
-  },
-
-  cut: () => {
-    const selected = selection.selected()
-    if (selected) {
-      const poi = store.state()[selected.uuid]
-      store.remove(selected.uuid)
-      return JSON.stringify(poi)
-    }
-  },
-
   paste: text => {
     // TODO: check if content is JSON at all
     // TODO: Check if clipboard content is of expected type.
@@ -158,8 +142,14 @@ const poiLayer = map => {
   }
 
   const add = poi => {
+    const { uuid, ...properties } = poi
     layer.addData(feature(poi, {
-      delete: () => remove({ uuid: poi.uuid })
+      delete: () => remove({ uuid }),
+      copy: () => JSON.stringify(properties),
+      cut: () => {
+        store.remove(uuid)
+        return JSON.stringify(properties)
+      }
     }))
   }
 

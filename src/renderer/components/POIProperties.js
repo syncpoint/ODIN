@@ -60,7 +60,6 @@ class POIProperties extends React.Component {
       >
         <TextField
           className={ this.props.classes.name }
-          autoFocus
           label={ 'Name' }
           value={ name }
           onChange={ event => this.handleNameChange(event.target.value) }
