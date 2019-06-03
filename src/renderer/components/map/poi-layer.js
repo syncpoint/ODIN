@@ -2,8 +2,8 @@ import L from 'leaflet'
 import ms from 'milsymbol'
 import uuid from 'uuid-random'
 import store from '../../stores/poi-store'
+import evented from '../../evented'
 import selection from '../App.selection'
-import clipboard from '../App.clipboard'
 
 // uuid -> marker/layer
 const featureLayers = {}
@@ -114,16 +114,6 @@ const pointToLayer = (feature, latlng) => {
   return marker
 }
 
-const clipboardHandlers = {
-  paste: text => {
-    // TODO: check if content is JSON at all
-    // TODO: Check if clipboard content is of expected type.
-    // TODO: Disambiguate name.
-    const poi = JSON.parse(text)
-    store.add(uuid(), poi)
-  }
-}
-
 const poiLayer = map => {
 
   // Add empty layer to map:
@@ -145,11 +135,8 @@ const poiLayer = map => {
     const { uuid, ...properties } = poi
     layer.addData(feature(poi, {
       delete: () => remove({ uuid }),
-      copy: () => JSON.stringify(properties),
-      cut: () => {
-        store.remove(uuid)
-        return JSON.stringify(properties)
-      }
+      copy: () => ({ type: 'poi', ...properties }),
+      cut: () => { store.remove(uuid); return { type: 'poi', ...properties } }
     }))
   }
 
@@ -167,7 +154,10 @@ const poiLayer = map => {
     .forEach(add)
   )
 
-  clipboard.registerHandler(clipboardHandlers)
+  evented.on('CLIPBOARD_PASTE', (type, poi) => {
+    if (type !== 'poi') return
+    store.add(uuid(), poi)
+  })
 }
 
 export default poiLayer
