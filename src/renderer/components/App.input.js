@@ -1,6 +1,8 @@
 import Mousetrap from 'mousetrap'
-import { clipboard } from 'electron'
+import evented from '../evented'
 import selection from './App.selection'
+
+let clipboard = {}
 
 // Behavior is defined through these callbacks:
 //  name/context: string
@@ -49,15 +51,19 @@ const init = map => {
   Mousetrap.bind(['mod+c'], () => {
     if (!selection.selected()) return
     if (!selection.selected().copy) return
-    const text = selection.selected().copy()
-    clipboard.writeText(text)
+    clipboard = selection.selected().copy()
   })
 
   Mousetrap.bind(['mod+x'], () => {
     if (!selection.selected()) return
     if (!selection.selected().cut) return
-    const text = selection.selected().cut()
-    clipboard.writeText(text)
+    clipboard = selection.selected().cut()
+  })
+
+  Mousetrap.bind(['mod+v'], () => {
+    const { type, ...properties } = clipboard
+    if (!type) return
+    evented.emit('CLIPBOARD_PASTE', type, properties)
   })
 
   push({
