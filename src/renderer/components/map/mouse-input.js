@@ -8,6 +8,7 @@ let input
 
 const init = reference => (map = reference)
 
+// FIXME: must become some sort of behavior
 const pickPoint = options => {
 
   // Cancel active input (if any):

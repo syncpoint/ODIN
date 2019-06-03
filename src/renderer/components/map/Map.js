@@ -16,6 +16,7 @@ import formatLatLng from '../../coord-format'
 import settings from './settings'
 import poiLayer from './poi-layer'
 import mouseInput from './mouse-input'
+import input from '../App.input'
 
 const ipcHandlers = {
   COMMAND_ADJUST,
@@ -54,7 +55,8 @@ const updateCoordinateDisplay = ({ latlng }) => {
 
 class Map extends React.Component {
   componentDidMount () {
-    const { id, options, onClick, onMoveend, onZoomend } = this.props
+    // const { id, options, onClick, onMoveend, onZoomend } = this.props
+    const { id, options, onMoveend, onZoomend } = this.props
     const viewPort = settings.map.getViewPort()
 
     // Override center/zoom options if available from settings:
@@ -64,13 +66,17 @@ class Map extends React.Component {
     }
 
     this.map = K(L.map(id, options))(map => {
+      // TODO: replace with more general `input`.
       mouseInput.init(map)
+      input.init(map)
 
       const mapVisible = settings.map.visible()
       if (mapVisible) L.tileLayer(tileProvider().url, tileProvider()).addTo(map)
       poiLayer(map)
 
-      map.on('click', () => onClick())
+      // // FIXME: must go somewhere else
+      // map.on('click', () => onClick())
+
       map.on('moveend', saveViewPort)
       map.on('moveend', event => onMoveend(event.target.getCenter()))
       map.on('zoom', updateScaleDisplay(map))
@@ -121,7 +127,7 @@ Map.propTypes = {
   id: PropTypes.string.isRequired,
   center: PropTypes.any.isRequired,
   zoom: PropTypes.any.isRequired,
-  onClick: PropTypes.func.isRequired,
+  // onClick: PropTypes.func.isRequired,
   onMoveend: PropTypes.func.isRequired,
   onZoomend: PropTypes.func.isRequired
 }
