@@ -12,8 +12,9 @@ import selection from './App.selection'
 const behaviors = []
 
 const dispatch = (handler, event) => {
-  if (!behaviors[behaviors.length - 1][handler]) return
-  behaviors[behaviors.length - 1][handler](event)
+  const behavior = behaviors[behaviors.length - 1]
+  if (!behavior[handler]) return
+  behavior[handler](event)
 }
 
 const push = behavior => behaviors.push(behavior)
@@ -46,7 +47,6 @@ const init = map => {
     context: 'DEFAULT',
     escape: () => selection.deselect(),
     delete: () => {
-      console.log('DEFAULT/delete', selection.selected())
       // When selection has delete interface -> do it!
       if (!selection.selected()) return
       if (!selection.selected().delete) return
