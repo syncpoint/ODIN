@@ -5,7 +5,6 @@ import PropTypes from 'prop-types'
 import latlng from '../../renderer/coord-format'
 import store from '../stores/poi-store'
 import selection from './App.selection'
-// import mouseInput from '../components/map/mouse-input'
 
 class POIProperties extends React.Component {
   constructor (props) {
@@ -14,10 +13,6 @@ class POIProperties extends React.Component {
   }
 
   handleNameChange (value) {
-    this.setState({ ...this.state, name: value })
-  }
-
-  handleNameBlur (value) {
     store.rename(this.props.uuid, value)
     this.setState({ ...this.state, name: value })
   }
@@ -27,6 +22,7 @@ class POIProperties extends React.Component {
       case 'Escape': return selection.deselect()
     }
   }
+
   handleClick () {
     // FIXME: needs stackable map behaviour (keyboard, mouse)
     // const callback = () => mouseInput.pickPoint({
@@ -67,7 +63,6 @@ class POIProperties extends React.Component {
           label={ 'Name' }
           value={ name }
           onChange={ event => this.handleNameChange(event.target.value) }
-          onBlur={ event => this.handleNameBlur(event.target.value) }
         />
         <TextField
           className={ this.props.classes.position }

@@ -17,8 +17,15 @@ const selected = () => {
 const deselect = () => selection.deselect()
 
 const select = uuid => {
-  console.log('select', uuid, featureLayers[uuid])
-  if (selected() !== uuid) selection.select({ type: 'poi', uuid })
+  if (selected() !== uuid) {
+    const layer = featureLayers[uuid]
+    const { actions } = layer.feature
+    selection.select({
+      type: 'poi',
+      uuid,
+      ...actions
+    })
+  }
 }
 
 selection.on('selected', object => {
@@ -35,11 +42,12 @@ selection.on('deselected', object => {
   layer.setIcon(layer.options.icons.standard)
 })
 
-// feature: poi -> feature
-const feature = poi => ({
+// feature: poi -> actions -> feature
+const feature = (poi, actions) => ({
   type: 'Feature',
   geometry: { type: 'Point', coordinates: [poi.lng, poi.lat] },
-  properties: { name: poi.name, uuid: poi.uuid, sidc: 'GFGPGPRI----' }
+  properties: { name: poi.name, uuid: poi.uuid, sidc: 'GFGPGPRI----' },
+  actions
 })
 
 // ==> marker symbol and icons
@@ -140,15 +148,19 @@ const poiLayer = map => {
   layer.id = 'POI_LAYER'
   layer.addTo(map)
 
-  const add = poi => layer.addData(feature(poi))
-
   const remove = ({ uuid }) => {
     if (uuid && featureLayers[uuid]) {
       deselect()
       layer.removeLayer(featureLayers[uuid])
       delete featureLayers[uuid]
-      store.remove(uuid) // FIXME: cyclic call when triggered from store event 'removed':
+      store.remove(uuid)
     }
+  }
+
+  const add = poi => {
+    layer.addData(feature(poi, {
+      delete: () => remove({ uuid: poi.uuid })
+    }))
   }
 
   const rename = ({ uuid }) => {
@@ -156,22 +168,6 @@ const poiLayer = map => {
     delete featureLayers[uuid]
     add({ uuid, ...store.state()[uuid] })
   }
-
-  // FIXME: must go to application's default behavior
-  map.on('click', () => deselect())
-
-  // FIXME: must go to application's default behavior
-  // map.on('keydown', event => {
-  //   const { originalEvent } = event
-  //   const removeSelected = () => remove({ uuid: selected() })
-
-  //   // FIXME: selection needs 'delete' interface
-  //   if (originalEvent.key === 'Backspace' && originalEvent.metaKey) removeSelected()
-  //   else if (originalEvent.key === 'Delete') removeSelected()
-
-  //   // FIXME: must go to application's default behavior
-  //   else if (originalEvent.key === 'Escape') deselect()
-  // })
 
   store.on('added', add)
   store.on('removed', remove)

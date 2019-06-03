@@ -48,6 +48,7 @@ const init = map => {
     escape: () => selection.deselect(),
     delete: () => {
       // When selection has delete interface -> do it!
+      console.log(selection.selected())
       if (!selection.selected()) return
       if (!selection.selected().delete) return
       selection.selected().delete()
