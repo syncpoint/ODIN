@@ -16,9 +16,10 @@ const selected = () => {
 
 const deselect = () => selection.deselect()
 
-const select = uuid => selected() !== uuid
-  ? selection.select({ type: 'poi', uuid })
-  : () => {}
+const select = uuid => {
+  console.log('select', uuid, featureLayers[uuid])
+  if (selected() !== uuid) selection.select({ type: 'poi', uuid })
+}
 
 selection.on('selected', object => {
   const { type, uuid } = object
@@ -105,31 +106,6 @@ const pointToLayer = (feature, latlng) => {
   return marker
 }
 
-const layerOps = layer => {
-  const add = poi => layer.addData(feature(poi))
-
-  const remove = ({ uuid }) => {
-    if (uuid && featureLayers[uuid]) {
-      deselect()
-      layer.removeLayer(featureLayers[uuid])
-      delete featureLayers[uuid]
-      store.remove(uuid) // FIXME: cyclic call when triggered from store event 'removed':
-    }
-  }
-
-  const rename = ({ uuid }) => {
-    layer.removeLayer(featureLayers[uuid])
-    delete featureLayers[uuid]
-    add({ uuid, ...store.state()[uuid] })
-  }
-
-  return {
-    add,
-    remove,
-    rename
-  }
-}
-
 const clipboardHandlers = {
   copy: () => {
     const selected = selection.selected()
@@ -164,23 +140,45 @@ const poiLayer = map => {
   layer.id = 'POI_LAYER'
   layer.addTo(map)
 
-  const markers = layerOps(layer)
+  const add = poi => layer.addData(feature(poi))
 
+  const remove = ({ uuid }) => {
+    if (uuid && featureLayers[uuid]) {
+      deselect()
+      layer.removeLayer(featureLayers[uuid])
+      delete featureLayers[uuid]
+      store.remove(uuid) // FIXME: cyclic call when triggered from store event 'removed':
+    }
+  }
+
+  const rename = ({ uuid }) => {
+    layer.removeLayer(featureLayers[uuid])
+    delete featureLayers[uuid]
+    add({ uuid, ...store.state()[uuid] })
+  }
+
+  // FIXME: must go to application's default behavior
   map.on('click', () => deselect())
-  map.on('keydown', event => {
-    const { originalEvent } = event
-    const removeSelected = () => markers.remove({ uuid: selected() })
-    if (originalEvent.key === 'Backspace' && originalEvent.metaKey) removeSelected()
-    else if (originalEvent.key === 'Delete') removeSelected()
-    else if (originalEvent.key === 'Escape') deselect()
-  })
 
-  store.on('added', markers.add)
-  store.on('removed', markers.remove)
-  store.on('renamed', markers.rename)
+  // FIXME: must go to application's default behavior
+  // map.on('keydown', event => {
+  //   const { originalEvent } = event
+  //   const removeSelected = () => remove({ uuid: selected() })
+
+  //   // FIXME: selection needs 'delete' interface
+  //   if (originalEvent.key === 'Backspace' && originalEvent.metaKey) removeSelected()
+  //   else if (originalEvent.key === 'Delete') removeSelected()
+
+  //   // FIXME: must go to application's default behavior
+  //   else if (originalEvent.key === 'Escape') deselect()
+  // })
+
+  store.on('added', add)
+  store.on('removed', remove)
+  store.on('renamed', rename)
   store.once('ready', state => Object.entries(state)
     .map(([uuid, poi]) => ({ uuid, ...poi }))
-    .forEach(markers.add)
+    .forEach(add)
   )
 
   clipboard.registerHandler(clipboardHandlers)
