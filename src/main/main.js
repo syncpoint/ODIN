@@ -49,6 +49,13 @@ const createWindow = name => {
     window.on('close', () => (mainWindow = null))
     window.once('ready-to-show', () => window.show())
 
+    // toggle menubar visibility on fullscreen
+    ;['enter-full-screen', 'leave-full-screen'].forEach(event => window.on(event, () => {
+      const fullScreen = window.isFullScreen()
+      window.setMenuBarVisibility(fullScreen)
+      window.setAutoHideMenuBar(!fullScreen)
+    }))
+
     // track and store window size and position:
     ;['resize', 'move', 'close'].forEach(event => window.on(event, () => {
       const bounds = K(window.getBounds())(bounds => {
