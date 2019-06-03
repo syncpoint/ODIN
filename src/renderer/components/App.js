@@ -135,8 +135,6 @@ class App extends React.Component {
           zoom={ this.state.zoom }
           onMoveend={ (latlng) => this.setCenter(latlng) }
           onZoomend={ zoom => this.setZoom(zoom) }
-          // FIXME: remove
-          // onClick= { () => this.closePanel('right') }
         />
         <div className={ this.props.classes.overlay }>
           <OSD
