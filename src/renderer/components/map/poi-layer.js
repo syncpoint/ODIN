@@ -146,9 +146,18 @@ const poiLayer = map => {
     add({ uuid, ...store.state()[uuid] })
   }
 
+  const move = ({ uuid, lat, lng }) => {
+    const layer = featureLayers[uuid]
+    if (!layer) return
+    const latlng = layer.getLatLng()
+    if (latlng.lat === lat && latlng.lng === lng) return
+    layer.setLatLng(L.latLng(lat, lng))
+  }
+
   store.on('added', add)
   store.on('removed', remove)
   store.on('renamed', rename)
+  store.on('moved', move)
   store.once('ready', state => Object.entries(state)
     .map(([uuid, poi]) => ({ uuid, ...poi }))
     .forEach(add)

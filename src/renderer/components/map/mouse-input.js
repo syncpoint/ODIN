@@ -1,10 +1,11 @@
 import disposable from '../../../shared/disposable'
 import evented from '../../evented'
+import input from '../App.input'
 
 let map
 
 // Cancellable input method.
-let input
+let inputMethod
 
 const init = reference => (map = reference)
 
@@ -12,7 +13,7 @@ const init = reference => (map = reference)
 const pickPoint = options => {
 
   // Cancel active input (if any):
-  if (input) input()
+  if (inputMethod) inputMethod()
 
   const prompt = options.prompt || ''
   evented.emit('OSD_MESSAGE', { message: prompt })
@@ -34,12 +35,16 @@ const pickPoint = options => {
 
   const disposables = disposable.of({})
   disposables.addDisposable(() => (container.style.cursor = originalCursor))
-  disposables.addDisposable(() => map.off('click', click))
+  disposables.addDisposable(() => input.pop())
 
   const originalCursor = container.style.cursor
   container.style.cursor = 'crosshair'
-  map.on('click', click)
-  input = disposables.dispose
+  input.push({
+    click: click,
+    escape: disposables.dispose
+  })
+
+  inputMethod = disposables.dispose
 }
 
 export default {

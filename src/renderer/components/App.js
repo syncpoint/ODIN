@@ -39,17 +39,9 @@ class App extends React.Component {
     }
   }
 
-  // // FIXME: must go to application's default behavior
-  // handleKeyDown (event) {
-  //   switch (event.key) {
-  //     case 'Escape': return this.closePanel('right')
-  //   }
-  // }
-
   openSpotlight (options) {
-    selection.deselect() // FIXME: why?
+    selection.deselect() // closes any properties panel
     input.push({
-      name: 'SPOTLIGHT',
       escape: () => this.closeSpotlight(),
       click: () => this.closeSpotlight()
     })
@@ -58,7 +50,7 @@ class App extends React.Component {
   }
 
   closeSpotlight () {
-    input.pop('SPOTLIGHT')
+    input.pop()
     this.closePanel('right')
   }
 
@@ -107,7 +99,6 @@ class App extends React.Component {
 
     selection.on('selected', object => {
       const { type, uuid } = object
-      // TODO: factory for type
       if (type !== 'poi') return
 
       // POI properties panel:
@@ -124,9 +115,7 @@ class App extends React.Component {
     const { panels } = this.state
 
     return (
-      <div
-        // onKeyDown={ event => this.handleKeyDown(event) }
-      >
+      <div>
         <Map
           id='map'
           className='map'
