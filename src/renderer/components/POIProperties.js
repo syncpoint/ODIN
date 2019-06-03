@@ -5,11 +5,18 @@ import PropTypes from 'prop-types'
 import latlng from '../../renderer/coord-format'
 import store from '../stores/poi-store'
 import selection from './App.selection'
+import mouseInput from './map/mouse-input'
 
 class POIProperties extends React.Component {
   constructor (props) {
     super(props)
     this.state = { ...store.state()[props.uuid] }
+
+    store.on('moved', ({ uuid, lat, lng }) => {
+      if (uuid !== props.uuid) return
+      if (this.state.lat === lat && this.state.lng === lng) return
+      this.setState({ ...this.state, lat, lng })
+    })
   }
 
   handleNameChange (value) {
@@ -24,17 +31,15 @@ class POIProperties extends React.Component {
   }
 
   handleClick () {
-    // FIXME: needs stackable map behaviour (keyboard, mouse)
-    // const callback = () => mouseInput.pickPoint({
-    //   prompt: 'Pick a new location...',
-    //   picked: latlng => {
-    //     store.move(this.props.uuid, latlng)
-    //     this.setState({ ...this.state, hidden: false })
-    //   }
-    // })
+    const callback = () => mouseInput.pickPoint({
+      prompt: 'Pick a new location...',
+      picked: ({ lat, lng }) => {
+        store.move(this.props.uuid, { lat, lng })
+        this.setState({ ...this.state, lat, lng, hidden: false })
+      }
+    })
 
-    // // callback()
-    // this.setState({ ...this.state, hidden: true }, callback)
+    this.setState({ ...this.state, hidden: true }, callback)
   }
 
   handleCommentChange (value) {

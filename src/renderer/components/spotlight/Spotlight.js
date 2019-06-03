@@ -65,6 +65,7 @@ class Spotlight extends React.Component {
         className={ classes.paper }
         elevation={ 4 }
         style={ style }
+        onKeyDown={ event => console.log('keyDown', event.key)}
       >
         <SearchField
           options={ this.props.options }
