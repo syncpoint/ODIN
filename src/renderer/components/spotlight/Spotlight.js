@@ -14,6 +14,13 @@ class Spotlight extends React.Component {
     }
   }
 
+  handleKeyDown (event) {
+    const close = this.props.options.close || (() => {})
+    switch (event.key) {
+      case 'Escape': return close()
+    }
+  }
+
   handleUpdate (rows) {
     this.setState({
       ...this.state,
@@ -65,7 +72,7 @@ class Spotlight extends React.Component {
         className={ classes.paper }
         elevation={ 4 }
         style={ style }
-        onKeyDown={ event => console.log('keyDown', event.key)}
+        onKeyDown={ event => this.handleKeyDown(event) }
       >
         <SearchField
           options={ this.props.options }

@@ -65,8 +65,8 @@ const standardIcon = (sidc, options) => icon(symbol(sidc, options))
 const highlightedIcon = (sidc, options) => icon(symbol(sidc, {
   ...options,
   monoColor: 'white',
-  outlineColor: 'grey',
-  outlineWidth: 4
+  outlineColor: 'black',
+  outlineWidth: 6
 }))
 
 // <== marker symbol and icons
@@ -74,6 +74,7 @@ const highlightedIcon = (sidc, options) => icon(symbol(sidc, {
 // ==> marker mouse handlers
 
 const moveend = ({ target }) => {
+  console.log('moveend', target)
   const { uuid } = target.options
   const { lat, lng } = target.getLatLng()
   store.move(uuid, { lat, lng })
