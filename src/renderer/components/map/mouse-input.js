@@ -3,11 +3,10 @@ import evented from '../../evented'
 import input from '../App.input'
 
 let map
+evented.on('MAP_CREATED', reference => (map = reference))
 
 // Cancellable input method.
 let inputMethod
-
-const init = reference => (map = reference)
 
 const pickPoint = options => {
 
@@ -48,6 +47,5 @@ const pickPoint = options => {
 }
 
 export default {
-  init,
   pickPoint
 }

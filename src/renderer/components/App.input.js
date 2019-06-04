@@ -71,8 +71,9 @@ const init = map => {
   }
 }
 
+evented.on('MAP_CREATED', init)
+
 export default {
-  init,
   push,
   pop
 }

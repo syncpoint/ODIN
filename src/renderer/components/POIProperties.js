@@ -11,6 +11,7 @@ class POIProperties extends React.Component {
   constructor (props) {
     super(props)
     this.state = { ...store.state()[props.uuid] }
+    this.movedHandler = this.handleMoved.bind(this)
   }
 
   handleNameChange (value) {
@@ -51,11 +52,11 @@ class POIProperties extends React.Component {
   }
 
   componentDidMount () {
-    store.on('moved', this.handleMoved.bind(this))
+    store.on('moved', this.movedHandler)
   }
 
   componentWillUnmount () {
-    store.off('moved', this.handleMoved.bind(this))
+    store.off('moved', this.movedHandler)
   }
 
   render () {
