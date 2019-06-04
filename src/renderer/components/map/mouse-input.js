@@ -9,7 +9,6 @@ let inputMethod
 
 const init = reference => (map = reference)
 
-// FIXME: must become some sort of behavior
 const pickPoint = options => {
 
   // Cancel active input (if any):
@@ -36,6 +35,7 @@ const pickPoint = options => {
   const disposables = disposable.of({})
   disposables.addDisposable(() => (container.style.cursor = originalCursor))
   disposables.addDisposable(() => input.pop())
+  disposables.addDisposable(() => evented.emit('OSD_MESSAGE', { message: '' }))
 
   const originalCursor = container.style.cursor
   container.style.cursor = 'crosshair'

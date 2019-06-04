@@ -84,7 +84,8 @@ const items = options => term => Promise
 const spotlightOptions = options => {
   return {
     items: items(options),
-    placeholder: 'Spotlight Search'
+    placeholder: 'Spotlight Search',
+    close: options.close
   }
 }
 

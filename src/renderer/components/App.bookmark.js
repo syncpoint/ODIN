@@ -13,7 +13,8 @@ const addBookmarkOptions = options => {
 
   return {
     accept,
-    placeholder: 'Bookmark Name'
+    placeholder: 'Bookmark Name',
+    close: options.close
   }
 }
 
