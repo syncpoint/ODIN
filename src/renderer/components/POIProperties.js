@@ -11,7 +11,6 @@ class POIProperties extends React.Component {
   constructor (props) {
     super(props)
     this.state = { ...store.state()[props.uuid] }
-    this.movedHandler = this.handleMoved.bind(this)
   }
 
   handleNameChange (value) {
@@ -45,13 +44,14 @@ class POIProperties extends React.Component {
     store.comment(this.props.uuid, value)
   }
 
-  handleMoved ({ uuid, lat, lng }) {
-    if (uuid !== this.props.uuid) return
-    if (this.state.lat === lat && this.state.lng === lng) return
-    this.setState({ ...this.state, lat, lng })
-  }
-
   componentDidMount () {
+    const moved = function ({ uuid, lat, lng }) {
+      if (uuid !== this.props.uuid) return
+      if (this.state.lat === lat && this.state.lng === lng) return
+      this.setState({ ...this.state, lat, lng })
+    }
+
+    this.movedHandler = moved.bind(this)
     store.on('moved', this.movedHandler)
   }
 
