@@ -9,23 +9,12 @@ import './leaflet-icons'
 import { K } from '../../../shared/combinators'
 import Leaflet from '../../leaflet'
 import { zoomLevels } from './zoom-levels'
-import { defaultValues, COMMAND_ADJUST, COMMAND_RESET_FILTERS } from './display-filters'
-import { tileProvider, COMMAND_MAP_TILE_PROVIDER, COMMAND_HIDPI_SUPPORT, COMMAND_TOGGLE_MAP_VISIBILITY } from './tile-provider'
-import { COMMAND_COPY_COORDS } from './clipboard'
+import { defaultValues } from './display-filters'
+import { tileProvider } from './tile-provider'
+import ipcHandlers from './ipc'
 import formatLatLng from '../../coord-format'
 import settings from './settings'
 import poiLayer from './poi-layer'
-import mouseInput from './mouse-input'
-import input from '../App.input'
-
-const ipcHandlers = {
-  COMMAND_ADJUST,
-  COMMAND_RESET_FILTERS,
-  COMMAND_MAP_TILE_PROVIDER,
-  COMMAND_HIDPI_SUPPORT,
-  COMMAND_COPY_COORDS,
-  COMMAND_TOGGLE_MAP_VISIBILITY
-}
 
 const updateScaleDisplay = map => () => {
   const level = zoomLevels[map.getZoom()]
@@ -66,16 +55,11 @@ class Map extends React.Component {
     }
 
     this.map = K(L.map(id, options))(map => {
-      // TODO: replace with more general `input`.
-      mouseInput.init(map)
-      input.init(map)
+      evented.emit('MAP_CREATED', map)
 
       const mapVisible = settings.map.visible()
       if (mapVisible) L.tileLayer(tileProvider().url, tileProvider()).addTo(map)
       poiLayer(map)
-
-      // // FIXME: must go somewhere else
-      // map.on('click', () => onClick())
 
       map.on('moveend', saveViewPort)
       map.on('moveend', event => onMoveend(event.target.getCenter()))
@@ -127,7 +111,6 @@ Map.propTypes = {
   id: PropTypes.string.isRequired,
   center: PropTypes.any.isRequired,
   zoom: PropTypes.any.isRequired,
-  // onClick: PropTypes.func.isRequired,
   onMoveend: PropTypes.func.isRequired,
   onZoomend: PropTypes.func.isRequired
 }

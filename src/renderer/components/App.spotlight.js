@@ -29,7 +29,7 @@ const places = options => term => nominatim(searchOptions)(term).then(rows => {
       text: <ListItemText primary={ row.display_name } secondary={ 'Place' }/>,
       action: () => {
         context.setCenter(L.latLng(row.lat, row.lon))
-        console.log(row.poi)
+
         // If it is a result of a reverse search (i.e. POI), store it for later use.
         if (row.poi) poiStore.add(uuid(), { name: row.poi, lat: row.lat, lng: row.lon })
       }
@@ -79,7 +79,6 @@ const itemProviders = [
 const items = options => term => Promise
   .all(itemProviders.map(fn => fn(options)(term)))
   .then(xs => xs.reduce((acc, x) => acc.concat(x), []))
-
 
 const spotlightOptions = options => {
   return {
