@@ -1,3 +1,4 @@
+// darwin only.
 import { app } from 'electron'
 import preferences from './preferences-submenu'
 
