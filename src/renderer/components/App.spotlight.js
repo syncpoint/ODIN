@@ -58,7 +58,7 @@ const bookmarks = options => term => {
 const pois = options => term => {
   const { context } = options
   const items = Object.entries((poiStore.state()))
-    .filter(([_, poi]) => poi.name.search(new RegExp(term, 'i')) !== -1)
+    .filter(([_, poi]) => poi.name && poi.name.search(new RegExp(term, 'i')) !== -1)
     .map(([uuid, poi]) => ({
       key: uuid,
       text: <ListItemText primary={ poi.name } secondary={ 'POI' }/>,
