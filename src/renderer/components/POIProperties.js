@@ -21,6 +21,9 @@ class POIProperties extends React.Component {
   handleKeyDown (event) {
     switch (event.key) {
       case 'Escape': return selection.deselect()
+      case 'Enter':
+        if (event.target.tagName !== 'TEXTAREA') selection.deselect()
+        break
     }
   }
 

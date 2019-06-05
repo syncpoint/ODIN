@@ -1,12 +1,17 @@
 import L from 'leaflet'
 import ms from 'milsymbol'
 import uuid from 'uuid-random'
+import { ipcRenderer } from 'electron'
 import store from '../../stores/poi-store'
 import evented from '../../evented'
 import selection from '../App.selection'
+import mouseInput from './mouse-input'
 
 // uuid -> marker/layer
 const featureLayers = {}
+
+// Set if newly added POI should automatically be selected:
+let pendingSelect
 
 const selected = () => {
   if (!selection.selected()) return
@@ -19,6 +24,8 @@ const deselect = () => selection.deselect()
 const select = uuid => {
   if (selected() !== uuid) {
     const layer = featureLayers[uuid]
+    if (!layer) return
+
     const { actions } = layer.feature
     selection.select({
       type: 'poi',
@@ -91,7 +98,8 @@ const click = ({ target }) => {
 const pointToLayer = (feature, latlng) => {
   const { uuid, name, sidc } = feature.properties
 
-  const options = { size: 34, uniqueDesignation: name }
+  const options = { size: 34 }
+  if (name) options.uniqueDesignation = name
   const marker = L.marker(latlng, {
     uuid,
     icons: {
@@ -111,14 +119,23 @@ const pointToLayer = (feature, latlng) => {
   const icons = marker.options.icons
   marker.setIcon(selected() === uuid ? icons.highlighted : icons.standard)
   featureLayers[uuid] = marker
+
+  // Note: At this point `feature` property is not already attached to marker.
   return marker
+}
+
+const onEachFeature = (feature, _) => {
+  if (!pendingSelect) return
+  if (feature.properties.uuid !== pendingSelect) return
+  select(pendingSelect)
+  pendingSelect = null
 }
 
 const poiLayer = map => {
 
   // Add empty layer to map:
   const features = { type: 'FeatureCollection', features: [] }
-  const layer = L.geoJSON(features, { pointToLayer })
+  const layer = L.geoJSON(features, { pointToLayer, onEachFeature })
   layer.id = 'POI_LAYER'
   layer.addTo(map)
 
@@ -165,7 +182,19 @@ const poiLayer = map => {
 
   evented.on('CLIPBOARD_PASTE', (type, poi) => {
     if (type !== 'poi') return
-    store.add(uuid(), poi)
+    pendingSelect = uuid()
+    // TODO: place somewhere else if spot is already occupied
+    store.add(pendingSelect, poi)
+  })
+
+  ipcRenderer.on('COMMAND_NEW_POI', () => {
+    mouseInput.pickPoint({
+      prompt: 'Pick a location...',
+      picked: latlng => {
+        pendingSelect = uuid()
+        store.add(pendingSelect, { ...latlng })
+      }
+    })
   })
 }
 
