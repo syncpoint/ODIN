@@ -12,7 +12,7 @@ import { zoomLevels } from './zoom-levels'
 import { defaultValues } from './display-filters'
 import { tileProvider } from './tile-provider'
 import ipcHandlers from './ipc'
-import formatLatLng from '../../coord-format'
+import coord from '../../coord-format'
 import settings from './settings'
 import poiLayer from './poi-layer'
 
@@ -39,7 +39,7 @@ const updateDisplayFilter = map => values => {
 }
 
 const updateCoordinateDisplay = ({ latlng }) => {
-  evented.emit('OSD_MESSAGE', { slot: 'C3', message: `${formatLatLng(latlng)}` })
+  evented.emit('OSD_MESSAGE', { slot: 'C3', message: `${coord.format(latlng)}` })
 }
 
 class Map extends React.Component {

@@ -2,7 +2,7 @@ import React from 'react'
 import { Paper, TextField, Button } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
-import latlng from '../../renderer/coord-format'
+import coord from '../../renderer/coord-format'
 import store from '../stores/poi-store'
 import selection from './App.selection'
 import mouseInput from './map/mouse-input'
@@ -84,7 +84,7 @@ class POIProperties extends React.Component {
         <TextField
           className={ this.props.classes.position }
           label={ 'Position' }
-          value={ latlng({ lat, lng }) }
+          value={ coord.format({ lat, lng }) }
         />
         <Button
           className={ this.props.classes.pick }

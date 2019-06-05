@@ -17,7 +17,7 @@ Dms.separator = ''
  * mgrs: 32U MV 61344 81745
  */
 
-const format = {
+const formats = {
   dms: ({ lat, lng }) => `${Dms.toLat(lat, 'dms')} ${Dms.toLon(lng, 'dms')}`,
   dm: ({ lat, lng }) => `${Dms.toLat(lat, 'dm')} ${Dms.toLon(lng, 'dm')}`,
   d: ({ lat, lng }) => `${Dms.toLat(lat, 'd')} ${Dms.toLon(lng, 'd')}`,
@@ -26,11 +26,15 @@ const format = {
 }
 
 const defaultFormat = 'mgrs'
-let currentFormat = format[settings.formats.coordinate.get(defaultFormat)]
+let currentFormat = formats[settings.formats.coordinate.get(defaultFormat)]
 
 ipcRenderer.on('COMMAND_COORD_FORMAT', (_, args) => {
   settings.formats.coordinate.set(args)
-  currentFormat = format[args] || format[defaultFormat]
+  currentFormat = formats[args] || formats[defaultFormat]
 })
 
-export default latlng => currentFormat(latlng)
+const format = currentFormat
+
+export default {
+  format
+}
