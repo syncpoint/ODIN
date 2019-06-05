@@ -3,7 +3,7 @@ import url from 'url'
 import { app, BrowserWindow, Menu, shell } from 'electron'
 import settings from 'electron-settings'
 import { K, noop } from '../shared/combinators'
-import { buildFromTemplate } from '../main/menu'
+import { buildFromTemplate } from '../main/menu/menu'
 
 const on = emitter => ([event, handler]) => emitter.on(event, handler)
 
