@@ -66,7 +66,7 @@ const createWindow = name => {
       settings.set(`windowState.${name}`, bounds)
     }))
 
-    Menu.setApplicationMenu(buildFromTemplate())
+    Menu.setApplicationMenu(buildFromTemplate(settings))
   })
 }
 
