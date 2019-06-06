@@ -13,26 +13,18 @@ const featureLayers = {}
 // Set if newly added POI should automatically be selected:
 let pendingSelect
 
-const selected = () => {
-  if (!selection.selected()) return
-  const { type, uuid } = selection.selected()
-  if (type === 'poi') return uuid
-}
-
-const deselect = () => selection.deselect()
-
 const select = uuid => {
-  if (selected() !== uuid) {
-    const layer = featureLayers[uuid]
-    if (!layer) return
+  const [selected] = selection.selected('poi')
+  if (selected && selected.uuid === uuid) return
+  const layer = featureLayers[uuid]
+  if (!layer) return
 
-    const { actions } = layer.feature
-    selection.select({
-      type: 'poi',
-      uuid,
-      ...actions
-    })
-  }
+  const { actions } = layer.feature
+  selection.select({
+    type: 'poi',
+    uuid,
+    ...actions
+  })
 }
 
 selection.on('selected', object => {
@@ -117,7 +109,11 @@ const pointToLayer = (feature, latlng) => {
 
   // Set icon depending on current selection:
   const icons = marker.options.icons
-  marker.setIcon(selected() === uuid ? icons.highlighted : icons.standard)
+  marker.setIcon(icons.standard)
+  selection.selected('poi')
+    .filter(selected => selected.uuid === uuid)
+    .forEach(_ => marker.setIcon(icons.highlighted))
+
   featureLayers[uuid] = marker
 
   // Note: At this point `feature` property is not already attached to marker.
@@ -141,7 +137,7 @@ const poiLayer = map => {
 
   const remove = ({ uuid }) => {
     if (uuid && featureLayers[uuid]) {
-      deselect()
+      selection.deselect()
       layer.removeLayer(featureLayers[uuid])
       delete featureLayers[uuid]
       store.remove(uuid)
@@ -149,11 +145,10 @@ const poiLayer = map => {
   }
 
   const add = poi => {
-    const { uuid, ...properties } = poi
+    const { uuid } = poi
     layer.addData(feature(poi, {
       delete: () => remove({ uuid }),
-      copy: () => ({ type: 'poi', ...properties }),
-      cut: () => { store.remove(uuid); return { type: 'poi', ...properties } }
+      properties: () => ({ type: 'poi', ...store.state()[uuid] })
     }))
   }
 
