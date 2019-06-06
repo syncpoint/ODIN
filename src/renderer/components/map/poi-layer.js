@@ -148,7 +148,6 @@ const poiLayer = map => {
       delete: () => remove({ uuid: poi.uuid }),
       properties: () => ({ ...store.state()[poi.uuid] }),
       paste: properties => {
-        console.log('properties', properties)
         pendingSelect = uuid()
         store.add(pendingSelect, properties)
       }
