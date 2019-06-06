@@ -7,18 +7,18 @@ import viewMenu from './view-menu'
 import applicationMenu from './application-menu'
 import fileMenu from './file-menu'
 
-const template = [
+const template = settings => ([
   // darwin only (must be filtered for other platforms)
   applicationMenu,
 
   fileMenu,
   editMenu,
-  viewMenu,
+  viewMenu(settings),
   goMenu,
   windowMenu,
   helpMenu
-]
+])
 
-export const buildFromTemplate = () =>
+export const buildFromTemplate = settings =>
   // filter null entries (darwin only):
-  Menu.buildFromTemplate(template.filter(x => x))
+  Menu.buildFromTemplate(template(settings).filter(x => x))
