@@ -3,7 +3,6 @@ import ms from 'milsymbol'
 import uuid from 'uuid-random'
 import { ipcRenderer } from 'electron'
 import store from '../../stores/poi-store'
-import evented from '../../evented'
 import selection from '../App.selection'
 import mouseInput from './mouse-input'
 
@@ -145,10 +144,14 @@ const poiLayer = map => {
   }
 
   const add = poi => {
-    const { uuid } = poi
     layer.addData(feature(poi, {
-      delete: () => remove({ uuid }),
-      properties: () => ({ type: 'poi', ...store.state()[uuid] })
+      delete: () => remove({ uuid: poi.uuid }),
+      properties: () => ({ ...store.state()[poi.uuid] }),
+      paste: properties => {
+        console.log('properties', properties)
+        pendingSelect = uuid()
+        store.add(pendingSelect, properties)
+      }
     }))
   }
 
@@ -174,13 +177,6 @@ const poiLayer = map => {
     .map(([uuid, poi]) => ({ uuid, ...poi }))
     .forEach(add)
   )
-
-  evented.on('CLIPBOARD_PASTE', (type, poi) => {
-    if (type !== 'poi') return
-    pendingSelect = uuid()
-    // TODO: place somewhere else if spot is already occupied
-    store.add(pendingSelect, poi)
-  })
 
   ipcRenderer.on('COMMAND_NEW_POI', () => {
     mouseInput.pickPoint({

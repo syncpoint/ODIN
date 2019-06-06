@@ -43,18 +43,23 @@ const init = map => {
 
   Mousetrap.bind(['mod+c'], () => {
     if (selection.empty()) return
-    clipboard = selection.selected().map(selected => selected.properties())
+    clipboard = selection.selected().map(selected => ({
+      properties: selected.properties(),
+      paste: selected.paste
+    }))
   })
 
   Mousetrap.bind(['mod+x'], () => {
     if (selection.empty()) return
-    clipboard = selection.selected().map(selected => selected.properties())
+    clipboard = selection.selected().map(selected => ({
+      properties: selected.properties(),
+      paste: selected.paste
+    }))
     selection.selected().forEach(selected => selected.delete())
   })
 
   Mousetrap.bind(['mod+v'], () => {
-    const emit = ({ type, ...properties }) => evented.emit('CLIPBOARD_PASTE', type, properties)
-    clipboard.forEach(emit)
+    clipboard.forEach(({ properties, paste }) => paste(properties))
   })
 
   defaultBehavior = {
