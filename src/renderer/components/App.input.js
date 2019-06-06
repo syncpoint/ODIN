@@ -42,30 +42,26 @@ const init = map => {
   // Clipbaord.
 
   Mousetrap.bind(['mod+c'], () => {
-    if (!selection.selected()) return
-    if (!selection.selected().copy) return
-    clipboard = selection.selected().copy()
+    if (selection.empty()) return
+    clipboard = selection.selected().map(selected => selected.properties())
   })
 
   Mousetrap.bind(['mod+x'], () => {
-    if (!selection.selected()) return
-    if (!selection.selected().cut) return
-    clipboard = selection.selected().cut()
+    if (selection.empty()) return
+    clipboard = selection.selected().map(selected => selected.properties())
+    selection.selected().forEach(selected => selected.delete())
   })
 
   Mousetrap.bind(['mod+v'], () => {
-    const { type, ...properties } = clipboard
-    if (!type) return
-    evented.emit('CLIPBOARD_PASTE', type, properties)
+    const emit = ({ type, ...properties }) => evented.emit('CLIPBOARD_PASTE', type, properties)
+    clipboard.forEach(emit)
   })
 
   defaultBehavior = {
     escape: () => selection.deselect(),
     delete: () => {
-      // When selection has delete interface -> do it!
-      if (!selection.selected()) return
-      if (!selection.selected().delete) return
-      selection.selected().delete()
+      if (selection.empty()) return
+      selection.selected().forEach(selected => selected.delete())
     },
     click: () => selection.deselect()
   }

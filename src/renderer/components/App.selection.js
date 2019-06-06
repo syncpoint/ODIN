@@ -15,6 +15,11 @@ evented.deselect = () => {
   selected = undefined
 }
 
-evented.selected = () => selected
+evented.selected = type => {
+  if (!type) return [selected]
+  else return (selected && selected.type === type) ? [selected] : []
+}
+
+evented.empty = () => !selected
 
 export default evented
