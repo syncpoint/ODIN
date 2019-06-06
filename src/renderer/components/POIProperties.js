@@ -10,7 +10,11 @@ import mouseInput from './map/mouse-input'
 class POIProperties extends React.Component {
   constructor (props) {
     super(props)
-    this.state = { ...store.state()[props.uuid] }
+
+    // Must set name if undefined in order for name TextField to be controlled.
+    const poi = store.state()[props.uuid]
+    if (!poi.name) poi.name = ''
+    this.state = { ...poi }
   }
 
   handleNameChange (value) {
