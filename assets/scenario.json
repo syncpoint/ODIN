@@ -1,9 +1,8 @@
 {
   "type": "FeatureCollection",
-  "extent": "BOX(16.462471 48.013688,16.548137 48.041974)",
+  "bbox": "[16.462471, 48.013688, 16.548137, 48.041974]",
   "features": [
     {
-      "id": "1. NTGrp/VersZg/StbKp/JgB73",
       "type": "Feature",
       "geometry": {
         "type": "Point",
@@ -13,14 +12,13 @@
         ]
       },
       "properties": {
-        "t": "1/73",
+        "m": "73",
+        "t": "1",
         "w": "07093552ZJUN2019",
-        "sidc": "SFGPUST----C---",
-        "txid": 199483
+        "sidc": "SFGPUST----C---"
       }
     },
     {
-      "id": "1.AufklTrp/2.AufklGrp/AufklZg/StbKp/JgB73",
       "type": "Feature",
       "geometry": {
         "type": "Point",
@@ -30,14 +28,13 @@
         ]
       },
       "properties": {
-        "t": "1/2/73",
+        "m": "2/73",
+        "t": "1",
         "w": "07093856ZJUN2019",
-        "sidc": "SFGPUCR----B---",
-        "txid": 199483
+        "sidc": "SFGPUCR----B---"
       }
     },
     {
-      "id": "1/JgB73",
       "type": "Feature",
       "geometry": {
         "type": "Point",
@@ -47,14 +44,13 @@
         ]
       },
       "properties": {
-        "t": "1/73",
+        "m": "73",
+        "t": "1",
         "w": "07093250ZJUN2019",
-        "sidc": "SFGPUCI----E---",
-        "txid": 199483
+        "sidc": "SFGPUCI----E---"
       }
     },
     {
-      "id": "1/PzB96",
       "type": "Feature",
       "geometry": {
         "type": "Point",
@@ -64,14 +60,13 @@
         ]
       },
       "properties": {
-        "t": "1/96",
+        "m": "96",
+        "t": "1",
         "w": "07092928ZJUN2019",
-        "sidc": "SFGPUCA----E---",
-        "txid": 199483
+        "sidc": "SFGPUCA----E---"
       }
     },
     {
-      "id": "2/JgB73",
       "type": "Feature",
       "geometry": {
         "type": "Point",
@@ -81,14 +76,13 @@
         ]
       },
       "properties": {
-        "t": "2/73",
+        "m": "73",
+        "t": "2",
         "w": "07092831ZJUN2019",
-        "sidc": "SFGPUCI----E---",
-        "txid": 199483
+        "sidc": "SFGPUCI----E---"
       }
     },
     {
-      "id": "GefStd JgB73",
       "type": "Feature",
       "geometry": {
         "type": "Point",
@@ -100,12 +94,10 @@
       "properties": {
         "t": "73",
         "w": "07093231ZJUN2019",
-        "sidc": "SFGPUCI---AF---",
-        "txid": 199483
+        "sidc": "SFGPUCI---AF---"
       }
     },
     {
-      "id": "I/1/JgB73",
       "type": "Feature",
       "geometry": {
         "type": "Point",
@@ -115,14 +107,13 @@
         ]
       },
       "properties": {
-        "t": "I/1/73",
+        "m": "1/73",
+        "t": "I",
         "w": "07093335ZJUN2019",
-        "sidc": "SFGPUCI----D---",
-        "txid": 199483
+        "sidc": "SFGPUCI----D---"
       }
     },
     {
-      "id": "II.FlAZg/1.FlABt/FlAB39",
       "type": "Feature",
       "geometry": {
         "type": "Point",
@@ -132,14 +123,13 @@
         ]
       },
       "properties": {
-        "t": "II/1/39",
+        "m": "1/39",
+        "t": "II",
         "w": "07093757ZJUN2019",
-        "sidc": "SFGPUCD----D---",
-        "txid": 199483
+        "sidc": "SFGPUCD----D---"
       }
     },
     {
-      "id": "II/1/PzB96",
       "type": "Feature",
       "geometry": {
         "type": "Point",
@@ -149,14 +139,13 @@
         ]
       },
       "properties": {
-        "t": "II/1/96",
+        "m": "1/96",
+        "t": "II",
         "w": "07093027ZJUN2019",
-        "sidc": "SFGPUCA----D---",
-        "txid": 199483
+        "sidc": "SFGPUCA----D---"
       }
     },
     {
-      "id": "IZg/StbKp/JgB73",
       "type": "Feature",
       "geometry": {
         "type": "Point",
@@ -166,14 +155,12 @@
         ]
       },
       "properties": {
-        "t": "/73",
+        "m": "73",
         "w": "07093455ZJUN2019",
-        "sidc": "SFGPUSX----D---",
-        "txid": 199483
+        "sidc": "SFGPUSX----D---"
       }
     },
     {
-      "id": "PAZg/2/JgB73",
       "type": "Feature",
       "geometry": {
         "type": "Point",
@@ -183,10 +170,9 @@
         ]
       },
       "properties": {
-        "t": "/2/73",
+        "m": "2/73",
         "w": "07093150ZJUN2019",
-        "sidc": "SFGPUCAA---D---",
-        "txid": 199483
+        "sidc": "SFGPUCAA---D---"
       }
     }
   ]
