@@ -12,7 +12,9 @@ const MODIFIER_MAP = {
   m: 'higherFormation',
   q: 'direction',
   t: 'uniqueDesignation',
-  w: 'dtg',
+
+  // TODO: find more compact form for DTG
+  // w: 'dtg',
   z: 'speed'
 }
 

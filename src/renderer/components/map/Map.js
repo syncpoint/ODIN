@@ -16,6 +16,7 @@ import ipcHandlers from '../ipc/ipc'
 import coord from '../../coord-format'
 import settings from './settings'
 import '../../layers/poi-layer'
+import '../../layers/symbol-layer'
 
 const updateScaleDisplay = map => () => {
   const level = zoomLevels[map.getZoom()]
