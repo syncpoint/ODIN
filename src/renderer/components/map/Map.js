@@ -1,3 +1,6 @@
+
+/* eslint-disable no-unused-vars  */
+
 import React from 'react'
 import L from 'leaflet'
 import { withStyles } from '@material-ui/core/styles'
@@ -14,7 +17,8 @@ import { tileProvider } from './tile-provider'
 import ipcHandlers from './ipc'
 import coord from '../../coord-format'
 import settings from './settings'
-import poiLayer from './poi-layer'
+import './units'
+import './poi'
 
 const updateScaleDisplay = map => () => {
   const level = zoomLevels[map.getZoom()]
@@ -44,7 +48,6 @@ const updateCoordinateDisplay = ({ latlng }) => {
 
 class Map extends React.Component {
   componentDidMount () {
-    // const { id, options, onClick, onMoveend, onZoomend } = this.props
     const { id, options, onMoveend, onZoomend } = this.props
     const viewPort = settings.map.getViewPort()
 
@@ -59,7 +62,6 @@ class Map extends React.Component {
 
       const mapVisible = settings.map.visible()
       if (mapVisible) L.tileLayer(tileProvider().url, tileProvider()).addTo(map)
-      poiLayer(map)
 
       map.on('moveend', saveViewPort)
       map.on('moveend', event => onMoveend(event.target.getCenter()))

@@ -97,12 +97,12 @@ class App extends React.Component {
       }))
     })
 
-    selection.on('selected', object => {
-      const { type, uuid } = object
-      if (type !== 'poi') return
+    selection.on('selected', ({ key }) => {
+      const matches = key.match(/feature:\/\/poi-layer\/(.*)/)
+      if (!matches) return
 
       // POI properties panel:
-      const right = () => <POIProperties uuid={ uuid } />
+      const right = () => <POIProperties uuid={ matches[1] } />
       this.openPanel('right', right)
     })
 

@@ -5,6 +5,7 @@ import { db } from './db'
 
 const evented = new EventEmitter()
 const state = {}
+let ready = false
 
 const handlers = {
   added: ({ uuid, ...poi }) => (state[uuid] = poi),
@@ -30,6 +31,7 @@ const recoverStream = reduce => new Writable({
   },
   final (callback) {
     evented.emit('ready', { ...state })
+    ready = true
     callback()
   }
 })
@@ -41,7 +43,7 @@ db.createReadStream({
   keys: false
 }).pipe(recoverStream(reduce))
 
-
+evented.ready = () => ready
 evented.state = () => ({ ...state })
 
 evented.add = (uuid, poi) => persist({ type: 'added', uuid, ...poi })
@@ -59,7 +61,7 @@ evented.move = (uuid, { lat, lng }) => {
 evented.rename = (uuid, name) => {
   if (!state[uuid]) return
   if (state[uuid].name === name) return
-  persist({ type: 'renamed', uuid, name })
+  persist({ type: 'renamed', uuid, ...state[uuid], name })
 }
 
 evented.comment = (uuid, comment) => {
