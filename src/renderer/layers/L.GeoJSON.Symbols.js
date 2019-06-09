@@ -91,6 +91,8 @@ const key = function (id) {
 }
 
 const initialize = function (options) {
+  console.log('selectable', options.selectable)
+
   this.markers = []
   L.setOptions(this, options)
   options.pointToLayer = pointToLayer.bind(this)
@@ -99,8 +101,10 @@ const initialize = function (options) {
   const features = options.features ? options.features() : []
   this.addData(features)
 
-  selection.on('selected', object => this.selected(object))
-  selection.on('deselected', object => this.deselected(object))
+  if (options.selectable) {
+    selection.on('selected', object => this.selected(object))
+    selection.on('deselected', object => this.deselected(object))
+  }
 }
 
 const select = function (id) {
