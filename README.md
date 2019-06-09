@@ -3,7 +3,7 @@
 [![Build Status: Linux](https://travis-ci.org/syncpoint/ODIN.svg?branch=develop)](https://travis-ci.org/syncpoint/ODIN.svg?branch=develop)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-While currently in its early infancy, ODIN wants to become an Open Source alternative to industry-led commercial Command and Control Information Systems. Our main goal is __simplicity__. Coming from a military background, we think it's time for a paradigm shift. Together with a vibrant community, we want to lead the way towards lightweight and user-friendly systems.
+While currently in its early infancy, ODIN aims to become an Open Source alternative to industry-led commercial Command and Control Information Systems. Our main goal is __simplicity__. Coming from a military background, we think it's time for a paradigm shift. Together with a vibrant community, we want to lead the way towards lightweight and user-friendly systems.
 
 ![ODIN C2IS](assets/splash-001.png?raw=true)
 
