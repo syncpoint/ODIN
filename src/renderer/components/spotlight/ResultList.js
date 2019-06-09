@@ -22,6 +22,7 @@ class ResultList extends React.Component {
   handleClick (key) {
     this.props.rows
       .filter(row => row.key === key)
+      .filter(row => row.action)
       .forEach(row => row.action())
   }
 

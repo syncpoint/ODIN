@@ -1,4 +1,5 @@
 import L from 'leaflet'
+import Leaflet from '../leaflet'
 import evented from '../evented'
 import store from '../stores/layer-store'
 
@@ -43,12 +44,22 @@ const fitBounds = bounds => {
   map.fitBounds(bounds, { animate: true })
 }
 
-
 evented.on('MAP_CREATED', reference => {
   map = reference
+
+  map.on('remove', x => console.log('layer removed', x))
   store.on('added', ({ name, file }) => {
     layer([name, file])
     fitBounds(bounds(file))
+  })
+
+  store.on('toggled', ({ name, file }) => {
+    Leaflet.layers(map)
+      .filter(layer => layer instanceof L.GeoJSON.Symbols)
+      .filter(layer => layer.options.id === name)
+      .forEach(layer => layer.remove())
+
+    if (file.visible) layer([name, file])
   })
 
   if (store.ready()) Object.entries(store.state()).forEach(layer)

@@ -33,7 +33,7 @@ db.createReadStream({
 }).pipe(recoverStream(reduce))
 
 evented.ready = () => ready
-evented.state = () => ({ ...state })
+evented.state = () => state
 
 evented.add = (name, file) => {
   db.put(`layer:${name}`, file)
@@ -43,6 +43,23 @@ evented.add = (name, file) => {
 evented.remove = name => {
   db.del(`layer:${name}`)
   evented.emit('removed', { name })
+}
+
+evented.toggle = name => {
+  const file = state[name]
+  if (!file) return
+
+  const toggle = visible => {
+    file.visible = visible
+    db.put(`layer:${name}`, file)
+    evented.emit('toggled', { name, file })
+  }
+
+  switch(file.visible) {
+    case true: return toggle(false)
+    case false: return toggle(true)
+    default: return toggle(false)
+  }
 }
 
 export default evented
