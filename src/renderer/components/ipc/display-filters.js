@@ -3,7 +3,7 @@ import Disposable from '../../../shared/disposable'
 import Timed from '../../../shared/timed'
 import { K, noop } from '../../../shared/combinators'
 import evented from '../../evented'
-import settings from './settings'
+import settings from '../map/settings'
 
 export const descriptors = {
   brightness: { label: 'Brightness', value: 100, min: 0, max: 100, delta: 5, unit: '%', display: '%' },

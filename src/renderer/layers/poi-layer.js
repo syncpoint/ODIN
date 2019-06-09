@@ -1,8 +1,7 @@
 import L from 'leaflet'
 import uuid from 'uuid-random'
-import '../../leaflet/L.GeoJSON.Symbols'
-import evented from '../../evented'
-import poiStore from '../../stores/poi-store'
+import evented from '../evented'
+import poiStore from '../stores/poi-store'
 
 const feature = (id, properties) => ({
   type: 'Feature',
@@ -22,7 +21,7 @@ evented.on('MAP_CREATED', map => {
     id: 'poi-layer',
     size: () => 34,
     draggable: true,
-    trackSelection: true // default: false
+    selectable: true // default: false
   })
   symbols.addTo(map)
 
