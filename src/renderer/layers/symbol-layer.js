@@ -4,10 +4,17 @@ import store from '../stores/layer-store'
 
 let map
 
+const STYLES = {
+  LineString: { color: '#000000', weight: 2, opacity: 1 },
+  Polygon: { color: '#444444', weight: 1, opacity: 0.1 }
+}
+
 const layer = ([name, features]) => new L.GeoJSON.Symbols({
   id: name,
   size: () => 34,
-  features: () => features
+  features: () => features,
+  filter: feature => feature.geometry,
+  style: feature => STYLES[feature.geometry.type] || {}
 }).addTo(map)
 
 const bounds = json => {
@@ -44,5 +51,6 @@ evented.on('MAP_CREATED', reference => {
     fitBounds(bounds(file))
   })
 
-  store.on('ready', state => Object.entries(state).forEach(layer))
+  if (store.ready()) Object.entries(store.state()).forEach(layer)
+  else store.on('ready', state => Object.entries(state).forEach(layer))
 })
