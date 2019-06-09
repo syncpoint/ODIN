@@ -1,8 +1,13 @@
+/*
+  CAUTION: This module must not be imported from different modules.
+*/
+
 import L from 'leaflet'
 import ms from 'milsymbol'
 import { K } from '../../shared/combinators'
 import selection from '../components/App.selection'
 
+// TODO: map remaining (text) modifiers
 const MODIFIER_MAP = {
   m: 'higherFormation',
   q: 'direction',
@@ -16,7 +21,7 @@ const defaultOptions = {
   // symbol size derived from feature or global settings.
   size: _ => 34,
   draggable: false,
-  trackSelection: false
+  selectable: false
 }
 
 const modifiers = feature => Object.entries(feature.properties)
@@ -62,15 +67,18 @@ const pointToLayer = function (feature, latlng) {
       : marker.options.icons.standard
     )
 
-    if (this.options.trackSelection) {
+    if (this.options.selectable) {
       marker.on('click', () => this.select(id))
     }
 
     if (this.options.draggable) {
       marker.on('moveend', ({ target }) => {
         const { feature } = target
-        feature.actions.move(target.getLatLng())
         this.select(id)
+
+        if (!feature.actions) return
+        if (!feature.actions.move) return
+        feature.actions.move(target.getLatLng())
       })
     }
   })
