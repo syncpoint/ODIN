@@ -23,6 +23,11 @@ const menu = {
           click: sendMessage('COMMAND_ADD_BOOKMARK')
         }
       ]
+    },
+    { type: 'separator' },
+    {
+      label: 'Import Layer...',
+      click: sendMessage('COMMAND_IMPORT_LAYER')
     }
   ]
 }
