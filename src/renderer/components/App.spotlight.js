@@ -1,10 +1,11 @@
 import React from 'react'
-import ListItemText from '@material-ui/core/ListItemText'
+import { ListItemText, ListItemSecondaryAction, Switch } from '@material-ui/core'
 import L from 'leaflet'
 import uuid from 'uuid-random'
 import nominatim from './nominatim'
 import settings from './map/settings'
 import poiStore from '../stores/poi-store'
+import layerStore from '../stores/layer-store'
 
 const searchOptions = {
   limit: 15, // default: 10, maximun: 50
@@ -57,7 +58,7 @@ const bookmarks = options => term => {
 
 const pois = options => term => {
   const { context } = options
-  const items = Object.entries((poiStore.state()))
+  const items = Object.entries(poiStore.state())
     .filter(([_, poi]) => poi.name && poi.name.search(new RegExp(term, 'i')) !== -1)
     .map(([uuid, poi]) => ({
       key: uuid,
@@ -69,8 +70,37 @@ const pois = options => term => {
   return Promise.resolve(items)
 }
 
+const layers = options => term => {
+
+  const handleToggle = name => {
+    layerStore.toggle(name)
+  }
+
+  const items = Object.entries(layerStore.state())
+    .filter(([name, _]) => name.search(new RegExp(term, 'i')) !== -1)
+    .map(([name, features]) => {
+      return {
+        key: `layer://${name}`,
+        text: (
+          <div>
+            <ListItemText primary={ name } secondary={ 'Layer' }/>
+            <ListItemSecondaryAction>
+              <Switch
+                edge="end"
+                onChange={ () => handleToggle(name) }
+              />
+            </ListItemSecondaryAction>
+          </div>
+        )
+      }
+    })
+
+  return Promise.resolve(items)
+}
+
 // Available providers (order matter):
 const itemProviders = [
+  layers,
   pois,
   bookmarks,
   places

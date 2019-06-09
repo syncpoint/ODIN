@@ -91,8 +91,6 @@ const key = function (id) {
 }
 
 const initialize = function (options) {
-  console.log('selectable', options.selectable)
-
   this.markers = []
   L.setOptions(this, options)
   options.pointToLayer = pointToLayer.bind(this)
