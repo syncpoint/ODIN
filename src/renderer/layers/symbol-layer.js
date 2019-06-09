@@ -4,29 +4,30 @@ import evented from '../evented'
 import store from '../stores/layer-store'
 
 let map
+let group
 
 const STYLES = {
   LineString: { color: '#000000', weight: 2, opacity: 1 },
   Polygon: { color: '#444444', weight: 1, opacity: 0.1 }
 }
 
-const layer = ([name, features]) => new L.GeoJSON.Symbols({
+const addLayer = ([name, layer]) => new L.GeoJSON.Symbols({
   id: name,
   size: () => 34,
-  features: () => features,
+  features: () => layer.content,
   filter: feature => feature.geometry,
   style: feature => STYLES[feature.geometry.type] || {}
-}).addTo(map)
+}).addTo(group)
 
-const bounds = json => {
-  if (!json.bbox) return
-  if (typeof json.bbox !== 'string') return
+const bounds = ({ content }) => {
+  if (!content.bbox) return
+  if (typeof content.bbox !== 'string') return
 
   const bounds = (lat1, lng1, lat2, lng2) => L.latLngBounds(L.latLng(lat1, lng1), L.latLng(lat2, lng2))
 
   // Format: PostGIS (ST_Extent())
   const regex = /BOX\((.*)[ ]+(.*)[, ]+(.*)[ ]+(.*)\)/
-  const match = json.bbox.match(regex)
+  const match = content.bbox.match(regex)
   if (match) {
     /* eslint-disable no-unused-vars */
     const [_, lng1, lat1, lng2, lat2] = match
@@ -35,7 +36,7 @@ const bounds = json => {
   }
 
   // Format: GeoJSON (simple array)
-  const [lng1, lat1, lng2, lat2] = JSON.parse(json.bbox)
+  const [lng1, lat1, lng2, lat2] = JSON.parse(content.bbox)
   return bounds(lat1, lng1, lat2, lng2)
 }
 
@@ -46,22 +47,33 @@ const fitBounds = bounds => {
 
 evented.on('MAP_CREATED', reference => {
   map = reference
+  group = L.layerGroup()
+  group.addTo(map)
 
-  map.on('remove', x => console.log('layer removed', x))
-  store.on('added', ({ name, file }) => {
-    layer([name, file])
-    fitBounds(bounds(file))
-  })
+  const show = state => Object.entries(state)
+    .filter(([_, layer]) => layer.show)
+    .forEach(addLayer)
 
-  store.on('toggled', ({ name, file }) => {
-    Leaflet.layers(map)
+  const hide = name => {
+
+    Leaflet.layers(group)
       .filter(layer => layer instanceof L.GeoJSON.Symbols)
       .filter(layer => layer.options.id === name)
-      .forEach(layer => layer.remove())
+      .forEach(layer => {
+        layer.on('remove', () => console.log('layer removed', name))
+        layer.remove()
+      })
+  }
 
-    if (file.visible) layer([name, file])
+  store.on('added', ({ name, layer }) => {
+    addLayer([name, layer])
+    fitBounds(bounds(layer))
   })
 
-  if (store.ready()) Object.entries(store.state()).forEach(layer)
-  else store.on('ready', state => Object.entries(state).forEach(layer))
+  store.on('removed', ({ name }) => hide(name))
+  store.on('hidden', ({ name }) => hide(name))
+  store.on('shown', ({ name, layer }) => addLayer([name, layer]))
+
+  if (store.ready()) show(store.state())
+  else store.on('ready', show)
 })

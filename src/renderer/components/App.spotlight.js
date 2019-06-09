@@ -72,8 +72,10 @@ const pois = options => term => {
 
 const layers = options => term => {
 
-  const handleToggle = name => {
-    layerStore.toggle(name)
+  const handleToggle = name => () => {
+    const show = layerStore.state()[name].show
+    if (show) layerStore.hide(name)
+    else layerStore.show(name)
   }
 
   const items = Object.entries(layerStore.state())
@@ -85,13 +87,12 @@ const layers = options => term => {
           <div>
             <ListItemText primary={ name } secondary={ 'Layer' }/>
             <ListItemSecondaryAction>
-              <Switch
-                edge="end"
-                onChange={ () => handleToggle(name) }
-              />
+              <Switch edge="end"/>
             </ListItemSecondaryAction>
           </div>
-        )
+        ),
+        action: handleToggle(name),
+        delete: () => layerStore.remove(name)
       }
     })
 

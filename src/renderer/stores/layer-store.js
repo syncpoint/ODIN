@@ -35,31 +35,34 @@ db.createReadStream({
 evented.ready = () => ready
 evented.state = () => state
 
-evented.add = (name, file) => {
-  db.put(`layer:${name}`, file)
-  evented.emit('added', { name, file })
+evented.add = (name, content) => {
+  const layer = { show: true, content }
+  state[name] = layer
+  db.put(`layer:${name}`, layer).then(() => evented.emit('added', { name, layer }))
 }
 
 evented.remove = name => {
-  db.del(`layer:${name}`)
-  evented.emit('removed', { name })
+  if (!state[name]) return
+  delete state[name]
+  db.del(`layer:${name}`).then(() => evented.emit('removed', { name }))
 }
 
-evented.toggle = name => {
-  const file = state[name]
-  if (!file) return
+evented.hide = name => {
+  const layer = state[name]
+  if (!layer) return
+  if (!layer.show) return
 
-  const toggle = visible => {
-    file.visible = visible
-    db.put(`layer:${name}`, file)
-    evented.emit('toggled', { name, file })
-  }
+  layer.show = false
+  db.put(`layer:${name}`, layer).then(() => evented.emit('hidden', { name }))
+}
 
-  switch(file.visible) {
-    case true: return toggle(false)
-    case false: return toggle(true)
-    default: return toggle(false)
-  }
+evented.show = name => {
+  const layer = state[name]
+  if (!layer) return
+  if (layer.show) return
+
+  layer.show = true
+  db.put(`layer:${name}`, layer).then(() => evented.emit('shown', { name, layer }))
 }
 
 export default evented
