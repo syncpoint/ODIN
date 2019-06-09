@@ -4,8 +4,6 @@ import { remote } from 'electron'
 import store from '../../stores/layer-store'
 
 export const COMMAND_IMPORT_LAYER = () => () => {
-  console.log('COMMAND_IMPORT_LAYER')
-
   const filters = [
     { name: 'Layers', extensions: ['json'] },
     { name: 'All Files', extensions: ['*'] }
