@@ -1,6 +1,3 @@
-
-/* eslint-disable no-unused-vars  */
-
 import React from 'react'
 import L from 'leaflet'
 import { withStyles } from '@material-ui/core/styles'
