@@ -94,7 +94,7 @@ const initialize = function (features, options) {
   this.markers = []
   L.setOptions(this, options)
   options.pointToLayer = pointToLayer.bind(this)
-  L.GeoJSON.prototype.initialize(features, options)
+  L.GeoJSON.prototype.initialize.call(this, features, options)
 
   if (options.selectable) {
     selection.on('selected', object => this.selected(object))
