@@ -37,8 +37,9 @@ evented.state = () => state
 
 evented.add = (name, content) => {
   const layer = { show: true, content }
+  const event = state[name] ? 'replaced' : 'added'
   state[name] = layer
-  db.put(`layer:${name}`, layer).then(() => evented.emit('added', { name, layer }))
+  db.put(`layer:${name}`, layer).then(() => evented.emit(event, { name, layer }))
 }
 
 evented.remove = name => {
