@@ -41,10 +41,9 @@ const removeLayer = name => Leaflet.layers(group)
   .filter(layer => layer.options.id === name)
   .forEach(layer => layer.remove())
 
-const addLayer = (name, layer) => new L.GeoJSON.Symbols({
+const addLayer = (name, layer) => new L.GeoJSON.Symbols(layer.content, {
   id: name,
   size: () => 34,
-  features: () => layer.content,
   filter: feature => feature.geometry,
   style: feature => STYLES[feature.geometry.type] || {}
 }).addTo(group)
@@ -52,7 +51,6 @@ const addLayer = (name, layer) => new L.GeoJSON.Symbols({
 const addAllLayers = state => Object.entries(state)
   .filter(([_, layer]) => layer.show)
   .forEach(([name, layer]) => addLayer(name, layer))
-
 
 evented.on('MAP_CREATED', reference => {
   map = reference
