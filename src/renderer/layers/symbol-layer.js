@@ -11,14 +11,6 @@ const STYLES = {
   Polygon: { color: '#444444', weight: 1, opacity: 0.1 }
 }
 
-const addLayer = ([name, layer]) => new L.GeoJSON.Symbols({
-  id: name,
-  size: () => 34,
-  features: () => layer.content,
-  filter: feature => feature.geometry,
-  style: feature => STYLES[feature.geometry.type] || {}
-}).addTo(group)
-
 const bounds = ({ content }) => {
   if (!content.bbox) return
   if (typeof content.bbox !== 'string') return
@@ -45,35 +37,43 @@ const fitBounds = bounds => {
   map.fitBounds(bounds, { animate: true })
 }
 
+const removeLayer = name => Leaflet.layers(group)
+  .filter(layer => layer.options.id === name)
+  .forEach(layer => layer.remove())
+
+const addLayer = (name, layer) => new L.GeoJSON.Symbols({
+  id: name,
+  size: () => 34,
+  features: () => layer.content,
+  filter: feature => feature.geometry,
+  style: feature => STYLES[feature.geometry.type] || {}
+}).addTo(group)
+
+const addAllLayers = state => Object.entries(state)
+  .filter(([_, layer]) => layer.show)
+  .forEach(([name, layer]) => addLayer(name, layer))
+
+
 evented.on('MAP_CREATED', reference => {
   map = reference
   group = L.layerGroup()
   group.addTo(map)
 
-  const show = state => Object.entries(state)
-    .filter(([_, layer]) => layer.show)
-    .forEach(addLayer)
-
-  const hide = name => {
-
-    Leaflet.layers(group)
-      .filter(layer => layer instanceof L.GeoJSON.Symbols)
-      .filter(layer => layer.options.id === name)
-      .forEach(layer => {
-        layer.on('remove', () => console.log('layer removed', name))
-        layer.remove()
-      })
-  }
-
   store.on('added', ({ name, layer }) => {
-    addLayer([name, layer])
+    addLayer(name, layer)
     fitBounds(bounds(layer))
   })
 
-  store.on('removed', ({ name }) => hide(name))
-  store.on('hidden', ({ name }) => hide(name))
-  store.on('shown', ({ name, layer }) => addLayer([name, layer]))
+  store.on('replaced', ({ name, layer }) => {
+    removeLayer(name)
+    addLayer(name, layer)
+    fitBounds(bounds(layer))
+  })
 
-  if (store.ready()) show(store.state())
-  else store.on('ready', show)
+  store.on('removed', ({ name }) => removeLayer(name))
+  store.on('hidden', ({ name }) => removeLayer(name))
+  store.on('shown', ({ name, layer }) => addLayer(name, layer))
+
+  if (store.ready()) addAllLayers(store.state())
+  else store.on('ready', addAllLayers)
 })
