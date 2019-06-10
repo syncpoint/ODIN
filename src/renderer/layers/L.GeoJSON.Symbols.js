@@ -90,14 +90,11 @@ const key = function (id) {
   return `feature://${this.options.id}/${id}`
 }
 
-const initialize = function (options) {
+const initialize = function (features, options) {
   this.markers = []
   L.setOptions(this, options)
   options.pointToLayer = pointToLayer.bind(this)
-  L.GeoJSON.prototype.initialize(null, options)
-
-  const features = options.features ? options.features() : []
-  this.addData(features)
+  L.GeoJSON.prototype.initialize(features, options)
 
   if (options.selectable) {
     selection.on('selected', object => this.selected(object))
