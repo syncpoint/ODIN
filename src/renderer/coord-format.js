@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron'
 import Dms from 'geodesy/dms.js'
 import { LatLon } from 'geodesy/mgrs.js'
-import settings from './components/map/settings'
+import settings from './model/settings'
 
 /* eslint-disable no-unused-vars */
 // Default separator is U+202F ‘narrow no-break space’.

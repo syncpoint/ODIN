@@ -1,4 +1,4 @@
-import settings from './map/settings'
+import settings from '../model/settings'
 import evented from '../evented'
 
 const addBookmarkOptions = options => {
