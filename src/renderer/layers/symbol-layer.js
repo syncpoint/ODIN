@@ -68,7 +68,6 @@ const addLayer = (name, layer) => new L.GeoJSON.Symbols(layer.content, {
     const { sidc } = feature.properties
     if (!sidc) return
 
-    console.log(sidc)
     return {
       fillColor: 'none',
       color: color(sidc.charAt(1)),

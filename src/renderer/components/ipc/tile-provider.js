@@ -1,6 +1,6 @@
 import L from 'leaflet'
 import Leaflet from '../../leaflet'
-import settings from '../map/settings'
+import settings from '../../model/settings'
 
 const defautTileProvider = {
   id: 'OpenStreetMap.Mapnik',
