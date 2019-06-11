@@ -6,10 +6,29 @@ import store from '../stores/layer-store'
 let map
 let group
 
-const STYLES = {
-  LineString: { color: '#000000', weight: 2, opacity: 1 },
-  Polygon: { color: '#444444', weight: 1, opacity: 0.1 }
+
+const COLOR = {
+  DARK: {
+    P: '#e1dc00',
+    U: '#e1dc00',
+    F: '#006b8c',
+    N: '#00a000',
+    H: '#c80000',
+    A: '#006b8c',
+    S: '#c80000'
+  },
+  MEDIUM: {
+    P: '#ffff00',
+    U: '#ffff00',
+    F: '#00a8dc',
+    N: '#00e200',
+    H: '#ff3031',
+    A: '#00a8dc',
+    S: '#ff3031'
+  }
 }
+
+const color = id => COLOR.DARK[id] || '000000'
 
 const bounds = ({ content }) => {
   if (!content.bbox) return
@@ -45,7 +64,18 @@ const addLayer = (name, layer) => new L.GeoJSON.Symbols(layer.content, {
   id: name,
   size: () => 34,
   filter: feature => feature.geometry,
-  style: feature => STYLES[feature.geometry.type] || {}
+  style: feature => {
+    const { sidc } = feature.properties
+    if (!sidc) return
+
+    console.log(sidc)
+    return {
+      fillColor: 'none',
+      color: color(sidc.charAt(1)),
+      weight: 3,
+      opacity: 1
+    }
+  }
 }).addTo(group)
 
 const addAllLayers = state => Object.entries(state)

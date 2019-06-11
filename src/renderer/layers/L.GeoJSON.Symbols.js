@@ -9,6 +9,7 @@ import selection from '../components/App.selection'
 
 // TODO: map remaining (text) modifiers
 const MODIFIER_MAP = {
+  f: 'reinforcedReduced',
   m: 'higherFormation',
   q: 'direction',
   t: 'uniqueDesignation',
