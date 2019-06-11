@@ -35,6 +35,7 @@ db.createReadStream({
 evented.ready = () => ready
 evented.state = () => state
 
+// strategy (pessimistic): update state, save, emit event on completion
 evented.add = (name, content) => {
   const layer = { show: true, content }
   const event = state[name] ? 'replaced' : 'added'
