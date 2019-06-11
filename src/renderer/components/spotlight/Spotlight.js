@@ -28,6 +28,13 @@ class Spotlight extends React.Component {
     })
   }
 
+  /*
+   * TODO:
+   * props.options.item() should return a 'hot list', i.e. EventEmitter
+   * item in list should know how to delete itself indirectly:
+   * item --(delete)--> store --(deleted)--> list --(updated)--> Spotlight
+   * list should update itself when filter term is changed
+   */
   handleDelete (key) {
     const index = this.state.rows.findIndex(row => row.key === key && row.delete)
     if (index !== -1) {

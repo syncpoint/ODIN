@@ -17,6 +17,7 @@ const handlers = {
 
 const reduce = ({ type, ...event }) => (handlers[type] || (() => {}))(event)
 
+// Strategy (optimistic): save (fire and forget), update state, emit event
 const persist = ({ type, ...event }) => {
   db.put(`journal:poi:${now()}`, { type, ...event })
   reduce({ type, ...event })

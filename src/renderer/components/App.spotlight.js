@@ -126,6 +126,7 @@ const layers = options => term => {
   return Promise.resolve(items)
 }
 
+// FIXME: does not scale well, needs contribution interface
 // Available providers (order matter):
 const itemProviders = [
   layers,
