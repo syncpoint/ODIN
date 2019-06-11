@@ -1,7 +1,7 @@
-import places from '../model/spotlight-places'
-import bookmarks from '../model/spotlight-bookmarks'
-import pois from '../model/spotlight-pois'
-import layers from '../model/spotlight-layers'
+import places from './spotlight-places'
+import bookmarks from './spotlight-bookmarks'
+import pois from './spotlight-pois'
+import layers from './spotlight-layers'
 
 // FIXME: does not scale well, needs contribution interface
 // Available providers (order matter):
