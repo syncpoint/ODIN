@@ -11,6 +11,7 @@ class POIProperties extends React.Component {
   constructor (props) {
     super(props)
 
+    // FIXME: provide all properties to that we don't have to query store
     // Must set name if undefined in order for name TextField to be controlled.
     const poi = store.state()[props.uuid]
     if (!poi.name) poi.name = ''

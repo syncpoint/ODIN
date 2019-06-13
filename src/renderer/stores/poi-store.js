@@ -4,6 +4,7 @@ import now from 'nano-time'
 import { db } from './db'
 
 const evented = new EventEmitter()
+const reducers = []
 const state = {}
 let ready = false
 
@@ -38,14 +39,21 @@ const recoverStream = reduce => new Writable({
 })
 
 // recover journal events:
-db.createReadStream({
+const recover = reducer => db.createReadStream({
   gte: 'journal:poi',
   lte: 'journal:poi\xff',
   keys: false
-}).pipe(recoverStream(reduce))
+}).pipe(recoverStream(reducer))
 
+
+// TODO: at some point, `ready` and `state` should no longer be necessary
 evented.ready = () => ready
 evented.state = () => ({ ...state })
+
+evented.register = reducer => {
+  recover(reducer)
+  reducers.push(reducer)
+}
 
 evented.add = (uuid, poi) => persist({ type: 'added', uuid, ...poi })
 
@@ -69,5 +77,7 @@ evented.comment = (uuid, comment) => {
   if (!state[uuid]) return
   persist({ type: 'commented', uuid, comment })
 }
+
+recover(reduce)
 
 export default evented

@@ -47,19 +47,24 @@ class Spotlight extends React.Component {
     }
   }
 
+  // TODO: delegate filter term change to hot item list
   handleChange (value) {
-    const { items } = this.props.options
+    const { items, searchItems } = this.props.options
     if (items) items(value).then(items => this.handleUpdate(items))
 
     this.setState({
       ...this.state,
       value
     })
+
+    if (!searchItems) return
+    searchItems.updateFilter(value)
   }
 
   componentDidMount () {
     const { options } = this.props
 
+    // TODO: supply optional items in ctor -> props
     // Populate with initials list:
     if (options) {
       const { items } = options
@@ -69,10 +74,20 @@ class Spotlight extends React.Component {
 
   render () {
     const { classes, options } = this.props
+    const { searchItems } = options
     const { value, rows } = this.state
     const style = {
       height: rows.length ? 'auto' : 'max-content'
     }
+
+    const list = () => searchItems
+      ? <ResultList
+        rows={ rows }
+        options={ options }
+        onChange={ value => this.handleChange(value) }
+        onDelete={ key => this.handleDelete(key) }
+      />
+      : null
 
     return (
       <Paper
@@ -86,12 +101,7 @@ class Spotlight extends React.Component {
           onChange={ value => this.handleChange(value) }
           value={ value }
         />
-        <ResultList
-          rows={ rows }
-          options={ options }
-          onChange={ value => this.handleChange(value) }
-          onDelete={ key => this.handleDelete(key) }
-        />
+        { list() }
         {/* <Preview></Preview> */}
       </Paper>
     )
