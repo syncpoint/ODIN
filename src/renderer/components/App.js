@@ -12,6 +12,7 @@ import spotlightOptions from './App.spotlight'
 import addBookmarkOptions from './App.bookmark'
 import selection from './App.selection'
 import input from './App.input'
+import mouseInput from '../components/map/mouse-input'
 
 const center = L.latLng(48.65400545105681, 15.319061279296877)
 const zoom = 13
@@ -40,6 +41,7 @@ class App extends React.Component {
   }
 
   openSpotlight (options) {
+    mouseInput.cancel()
     selection.deselect() // closes any properties panel
     input.push({
       escape: () => this.closeSpotlight(),
