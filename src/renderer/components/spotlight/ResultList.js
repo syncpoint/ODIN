@@ -7,6 +7,14 @@ import { noop } from '../../../shared/combinators'
 
 class ResultList extends React.Component {
 
+  constructor (props) {
+    super(props)
+
+    if (props.options.searchItems) {
+      this.state = { rows: props.options.searchItems.snapshot() }
+    }
+  }
+
   handleListKeyDown (event) {
     const { onChange } = this.props
 
@@ -20,7 +28,7 @@ class ResultList extends React.Component {
   }
 
   handleClick (key) {
-    this.props.rows
+    this.state.rows
       .filter(row => row.key === key)
       .filter(row => row.action)
       .forEach(row => row.action())
@@ -40,8 +48,18 @@ class ResultList extends React.Component {
     }
   }
 
+  componentDidMount () {
+    this.updateListener = rows => this.setState({ ...this.state, rows })
+    if (this.props.options.searchItems) this.props.options.searchItems.on('updated', this.updateListener)
+  }
+
+  componentWillUnmount () {
+    if (this.props.options.searchItems) this.props.options.searchItems.off('updated', this.updateListener)
+  }
+
   render () {
-    const { classes, rows } = this.props
+    const { rows } = this.state
+    const { classes } = this.props
     const display = rows.length ? 'block' : 'none'
 
     const listItems = () => (rows || []).map(row => (
