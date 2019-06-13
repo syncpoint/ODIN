@@ -8,10 +8,12 @@ evented.on('MAP_CREATED', reference => (map = reference))
 // Cancellable input method.
 let inputMethod
 
+// Cancel active input (if any):
+const cancel = () => inputMethod ? inputMethod() : () => {}
+
 const pickPoint = options => {
 
-  // Cancel active input (if any):
-  if (inputMethod) inputMethod()
+  cancel()
 
   const prompt = options.prompt || ''
   evented.emit('OSD_MESSAGE', { message: prompt })
@@ -47,5 +49,6 @@ const pickPoint = options => {
 }
 
 export default {
+  cancel,
   pickPoint
 }
