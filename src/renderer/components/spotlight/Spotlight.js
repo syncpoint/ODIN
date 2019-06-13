@@ -6,11 +6,12 @@ import SearchField from './SearchField'
 import ResultList from './ResultList'
 
 class Spotlight extends React.Component {
+
   constructor (props) {
     super(props)
     this.state = {
-      value: '',
-      rows: []
+      rows: [],
+      value: ''
     }
   }
 
@@ -21,55 +22,27 @@ class Spotlight extends React.Component {
     }
   }
 
-  handleUpdate (rows) {
-    this.setState({
-      ...this.state,
-      rows
-    })
-  }
-
-  /*
-   * TODO:
-   * props.options.item() should return a 'hot list', i.e. EventEmitter
-   * item in list should know how to delete itself indirectly:
-   * item --(delete)--> store --(deleted)--> list --(updated)--> Spotlight
-   * list should update itself when filter term is changed
-   */
-  handleDelete (key) {
-    const index = this.state.rows.findIndex(row => row.key === key && row.delete)
-    if (index !== -1) {
-      this.state.rows[index].delete()
-      this.state.rows.splice(index, 1)
-      this.setState({
-        ...this.state,
-        rows: this.state.rows
-      })
-    }
-  }
-
-  // TODO: delegate filter term change to hot item list
   handleChange (value) {
-    const { items, searchItems } = this.props.options
-    if (items) items(value).then(items => this.handleUpdate(items))
+    const updateFilter = () => {
+      const { searchItems } = this.props.options
+      if (!searchItems) return
+      searchItems.updateFilter(value)
+    }
 
-    this.setState({
-      ...this.state,
-      value
-    })
-
-    if (!searchItems) return
-    searchItems.updateFilter(value)
+    this.setState({ ...this.state, value }, updateFilter)
   }
 
   componentDidMount () {
     const { options } = this.props
-
-    // TODO: supply optional items in ctor -> props
-    // Populate with initials list:
-    if (options) {
-      const { items } = options
-      if (items) items('').then(rows => this.handleUpdate(rows))
+    this.updateListener = rows => {
+      this.setState({ ...this.state, rows })
     }
+    if (options.searchItems) options.searchItems.on('updated', this.updateListener)
+  }
+
+  componentWillUnmount () {
+    const { options } = this.props
+    if (options.searchItems) options.searchItems.off('updated', this.updateListener)
   }
 
   render () {
@@ -85,7 +58,6 @@ class Spotlight extends React.Component {
         rows={ rows }
         options={ options }
         onChange={ value => this.handleChange(value) }
-        onDelete={ key => this.handleDelete(key) }
       />
       : null
 

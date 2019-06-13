@@ -7,14 +7,6 @@ import { noop } from '../../../shared/combinators'
 
 class ResultList extends React.Component {
 
-  constructor (props) {
-    super(props)
-
-    if (props.options.searchItems) {
-      this.state = { rows: props.options.searchItems.snapshot() }
-    }
-  }
-
   handleListKeyDown (event) {
     const { onChange } = this.props
 
@@ -27,39 +19,28 @@ class ResultList extends React.Component {
     }
   }
 
-  handleClick (key) {
-    this.state.rows
+  invokeAction (action, key) {
+    this.props.rows
       .filter(row => row.key === key)
-      .filter(row => row.action)
-      .forEach(row => row.action())
+      .forEach(row => row[action]())
   }
 
   handleDoubleClick (key) {
-    this.handleClick(key)
+    this.invokeAction('action', key)
     ;(this.props.options.close || noop)()
   }
 
   handleItemKeyDown (key) {
     switch (event.key) {
       // NOTE: click is triggered implicitly
-      case 'Enter': return (this.props.options.close || noop)()
-      case 'Delete': return this.props.onDelete(key)
-      case 'Backspace': if (event.metaKey) return this.props.onDelete(key)
+      case 'Enter': return this.invokeAction('action', key)
+      case 'Delete': return this.invokeAction('delete', key)
+      case 'Backspace': if (event.metaKey) return this.invokeAction('delete', key)
     }
   }
 
-  componentDidMount () {
-    this.updateListener = rows => this.setState({ ...this.state, rows })
-    if (this.props.options.searchItems) this.props.options.searchItems.on('updated', this.updateListener)
-  }
-
-  componentWillUnmount () {
-    if (this.props.options.searchItems) this.props.options.searchItems.off('updated', this.updateListener)
-  }
-
   render () {
-    const { rows } = this.state
-    const { classes } = this.props
+    const { classes, rows } = this.props
     const display = rows.length ? 'block' : 'none'
 
     const listItems = () => (rows || []).map(row => (
@@ -67,7 +48,7 @@ class ResultList extends React.Component {
         button
         divider={ true }
         key={ row.key }
-        onClick={ () => this.handleClick(row.key) }
+        onClick={ () => this.invokeAction('action', row.key) }
         onDoubleClick={ () => this.handleDoubleClick(row.key) }
         onKeyDown={ () => this.handleItemKeyDown(row.key) }
       >
@@ -91,8 +72,7 @@ ResultList.propTypes = {
   classes: PropTypes.any.isRequired,
   options: PropTypes.any.isRequired,
   rows: PropTypes.array.isRequired,
-  onChange: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired
 }
 
 const styles = theme => ({
