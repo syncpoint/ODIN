@@ -3,6 +3,7 @@ import bookmarks from '../model/spotlight-bookmarks'
 import places from '../model/spotlight-places'
 import pois from '../model/spotlight-pois'
 import layers from '../model/spotlight-layers'
+import features from '../model/spotlight-features'
 
 const searchItems = new EventEmitter()
 
@@ -33,5 +34,6 @@ bookmarks(register)
 pois(register)
 layers(register)
 places(register)
+features(register)
 
 export default searchItems
