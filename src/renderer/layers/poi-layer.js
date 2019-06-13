@@ -17,7 +17,7 @@ const feature = (id, properties) => ({
 })
 
 evented.on('MAP_CREATED', map => {
-  const symbols = new L.GeoJSON.Symbols({
+  const symbols = new L.GeoJSON.Symbols(null, {
     id: 'poi-layer',
     size: () => 34,
     draggable: true,

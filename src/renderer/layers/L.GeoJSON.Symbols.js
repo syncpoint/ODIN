@@ -9,6 +9,7 @@ import selection from '../components/App.selection'
 
 // TODO: map remaining (text) modifiers
 const MODIFIER_MAP = {
+  f: 'reinforcedReduced',
   m: 'higherFormation',
   q: 'direction',
   t: 'uniqueDesignation',
@@ -90,16 +91,11 @@ const key = function (id) {
   return `feature://${this.options.id}/${id}`
 }
 
-const initialize = function (options) {
-  console.log('selectable', options.selectable)
-
+const initialize = function (features, options) {
   this.markers = []
   L.setOptions(this, options)
   options.pointToLayer = pointToLayer.bind(this)
-  L.GeoJSON.prototype.initialize(null, options)
-
-  const features = options.features ? options.features() : []
-  this.addData(features)
+  L.GeoJSON.prototype.initialize.call(this, features, options)
 
   if (options.selectable) {
     selection.on('selected', object => this.selected(object))

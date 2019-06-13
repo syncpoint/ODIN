@@ -6,11 +6,12 @@ import SearchField from './SearchField'
 import ResultList from './ResultList'
 
 class Spotlight extends React.Component {
+
   constructor (props) {
     super(props)
     this.state = {
-      value: '',
-      rows: []
+      rows: [],
+      value: ''
     }
   }
 
@@ -21,51 +22,44 @@ class Spotlight extends React.Component {
     }
   }
 
-  handleUpdate (rows) {
-    this.setState({
-      ...this.state,
-      rows
-    })
-  }
-
-  handleDelete (key) {
-    const index = this.state.rows.findIndex(row => row.key === key && row.delete)
-    if (index !== -1) {
-      this.state.rows[index].delete()
-      this.state.rows.splice(index, 1)
-      this.setState({
-        ...this.state,
-        rows: this.state.rows
-      })
-    }
-  }
-
   handleChange (value) {
-    const { items } = this.props.options
-    if (items) items(value).then(items => this.handleUpdate(items))
+    const updateFilter = () => {
+      const { searchItems } = this.props.options
+      if (!searchItems) return
+      searchItems.updateFilter(value)
+    }
 
-    this.setState({
-      ...this.state,
-      value
-    })
+    this.setState({ ...this.state, value }, updateFilter)
   }
 
   componentDidMount () {
     const { options } = this.props
-
-    // Populate with initials list:
-    if (options) {
-      const { items } = options
-      if (items) items('').then(rows => this.handleUpdate(rows))
+    this.updateListener = rows => {
+      this.setState({ ...this.state, rows })
     }
+    if (options.searchItems) options.searchItems.on('updated', this.updateListener)
+  }
+
+  componentWillUnmount () {
+    const { options } = this.props
+    if (options.searchItems) options.searchItems.off('updated', this.updateListener)
   }
 
   render () {
     const { classes, options } = this.props
+    const { searchItems } = options
     const { value, rows } = this.state
     const style = {
       height: rows.length ? 'auto' : 'max-content'
     }
+
+    const list = () => searchItems
+      ? <ResultList
+        rows={ rows }
+        options={ options }
+        onChange={ value => this.handleChange(value) }
+      />
+      : null
 
     return (
       <Paper
@@ -79,12 +73,7 @@ class Spotlight extends React.Component {
           onChange={ value => this.handleChange(value) }
           value={ value }
         />
-        <ResultList
-          rows={ rows }
-          options={ options }
-          onChange={ value => this.handleChange(value) }
-          onDelete={ key => this.handleDelete(key) }
-        />
+        { list() }
         {/* <Preview></Preview> */}
       </Paper>
     )

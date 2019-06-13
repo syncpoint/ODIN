@@ -14,7 +14,7 @@ import { defaultValues } from '../ipc/display-filters'
 import { tileProvider } from '../ipc/tile-provider'
 import ipcHandlers from '../ipc/ipc'
 import coord from '../../coord-format'
-import settings from './settings'
+import settings from '../../model/settings'
 import '../../layers/poi-layer'
 import '../../layers/symbol-layer'
 
@@ -71,6 +71,8 @@ class Map extends React.Component {
 
     evented.on('OSD_MOUNTED', updateScaleDisplay(this.map))
     evented.on('MAP:DISPLAY_FILTER_CHANGED', updateDisplayFilter(this.map))
+    evented.on('map.center', latlng => this.map.panTo(latlng))
+    evented.on('map.viewport', (center, zoom) => this.map.flyTo(center, zoom))
     evented.emit('MAP:DISPLAY_FILTER_CHANGED', settings.map.getDisplayFilters(defaultValues()))
 
     // Bind command handlers after map was initialized:

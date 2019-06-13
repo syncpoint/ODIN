@@ -8,7 +8,7 @@ import * as R from 'ramda'
 import OSD from './OSD'
 import Spotlight from './spotlight/Spotlight'
 import POIProperties from './POIProperties'
-import spotlightOptions from './App.spotlight'
+import { spotlightOptions } from './App.spotlight'
 import addBookmarkOptions from './App.bookmark'
 import selection from './App.selection'
 import input from './App.input'
@@ -91,6 +91,7 @@ class App extends React.Component {
       }))
     })
 
+    // FIXME: should now be called COMMAND_FIND
     ipcRenderer.on('COMMAND_GOTO_PLACE', (_, args) => {
       this.openSpotlight(spotlightOptions({
         context: this,

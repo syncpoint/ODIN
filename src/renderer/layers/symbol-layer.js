@@ -1,56 +1,108 @@
 import L from 'leaflet'
+import Leaflet from '../leaflet'
 import evented from '../evented'
 import store from '../stores/layer-store'
 
 let map
+let group
 
-const STYLES = {
-  LineString: { color: '#000000', weight: 2, opacity: 1 },
-  Polygon: { color: '#444444', weight: 1, opacity: 0.1 }
-}
 
-const layer = ([name, features]) => new L.GeoJSON.Symbols({
-  id: name,
-  size: () => 34,
-  features: () => features,
-  filter: feature => feature.geometry,
-  style: feature => STYLES[feature.geometry.type] || {}
-}).addTo(map)
-
-const bounds = json => {
-  if (!json.bbox) return
-  if (typeof json.bbox !== 'string') return
-
-  const bounds = (lat1, lng1, lat2, lng2) => L.latLngBounds(L.latLng(lat1, lng1), L.latLng(lat2, lng2))
-
-  // Format: PostGIS (ST_Extent())
-  const regex = /BOX\((.*)[ ]+(.*)[, ]+(.*)[ ]+(.*)\)/
-  const match = json.bbox.match(regex)
-  if (match) {
-    /* eslint-disable no-unused-vars */
-    const [_, lng1, lat1, lng2, lat2] = match
-    return bounds(lat1, lng1, lat2, lng2)
-    /* eslint-enable no-unused-vars */
+const COLOR = {
+  DARK: {
+    P: '#e1dc00',
+    U: '#e1dc00',
+    F: '#006b8c',
+    N: '#00a000',
+    H: '#c80000',
+    A: '#006b8c',
+    S: '#c80000',
+    // undefined SIDC/standard identity:
+    X: '#000000'
+  },
+  MEDIUM: {
+    P: '#ffff00',
+    U: '#ffff00',
+    F: '#00a8dc',
+    N: '#00e200',
+    H: '#ff3031',
+    A: '#00a8dc',
+    S: '#ff3031',
+    X: '#000000'
   }
-
-  // Format: GeoJSON (simple array)
-  const [lng1, lat1, lng2, lat2] = JSON.parse(json.bbox)
-  return bounds(lat1, lng1, lat2, lng2)
 }
 
-const fitBounds = bounds => {
-  if (!bounds) return
-  map.fitBounds(bounds, { animate: true })
+const color = id => COLOR.DARK[id] || '000000'
+
+// const bounds = ({ content }) => {
+//   if (!content.bbox) return
+//   if (typeof content.bbox !== 'string') return
+
+//   const bounds = (lat1, lng1, lat2, lng2) => L.latLngBounds(L.latLng(lat1, lng1), L.latLng(lat2, lng2))
+
+//   // Format: PostGIS (ST_Extent())
+//   const regex = /BOX\((.*)[ ]+(.*)[, ]+(.*)[ ]+(.*)\)/
+//   const match = content.bbox.match(regex)
+//   if (match) {
+//     /* eslint-disable no-unused-vars */
+//     const [_, lng1, lat1, lng2, lat2] = match
+//     return bounds(lat1, lng1, lat2, lng2)
+//     /* eslint-enable no-unused-vars */
+//   }
+
+//   // Format: GeoJSON (simple array)
+//   const [lng1, lat1, lng2, lat2] = JSON.parse(content.bbox)
+//   return bounds(lat1, lng1, lat2, lng2)
+// }
+
+// const fitBounds = bounds => {
+//   if (!bounds) return
+//   map.fitBounds(bounds, { animate: true })
+// }
+
+const removeLayer = name => Leaflet.layers(group)
+  .filter(layer => layer.options.id === name)
+  .forEach(layer => layer.remove())
+
+const addLayer = (name, layer) => {
+  const symbols = new L.GeoJSON.Symbols(layer.content, {
+    id: name,
+    size: () => 34,
+    filter: feature => feature.geometry,
+    style: feature => {
+      const { sidc } = feature.properties
+
+      return {
+        fillColor: 'none',
+        color: color(sidc ? sidc.charAt(1) : 'X'),
+        weight: 2,
+        opacity: 0.4
+      }
+    }
+  })
+
+  symbols.addTo(group)
 }
 
+const addAllLayers = state => Object.entries(state)
+  .filter(([_, layer]) => layer.show)
+  .forEach(([name, layer]) => addLayer(name, layer))
 
 evented.on('MAP_CREATED', reference => {
   map = reference
-  store.on('added', ({ name, file }) => {
-    layer([name, file])
-    fitBounds(bounds(file))
+  group = L.layerGroup()
+  group.addTo(map)
+
+  store.on('added', ({ name, layer }) => addLayer(name, layer))
+
+  store.on('replaced', ({ name, layer }) => {
+    removeLayer(name)
+    addLayer(name, layer)
   })
 
-  if (store.ready()) Object.entries(store.state()).forEach(layer)
-  else store.on('ready', state => Object.entries(state).forEach(layer))
+  store.on('removed', ({ name }) => removeLayer(name))
+  store.on('hidden', ({ name }) => removeLayer(name))
+  store.on('shown', ({ name, layer }) => addLayer(name, layer))
+
+  if (store.ready()) addAllLayers(store.state())
+  else store.on('ready', addAllLayers)
 })

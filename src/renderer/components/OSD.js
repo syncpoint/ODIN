@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { currentDateTime } from '../../shared/datetime'
 import evented from '../evented'
-import settings from './map/settings'
+import settings from '../model/settings'
 import { ipcRenderer } from 'electron'
 
 class OSD extends React.Component {
