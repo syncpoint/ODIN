@@ -33,16 +33,42 @@ db.createReadStream({
 }).pipe(recoverStream(reduce))
 
 evented.ready = () => ready
-evented.state = () => ({ ...state })
+evented.state = () => state
 
-evented.add = (name, file) => {
-  db.put(`layer:${name}`, file)
-  evented.emit('added', { name, file })
+// strategy (pessimistic): update state, save, emit event on completion
+evented.add = (name, content) => {
+  const layer = { show: true, content }
+  const event = state[name] ? 'replaced' : 'added'
+  state[name] = layer
+  db.put(`layer:${name}`, layer).then(() => evented.emit(event, { name, layer }))
 }
 
 evented.remove = name => {
-  db.del(`layer:${name}`)
-  evented.emit('removed', { name })
+  if (!state[name]) return
+  delete state[name]
+  db.del(`layer:${name}`).then(() => evented.emit('removed', { name }))
 }
+
+evented.hide = name => {
+  const layer = state[name]
+  if (!layer) return
+  if (!layer.show) return
+
+  layer.show = false
+  db.put(`layer:${name}`, layer).then(() => evented.emit('hidden', { name }))
+}
+
+evented.show = name => {
+  const layer = state[name]
+  if (!layer) return
+  if (layer.show) return
+
+  layer.show = true
+  db.put(`layer:${name}`, layer).then(() => evented.emit('shown', { name, layer }))
+}
+
+evented.removeAll = () => Object.keys(state).forEach(evented.remove)
+evented.hideAll = () => Object.keys(state).forEach(evented.hide)
+evented.showAll = () => Object.keys(state).forEach(evented.show)
 
 export default evented

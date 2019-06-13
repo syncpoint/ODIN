@@ -28,12 +28,15 @@ const DONE             = 4 // The operation is complete.
 
 const search = options => searchTerm => {
 
+
   // Replace search term if in MGRS/UTM format:
   const ll = latLng(searchTerm)
   const term = ll ? `${ll._lat} ${ll._lon}` : searchTerm
   const map = ll ? row => K(row)(row => (row.poi = searchTerm)) : row => row
 
   return new Promise((resolve, reject) => K(new XMLHttpRequest())(xhr => {
+    if (!searchTerm) resolve([])
+
     xhr.addEventListener('readystatechange', event => {
       const request = event.target
 

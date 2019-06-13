@@ -19,23 +19,23 @@ class ResultList extends React.Component {
     }
   }
 
-  handleClick (key) {
+  invokeAction (action, key) {
     this.props.rows
       .filter(row => row.key === key)
-      .forEach(row => row.action())
+      .forEach(row => row[action]())
   }
 
   handleDoubleClick (key) {
-    this.handleClick(key)
+    this.invokeAction('action', key)
     ;(this.props.options.close || noop)()
   }
 
   handleItemKeyDown (key) {
     switch (event.key) {
       // NOTE: click is triggered implicitly
-      case 'Enter': return (this.props.options.close || noop)()
-      case 'Delete': return this.props.onDelete(key)
-      case 'Backspace': if (event.metaKey) return this.props.onDelete(key)
+      case 'Enter': return this.invokeAction('action', key)
+      case 'Delete': return this.invokeAction('delete', key)
+      case 'Backspace': if (event.metaKey) return this.invokeAction('delete', key)
     }
   }
 
@@ -48,7 +48,7 @@ class ResultList extends React.Component {
         button
         divider={ true }
         key={ row.key }
-        onClick={ () => this.handleClick(row.key) }
+        onClick={ () => this.invokeAction('action', row.key) }
         onDoubleClick={ () => this.handleDoubleClick(row.key) }
         onKeyDown={ () => this.handleItemKeyDown(row.key) }
       >
@@ -72,8 +72,7 @@ ResultList.propTypes = {
   classes: PropTypes.any.isRequired,
   options: PropTypes.any.isRequired,
   rows: PropTypes.array.isRequired,
-  onChange: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired
 }
 
 const styles = theme => ({
