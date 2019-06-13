@@ -1,20 +1,32 @@
+import EventEmitter from 'events'
 import React from 'react'
 import { ListItemText } from '@material-ui/core'
 import L from 'leaflet'
-import store from '../stores/poi-store'
+import poiStore from '../stores/poi-store'
+import evented from '../evented'
 
-const pois = options => term => {
-  const { context } = options
-  const items = Object.entries(store.state())
-    .filter(([_, poi]) => poi.name && poi.name.search(new RegExp(term, 'i')) !== -1)
-    .map(([uuid, poi]) => ({
-      key: uuid,
-      text: <ListItemText primary={ poi.name } secondary={ 'POI' }/>,
-      action: () => context.setCenter(L.latLng(poi.lat, poi.lng)),
-      delete: () => store.remove(uuid)
-    }))
+export default register => {
+  const contributor = new EventEmitter()
+  const term = register(contributor)
 
-  return Promise.resolve(items)
+  const contribution = () => {
+    const filter = term()
+      ? ([_, poi]) => poi.name && poi.name.search(new RegExp(term(), 'i')) !== -1
+      : () => true
+
+    return Object.entries(poiStore.state())
+      .filter(filter)
+      .map(([uuid, poi]) => ({
+        key: uuid,
+        text: <ListItemText primary={ poi.name } secondary={ 'POI' }/>,
+        action: () => evented.emit('map.center', L.latLng(poi.lat, poi.lng)),
+        delete: () => poiStore.remove(uuid)
+      }))
+  }
+
+  if (poiStore.ready()) contributor.emit('updated', contribution())
+  else poiStore.once('ready', () => contributor.emit('updated', contribution()))
+  poiStore.on('removed', () => contributor.emit('updated', contribution()))
+  contributor.updateFilter = () => contributor.emit('updated', contribution())
 }
 
-export default pois
