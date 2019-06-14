@@ -26,12 +26,17 @@ export default register => {
 
     const items = Object.entries(store.state())
       .filter(filter)
-      .map(([name, features]) => ({
-        name,
-        tags: ['Layer', ...name.split(':').splice(1)],
-        checked: features.show,
-        onChange: handleChange(name)
-      })).map(props => ({
+      .map(([name, features]) => {
+        const [label, ...tags] = name.split(':')
+        return {
+          name,
+          label,
+          tags: ['Layer', ...tags],
+          checked: features.show,
+          onChange: handleChange(name)
+        }
+      })
+      .map(props => ({
         key: `layer://${props.name}`,
         text: <LayerListItem { ...props }/>,
         action: () => handleChange(props.name)(!props.checked),
@@ -46,7 +51,7 @@ export default register => {
       const checked = items.some(item => item.checked)
 
       const props = {
-        name: 'All Layers',
+        label: 'All Layers',
         tags: ['Layer'],
         checked: checked,
         onChange: () => checked ? store.hideAll(names) : store.showAll(names)
