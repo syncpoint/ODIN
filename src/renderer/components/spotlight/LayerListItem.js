@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 
 const LayerListItem = props => (
   <div>
-    <ListItemText primary={ props.name } secondary={ props.tags.join(' ') }/>
+    <ListItemText primary={ props.label } secondary={ props.tags.join(' ') }/>
     <ListItemSecondaryAction>
       <Switch
         edge="end"
@@ -19,7 +19,7 @@ LayerListItem.propTypes = {
   tags: PropTypes.array.isRequired,
   checked: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,
-  name: PropTypes.string.isRequired
+  label: PropTypes.string.isRequired
 }
 
 export default LayerListItem
