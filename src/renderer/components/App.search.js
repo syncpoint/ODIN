@@ -14,7 +14,7 @@ const contributors = []
 
 searchItems.updateFilter = term => {
   searchTerm = term
-  contributors.forEach(c => c.updateFilter())
+  contributors.forEach(c => setImmediate(() => c.updateFilter()))
 }
 
 searchItems.snapshot = () => contributions.reduce((acc, val) => acc.concat(val), [])
@@ -33,7 +33,7 @@ const register = contributor => {
 bookmarks(register)
 pois(register)
 layers(register)
-places(register)
 features(register)
+places(register)
 
 export default searchItems
