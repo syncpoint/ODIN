@@ -1,7 +1,7 @@
 import EventEmitter from 'events'
 import React from 'react'
 import LayerListItem from '../components/spotlight/LayerListItem'
-import layerStore from '../stores/layer-store'
+import store from '../stores/layer-store'
 
 export default register => {
   const contributor = new EventEmitter()
@@ -14,56 +14,65 @@ export default register => {
 
     const handleChange = name => checked => {
       if (!name && checked === undefined) {
-        Object.values(layerStore.state()).some(features => features.show)
-          ? layerStore.hideAll()
-          : layerStore.showAll()
+        Object.values(store.state()).some(features => features.show)
+          ? store.hideAll()
+          : store.showAll()
       } else {
         setImmediate(() => {
-          (checked ? layerStore.show : layerStore.hide)(name)
+          (checked ? store.show : store.hide)(name)
         })
       }
     }
 
-    const items = Object.entries(layerStore.state())
+    const items = Object.entries(store.state())
       .filter(filter)
-      .map(([name, features]) => ({
-        name,
-        tags: ['Layer', ...name.split(':').splice(1)],
-        checked: features.show,
-        onChange: handleChange(name)
-      })).map(props => ({
+      .map(([name, features]) => {
+        const [label, ...tags] = name.split(':')
+        return {
+          name,
+          label,
+          tags: ['Layer', ...tags],
+          checked: features.show,
+          onChange: handleChange(name)
+        }
+      })
+      .map(props => ({
         key: `layer://${props.name}`,
         text: <LayerListItem { ...props }/>,
         action: () => handleChange(props.name)(!props.checked),
-        delete: () => layerStore.remove(props.name)
+        delete: () => store.remove(props.name),
+        name: props.name,
+        checked: props.checked
       }))
 
-    // Add 'master switch':
+    // Add 'master switch' for layers currently included in list:
     if (items.length) {
-      const showSome = Object.values(layerStore.state()).some(fatures => fatures.show)
+      const names = items.map(item => item.name)
+      const checked = items.some(item => item.checked)
+
       const props = {
-        name: 'All Layers',
+        label: 'All Layers',
         tags: ['Layer'],
-        checked: showSome,
-        onChange: handleChange()
+        checked: checked,
+        onChange: () => checked ? store.hideAll(names) : store.showAll(names)
       }
       items.unshift({
         key: `layer://`,
         text: <LayerListItem { ...props }/>,
-        action: handleChange(),
-        delete: () => layerStore.removeAll()
+        action: () => checked ? store.hideAll(names) : store.showAll(names),
+        delete: () => store.removeAll(names)
       })
     }
 
     return items
   }
 
-  if (layerStore.ready()) contributor.emit('updated', contribution())
-  else layerStore.once('ready', () => contributor.emit('updated', contribution()))
+  if (store.ready()) contributor.emit('updated', contribution())
+  else store.once('ready', () => contributor.emit('updated', contribution()))
 
-  layerStore.on('shown', () => contributor.emit('updated', contribution()))
-  layerStore.on('hidden', () => contributor.emit('updated', contribution()))
-  layerStore.on('added', () => contributor.emit('updated', contribution()))
-  layerStore.on('removed', () => contributor.emit('updated', contribution()))
+  store.on('shown', () => contributor.emit('updated', contribution()))
+  store.on('hidden', () => contributor.emit('updated', contribution()))
+  store.on('added', () => contributor.emit('updated', contribution()))
+  store.on('removed', () => contributor.emit('updated', contribution()))
   contributor.updateFilter = () => contributor.emit('updated', contribution())
 }
