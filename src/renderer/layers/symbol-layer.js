@@ -74,8 +74,8 @@ const addLayer = (name, layer) => {
       return {
         fillColor: 'none',
         color: color(sidc ? sidc.charAt(1) : 'X'),
-        weight: 2,
-        opacity: 0.4
+        weight: 3,
+        opacity: 1
       }
     }
   })
