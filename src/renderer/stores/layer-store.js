@@ -67,8 +67,8 @@ evented.show = name => {
   db.put(`layer:${name}`, layer).then(() => evented.emit('shown', { name, layer }))
 }
 
-evented.removeAll = () => Object.keys(state).forEach(evented.remove)
-evented.hideAll = () => Object.keys(state).forEach(evented.hide)
-evented.showAll = () => Object.keys(state).forEach(evented.show)
+evented.removeAll = names => (names || Object.keys(state)).forEach(evented.remove)
+evented.hideAll = names => (names || Object.keys(state)).forEach(evented.hide)
+evented.showAll = names => (names || Object.keys(state)).forEach(evented.show)
 
 export default evented
