@@ -52,6 +52,7 @@ class ResultList extends React.Component {
         onDoubleClick={ () => this.handleDoubleClick(row.key) }
         onKeyDown={ () => this.handleItemKeyDown(row.key) }
       >
+        { row.avatar }
         { row.text }
       </ListItem>
     ))
