@@ -4,6 +4,7 @@ import { app, BrowserWindow, Menu } from 'electron'
 import settings from 'electron-settings'
 import { K, noop } from '../shared/combinators'
 import { buildFromTemplate } from '../main/menu/menu'
+import './REST'
 
 // Disable for production:
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'

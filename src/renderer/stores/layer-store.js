@@ -2,6 +2,7 @@
 
 import { Writable } from 'stream'
 import EventEmitter from 'events'
+import { ipcRenderer } from 'electron'
 import { db } from './db'
 
 const evented = new EventEmitter()
@@ -70,5 +71,9 @@ evented.show = name => {
 evented.removeAll = names => (names || Object.keys(state)).forEach(evented.remove)
 evented.hideAll = names => (names || Object.keys(state)).forEach(evented.hide)
 evented.showAll = names => (names || Object.keys(state)).forEach(evented.show)
+
+ipcRenderer.on('COMMAND_LOAD_LAYER', (_, name, content) => {
+  evented.add(name, content)
+})
 
 export default evented
