@@ -33,31 +33,31 @@ const COLOR = {
 
 const color = id => COLOR.DARK[id] || '000000'
 
-const bounds = ({ content }) => {
-  if (!content.bbox) return
-  if (typeof content.bbox !== 'string') return
+// const bounds = ({ content }) => {
+//   if (!content.bbox) return
+//   if (typeof content.bbox !== 'string') return
 
-  const bounds = (lat1, lng1, lat2, lng2) => L.latLngBounds(L.latLng(lat1, lng1), L.latLng(lat2, lng2))
+//   const bounds = (lat1, lng1, lat2, lng2) => L.latLngBounds(L.latLng(lat1, lng1), L.latLng(lat2, lng2))
 
-  // Format: PostGIS (ST_Extent())
-  const regex = /BOX\((.*)[ ]+(.*)[, ]+(.*)[ ]+(.*)\)/
-  const match = content.bbox.match(regex)
-  if (match) {
-    /* eslint-disable no-unused-vars */
-    const [_, lng1, lat1, lng2, lat2] = match
-    return bounds(lat1, lng1, lat2, lng2)
-    /* eslint-enable no-unused-vars */
-  }
+//   // Format: PostGIS (ST_Extent())
+//   const regex = /BOX\((.*)[ ]+(.*)[, ]+(.*)[ ]+(.*)\)/
+//   const match = content.bbox.match(regex)
+//   if (match) {
+//     /* eslint-disable no-unused-vars */
+//     const [_, lng1, lat1, lng2, lat2] = match
+//     return bounds(lat1, lng1, lat2, lng2)
+//     /* eslint-enable no-unused-vars */
+//   }
 
-  // Format: GeoJSON (simple array)
-  const [lng1, lat1, lng2, lat2] = JSON.parse(content.bbox)
-  return bounds(lat1, lng1, lat2, lng2)
-}
+//   // Format: GeoJSON (simple array)
+//   const [lng1, lat1, lng2, lat2] = JSON.parse(content.bbox)
+//   return bounds(lat1, lng1, lat2, lng2)
+// }
 
-const fitBounds = bounds => {
-  if (!bounds) return
-  map.fitBounds(bounds, { animate: true })
-}
+// const fitBounds = bounds => {
+//   if (!bounds) return
+//   map.fitBounds(bounds, { animate: true })
+// }
 
 const removeLayer = name => Leaflet.layers(group)
   .filter(layer => layer.options.id === name)
@@ -81,7 +81,7 @@ const addLayer = (name, layer) => {
   })
 
   symbols.addTo(group)
-  fitBounds(bounds(layer))
+  // fitBounds(bounds(layer))
 }
 
 const addAllLayers = state => Object.entries(state)
