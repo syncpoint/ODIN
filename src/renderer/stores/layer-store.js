@@ -72,6 +72,30 @@ evented.removeAll = names => (names || Object.keys(state)).forEach(evented.remov
 evented.hideAll = names => (names || Object.keys(state)).forEach(evented.hide)
 evented.showAll = names => (names || Object.keys(state)).forEach(evented.show)
 
+evented.updateGeometry = (name, id, latlngs) => {
+  if (!state[name]) return
+  const layer = state[name]
+  const features = layer.content.features
+  const index = features.findIndex(feature => feature.id === id)
+  if (index === -1) return
+
+  switch (features[index].geometry.type) {
+    case 'Point':
+      features[index].geometry.coordinates = [latlngs[0].lng, latlngs[0].lat]
+      break
+    case 'LineString':
+      features[index].geometry.coordinates = latlngs.map(({ lat, lng }) => ([lng, lat]))
+      break
+    case 'Polygon':
+      // TODO: support multiple rings
+      const xs = latlngs[0].map(({ lat, lng }) => ([lng, lat]))
+      features[index].geometry.coordinates = [[ ...xs, xs[0]]]
+      break
+  }
+
+  db.put(`layer:${name}`, layer).then(() => {})
+}
+
 ipcRenderer.on('COMMAND_LOAD_LAYER', (_, name, content) => {
   evented.add(name, content)
 })

@@ -6,6 +6,7 @@ import L from 'leaflet'
 import ms from 'milsymbol'
 import { K } from '../../shared/combinators'
 import selection from '../components/App.selection'
+import store from '../stores/layer-store'
 
 // TODO: map remaining (text) modifiers
 const MODIFIER_MAP = {
@@ -30,6 +31,26 @@ const defaultOptions = {
 const modifiers = feature => Object.entries(feature.properties)
   .filter(([key, value]) => MODIFIER_MAP[key] && value)
   .reduce((acc, [key, value]) => K(acc)(acc => (acc[MODIFIER_MAP[key]] = value)), {})
+
+const onEachFeature = function (feature, layer) {
+
+  layer.on('pm:edit', event => {
+    const { target } = event
+    const latlngs = target._latlng ? [target._latlng] : target._latlngs
+    store.updateGeometry(this.options.id, feature.id, latlngs)
+  })
+
+  // layer.on('pm:vertexadded', event => console.log('pm:vertexadded', event))
+  // layer.on('pm:vertexremoved', event => console.log('pm:vertexremoved', event))
+  // layer.on('pm:markerdragend', event => console.log('pm:markerdragend', event))
+  // layer.on('pm:centerplaced', event => console.log('pm:centerplaced', event))
+
+  layer.on('click', event => {
+    const { target } = event
+    target._map.pm.disableGlobalEditMode()
+    layer.pm.enable()
+  })
+}
 
 const pointToLayer = function (feature, latlng) {
   const { id, properties } = feature
@@ -95,6 +116,7 @@ const initialize = function (features, options) {
   this.markers = []
   L.setOptions(this, options)
   options.pointToLayer = pointToLayer.bind(this)
+  options.onEachFeature = onEachFeature.bind(this)
   L.GeoJSON.prototype.initialize.call(this, features, options)
 
   if (options.selectable) {

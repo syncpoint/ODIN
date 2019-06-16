@@ -63,7 +63,10 @@ const init = map => {
   })
 
   defaultBehavior = {
-    escape: () => selection.deselect(),
+    escape: () => {
+      selection.deselect()
+      map.pm.disableGlobalEditMode()
+    },
     delete: () => {
       if (selection.empty()) return
       selection.selected().forEach(selected => selected.delete())
