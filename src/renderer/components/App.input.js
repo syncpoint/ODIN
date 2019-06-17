@@ -71,7 +71,20 @@ const init = map => {
       if (selection.empty()) return
       selection.selected().forEach(selected => selected.delete())
     },
-    click: () => selection.deselect()
+    click: event => {
+
+      // Ignore if event target was not map container.
+      //
+      // This is some sort of workaround:
+      // When a new vertex is added for a feature in edit mode,
+      // the mouse event bubbles up to here with  marker container as its target.
+      // We don't to exit edit mode in this case.
+
+      if (event.originalEvent.target !== map._container) return
+
+      map.pm.disableGlobalEditMode()
+      selection.deselect()
+    }
   }
 }
 

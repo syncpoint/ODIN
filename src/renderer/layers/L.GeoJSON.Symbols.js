@@ -40,11 +40,6 @@ const onEachFeature = function (feature, layer) {
     store.updateGeometry(this.options.id, feature.id, latlngs)
   })
 
-  // layer.on('pm:vertexadded', event => console.log('pm:vertexadded', event))
-  // layer.on('pm:vertexremoved', event => console.log('pm:vertexremoved', event))
-  // layer.on('pm:markerdragend', event => console.log('pm:markerdragend', event))
-  // layer.on('pm:centerplaced', event => console.log('pm:centerplaced', event))
-
   layer.on('click', event => {
     const { target } = event
     target._map.pm.disableGlobalEditMode()
