@@ -26,7 +26,7 @@ const updateScaleDisplay = map => () => {
 }
 
 const saveViewPort = ({ target }) => {
-  const { lat, lng } = target.getCenter()
+  const { lat, lng } = target.getCenter().wrap()
   const zoom = target.getZoom()
   settings.map.setViewPort({ lat, lng, zoom })
 }
@@ -43,7 +43,8 @@ const updateDisplayFilter = map => values => {
 }
 
 const updateCoordinateDisplay = ({ latlng }) => {
-  evented.emit('OSD_MESSAGE', { slot: 'C3', message: `${coord.format(latlng)}` })
+  const message = `${coord.format(latlng.wrap())}`
+  evented.emit('OSD_MESSAGE', { slot: 'C3', message })
 }
 
 class Map extends React.Component {

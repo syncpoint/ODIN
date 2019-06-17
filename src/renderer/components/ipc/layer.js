@@ -33,6 +33,7 @@ export const COMMAND_IMPORT_LAYER = ({ map }) => {
   }
 }
 
+// Hook-in drag and drop capabilities:
 evented.on('MAP_CREATED', map => {
   map._container.ondragover = () => false
   map._container.ondragleave = () => false

@@ -100,7 +100,13 @@ class App extends React.Component {
       }))
     })
 
-    selection.on('selected', ({ key }) => {
+    selection.on('selected', object => {
+
+      // FIXME: for now only POIs are supported
+      const properties = object.properties()
+      if (properties.latlngs) return // AOI
+
+      const { key } = object
       const matches = key.match(/feature:\/\/poi-layer\/(.*)/)
       if (!matches) return
 

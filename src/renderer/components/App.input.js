@@ -81,7 +81,6 @@ const init = map => {
       // We don't to exit edit mode in this case.
 
       if (event.originalEvent.target !== map._container) return
-
       map.pm.disableGlobalEditMode()
       selection.deselect()
     }

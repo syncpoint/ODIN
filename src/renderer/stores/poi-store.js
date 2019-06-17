@@ -11,6 +11,7 @@ let ready = false
 const handlers = {
   added: ({ uuid, ...poi }) => (state[uuid] = poi),
   moved: ({ uuid, lat, lng }) => (state[uuid] = { ...state[uuid], lat, lng }),
+  updated: ({ uuid, latlngs }) => (state[uuid] = { ...state[uuid], latlngs }),
   renamed: ({ uuid, name }) => (state[uuid].name = name),
   removed: ({ uuid }) => delete state[uuid],
   commented: ({ uuid, comment }) => (state[uuid].comment = comment)
@@ -62,9 +63,16 @@ evented.remove = uuid => {
   persist({ type: 'removed', uuid })
 }
 
-evented.move = (uuid, { lat, lng }) => {
+evented.move = uuid => x => {
   if (!state[uuid]) return
+  const { lat, lng } = x
   persist({ type: 'moved', uuid, lat, lng })
+}
+
+evented.update = uuid => latlngs => {
+  console.log('update', latlngs)
+  if (!state[uuid]) return
+  persist({ type: 'updated', uuid, latlngs })
 }
 
 evented.rename = (uuid, name) => {

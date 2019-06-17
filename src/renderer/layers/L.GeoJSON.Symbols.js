@@ -6,7 +6,6 @@ import L from 'leaflet'
 import ms from 'milsymbol'
 import { K } from '../../shared/combinators'
 import selection from '../components/App.selection'
-import store from '../stores/layer-store'
 
 // TODO: map remaining (text) modifiers
 const MODIFIER_MAP = {
@@ -33,16 +32,27 @@ const modifiers = feature => Object.entries(feature.properties)
   .reduce((acc, [key, value]) => K(acc)(acc => (acc[MODIFIER_MAP[key]] = value)), {})
 
 const onEachFeature = function (feature, layer) {
+  const { id, actions } = feature
+
+  this.layers[this.key(id)] = layer
 
   layer.on('pm:edit', event => {
     const { target } = event
-    const latlngs = target._latlng ? [target._latlng] : target._latlngs
-    store.updateGeometry(this.options.id, feature.id, latlngs)
+    console.log('[pm:edit]', target)
+    const latlngs = target._latlng ? target._latlng : target._latlngs
+    actions.update && actions.update(latlngs)
+  })
+
+  layer.on('pm:cut', event => {
+    const { target } = event
+    console.log('[pm:cut]', target)
+    actions.update && actions.update(target._latlngs)
   })
 
   layer.on('click', event => {
     const { target } = event
     target._map.pm.disableGlobalEditMode()
+    this.select(id)
     layer.pm.enable()
   })
 }
@@ -78,28 +88,11 @@ const pointToLayer = function (feature, latlng) {
   }
 
   return K(L.marker(latlng, markerOptions))(marker => {
-    this.markers[this.key(id)] = marker
-
     marker.setIcon(selection.selected()
-      .find(selected => selected && this.markers[selected.key])
+      .find(selected => selected && this.layers[selected.key])
       ? marker.options.icons.highlighted
       : marker.options.icons.standard
     )
-
-    if (this.options.selectable) {
-      marker.on('click', () => this.select(id))
-    }
-
-    if (this.options.draggable) {
-      marker.on('moveend', ({ target }) => {
-        const { feature } = target
-        this.select(id)
-
-        if (!feature.actions) return
-        if (!feature.actions.move) return
-        feature.actions.move(target.getLatLng())
-      })
-    }
   })
 }
 
@@ -108,7 +101,7 @@ const key = function (id) {
 }
 
 const initialize = function (features, options) {
-  this.markers = []
+  this.layers = []
   L.setOptions(this, options)
   options.pointToLayer = pointToLayer.bind(this)
   options.onEachFeature = onEachFeature.bind(this)
@@ -123,20 +116,24 @@ const initialize = function (features, options) {
 const select = function (id) {
   const [selected] = selection.selected()
   if (selected && selected.key === this.key(id)) return
-  const marker = this.markers[this.key(id)]
+  const marker = this.layers[this.key(id)]
+  if (!marker) return
+
   const { actions } = marker.feature
   selection.select({ key: this.key(id), ...actions })
 }
 
 const selected = function ({ key }) {
-  const marker = this.markers[key]
+  const marker = this.layers[key]
   if (!marker) return
+  if (!marker.options.icons) return
   marker.setIcon(marker.options.icons.highlighted)
 }
 
 const deselected = function ({ key }) {
-  const marker = this.markers[key]
+  const marker = this.layers[key]
   if (!marker) return
+  if (!marker.options.icons) return
   marker.setIcon(marker.options.icons.standard)
 }
 
@@ -146,24 +143,24 @@ const addFeature = function (feature) {
 }
 
 const removeFeature = function (id) {
-  const marker = this.markers[this.key(id)]
+  const marker = this.layers[this.key(id)]
   if (!marker) return
   selection.deselect()
   this.removeLayer(marker)
-  delete this.markers[this.key(id)]
+  delete this.layers[this.key(id)]
 }
 
 const replaceFeature = function (id, feature) {
-  const marker = this.markers[this.key(id)]
+  const marker = this.layers[this.key(id)]
   if (!marker) return
 
   this.removeLayer(marker)
-  delete this.markers[this.key(id)]
+  delete this.layers[this.key(id)]
   this.addData(feature)
 }
 
 const moveFeature = function (id, lat, lng) {
-  const marker = this.markers[this.key(id)]
+  const marker = this.layers[this.key(id)]
   if (!marker) return
   if (marker.getLatLng().equals(L.latLng(lat, lng))) return
   marker.setLatLng(L.latLng(lat, lng))

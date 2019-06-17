@@ -10,3 +10,24 @@ export const COMMAND_NEW_POI = () => () => {
     }
   })
 }
+
+export const COMMAND_NEW_AOI = ({ map }) => () => {
+
+  const options = {
+    tooltips: false,
+    cursorMarker: true, // does not seem to work without a marker
+    templineStyle: { color: 'red', weight: 2 },
+    hintlineStyle: { color: 'red', weight: 2, dashArray: [5, 5] }
+  }
+
+  map.once('pm:drawend', event => {
+    console.log('pm:drawend', event)
+  })
+
+  map.once('pm:create', ({ layer }) => {
+    store.add(uuid(), { latlngs: layer._latlngs })
+    layer.remove(map)
+  })
+
+  map.pm.enableDraw('Polygon', options)
+}

@@ -14,7 +14,7 @@ const menu = {
         {
           label: 'Area of Interest',
           click: sendMessage('COMMAND_NEW_AOI'),
-          enabled: false
+          enabled: true
         },
         { type: 'separator' },
         {
