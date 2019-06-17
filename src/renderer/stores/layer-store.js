@@ -3,6 +3,7 @@
 import { Writable } from 'stream'
 import EventEmitter from 'events'
 import { ipcRenderer } from 'electron'
+import uuid from 'uuid-random'
 import { db } from './db'
 
 const evented = new EventEmitter()
@@ -39,6 +40,12 @@ evented.state = () => state
 // strategy (pessimistic): update state, save, emit event on completion
 evented.add = (name, content) => {
   const layer = { show: true, content }
+
+  // Add unique feature ids if none are provided.
+  content.features
+    .filter(feature => !feature.id)
+    .forEach(feature => (feature.id = uuid()))
+
   const event = state[name] ? 'replaced' : 'added'
   state[name] = layer
   db.put(`layer:${name}`, layer).then(() => evented.emit(event, { name, layer }))

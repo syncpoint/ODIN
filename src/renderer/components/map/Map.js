@@ -71,26 +71,12 @@ class Map extends React.Component {
       map._container.focus()
 
       map.pm.addControls({
-        position: 'topleft'
-      })
-
-      map.on('pm:globaleditmodetoggled', event => console.log('pm:globaleditmodetoggled', event))
-      map.on('pm:drawstart', event => {
-        console.log('pm:drawstart', event)
-        const { workingLayer: layer } = event
-        layer.on('pm:vertexadded', event => console.log('pm:vertexadded', event))
-        layer.on('pm:centerplaced', event => console.log('pm:centerplaced', event))
-        layer.on('pm:edit', event => console.log('pm:edit', event))
-      })
-      map.on('pm:drawend', event => console.log('pm:drawend', event))
-      map.on('pm:create', event => {
-        console.log('pm:create', event)
-        const { layer } = event
-        layer.on('pm:edit', event => console.log('pm:edit', event))
-        layer.on('pm:vertexadded', event => console.log('pm:vertexadded', event))
-        layer.on('pm:vertexremoved', event => console.log('pm:vertexremoved', event))
-        layer.on('pm:markerdragend', event => console.log('pm:markerdragend', event))
-        layer.on('pm:centerplaced', event => console.log('pm:centerplaced', event))
+        position: 'topleft',
+        drawMarker: false,
+        drawPolyline: false,
+        drawRectangle: false,
+        drawPolygon: false,
+        drawCircle: false
       })
     })
 
