@@ -33,20 +33,12 @@ const modifiers = feature => Object.entries(feature.properties)
 
 const onEachFeature = function (feature, layer) {
   const { id, actions } = feature
-
   this.layers[this.key(id)] = layer
 
   layer.on('pm:edit', event => {
     const { target } = event
-    console.log('[pm:edit]', target)
     const latlngs = target._latlng ? target._latlng : target._latlngs
-    actions.update && actions.update(latlngs)
-  })
-
-  layer.on('pm:cut', event => {
-    const { target } = event
-    console.log('[pm:cut]', target)
-    actions.update && actions.update(target._latlngs)
+    actions && actions.update && actions.update(latlngs)
   })
 
   layer.on('click', event => {
@@ -107,10 +99,8 @@ const initialize = function (features, options) {
   options.onEachFeature = onEachFeature.bind(this)
   L.GeoJSON.prototype.initialize.call(this, features, options)
 
-  if (options.selectable) {
-    selection.on('selected', object => this.selected(object))
-    selection.on('deselected', object => this.deselected(object))
-  }
+  selection.on('selected', object => this.selected(object))
+  selection.on('deselected', object => this.deselected(object))
 }
 
 const select = function (id) {

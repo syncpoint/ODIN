@@ -79,7 +79,7 @@ evented.removeAll = names => (names || Object.keys(state)).forEach(evented.remov
 evented.hideAll = names => (names || Object.keys(state)).forEach(evented.hide)
 evented.showAll = names => (names || Object.keys(state)).forEach(evented.show)
 
-evented.updateGeometry = (name, id, latlngs) => {
+evented.update = (name, id) => latlngs => {
   if (!state[name]) return
   const layer = state[name]
   const features = layer.content.features
@@ -88,7 +88,7 @@ evented.updateGeometry = (name, id, latlngs) => {
 
   switch (features[index].geometry.type) {
     case 'Point':
-      features[index].geometry.coordinates = [latlngs[0].lng, latlngs[0].lat]
+      features[index].geometry.coordinates = [latlngs.lng, latlngs.lat]
       break
     case 'LineString':
       features[index].geometry.coordinates = latlngs.map(({ lat, lng }) => ([lng, lat]))

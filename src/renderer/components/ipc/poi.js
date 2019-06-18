@@ -20,10 +20,6 @@ export const COMMAND_NEW_AOI = ({ map }) => () => {
     hintlineStyle: { color: 'red', weight: 2, dashArray: [5, 5] }
   }
 
-  map.once('pm:drawend', event => {
-    console.log('pm:drawend', event)
-  })
-
   map.once('pm:create', ({ layer }) => {
     store.add(uuid(), { latlngs: layer._latlngs })
     layer.remove(map)
