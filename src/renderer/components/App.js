@@ -103,6 +103,7 @@ class App extends React.Component {
     selection.on('selected', object => {
 
       // FIXME: for now only POIs are supported
+      if (!object.properties) return
       const properties = object.properties()
       if (properties.latlngs) return // AOI
 

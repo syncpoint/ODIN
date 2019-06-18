@@ -70,7 +70,6 @@ evented.move = uuid => x => {
 }
 
 evented.update = uuid => latlngs => {
-  console.log('update', latlngs)
   if (!state[uuid]) return
   persist({ type: 'updated', uuid, latlngs })
 }
