@@ -1,0 +1,958 @@
+{
+  "bbox": "BOX(16.002625 47.793869,16.536841 47.881721)",
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "title": "3.Brig",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.310971,
+          47.881721
+        ]
+      },
+      "properties": {
+        "m": "",
+        "t": "3",
+        "w": "17135121ZJUN2019",
+        "sidc": "SFGPUCVC---H---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "3.Brig/BrigKdo",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.002625,
+          47.83993
+        ]
+      },
+      "properties": {
+        "m": "3",
+        "t": "Kdo",
+        "w": "17124039ZJUN2019",
+        "sidc": "SFGPUCVC-------"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlR311",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.243259,
+          47.855788
+        ]
+      },
+      "properties": {
+        "m": "",
+        "t": "311",
+        "w": "17132552ZJUN2019",
+        "sidc": "SFGPUCVF---G---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlR311/1.Sta(Aufkl)",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.242825,
+          47.837626
+        ]
+      },
+      "properties": {
+        "m": "311",
+        "t": "1",
+        "w": "17132242ZJUN2019",
+        "sidc": "SFGPUCVFR--E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlR311/1.Sta(Aufkl)/I.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.242609,
+          47.828577
+        ]
+      },
+      "properties": {
+        "m": "1/311",
+        "t": "I",
+        "w": "17132258ZJUN2019",
+        "sidc": "SFGPUCVFR--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlR311/1.Sta(Aufkl)/II.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.242324,
+          47.819438
+        ]
+      },
+      "properties": {
+        "m": "1/311",
+        "t": "II",
+        "w": "17132303ZJUN2019",
+        "sidc": "SFGPUCVFR--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlR311/2.Sta(Kpf)",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.269534,
+          47.837379
+        ]
+      },
+      "properties": {
+        "m": "311",
+        "t": "2",
+        "w": "17132331ZJUN2019",
+        "sidc": "SFGPUCVFA--E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlR311/2.Sta(Kpf)/I.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.269435,
+          47.828409
+        ]
+      },
+      "properties": {
+        "m": "2/311",
+        "t": "I",
+        "w": "17132341ZJUN2019",
+        "sidc": "SFGPUCVFA--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlR311/2.Sta(Kpf)/II.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.269092,
+          47.819271
+        ]
+      },
+      "properties": {
+        "m": "2/311",
+        "t": "II",
+        "w": "17132337ZJUN2019",
+        "sidc": "SFGPUCVFA--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlR311/2.Sta(Kpf)/III.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.268995,
+          47.810347
+        ]
+      },
+      "properties": {
+        "m": "2/311",
+        "t": "III",
+        "w": "17132347ZJUN2019",
+        "sidc": "SFGPUCVFA--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlR311/RKdo",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.216214,
+          47.838064
+        ]
+      },
+      "properties": {
+        "m": "311",
+        "t": "RKdo",
+        "w": "17132238ZJUN2019",
+        "sidc": "SFGPUCVF-------"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.096501,
+          47.857229
+        ]
+      },
+      "properties": {
+        "m": "",
+        "t": "FlugBetr301",
+        "w": "17130716ZJUN2019",
+        "sidc": "SFGPUCVC---G---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/FMKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.095757,
+          47.839034
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "",
+        "w": "17125447ZJUN2019",
+        "sidc": "SFGPUUS----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/FMKp/FMUstgZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.095661,
+          47.821121
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "",
+        "w": "17125535ZJUN2019",
+        "sidc": "SFGPUUSS---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/FMKp/FuZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.095675,
+          47.830055
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "",
+        "w": "17125529ZJUN2019",
+        "sidc": "SFGPUUSR---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/FMKp/SAT-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.095379,
+          47.812198
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "",
+        "w": "17125541ZJUN2019",
+        "sidc": "SFGPUUSRS--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/I-Kp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.122734,
+          47.838782
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "",
+        "w": "17130551ZJUN2019",
+        "sidc": "SFGPUSX----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/I-Kp/I-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.122447,
+          47.829824
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "",
+        "w": "17130604ZJUN2019",
+        "sidc": "SFGPUSX----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/I-Kp/I-Zg (Fl)",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.122253,
+          47.820783
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "(Fl)",
+        "w": "17130631ZJUN2019",
+        "sidc": "SFGPUSX----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/I-Kp/I-Zg (FlugKpr)",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.121526,
+          47.793869
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "",
+        "w": "17135423ZJUN2019",
+        "sidc": "SFGPUSXOM--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/I-Kp/I-Zg (KHS)",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.122063,
+          47.811967
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "(KHS)",
+        "w": "17135429ZJUN2019",
+        "sidc": "SFGPUSX----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/I-Kp/I-Zg (THS)",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.121852,
+          47.802828
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "(THS)",
+        "w": "17135500ZJUN2019",
+        "sidc": "SFGPUSX----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/RKdo",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.042471,
+          47.839566
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "RKdo",
+        "w": "17125511ZJUN2019",
+        "sidc": "SFGPUCVC-------"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/VersKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.069156,
+          47.839384
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "",
+        "w": "17125458ZJUN2019",
+        "sidc": "SFGPUSS----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/VersKp/SanZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.06839,
+          47.803374
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "",
+        "w": "17125604ZJUN2019",
+        "sidc": "SFGPUSM----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/VersKp/StbZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.069025,
+          47.830424
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "Stb",
+        "w": "17125505ZJUN2019",
+        "sidc": "SFGPUCVC---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/VersKp/VersZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.068801,
+          47.821464
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "",
+        "w": "17125549ZJUN2019",
+        "sidc": "SFGPUSS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/VersKp/WiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.068694,
+          47.812332
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "",
+        "w": "17125556ZJUN2019",
+        "sidc": "SFGPUSS1---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/WchSiKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.14939,
+          47.838492
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "",
+        "w": "17130611ZJUN2019",
+        "sidc": "SFGPUCSA---E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/WchSiKp/I.WchSiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.149139,
+          47.829587
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "I",
+        "w": "17130617ZJUN2019",
+        "sidc": "SFGPUCSA---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/WchSiKp/II.WchSiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.149076,
+          47.820662
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "II",
+        "w": "17130624ZJUN2019",
+        "sidc": "SFGPUCSA---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlugBetrRgt301/WchSiKp/III.WchSiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.148742,
+          47.811586
+        ]
+      },
+      "properties": {
+        "m": "301",
+        "t": "III",
+        "w": "17130637ZJUN2019",
+        "sidc": "SFGPUCSA---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "KHS-Rgt312",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.363565,
+          47.854278
+        ]
+      },
+      "properties": {
+        "m": "",
+        "t": "312",
+        "w": "17134116ZJUN2019",
+        "sidc": "SFGPUCVRA--G---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "KHS-Rgt312/1.Sta(Kpf)",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.363296,
+          47.836357
+        ]
+      },
+      "properties": {
+        "m": "312",
+        "t": "1",
+        "w": "17134015ZJUN2019",
+        "sidc": "SFGPUCVRA--E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "KHS-Rgt312/1.Sta(Kpf)/I.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.36271,
+          47.827268
+        ]
+      },
+      "properties": {
+        "m": "1/312",
+        "t": "I",
+        "w": "17134020ZJUN2019",
+        "sidc": "SFGPUCVRA--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "KHS-Rgt312/1.Sta(Kpf)/II.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.362824,
+          47.818341
+        ]
+      },
+      "properties": {
+        "m": "1/312",
+        "t": "II",
+        "w": "17134030ZJUN2019",
+        "sidc": "SFGPUCVRA--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "KHS-Rgt312/1.Sta(Kpf)/III.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.362662,
+          47.809075
+        ]
+      },
+      "properties": {
+        "m": "1/312",
+        "t": "III",
+        "w": "17134035ZJUN2019",
+        "sidc": "SFGPUCVRA--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "KHS-Rgt312/2.Sta(Kpf)",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.389786,
+          47.835986
+        ]
+      },
+      "properties": {
+        "m": "312",
+        "t": "2",
+        "w": "17134040ZJUN2019",
+        "sidc": "SFGPUCVRA--E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "KHS-Rgt312/2.Sta(Kpf)/I.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.389679,
+          47.826944
+        ]
+      },
+      "properties": {
+        "m": "2/312",
+        "t": "I",
+        "w": "17134104ZJUN2019",
+        "sidc": "SFGPUCVRA--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "KHS-Rgt312/2.Sta(Kpf)/II.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.38949,
+          47.817886
+        ]
+      },
+      "properties": {
+        "m": "2/312",
+        "t": "II",
+        "w": "17134059ZJUN2019",
+        "sidc": "SFGPUCVRA--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "KHS-Rgt312/2.Sta(Kpf)/III.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.389193,
+          47.808748
+        ]
+      },
+      "properties": {
+        "m": "2/312",
+        "t": "III",
+        "w": "17134054ZJUN2019",
+        "sidc": "SFGPUCVRA--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "KHS-Rgt312/RKdo",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.336512,
+          47.83678
+        ]
+      },
+      "properties": {
+        "m": "312",
+        "t": "RKdo",
+        "w": "17134004ZJUN2019",
+        "sidc": "SFGPUCVRA------"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "MZHS-Rgt313",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.497363,
+          47.852646
+        ]
+      },
+      "properties": {
+        "m": "",
+        "t": "313",
+        "w": "17135133ZJUN2019",
+        "sidc": "SFGPUCVRU--G---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "MZHS-Rgt313/1.Sta(MZHS)",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.483418,
+          47.83476
+        ]
+      },
+      "properties": {
+        "m": "313",
+        "t": "1",
+        "w": "17134530ZJUN2019",
+        "sidc": "SFGPUCVRU--E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "MZHS-Rgt313/1.Sta(MZHS)/I.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.482869,
+          47.825805
+        ]
+      },
+      "properties": {
+        "m": "1/313",
+        "t": "I",
+        "w": "17134606ZJUN2019",
+        "sidc": "SFGPUCVRU--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "MZHS-Rgt313/1.Sta(MZHS)/II.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.482835,
+          47.816655
+        ]
+      },
+      "properties": {
+        "m": "1/313",
+        "t": "II",
+        "w": "17134548ZJUN2019",
+        "sidc": "SFGPUCVRU--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "MZHS-Rgt313/1.Sta(MZHS)/III.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.482718,
+          47.807839
+        ]
+      },
+      "properties": {
+        "m": "1/313",
+        "t": "III",
+        "w": "17134620ZJUN2019",
+        "sidc": "SFGPUCVRU--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "MZHS-Rgt313/2.Sta(MZHS)",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.510015,
+          47.834413
+        ]
+      },
+      "properties": {
+        "m": "313",
+        "t": "2",
+        "w": "17134538ZJUN2019",
+        "sidc": "SFGPUCVRU--E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "MZHS-Rgt313/2.Sta(MZHS)/I.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.509964,
+          47.825308
+        ]
+      },
+      "properties": {
+        "m": "2/313",
+        "t": "I",
+        "w": "17134602ZJUN2019",
+        "sidc": "SFGPUCVRU--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "MZHS-Rgt313/2.Sta(MZHS)/II.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.509491,
+          47.816353
+        ]
+      },
+      "properties": {
+        "m": "2/313",
+        "t": "II",
+        "w": "17134544ZJUN2019",
+        "sidc": "SFGPUCVRU--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "MZHS-Rgt313/2.Sta(MZHS)/III.Schwarm",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.509378,
+          47.807401
+        ]
+      },
+      "properties": {
+        "m": "2/313",
+        "t": "III",
+        "w": "17134615ZJUN2019",
+        "sidc": "SFGPUCVRU--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "MZHS-Rgt313/3.Sta(LuUstg)",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.536841,
+          47.834156
+        ]
+      },
+      "properties": {
+        "m": "313",
+        "t": "3",
+        "w": "17135021ZJUN2019",
+        "sidc": "SFGPUCVR---E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "MZHS-Rgt313/3.Sta(LuUstg)/AntiMiSchw",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.535822,
+          47.806897
+        ]
+      },
+      "properties": {
+        "m": "3/313",
+        "t": "",
+        "w": "17135035ZJUN2019",
+        "sidc": "SFGPUCVRM--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "MZHS-Rgt313/3.Sta(LuUstg)/LuAufklSchw",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.536501,
+          47.824911
+        ]
+      },
+      "properties": {
+        "m": "3/313",
+        "t": "",
+        "w": "17135026ZJUN2019",
+        "sidc": "SFGPUCRVO--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "MZHS-Rgt313/3.Sta(LuUstg)/MEDEVAC-Schw",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.536236,
+          47.815953
+        ]
+      },
+      "properties": {
+        "m": "3/313",
+        "t": "",
+        "w": "17135030ZJUN2019",
+        "sidc": "SFGPUCVRUE-D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "MZHS-Rgt313/RKdo",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.456597,
+          47.835211
+        ]
+      },
+      "properties": {
+        "m": "313",
+        "t": "RKdo",
+        "w": "17134218ZJUN2019",
+        "sidc": "SFGPUCVRU------"
+      }
+    }
+  ]
+}
