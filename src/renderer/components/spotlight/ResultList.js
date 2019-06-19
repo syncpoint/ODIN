@@ -32,8 +32,6 @@ class ResultList extends React.Component {
 
   handleItemKeyDown (key) {
     switch (event.key) {
-      // NOTE: click is triggered implicitly
-      case 'Enter': return this.invokeAction('action', key)
       case 'Delete': return this.invokeAction('delete', key)
       case 'Backspace': if (event.metaKey) return this.invokeAction('delete', key)
     }
