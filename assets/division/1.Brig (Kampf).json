@@ -1,0 +1,3287 @@
+{
+  "bbox": "BOX(13.089198 47.77636,15.000844 47.943216)",
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "title": "1.Brig",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.876594,
+          47.884115
+        ]
+      },
+      "properties": {
+        "m": "",
+        "t": "1",
+        "w": "17085553ZJUN2019",
+        "sidc": "SFGPUC-----H---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "1.Brig/BrigKdo",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.089198,
+          47.828278
+        ]
+      },
+      "properties": {
+        "m": "1",
+        "t": "Kdo",
+        "w": "13172340ZJUN2019",
+        "sidc": "SFGPUC---------"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "1.Brig/BrigStbKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.115955,
+          47.828856
+        ]
+      },
+      "properties": {
+        "m": "1",
+        "t": "",
+        "w": "13172350ZJUN2019",
+        "sidc": "SFGPU------E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "1.Brig/BrigStbKp/BrigStbZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.116277,
+          47.819962
+        ]
+      },
+      "properties": {
+        "m": "1",
+        "t": "Brig",
+        "w": "13172356ZJUN2019",
+        "sidc": "SFGPU------D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "1.Brig/BrigStbKp/I.WchZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.116953,
+          47.802013
+        ]
+      },
+      "properties": {
+        "m": "1",
+        "t": "I",
+        "w": "13172439ZJUN2019",
+        "sidc": "SFGPUCS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "1.Brig/BrigStbKp/II.WchZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.11753,
+          47.792692
+        ]
+      },
+      "properties": {
+        "m": "1",
+        "t": "II",
+        "w": "13172432ZJUN2019",
+        "sidc": "SFGPUCS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "1.Brig/BrigStbKp/TrspZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.116697,
+          47.810953
+        ]
+      },
+      "properties": {
+        "m": "1",
+        "t": "",
+        "w": "13172446ZJUN2019",
+        "sidc": "SFGPUST----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.262297,
+          47.849286
+        ]
+      },
+      "properties": {
+        "m": "",
+        "t": "101",
+        "w": "13180321ZJUN2019",
+        "sidc": "SFGPUCR----F---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/1.AufklKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.236083,
+          47.830774
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "1",
+        "w": "13175009ZJUN2019",
+        "sidc": "SFGPUCR----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/1.AufklKp/I.AufklZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.23639,
+          47.8217
+        ]
+      },
+      "properties": {
+        "m": "1/101",
+        "t": "I",
+        "w": "13175242ZJUN2019",
+        "sidc": "SFGPUCR----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/1.AufklKp/II.AufklZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.236835,
+          47.812907
+        ]
+      },
+      "properties": {
+        "m": "1/101",
+        "t": "II",
+        "w": "13175302ZJUN2019",
+        "sidc": "SFGPUCR----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/1.AufklKp/III.AufklZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.237106,
+          47.803724
+        ]
+      },
+      "properties": {
+        "m": "1/101",
+        "t": "III",
+        "w": "13175312ZJUN2019",
+        "sidc": "SFGPUCR----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/2.AufklKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.262915,
+          47.831183
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "2",
+        "w": "13175018ZJUN2019",
+        "sidc": "SFGPUCR----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/2.AufklKp/I.AufklZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.263217,
+          47.822109
+        ]
+      },
+      "properties": {
+        "m": "2/101",
+        "t": "I",
+        "w": "13175250ZJUN2019",
+        "sidc": "SFGPUCR----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/2.AufklKp/II.AufklZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.263529,
+          47.81317
+        ]
+      },
+      "properties": {
+        "m": "2/101",
+        "t": "II",
+        "w": "13175307ZJUN2019",
+        "sidc": "SFGPUCR----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/2.AufklKp/III.AufklZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.26387,
+          47.804132
+        ]
+      },
+      "properties": {
+        "m": "2/101",
+        "t": "III",
+        "w": "13175319ZJUN2019",
+        "sidc": "SFGPUCR----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/BKdo",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.182835,
+          47.829934
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "BKdo",
+        "w": "13172518ZJUN2019",
+        "sidc": "SFGPUCR--------"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/StbKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.209382,
+          47.83045
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "Stb",
+        "w": "13174832ZJUN2019",
+        "sidc": "SFGPUCR----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/StbKp/FMZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.210001,
+          47.812455
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "",
+        "w": "13174857ZJUN2019",
+        "sidc": "SFGPUUS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/StbKp/IZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.211441,
+          47.77636
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "",
+        "w": "13174954ZJUN2019",
+        "sidc": "SFGPUSX----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/StbKp/SanZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.211079,
+          47.785343
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "",
+        "w": "13174947ZJUN2019",
+        "sidc": "SFGPUSM----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/StbKp/StbZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.209772,
+          47.821459
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "Stb",
+        "w": "13174839ZJUN2019",
+        "sidc": "SFGPUCR----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/StbKp/VersZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.210381,
+          47.803337
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "",
+        "w": "13174911ZJUN2019",
+        "sidc": "SFGPUSS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/StbKp/WiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.210704,
+          47.794335
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "",
+        "w": "13174931ZJUN2019",
+        "sidc": "SFGPUSS1---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/feSpaeKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.289677,
+          47.831675
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "",
+        "w": "13175721ZJUN2019",
+        "sidc": "SFGPUCRX---E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/feSpaeKp/I.feSpaeZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.290056,
+          47.822584
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "I",
+        "w": "13175726ZJUN2019",
+        "sidc": "SFGPUCRX---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/feSpaeKp/II.feSpaeZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.290269,
+          47.813661
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "II",
+        "w": "13175732ZJUN2019",
+        "sidc": "SFGPUCRX---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/feSpaeKp/NaZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.290606,
+          47.804623
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "Na",
+        "w": "13180045ZJUN2019",
+        "sidc": "SFGPUCR----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/teAufklKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.316325,
+          47.832015
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "te",
+        "w": "13180225ZJUN2019",
+        "sidc": "SFGPUCR----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/teAufklKp/I.Drohnen-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.316973,
+          47.814029
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "I",
+        "w": "13180246ZJUN2019",
+        "sidc": "SFGPUCVU---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/teAufklKp/II.Drohnen-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.317266,
+          47.80499
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "II",
+        "w": "13180251ZJUN2019",
+        "sidc": "SFGPUCVU---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "AufklB101/teAufklKp/Radar-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.316592,
+          47.822949
+        ]
+      },
+      "properties": {
+        "m": "101",
+        "t": "",
+        "w": "13180235ZJUN2019",
+        "sidc": "SFGPUCFTR--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.87698,
+          47.856955
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "",
+        "w": "13191227ZJUN2019",
+        "sidc": "SFGPUCD----F---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/1.FlABt",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.864038,
+          47.838661
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "1",
+        "w": "13185846ZJUN2019",
+        "sidc": "SFGPUCD----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/1.FlABt/I.FlAZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.864152,
+          47.829737
+        ]
+      },
+      "properties": {
+        "m": "1/104",
+        "t": "I",
+        "w": "13190752ZJUN2019",
+        "sidc": "SFGPUCD----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/1.FlABt/II.FlAZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.864481,
+          47.820814
+        ]
+      },
+      "properties": {
+        "m": "1/104",
+        "t": "II",
+        "w": "13190757ZJUN2019",
+        "sidc": "SFGPUCD----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/1.FlABt/III.FlAZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.864678,
+          47.811774
+        ]
+      },
+      "properties": {
+        "m": "1/104",
+        "t": "III",
+        "w": "13190812ZJUN2019",
+        "sidc": "SFGPUCD----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/2.FlABt",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.890798,
+          47.83904
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "2",
+        "w": "13190704ZJUN2019",
+        "sidc": "SFGPUCD----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/2.FlABt/I.FlAZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.890846,
+          47.829917
+        ]
+      },
+      "properties": {
+        "m": "2/104",
+        "t": "I",
+        "w": "13190800ZJUN2019",
+        "sidc": "SFGPUCD----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/2.FlABt/II.FlAZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.891397,
+          47.820961
+        ]
+      },
+      "properties": {
+        "m": "2/104",
+        "t": "II",
+        "w": "13190805ZJUN2019",
+        "sidc": "SFGPUCD----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/2.FlABt/III.FlAZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.891467,
+          47.812036
+        ]
+      },
+      "properties": {
+        "m": "2/104",
+        "t": "III",
+        "w": "13190817ZJUN2019",
+        "sidc": "SFGPUCD----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/BKdo",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.810576,
+          47.838273
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "BKdo",
+        "w": "13185805ZJUN2019",
+        "sidc": "SFGPUCD--------"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/FlumBt",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.944233,
+          47.839499
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "",
+        "w": "13191139ZJUN2019",
+        "sidc": "SFGPUCDT---E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/FlumBt/I.FlumZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.94435,
+          47.830457
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "I",
+        "w": "13191143ZJUN2019",
+        "sidc": "SFGPUCDT---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/FlumBt/II.FlumZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.944719,
+          47.821454
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "II",
+        "w": "13191149ZJUN2019",
+        "sidc": "SFGPUCDT---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/StbBt",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.837301,
+          47.838448
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "Stb",
+        "w": "13185841ZJUN2019",
+        "sidc": "SFGPUCD----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/StbBt/FMZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.837916,
+          47.82045
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "",
+        "w": "13190031ZJUN2019",
+        "sidc": "SFGPUUS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/StbBt/IZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.838746,
+          47.784458
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "",
+        "w": "13190101ZJUN2019",
+        "sidc": "SFGPUSX----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/StbBt/SanZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.838505,
+          47.793454
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "",
+        "w": "13190054ZJUN2019",
+        "sidc": "SFGPUSM----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/StbBt/StbZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.837354,
+          47.829469
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "Stb",
+        "w": "13185936ZJUN2019",
+        "sidc": "SFGPUCD----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/StbBt/VersZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.838025,
+          47.81139
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "",
+        "w": "13185959ZJUN2019",
+        "sidc": "SFGPUSS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/StbBt/WiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.838185,
+          47.802421
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "",
+        "w": "13190040ZJUN2019",
+        "sidc": "SFGPUSS1---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/sFlALBt",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.917483,
+          47.83925
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "",
+        "w": "13191131ZJUN2019",
+        "sidc": "SFGPUCDMH--E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/sFlALBt/I.sFlALZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.917804,
+          47.83021
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "I",
+        "w": "13191135ZJUN2019",
+        "sidc": "SFGPUCDMH--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/sFlALBt/II.sFlALZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.917803,
+          47.821285
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "II",
+        "w": "13191153ZJUN2019",
+        "sidc": "SFGPUCDMH--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "FlAB104/sFlALBt/III.sFlALZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.918043,
+          47.812289
+        ]
+      },
+      "properties": {
+        "m": "104",
+        "t": "III",
+        "w": "13191158ZJUN2019",
+        "sidc": "SFGPUCDMH--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.0775,
+          47.858543
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "",
+        "w": "14095036ZJUN2019",
+        "sidc": "SFGPUCI----F---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/1.JgKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.06452,
+          47.840614
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "1",
+        "w": "13192112ZJUN2019",
+        "sidc": "SFGPUCI----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/1.JgKp/I.JgZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.064723,
+          47.831555
+        ]
+      },
+      "properties": {
+        "m": "1/111",
+        "t": "I",
+        "w": "13192120ZJUN2019",
+        "sidc": "SFGPUCI----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/1.JgKp/II.JgZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.064979,
+          47.822461
+        ]
+      },
+      "properties": {
+        "m": "1/111",
+        "t": "II",
+        "w": "13192128ZJUN2019",
+        "sidc": "SFGPUCI----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/1.JgKp/III.JgZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.064912,
+          47.813544
+        ]
+      },
+      "properties": {
+        "m": "1/111",
+        "t": "III",
+        "w": "13192223ZJUN2019",
+        "sidc": "SFGPUCI----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/1.JgKp/PALZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.065302,
+          47.804486
+        ]
+      },
+      "properties": {
+        "m": "1/111",
+        "t": "",
+        "w": "13192754ZJUN2019",
+        "sidc": "SFGPUCAA---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/2.JgKp(lubwgl)",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.09126,
+          47.840757
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "2",
+        "w": "13192556ZJUN2019",
+        "sidc": "SFGPUCIA---E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/2.JgKp(lubwgl)/I.JgZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.091417,
+          47.831761
+        ]
+      },
+      "properties": {
+        "m": "2/111",
+        "t": "I",
+        "w": "13192601ZJUN2019",
+        "sidc": "SFGPUCIA---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/2.JgKp(lubwgl)/II.JgZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.091521,
+          47.822764
+        ]
+      },
+      "properties": {
+        "m": "2/111",
+        "t": "II",
+        "w": "13192606ZJUN2019",
+        "sidc": "SFGPUCIA---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/2.JgKp(lubwgl)/III.JgZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.091681,
+          47.813579
+        ]
+      },
+      "properties": {
+        "m": "2/111",
+        "t": "III",
+        "w": "13192612ZJUN2019",
+        "sidc": "SFGPUCIA---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/2.JgKp(lubwgl)/PALZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.091727,
+          47.804779
+        ]
+      },
+      "properties": {
+        "m": "2/111",
+        "t": "",
+        "w": "17084151ZJUN2019",
+        "sidc": "SFGPUCAAM--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/3.JgKp(gebbwgl)",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.117998,
+          47.84101
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "3",
+        "w": "13193140ZJUN2019",
+        "sidc": "SFGPUCIO---E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/3.JgKp(gebbwgl)/I.JgZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.118274,
+          47.831871
+        ]
+      },
+      "properties": {
+        "m": "3/111",
+        "t": "I",
+        "w": "13193214ZJUN2019",
+        "sidc": "SFGPUCIO---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/3.JgKp(gebbwgl)/II.JgZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.118184,
+          47.822936
+        ]
+      },
+      "properties": {
+        "m": "3/111",
+        "t": "II",
+        "w": "13193219ZJUN2019",
+        "sidc": "SFGPUCIO---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/3.JgKp(gebbwgl)/III.JgZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.118336,
+          47.813957
+        ]
+      },
+      "properties": {
+        "m": "3/111",
+        "t": "III",
+        "w": "13193447ZJUN2019",
+        "sidc": "SFGPUCIO---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/3.JgKp(gebbwgl)/PALZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.118554,
+          47.80506
+        ]
+      },
+      "properties": {
+        "m": "3/111",
+        "t": "",
+        "w": "17084301ZJUN2019",
+        "sidc": "SFGPUCAAU--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/BKdo",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.011135,
+          47.840203
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "BKdo",
+        "w": "13191648ZJUN2019",
+        "sidc": "SFGPUCI--------"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/KUKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.144551,
+          47.841211
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "",
+        "w": "13193210ZJUN2019",
+        "sidc": "SFGPUU-----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/KUKp/AufklZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.144887,
+          47.832117
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "",
+        "w": "13193244ZJUN2019",
+        "sidc": "SFGPUCR----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/KUKp/MKZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.145222,
+          47.805226
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "MK",
+        "w": "13193542ZJUN2019",
+        "sidc": "SFGPUCDG---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/KUKp/SSchZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.145088,
+          47.823139
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "SSch",
+        "w": "13193419ZJUN2019",
+        "sidc": "SFGPUCI----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/KUKp/sGrWZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.145182,
+          47.81416
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "",
+        "w": "13193429ZJUN2019",
+        "sidc": "SFGPUCFM---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/StbKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.037769,
+          47.840339
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "Stb",
+        "w": "13191657ZJUN2019",
+        "sidc": "SFGPUCI----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/StbKp/FMZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.038059,
+          47.822436
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "",
+        "w": "13191730ZJUN2019",
+        "sidc": "SFGPUUS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/StbKp/IZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.038724,
+          47.786442
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "",
+        "w": "13191756ZJUN2019",
+        "sidc": "SFGPUSX----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/StbKp/SanZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.038774,
+          47.795305
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "",
+        "w": "13191749ZJUN2019",
+        "sidc": "SFGPUSM----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/StbKp/StbZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.037934,
+          47.831388
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "Stb",
+        "w": "13191723ZJUN2019",
+        "sidc": "SFGPUCI----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/StbKp/VersZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.03831,
+          47.813198
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "",
+        "w": "13191736ZJUN2019",
+        "sidc": "SFGPUSS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "JgB111/StbKp/WiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.038393,
+          47.804399
+        ]
+      },
+      "properties": {
+        "m": "111",
+        "t": "",
+        "w": "13191743ZJUN2019",
+        "sidc": "SFGPUSS1---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "ODIN-DIV",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.000844,
+          47.943216
+        ]
+      },
+      "properties": {
+        "m": "",
+        "t": "ODIN",
+        "w": "17135218ZJUN2019",
+        "sidc": "SFGPUCIZ---I---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.663383,
+          47.854388
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "",
+        "w": "13185505ZJUN2019",
+        "sidc": "SFGPUCE----F---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/1.PiKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.636931,
+          47.836369
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "1",
+        "w": "13183512ZJUN2019",
+        "sidc": "SFGPUCE----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/1.PiKp/I.PiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.637167,
+          47.827356
+        ]
+      },
+      "properties": {
+        "m": "1/103",
+        "t": "I",
+        "w": "13184724ZJUN2019",
+        "sidc": "SFGPUCE----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/1.PiKp/II.PiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.637339,
+          47.818244
+        ]
+      },
+      "properties": {
+        "m": "1/103",
+        "t": "II",
+        "w": "13184757ZJUN2019",
+        "sidc": "SFGPUCE----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/1.PiKp/III.PiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.637627,
+          47.809285
+        ]
+      },
+      "properties": {
+        "m": "1/103",
+        "t": "III",
+        "w": "13184816ZJUN2019",
+        "sidc": "SFGPUCE----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/2.PiKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.663654,
+          47.836539
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "2",
+        "w": "13183517ZJUN2019",
+        "sidc": "SFGPUCE----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/2.PiKp/I.PiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.663858,
+          47.827571
+        ]
+      },
+      "properties": {
+        "m": "2/103",
+        "t": "I",
+        "w": "13184831ZJUN2019",
+        "sidc": "SFGPUCE----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/2.PiKp/II.PiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.66425,
+          47.818542
+        ]
+      },
+      "properties": {
+        "m": "2/103",
+        "t": "II",
+        "w": "13184848ZJUN2019",
+        "sidc": "SFGPUCE----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/2.PiKp/III.PiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.664399,
+          47.8096
+        ]
+      },
+      "properties": {
+        "m": "2/103",
+        "t": "III",
+        "w": "13184904ZJUN2019",
+        "sidc": "SFGPUCE----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/BKdo",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.583609,
+          47.835409
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "BKdo",
+        "w": "13183047ZJUN2019",
+        "sidc": "SFGPUCE--------"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/PiBauKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.69036,
+          47.836874
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "",
+        "w": "13184635ZJUN2019",
+        "sidc": "SFGPUCEN---E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/PiBauKp/I.PiBauZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.69059,
+          47.827744
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "I",
+        "w": "13184640ZJUN2019",
+        "sidc": "SFGPUCEN---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/PiBauKp/II.PiBauZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.69081,
+          47.818983
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "II",
+        "w": "13184645ZJUN2019",
+        "sidc": "SFGPUCEN---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/PiBauKp/StrBauZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.691161,
+          47.809818
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "StrBau",
+        "w": "13184709ZJUN2019",
+        "sidc": "SFGPUCEN---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/PzPiKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.717122,
+          47.837095
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "",
+        "w": "13185344ZJUN2019",
+        "sidc": "SFGPUCECT--E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/PzPiKp/I.PzPiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.717279,
+          47.828046
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "I",
+        "w": "13185349ZJUN2019",
+        "sidc": "SFGPUCECT--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/PzPiKp/II.PzPiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.717588,
+          47.819267
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "II",
+        "w": "13185401ZJUN2019",
+        "sidc": "SFGPUCECT--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/PzPiKp/PzBgeZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.71781,
+          47.810254
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "",
+        "w": "13185406ZJUN2019",
+        "sidc": "SFGPUCATR--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/StbKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.610281,
+          47.83596
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "Stb",
+        "w": "13183054ZJUN2019",
+        "sidc": "SFGPUCE----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/StbKp/FMZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.610845,
+          47.817845
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "",
+        "w": "13183109ZJUN2019",
+        "sidc": "SFGPUUS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/StbKp/IZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.611626,
+          47.782025
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "",
+        "w": "13183145ZJUN2019",
+        "sidc": "SFGPUSX----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/StbKp/SanZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.611483,
+          47.790887
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "",
+        "w": "13183138ZJUN2019",
+        "sidc": "SFGPUSM----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/StbKp/StbZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.610413,
+          47.827009
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "Stb",
+        "w": "17083707ZJUN2019",
+        "sidc": "SFGPUCE----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/StbKp/VersZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.611015,
+          47.808948
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "",
+        "w": "13183118ZJUN2019",
+        "sidc": "SFGPUSS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/StbKp/WiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.611201,
+          47.79998
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "",
+        "w": "13183127ZJUN2019",
+        "sidc": "SFGPUSS1---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/tePiKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.743599,
+          47.837541
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "te",
+        "w": "13185424ZJUN2019",
+        "sidc": "SFGPUCE----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/tePiKp/I.PiMaschZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.743819,
+          47.828447
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "I.PiMasch",
+        "w": "13185429ZJUN2019",
+        "sidc": "SFGPUCE----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/tePiKp/II.PiMaschZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.74404,
+          47.819254
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "II.PiMasch",
+        "w": "13185433ZJUN2019",
+        "sidc": "SFGPUCE----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/tePiKp/KMA-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.744477,
+          47.810567
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "",
+        "w": "13185442ZJUN2019",
+        "sidc": "SFGPUUE----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PiB103/tePiKp/PiAufklZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.744708,
+          47.801527
+        ]
+      },
+      "properties": {
+        "m": "103",
+        "t": "",
+        "w": "13185546ZJUN2019",
+        "sidc": "SFGPUCECR--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.449306,
+          47.851947
+        ]
+      },
+      "properties": {
+        "m": "",
+        "t": "102",
+        "w": "13182616ZJUN2019",
+        "sidc": "SFGPUCFHE--F---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/1.PzHBt",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.436635,
+          47.833654
+        ]
+      },
+      "properties": {
+        "m": "102",
+        "t": "1",
+        "w": "13181224ZJUN2019",
+        "sidc": "SFGPUCFHE--E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/1.PzHBt/I.GS-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.436863,
+          47.824722
+        ]
+      },
+      "properties": {
+        "m": "1/102",
+        "t": "I",
+        "w": "13181738ZJUN2019",
+        "sidc": "SFGPUCFHE--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/1.PzHBt/II.GS-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.437187,
+          47.815711
+        ]
+      },
+      "properties": {
+        "m": "1/102",
+        "t": "II",
+        "w": "13181752ZJUN2019",
+        "sidc": "SFGPUCFHE--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/1.PzHBt/III.GS-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.43731,
+          47.806724
+        ]
+      },
+      "properties": {
+        "m": "1/102",
+        "t": "III",
+        "w": "17083122ZJUN2019",
+        "sidc": "SFGPUCFHE--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/1.PzHBt/MunZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.437619,
+          47.797748
+        ]
+      },
+      "properties": {
+        "m": "1/102",
+        "t": "",
+        "w": "17083103ZJUN2019",
+        "sidc": "SFGPUSS5---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/2.PzHBt",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.463322,
+          47.834068
+        ]
+      },
+      "properties": {
+        "m": "102",
+        "t": "2",
+        "w": "13181728ZJUN2019",
+        "sidc": "SFGPUCFHE--E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/2.PzHBt/I.GS-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.463588,
+          47.825083
+        ]
+      },
+      "properties": {
+        "m": "2/102",
+        "t": "I",
+        "w": "13181742ZJUN2019",
+        "sidc": "SFGPUCFHE--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/2.PzHBt/II.GS-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.463907,
+          47.816072
+        ]
+      },
+      "properties": {
+        "m": "2/102",
+        "t": "II",
+        "w": "13181758ZJUN2019",
+        "sidc": "SFGPUCFHE--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/2.PzHBt/III.GS-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.464147,
+          47.807041
+        ]
+      },
+      "properties": {
+        "m": "2/102",
+        "t": "III",
+        "w": "17083140ZJUN2019",
+        "sidc": "SFGPUCFHE--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/2.PzHBt/MunZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.464371,
+          47.798073
+        ]
+      },
+      "properties": {
+        "m": "2/102",
+        "t": "",
+        "w": "17083111ZJUN2019",
+        "sidc": "SFGPUSS5---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/3.PzHBt",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.490051,
+          47.834459
+        ]
+      },
+      "properties": {
+        "m": "102",
+        "t": "3",
+        "w": "13181733ZJUN2019",
+        "sidc": "SFGPUCFHE--E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/3.PzHBt/I.GS-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.490529,
+          47.825333
+        ]
+      },
+      "properties": {
+        "m": "3/102",
+        "t": "I",
+        "w": "13181746ZJUN2019",
+        "sidc": "SFGPUCFHE--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/3.PzHBt/II.GS-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.490574,
+          47.816425
+        ]
+      },
+      "properties": {
+        "m": "3/102",
+        "t": "II",
+        "w": "13181858ZJUN2019",
+        "sidc": "SFGPUCFHE--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/3.PzHBt/III.GS-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.490793,
+          47.807475
+        ]
+      },
+      "properties": {
+        "m": "3/102",
+        "t": "III",
+        "w": "17083211ZJUN2019",
+        "sidc": "SFGPUCFHE--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/3.PzHBt/MunZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.490987,
+          47.79848
+        ]
+      },
+      "properties": {
+        "m": "3/102",
+        "t": "",
+        "w": "17083115ZJUN2019",
+        "sidc": "SFGPUSS5---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/ArtUstgBt",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.516638,
+          47.83468
+        ]
+      },
+      "properties": {
+        "m": "102",
+        "t": "Ustg",
+        "w": "13182513ZJUN2019",
+        "sidc": "SFGPUCF----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/ArtUstgBt/BeobZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.517149,
+          47.816754
+        ]
+      },
+      "properties": {
+        "m": "102",
+        "t": "",
+        "w": "13182529ZJUN2019",
+        "sidc": "SFGPUCFTF--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/ArtUstgBt/Erk&VermZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.517149,
+          47.825662
+        ]
+      },
+      "properties": {
+        "m": "102",
+        "t": "",
+        "w": "13182522ZJUN2019",
+        "sidc": "SFGPUCFS---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/ArtUstgBt/WeZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.517528,
+          47.807644
+        ]
+      },
+      "properties": {
+        "m": "102",
+        "t": "",
+        "w": "13182537ZJUN2019",
+        "sidc": "SFGPUCFO---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/BKdo",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.38311,
+          47.832957
+        ]
+      },
+      "properties": {
+        "m": "102",
+        "t": "BKdo",
+        "w": "13180849ZJUN2019",
+        "sidc": "SFGPUCFHE------"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/StbBt",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.409864,
+          47.833358
+        ]
+      },
+      "properties": {
+        "m": "102",
+        "t": "Stb",
+        "w": "13181214ZJUN2019",
+        "sidc": "SFGPUCFHE--E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/StbBt/FMZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.41041,
+          47.815469
+        ]
+      },
+      "properties": {
+        "m": "102",
+        "t": "",
+        "w": "13181344ZJUN2019",
+        "sidc": "SFGPUUS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/StbBt/IZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.411484,
+          47.779403
+        ]
+      },
+      "properties": {
+        "m": "102",
+        "t": "",
+        "w": "13181425ZJUN2019",
+        "sidc": "SFGPUSX----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/StbBt/KdoZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.410082,
+          47.824462
+        ]
+      },
+      "properties": {
+        "m": "102",
+        "t": "Kdo",
+        "w": "13181329ZJUN2019",
+        "sidc": "SFGPUCFHE--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/StbBt/SanZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.411307,
+          47.788263
+        ]
+      },
+      "properties": {
+        "m": "102",
+        "t": "",
+        "w": "13181417ZJUN2019",
+        "sidc": "SFGPUSM----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/StbBt/VersZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.410757,
+          47.806314
+        ]
+      },
+      "properties": {
+        "m": "102",
+        "t": "",
+        "w": "13181401ZJUN2019",
+        "sidc": "SFGPUSS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzArtB102/StbBt/WiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.411163,
+          47.797367
+        ]
+      },
+      "properties": {
+        "m": "102",
+        "t": "",
+        "w": "13181407ZJUN2019",
+        "sidc": "SFGPUSS1---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.43827,
+          47.860857
+        ]
+      },
+      "properties": {
+        "m": "",
+        "t": "113",
+        "w": "17082026ZJUN2019",
+        "sidc": "SFGPUCA----F---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/1.PzKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.438797,
+          47.843009
+        ]
+      },
+      "properties": {
+        "m": "113",
+        "t": "1",
+        "w": "17081749ZJUN2019",
+        "sidc": "SFGPUCA----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/1.PzKp/I.PzZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.438787,
+          47.834047
+        ]
+      },
+      "properties": {
+        "m": "1/113",
+        "t": "I",
+        "w": "17081817ZJUN2019",
+        "sidc": "SFGPUCA----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/1.PzKp/II.PzZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.438885,
+          47.824978
+        ]
+      },
+      "properties": {
+        "m": "1/113",
+        "t": "II",
+        "w": "17081836ZJUN2019",
+        "sidc": "SFGPUCA----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/1.PzKp/III.PzZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.438981,
+          47.816062
+        ]
+      },
+      "properties": {
+        "m": "1/113",
+        "t": "III",
+        "w": "17081841ZJUN2019",
+        "sidc": "SFGPUCA----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/2.PzKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.46542,
+          47.8431
+        ]
+      },
+      "properties": {
+        "m": "113",
+        "t": "2",
+        "w": "17081759ZJUN2019",
+        "sidc": "SFGPUCA----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/2.PzKp/I.PzZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.465567,
+          47.833968
+        ]
+      },
+      "properties": {
+        "m": "2/113",
+        "t": "I",
+        "w": "17081823ZJUN2019",
+        "sidc": "SFGPUCA----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/2.PzKp/II.PzZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.465658,
+          47.825079
+        ]
+      },
+      "properties": {
+        "m": "2/113",
+        "t": "II",
+        "w": "17081845ZJUN2019",
+        "sidc": "SFGPUCA----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/2.PzKp/III.PzZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.465803,
+          47.816154
+        ]
+      },
+      "properties": {
+        "m": "2/113",
+        "t": "III",
+        "w": "17081848ZJUN2019",
+        "sidc": "SFGPUCA----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/3.PzKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.492202,
+          47.843258
+        ]
+      },
+      "properties": {
+        "m": "113",
+        "t": "3",
+        "w": "17081803ZJUN2019",
+        "sidc": "SFGPUCA----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/3.PzKp/I.PzZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.492343,
+          47.834261
+        ]
+      },
+      "properties": {
+        "m": "3/113",
+        "t": "I",
+        "w": "17081827ZJUN2019",
+        "sidc": "SFGPUCA----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/3.PzKp/II.PzZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.49243,
+          47.825336
+        ]
+      },
+      "properties": {
+        "m": "3/113",
+        "t": "II",
+        "w": "17081852ZJUN2019",
+        "sidc": "SFGPUCA----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/3.PzKp/III.PzZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.492518,
+          47.816311
+        ]
+      },
+      "properties": {
+        "m": "3/113",
+        "t": "III",
+        "w": "17081856ZJUN2019",
+        "sidc": "SFGPUCA----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/BKdo",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.385486,
+          47.84279
+        ]
+      },
+      "properties": {
+        "m": "113",
+        "t": "BKdo",
+        "w": "17081722ZJUN2019",
+        "sidc": "SFGPUCA--------"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/StbKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.412097,
+          47.842722
+        ]
+      },
+      "properties": {
+        "m": "113",
+        "t": "Stb",
+        "w": "17081734ZJUN2019",
+        "sidc": "SFGPUCA----E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/StbKp/FMZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.412073,
+          47.824736
+        ]
+      },
+      "properties": {
+        "m": "113",
+        "t": "",
+        "w": "17081916ZJUN2019",
+        "sidc": "SFGPUUS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/StbKp/IZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.412596,
+          47.788956
+        ]
+      },
+      "properties": {
+        "m": "113",
+        "t": "",
+        "w": "17082007ZJUN2019",
+        "sidc": "SFGPUSX----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/StbKp/SanZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.412496,
+          47.797827
+        ]
+      },
+      "properties": {
+        "m": "113",
+        "t": "",
+        "w": "17081959ZJUN2019",
+        "sidc": "SFGPUSM----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/StbKp/StbZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.411971,
+          47.833697
+        ]
+      },
+      "properties": {
+        "m": "113",
+        "t": "Stb",
+        "w": "17081932ZJUN2019",
+        "sidc": "SFGPUCA----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/StbKp/VersZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.412174,
+          47.815739
+        ]
+      },
+      "properties": {
+        "m": "113",
+        "t": "",
+        "w": "17081926ZJUN2019",
+        "sidc": "SFGPUSS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzB113/StbKp/WiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.412343,
+          47.806734
+        ]
+      },
+      "properties": {
+        "m": "113",
+        "t": "",
+        "w": "17081952ZJUN2019",
+        "sidc": "SFGPUSS1---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.264729,
+          47.859967
+        ]
+      },
+      "properties": {
+        "m": "",
+        "t": "112",
+        "w": "17081431ZJUN2019",
+        "sidc": "SFGPUCIZ---F---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/1.PzGrenKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.264943,
+          47.841991
+        ]
+      },
+      "properties": {
+        "m": "112",
+        "t": "1",
+        "w": "14100419ZJUN2019",
+        "sidc": "SFGPUCIZ---E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/1.PzGrenKp/I.PzGrenZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.265019,
+          47.832868
+        ]
+      },
+      "properties": {
+        "m": "1/112",
+        "t": "I",
+        "w": "14100430ZJUN2019",
+        "sidc": "SFGPUCIZ---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/1.PzGrenKp/II.PzGrenZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.265236,
+          47.82407
+        ]
+      },
+      "properties": {
+        "m": "1/112",
+        "t": "II",
+        "w": "14100504ZJUN2019",
+        "sidc": "SFGPUCIZ---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/1.PzGrenKp/III.PzGrenZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.265271,
+          47.815019
+        ]
+      },
+      "properties": {
+        "m": "1/112",
+        "t": "III",
+        "w": "14100518ZJUN2019",
+        "sidc": "SFGPUCIZ---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/1.PzGrenKp/PALZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.265465,
+          47.805951
+        ]
+      },
+      "properties": {
+        "m": "1/112",
+        "t": "",
+        "w": "17081152ZJUN2019",
+        "sidc": "SFGPUCAAA--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/2.PzGrenKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.291658,
+          47.842096
+        ]
+      },
+      "properties": {
+        "m": "112",
+        "t": "2",
+        "w": "14100426ZJUN2019",
+        "sidc": "SFGPUCIZ---E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/2.PzGrenKp/I.PzGrenZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.291874,
+          47.833136
+        ]
+      },
+      "properties": {
+        "m": "2/112",
+        "t": "I",
+        "w": "14100436ZJUN2019",
+        "sidc": "SFGPUCIZ---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/2.PzGrenKp/II.PzGrenZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.291996,
+          47.824175
+        ]
+      },
+      "properties": {
+        "m": "2/112",
+        "t": "II",
+        "w": "14100509ZJUN2019",
+        "sidc": "SFGPUCIZ---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/2.PzGrenKp/III.PzGrenZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.292025,
+          47.815124
+        ]
+      },
+      "properties": {
+        "m": "2/112",
+        "t": "III",
+        "w": "14100522ZJUN2019",
+        "sidc": "SFGPUCIZ---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/2.PzGrenKp/PALZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.292147,
+          47.806145
+        ]
+      },
+      "properties": {
+        "m": "2/112",
+        "t": "",
+        "w": "17081319ZJUN2019",
+        "sidc": "SFGPUCAAA--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/3.PzGrenKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.318507,
+          47.842259
+        ]
+      },
+      "properties": {
+        "m": "112",
+        "t": "3",
+        "w": "14100446ZJUN2019",
+        "sidc": "SFGPUCIZ---E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/3.PzGrenKp/I.PzGrenZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.318436,
+          47.83336
+        ]
+      },
+      "properties": {
+        "m": "3/112",
+        "t": "I",
+        "w": "14100455ZJUN2019",
+        "sidc": "SFGPUCIZ---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/3.PzGrenKp/II.PzGrenZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.318649,
+          47.824238
+        ]
+      },
+      "properties": {
+        "m": "3/112",
+        "t": "II",
+        "w": "14100513ZJUN2019",
+        "sidc": "SFGPUCIZ---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/3.PzGrenKp/III.PzGrenZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.31882,
+          47.815286
+        ]
+      },
+      "properties": {
+        "m": "3/112",
+        "t": "III",
+        "w": "14100529ZJUN2019",
+        "sidc": "SFGPUCIZ---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/3.PzGrenKp/PALZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.31883,
+          47.806343
+        ]
+      },
+      "properties": {
+        "m": "3/112",
+        "t": "",
+        "w": "17081312ZJUN2019",
+        "sidc": "SFGPUCAAA--D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/BKdo",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.211476,
+          47.841574
+        ]
+      },
+      "properties": {
+        "m": "112",
+        "t": "BKdo",
+        "w": "14095453ZJUN2019",
+        "sidc": "SFGPUCIZ-------"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/StbKp",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.238189,
+          47.841853
+        ]
+      },
+      "properties": {
+        "m": "112",
+        "t": "Stb",
+        "w": "14100114ZJUN2019",
+        "sidc": "SFGPUCIZ---E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/StbKp/FMZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.238451,
+          47.823896
+        ]
+      },
+      "properties": {
+        "m": "112",
+        "t": "",
+        "w": "14100228ZJUN2019",
+        "sidc": "SFGPUUS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/StbKp/IZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.238977,
+          47.787936
+        ]
+      },
+      "properties": {
+        "m": "112",
+        "t": "",
+        "w": "14100407ZJUN2019",
+        "sidc": "SFGPUSX----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/StbKp/SanZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.238739,
+          47.796923
+        ]
+      },
+      "properties": {
+        "m": "112",
+        "t": "",
+        "w": "14100359ZJUN2019",
+        "sidc": "SFGPUSM----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/StbKp/StbZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.238267,
+          47.832829
+        ]
+      },
+      "properties": {
+        "m": "112",
+        "t": "Stb",
+        "w": "14100221ZJUN2019",
+        "sidc": "SFGPUCIZ---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/StbKp/VersZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.238529,
+          47.814944
+        ]
+      },
+      "properties": {
+        "m": "112",
+        "t": "",
+        "w": "14100240ZJUN2019",
+        "sidc": "SFGPUSS----D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "PzGrenB112/StbKp/WiZg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.238756,
+          47.805822
+        ]
+      },
+      "properties": {
+        "m": "112",
+        "t": "",
+        "w": "14100347ZJUN2019",
+        "sidc": "SFGPUSS1---D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "SOF-Kp121",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.559094,
+          47.843426
+        ]
+      },
+      "properties": {
+        "m": "",
+        "t": "121",
+        "w": "17085408ZJUN2019",
+        "sidc": "SFFP-------E---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "SOF-Kp121/I.SOF-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.558862,
+          47.834428
+        ]
+      },
+      "properties": {
+        "m": "121",
+        "t": "I",
+        "w": "17085414ZJUN2019",
+        "sidc": "SFFP-------D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "SOF-Kp121/II.SOF-Zg",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.55914,
+          47.825296
+        ]
+      },
+      "properties": {
+        "m": "121",
+        "t": "II",
+        "w": "17085419ZJUN2019",
+        "sidc": "SFFP-------D---"
+      }
+    },
+    {
+      "type": "Feature",
+      "title": "SOF-Kp121/III.SOF-Zg (Ranger)",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.559215,
+          47.816434
+        ]
+      },
+      "properties": {
+        "m": "121",
+        "t": "III",
+        "w": "17085426ZJUN2019",
+        "sidc": "SFFPGR-----D---"
+      }
+    }
+  ]
+}
