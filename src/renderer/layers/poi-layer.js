@@ -19,20 +19,14 @@ const geometry = properties => properties.latlngs
   ? polygon(properties)
   : point(properties)
 
-const feature = (id, properties) => {
-
-  // Provide different update method depending on geometry
-  const update = properties.latlngs
-    ? store.update(id)
-    : store.move(id)
-
+const poi = (id, properties) => {
   return {
     type: 'Feature',
     id: id,
     geometry: geometry(properties),
     properties: { t: properties.name, sidc: 'GFGPGPRI----' },
     actions: {
-      update,
+      update: store.move(id),
       properties: () => store.state()[id],
       paste: properties => store.add(uuid(), properties),
       delete: () => store.remove(id),
@@ -40,6 +34,23 @@ const feature = (id, properties) => {
     }
   }
 }
+
+const aoi = (id, properties) => {
+  return {
+    type: 'Feature',
+    id: id,
+    geometry: geometry(properties),
+    properties: { t: properties.name, sidc: 'GFGPSAN--------' }, // NAI
+    actions: {
+      update: store.update(id),
+      properties: () => store.state()[id],
+      paste: properties => store.add(uuid(), properties),
+      delete: () => store.remove(id)
+    }
+  }
+}
+
+const feature = (id, properties) => (properties.latlngs ? aoi : poi)(id, properties)
 
 evented.on('MAP_CREATED', map => {
   const symbols = new L.GeoJSON.Symbols(null, {
