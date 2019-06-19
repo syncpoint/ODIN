@@ -5,7 +5,7 @@
 
 While currently in its early infancy, ODIN aims to become an Open Source alternative to industry-led commercial Command and Control Information Systems. Our main goal is __simplicity__. Coming from a military background, we think it's time for a paradigm shift. Together with a vibrant community, we want to lead the way towards lightweight and user-friendly systems.
 
-![ODIN C2IS](assets/splash-001.png?raw=true)
+![ODIN C2IS](assets/splash-002.png?raw=true)
 
 ## Contributing
 If you are interested in raising ODIN to become big and strong, there are several ways you can help: Feature request, bugs and other backlog items can be reported in the [issues section](https://github.com/syncpoint/ODIN/issues) of the repository. Pull requests are also highly appreciated. And finally, any form of testing and feedback is welcome.
