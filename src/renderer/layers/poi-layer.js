@@ -1,3 +1,5 @@
+import React from 'react'
+import POIProperties from '../components/POIProperties'
 import L from 'leaflet'
 import uuid from 'uuid-random'
 import evented from '../evented'
@@ -33,7 +35,8 @@ const feature = (id, properties) => {
       update,
       properties: () => store.state()[id],
       paste: properties => store.add(uuid(), properties),
-      delete: () => store.remove(id)
+      delete: () => store.remove(id),
+      edit: () => <POIProperties uuid={ id } />
     }
   }
 }
