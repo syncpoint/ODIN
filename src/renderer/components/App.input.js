@@ -55,7 +55,10 @@ const init = map => {
       properties: selected.properties(),
       paste: selected.paste
     }))
-    selection.selected().forEach(selected => selected.delete())
+
+    selection.selected()
+      .filter(selected => selected.delete)
+      .forEach(selected => selected.delete())
   })
 
   Mousetrap.bind(['mod+v'], () => {
@@ -69,7 +72,9 @@ const init = map => {
     },
     delete: () => {
       if (selection.empty()) return
-      selection.selected().forEach(selected => selected.delete())
+      selection.selected()
+        .filter(selected => selected.delete)
+        .forEach(selected => selected.delete())
     },
     click: event => {
 

@@ -7,7 +7,6 @@ import L from 'leaflet'
 import * as R from 'ramda'
 import OSD from './OSD'
 import Spotlight from './spotlight/Spotlight'
-import POIProperties from './POIProperties'
 import { spotlightOptions } from './App.spotlight'
 import addBookmarkOptions from './App.bookmark'
 import selection from './App.selection'
@@ -101,19 +100,7 @@ class App extends React.Component {
     })
 
     selection.on('selected', object => {
-
-      // FIXME: for now only POIs are supported
-      if (!object.properties) return
-      const properties = object.properties()
-      if (properties.latlngs) return // AOI
-
-      const { key } = object
-      const matches = key.match(/feature:\/\/poi-layer\/(.*)/)
-      if (!matches) return
-
-      // POI properties panel:
-      const right = () => <POIProperties uuid={ matches[1] } />
-      this.openPanel('right', right)
+      object.edit && this.openPanel('right', object.edit)
     })
 
     selection.on('deselected', () => {
