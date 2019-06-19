@@ -10,7 +10,8 @@ export default register => {
   const term = register(contributor)
 
   contributor.updateFilter = () => {
-    const items = Object.entries((settings.bookmarks.get()))
+
+    const contribution = () => Object.entries((settings.bookmarks.get()))
       .filter(([id, _]) => id.search(new RegExp(term(), 'i')) !== -1)
       .sort((a, b) => a[0].localeCompare(b[0]))
       .map(([id, bookmark]) => ({
@@ -21,9 +22,10 @@ export default register => {
           const bookmarks = settings.bookmarks.get()
           delete bookmarks[id]
           settings.bookmarks.set(bookmarks)
+          contributor.emit('updated', contribution())
         }
       }))
 
-    contributor.emit('updated', items)
+    contributor.emit('updated', contribution())
   }
 }
