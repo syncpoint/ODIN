@@ -9,14 +9,12 @@ import selection from '../components/App.selection'
 import evented from '../evented'
 import { fromNow } from '../../shared/datetime'
 
-// TODO: map remaining (text) modifiers
 const MODIFIER_MAP = {
   f: 'reinforcedReduced',
   m: 'higherFormation',
   q: 'direction',
   t: 'uniqueDesignation',
 
-  // TODO: find more compact form for DTG
   // w: 'dtg',
   z: 'speed'
 }
@@ -31,6 +29,7 @@ const defaultOptions = {
 
 const modifiers = feature => Object.entries(feature.properties)
   .filter(([key, value]) => MODIFIER_MAP[key] && value)
+  .map(([key, value]) => ([key, key === 'w' ? fromNow(value) : value]))
   .reduce((acc, [key, value]) => K(acc)(acc => (acc[MODIFIER_MAP[key]] = value)), {})
 
 const onEachFeature = function (feature, layer) {

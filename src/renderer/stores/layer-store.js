@@ -94,7 +94,6 @@ evented.update = (name, id) => latlngs => {
       features[index].geometry.coordinates = latlngs.map(({ lat, lng }) => ([lng, lat]))
       break
     case 'Polygon':
-      // TODO: support multiple rings
       const xs = latlngs[0].map(({ lat, lng }) => ([lng, lat]))
       features[index].geometry.coordinates = [[ ...xs, xs[0]]]
       break

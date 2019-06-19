@@ -18,7 +18,6 @@ export default register => {
         text: <ListItemText primary={ id } secondary={ 'Bookmark' }/>,
         action: () => evented.emit('map.viewport', L.latLng(bookmark.lat, bookmark.lng), bookmark.zoom),
         delete: () => {
-          // TODO: store bookmarks in leveldb
           const bookmarks = settings.bookmarks.get()
           delete bookmarks[id]
           settings.bookmarks.set(bookmarks)
