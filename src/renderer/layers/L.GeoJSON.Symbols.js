@@ -43,13 +43,13 @@ const onEachFeature = function (feature, layer) {
     actions && actions.update && actions.update(latlngs)
   })
 
-  layer.on('pm:remove', () => console.log('pm:remove', id))
-
   layer.on('click', event => {
     const { target } = event
     target._map.pm.disableGlobalEditMode()
     this.select(id)
-    layer.pm.enable({ preventMarkerRemoval: true })
+
+    const preventMarkerRemoval = feature.geometry.type === 'Point'
+    layer.pm.enable({ preventMarkerRemoval })
   })
 }
 
