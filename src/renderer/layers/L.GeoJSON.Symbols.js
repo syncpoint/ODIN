@@ -6,6 +6,8 @@ import L from 'leaflet'
 import ms from 'milsymbol'
 import { K } from '../../shared/combinators'
 import selection from '../components/App.selection'
+import evented from '../evented'
+import { fromNow } from '../../shared/datetime'
 
 // TODO: map remaining (text) modifiers
 const MODIFIER_MAP = {
@@ -41,11 +43,13 @@ const onEachFeature = function (feature, layer) {
     actions && actions.update && actions.update(latlngs)
   })
 
+  layer.on('pm:remove', () => console.log('pm:remove', id))
+
   layer.on('click', event => {
     const { target } = event
     target._map.pm.disableGlobalEditMode()
     this.select(id)
-    layer.pm.enable()
+    layer.pm.enable({ preventMarkerRemoval: true })
   })
 }
 
@@ -80,6 +84,20 @@ const pointToLayer = function (feature, latlng) {
   }
 
   return K(L.marker(latlng, markerOptions))(marker => {
+    const ctrlKey = event => event.originalEvent.ctrlKey
+    const set = (slot, message) => event => ctrlKey(event) && evented.emit('OSD_MESSAGE', { slot, message })
+    const reset = slot => () => evented.emit('OSD_MESSAGE', { slot, message: '' })
+
+    if (feature.title) {
+      marker.on('mouseover', set('B1', feature.title))
+      marker.on('mouseout', reset('B1'))
+    }
+
+    if (feature.properties.w) {
+      marker.on('mouseover', set('B2', fromNow(feature.properties.w)))
+      marker.on('mouseout', reset('B2'))
+    }
+
     marker.setIcon(selection.selected()
       .find(selected => selected && this.layers[selected.key])
       ? marker.options.icons.highlighted
