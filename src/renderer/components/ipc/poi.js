@@ -11,7 +11,7 @@ export const COMMAND_NEW_POI = () => () => {
   })
 }
 
-export const COMMAND_NEW_AOI = ({ map }) => () => {
+const area = sidc => ({ map }) => () => {
 
   const options = {
     tooltips: false,
@@ -21,9 +21,12 @@ export const COMMAND_NEW_AOI = ({ map }) => () => {
   }
 
   map.once('pm:create', ({ layer }) => {
-    store.add(uuid(), { latlngs: layer._latlngs })
+    store.add(uuid(), { latlngs: layer._latlngs, sidc })
     layer.remove(map)
   })
 
   map.pm.enableDraw('Polygon', options)
 }
+
+export const COMMAND_NEW_NAI = area('GFGPSAN--------')
+export const COMMAND_NEW_TAI = area('GFGPSAT--------')

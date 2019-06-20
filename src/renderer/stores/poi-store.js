@@ -56,6 +56,7 @@ evented.register = reducer => {
   reducers.push(reducer)
 }
 
+// TODO: rename type -> event
 evented.add = (uuid, poi) => persist({ type: 'added', uuid, ...poi })
 
 evented.remove = uuid => {

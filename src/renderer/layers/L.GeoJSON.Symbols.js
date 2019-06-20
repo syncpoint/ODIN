@@ -197,7 +197,6 @@ L.Area = L.Polygon.extend({
       const lines = []
       if (options && options.type) lines.push(options.type)
       if (this.properties.t) lines.push(this.properties.t)
-      lines.push('CA-928')
 
       const point = this.centerOfMass()
       text.textContent = lines[0]
@@ -223,7 +222,7 @@ L.Area = L.Polygon.extend({
 
   onRemove (map) {
     const group = this._path.parentElement
-    group.removeChild(this.typeLabel)
+    if (this.label) group.removeChild(this.label)
     L.Polygon.prototype.onRemove.call(this, map)
   },
 
