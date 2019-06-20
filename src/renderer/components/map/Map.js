@@ -4,13 +4,8 @@ import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { ipcRenderer } from 'electron'
 import evented from '../../evented'
-import 'leaflet/dist/leaflet.css'
-import 'leaflet.pm'
-import 'leaflet.pm/dist/leaflet.pm.css'
-import './leaflet-icons'
+import { panes } from '../../leaflet/index'
 import { K } from '../../../shared/combinators'
-import Leaflet from '../../leaflet'
-import '../../layers/L.GeoJSON.Symbols'
 import { zoomLevels } from './zoom-levels'
 import { defaultValues } from '../ipc/display-filters'
 import { tileProvider } from '../ipc/tile-provider'
@@ -36,8 +31,7 @@ const updateDisplayFilter = map => values => {
     .map(([name, { value, unit }]) => `${name}(${value}${unit})`)
     .join(' ')
 
-  Leaflet
-    .panes(layer => layer /* instanceof L.TileLayer */)(map)
+  panes(layer => layer /* instanceof L.TileLayer */)(map)
     .map(pane => pane.style)
     .forEach(style => (style.filter = filter))
 }
