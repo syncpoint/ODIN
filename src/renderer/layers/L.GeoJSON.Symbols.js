@@ -8,6 +8,7 @@ import { K } from '../../shared/combinators'
 import selection from '../components/App.selection'
 import evented from '../evented'
 import { fromNow } from '../../shared/datetime'
+import gfxOptions from './gfx-options'
 
 const MODIFIER_MAP = {
   f: 'reinforcedReduced',
@@ -62,7 +63,12 @@ const pointToLayer = function (feature, latlng) {
     iconAnchor: new L.Point(symbol.getAnchor().x, symbol.getAnchor().y)
   })
 
-  const symbolOptions = { size: this.options.size(), ...modifiers(feature) }
+  const symbolOptions = {
+    size: this.options.size(),
+    colorMode: 'Light', // default: light
+    simpleStatusModifier: true,
+    ...modifiers(feature)
+  }
   const icons = {
     standard: icon(new ms.Symbol(sidc, symbolOptions)),
     highlighted: icon(new ms.Symbol(sidc, {
@@ -173,6 +179,147 @@ const moveFeature = function (id, lat, lng) {
   marker.setLatLng(L.latLng(lat, lng))
 }
 
+const functionId = sidc => sidc.substring(4, 10)
+
+L.Area = L.Polygon.extend({
+  initialize (latlngs, options, properties) {
+    L.Polygon.prototype.initialize.call(this, latlngs, options)
+    this.properties = properties
+  },
+
+  onAdd (map) {
+    L.Polygon.prototype.onAdd.call(this, map)
+
+    const key = functionId(this.properties.sidc)
+    const options = gfxOptions[key]
+
+    this.label = K(L.SVG.create('text'))(text => {
+      const lines = []
+      if (options && options.type) lines.push(options.type)
+      if (this.properties.t) lines.push(this.properties.t)
+      lines.push('CA-928')
+
+      const point = this.centerOfMass()
+      text.textContent = lines[0]
+      text.setAttribute('x', point[0])
+      text.setAttribute('y', point[1])
+      text.setAttribute('text-anchor', 'middle')
+
+      lines.splice(1).forEach(line => {
+        const tspan = L.SVG.create('tspan')
+        tspan.textContent = line
+        tspan.setAttribute('text-anchor', 'middle')
+        tspan.setAttribute('dy', '1.2em')
+        tspan.setAttribute('x', point[0])
+        text.appendChild(tspan)
+      })
+
+      const group = this._path.parentElement
+      group.appendChild(text)
+    })
+
+    this.updateLabelPosition()
+  },
+
+  onRemove (map) {
+    const group = this._path.parentElement
+    group.removeChild(this.typeLabel)
+    L.Polygon.prototype.onRemove.call(this, map)
+  },
+
+  redraw () {
+    L.Polygon.prototype.redraw.call(this)
+    this.updateLabelPosition()
+  },
+
+  updateLabelPosition () {
+    if (!this.label) return
+    const point = this.centerOfMass()
+    this.label.setAttribute('x', point[0])
+    this.label.setAttribute('y', point[1])
+
+    Array.from(this.label.childNodes)
+      .splice(1)
+      .forEach(child => child.setAttribute('x', point[0]))
+  },
+
+  _project () {
+    L.Polygon.prototype._project.call(this)
+    this.updateLabelPosition()
+  },
+
+  /**
+   * Optimization.
+   * Mostly Polygon.getCenter() without layerPointToLatLng().
+   *
+   * @returns layer point instead of latlng
+   */
+  centerOfMass () {
+    const points = this._rings[0]
+    const len = points.length
+    if (!len) return null
+
+    // polygon centroid algorithm; only uses the first ring if there are multiple
+    let area = 0
+    let x = 0
+    let y = 0
+
+    for (let i = 0, j = len - 1; i < len; j = i++) {
+      const f = points[i].y * points[j].x - points[j].y * points[i].x
+      x += (points[i].x + points[j].x) * f
+      y += (points[i].y + points[j].y) * f
+      area += f * 3
+    }
+
+    if (area === 0) return points[0]
+    else return [x / area, y / area]
+  }
+})
+
+const GEOMETRIES = {
+  Polygon: (geojson, options) => {
+    const geometry = geojson.type === 'Feature' ? geojson.geometry : geojson
+    const coords = geometry ? geometry.coordinates : null
+    const latlngs = L.GeoJSON.coordsToLatLngs(coords, 1)
+    const polygon = new L.Area(latlngs, options, geojson.properties)
+    return polygon
+  }
+}
+
+const geometryToLayer = function (geojson, options) {
+  const geometry = geojson.type === 'Feature' ? geojson.geometry : geojson
+  const factory = GEOMETRIES[geometry.type] || L.GeoJSON.geometryToLayer
+  return factory(geojson, options)
+}
+
+/**
+ * Hook-in to provide own function geometryToLayer().
+ */
+const addData = function (geojson) {
+
+  const features = L.Util.isArray(geojson) ? geojson : geojson.features
+
+  if (features) {
+    // When collection, add individual features recursively and return.
+    features
+      .filter(feature => feature.geometries || feature.geometry || feature.features || feature.coordinates)
+      .forEach(feature => this.addData(feature))
+    return this
+  }
+
+  const options = this.options
+  if (options.filter && !options.filter(geojson)) return this
+  const layer = geometryToLayer(geojson, options)
+  if (!layer) return this
+
+  layer.feature = L.GeoJSON.asFeature(geojson)
+  layer.defaultOptions = layer.options
+  this.resetStyle(layer)
+
+  if (options.onEachFeature) options.onEachFeature(geojson, layer)
+  return this.addLayer(layer)
+}
+
 L.GeoJSON.Symbols = L.GeoJSON.extend({
   options: defaultOptions,
   key,
@@ -183,5 +330,6 @@ L.GeoJSON.Symbols = L.GeoJSON.extend({
   addFeature,
   removeFeature,
   replaceFeature,
-  moveFeature
+  moveFeature,
+  addData
 })
