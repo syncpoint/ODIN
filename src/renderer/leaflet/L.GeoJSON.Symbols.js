@@ -179,17 +179,6 @@ const moveFeature = function (id, lat, lng) {
   marker.setLatLng(L.latLng(lat, lng))
 }
 
-
-// const GEOMETRIES = {
-//   Polygon: (geojson, options) => {
-//     const geometry = geojson.type === 'Feature' ? geojson.geometry : geojson
-//     const coords = geometry ? geometry.coordinates : null
-//     const latlngs = L.GeoJSON.coordsToLatLngs(coords, 1)
-//     const polygon = new L.Area(latlngs, options, geojson.properties)
-//     return polygon
-//   }
-// }
-
 const geometryToLayer = function (geojson, options) {
   // Either we find a SIDC/function specific layer factory or
   // we use generic Leaflet method.
