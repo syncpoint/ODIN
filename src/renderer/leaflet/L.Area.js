@@ -87,7 +87,7 @@ L.Area = L.Polygon.extend({
       area += f * 3
     }
 
-    if (area === 0) return points[0]
+    if (area === 0) return [points[0].x, points[0].y]
     else return [x / area, y / area]
   }
 })
