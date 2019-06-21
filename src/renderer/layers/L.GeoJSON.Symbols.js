@@ -116,8 +116,15 @@ const initialize = function (features, options) {
   options.onEachFeature = onEachFeature.bind(this)
   L.GeoJSON.prototype.initialize.call(this, features, options)
 
-  selection.on('selected', object => this.selected(object))
-  selection.on('deselected', object => this.deselected(object))
+  const onSelected = object => this.selected(object)
+  const onDeselected = object => this.deselected(object)
+  this.once('remove', () => {
+    selection.off('selected', onSelected)
+    selection.off('deselected', onDeselected)
+  })
+
+  selection.on('selected', onSelected)
+  selection.on('deselected', onDeselected)
 }
 
 const select = function (id) {
