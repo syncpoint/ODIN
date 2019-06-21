@@ -20,6 +20,7 @@ export default register => {
         const xs = features
           .filter(feature => {
             if (!feature.title) return false
+            if (!feature.geometry) return false
             if (feature.geometry.type !== 'Point') return false
             return feature.title.search(new RegExp(term(), 'i')) !== -1
           })
