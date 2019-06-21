@@ -1,6 +1,8 @@
 import EventEmitter from 'events'
 
 const evented = new EventEmitter()
+evented.setMaxListeners(0)
+
 let selected
 
 evented.select = object => {
