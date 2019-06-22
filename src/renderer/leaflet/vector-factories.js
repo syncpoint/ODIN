@@ -1,17 +1,41 @@
 /* eslint-disable */
 
-const coordsToLatLngs = geojson =>
-  L.GeoJSON.coordsToLatLngs(geojson.geometry.coordinates, 1)
+const ECHELON = {
+  A: '∅',
+  B: '•',
+  C: '••',
+  D: '•••',
+  E: '|',
+  F: '||',
+  G: '|||',
+  // H: '×',
+  H: '╳',
+  I: '××',
+  J: '×××',
+  K: '××××',
+  L: '×××××',
+  M: '××××××',
+  N: '++'
+}
 
-const area = (geojson, options) => new L.Area(coordsToLatLngs(geojson), {
+const coordsToLatLngs = (geojson, levelsDeep) =>
+  L.GeoJSON.coordsToLatLngs(geojson.geometry.coordinates, levelsDeep)
+
+const area = (geojson, options) => new L.Area(coordsToLatLngs(geojson, 1), {
   ...options,
   t: geojson.properties.t || geojson.title
 })
 
-const typedArea = type => (geojson, options) => new L.Area(coordsToLatLngs(geojson), {
+const typedArea = type => (geojson, options) => new L.Area(coordsToLatLngs(geojson, 1), {
   ...options,
   type,
   t: geojson.properties.t || geojson.title
+})
+
+const boundary = (geojson, options) => new L.Boundary(coordsToLatLngs(geojson, 0), {
+  ...options,
+  // b: ECHELON[geojson.properties.sidc[11]],
+  b: geojson.properties.sidc[11]
 })
 
 // functionId(sidc) -> SVG vector factory
@@ -73,4 +97,7 @@ export default {
 
   // /* OBSTACLES - MINEFIELDS - MINED AREA */
   // 'OFA---': { /* 'M's on boundary */ }
+
+  /* GENERAL - LINES - BOUNDARIES */
+  'GLB---': boundary
 }
