@@ -3,10 +3,9 @@ import * as R from 'ramda'
 import { K } from '../../shared/combinators'
 import echelons from './echelons'
 
-const setAttributes = o => element =>
-  Object.entries(o)
-    .filter(([key]) => key !== 'type')
-    .forEach(([key, value]) => element.setAttribute(key, value))
+const setAttributes = xs => element => Object.entries(xs)
+  .filter(([key]) => key !== 'type')
+  .forEach(([key, value]) => element.setAttribute(key, value))
 
 const style = {
   'stroke-width': 4,
@@ -14,6 +13,21 @@ const style = {
   'fill': 'none'
 }
 
+// NOTE: affine transformations are applied right to left.
+const transformLabel = (center, angle) => `
+  translate(${center[0]} ${center[1]})
+  rotate(${angle / Math.PI * 180})
+  scale(0.5 0.5),
+  translate(-100 -178)`
+
+const transformBackdrop = (center, angle, bbox) => `
+  translate(${center[0]} ${center[1]})
+  rotate(${angle / Math.PI * 180})
+  translate(${bbox.width / -4} ${bbox.height / -4})`
+
+/**
+ * Polyline with echelon decoration.
+ */
 L.Boundary = L.Polyline.extend({
   initialize (latlngs, options) {
     L.setOptions(this, options)
@@ -43,6 +57,15 @@ L.Boundary = L.Polyline.extend({
     this.labels = []
   },
 
+  _segments () {
+    // TODO: filter segments to short for echelon label
+    return R.aperture(2, this._rings[0])
+      .map(([a, b]) => [
+        Math.atan((b.y - a.y) / (b.x - a.x)),
+        [(a.x + b.x) / 2, (a.y + b.y) / 2]
+      ])
+  },
+
   /**
    * (Re-)create label list based on current set of vertices.
    */
@@ -53,57 +76,44 @@ L.Boundary = L.Polyline.extend({
     const group = echelons[this.options.b]
     if (!group) return /* nothing to do. */
 
-    // TODO: filter short segments
-    const segments = R.aperture(2, this._rings[0])
-      .map(([a, b]) => [
-        Math.atan((b.y - a.y) / (b.x - a.x)),
-        [(a.x + b.x) / 2, (a.y + b.y) / 2]
-      ])
-
-    segments.forEach(([angle, center]) => {
-      const label = L.SVG.create('g')
+    this._segments().forEach(([angle, center]) => K(L.SVG.create('g'))(label => {
       setAttributes(style)(label)
 
-      group.forEach(x => {
-        const element = L.SVG.create(x.type)
+      group.forEach(x => K(L.SVG.create(x.type))(element => {
         setAttributes(x)(element)
         label.appendChild(element)
-      })
+      }))
 
-      label.setAttribute('transform', `translate(${center[0]} ${center[1]}) rotate(${angle / Math.PI * 180}) scale(0.5 0.5), translate(-100 -180)`)
+      label.setAttribute('transform', transformLabel(center, angle))
       parent.appendChild(label)
       const bbox = label.getBBox()
 
+      // White/transparent backdrop to increase readability.
       K(L.SVG.create('rect'))(rect => {
-        rect.setAttribute('transform', `translate(${center[0]} ${center[1]}) rotate(${angle / Math.PI * 180}) translate(${bbox.width / -4} ${bbox.height / -4})`)
+        rect.setAttribute('transform', transformBackdrop(center, angle, bbox))
         rect.setAttribute('width', bbox.width / 2)
         rect.setAttribute('height', bbox.height / 2)
         rect.setAttribute('fill', 'rgba(255, 255, 255, 0.7)')
+
+        // no z-order in SVG, place backdrop 'under' (i.e. before) the label:
         parent.insertBefore(rect, label)
         this.labels.push([label, rect])
       })
-    })
+    }))
   },
 
   /**
    * Update label positions without changing label list.
    */
   _updatLabels () {
-    R.aperture(2, this._rings[0])
-      .map(([a, b]) => [
-        Math.atan((b.y - a.y) / (b.x - a.x)),
-        [(a.x + b.x) / 2, (a.y + b.y) / 2]
-      ])
-      .forEach(([angle, center], index) => {
-        const label = this.labels[index][0]
-        label.setAttribute('transform', `translate(${center[0]} ${center[1]}) rotate(${angle / Math.PI * 180}) scale(0.5 0.5), translate(-100 -180)`)
-        const bbox = label.getBBox()
-        const rect = this.labels[index][1]
-
-        rect.setAttribute('transform', `translate(${center[0]} ${center[1]}) rotate(${angle / Math.PI * 180}) translate(${bbox.width / -4} ${bbox.height / -4})`)
-        rect.setAttribute('width', bbox.width / 2)
-        rect.setAttribute('height', bbox.height / 2)
-      })
+    this._segments().forEach(([angle, center], index) => {
+      const [label, rect] = this.labels[index]
+      const bbox = label.getBBox()
+      label.setAttribute('transform', transformLabel(center, angle))
+      rect.setAttribute('transform', transformBackdrop(center, angle, bbox))
+      rect.setAttribute('width', bbox.width / 2)
+      rect.setAttribute('height', bbox.height / 2)
+    })
   },
 
   _project () {
