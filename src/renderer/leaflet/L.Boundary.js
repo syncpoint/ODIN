@@ -50,35 +50,39 @@ L.Boundary = L.Polyline.extend({
     this._removeLabels()
     const parent = this._path.parentElement
 
+    const group = echelons[this.options.b]
+    if (!group) return /* nothing to do. */
+
     // TODO: filter short segments
-    R.aperture(2, this._rings[0])
+    const segments = R.aperture(2, this._rings[0])
       .map(([a, b]) => [
         Math.atan((b.y - a.y) / (b.x - a.x)),
         [(a.x + b.x) / 2, (a.y + b.y) / 2]
       ])
-      .forEach(([angle, center]) => {
-        const label = L.SVG.create('g')
-        setAttributes(style)(label)
 
-        echelons[this.options.b].forEach(x => {
-          const element = L.SVG.create(x.type)
-          setAttributes(x)(element)
-          label.appendChild(element)
-        })
+    segments.forEach(([angle, center]) => {
+      const label = L.SVG.create('g')
+      setAttributes(style)(label)
 
-        label.setAttribute('transform', `translate(${center[0]} ${center[1]}) rotate(${angle / Math.PI * 180}) scale(0.5 0.5), translate(-100 -180)`)
-        parent.appendChild(label)
-        const bbox = label.getBBox()
-
-        K(L.SVG.create('rect'))(rect => {
-          rect.setAttribute('transform', `translate(${center[0]} ${center[1]}) rotate(${angle / Math.PI * 180}) translate(${bbox.width / -4} ${bbox.height / -4})`)
-          rect.setAttribute('width', bbox.width / 2)
-          rect.setAttribute('height', bbox.height / 2)
-          rect.setAttribute('fill', 'rgba(255, 255, 255, 0.7)')
-          parent.insertBefore(rect, label)
-          this.labels.push([label, rect])
-        })
+      group.forEach(x => {
+        const element = L.SVG.create(x.type)
+        setAttributes(x)(element)
+        label.appendChild(element)
       })
+
+      label.setAttribute('transform', `translate(${center[0]} ${center[1]}) rotate(${angle / Math.PI * 180}) scale(0.5 0.5), translate(-100 -180)`)
+      parent.appendChild(label)
+      const bbox = label.getBBox()
+
+      K(L.SVG.create('rect'))(rect => {
+        rect.setAttribute('transform', `translate(${center[0]} ${center[1]}) rotate(${angle / Math.PI * 180}) translate(${bbox.width / -4} ${bbox.height / -4})`)
+        rect.setAttribute('width', bbox.width / 2)
+        rect.setAttribute('height', bbox.height / 2)
+        rect.setAttribute('fill', 'rgba(255, 255, 255, 0.7)')
+        parent.insertBefore(rect, label)
+        this.labels.push([label, rect])
+      })
+    })
   },
 
   /**
