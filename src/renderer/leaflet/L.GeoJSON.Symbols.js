@@ -51,6 +51,21 @@ const onEachFeature = function (feature, layer) {
     const preventMarkerRemoval = feature.geometry.type === 'Point'
     layer.pm.enable({ preventMarkerRemoval })
   })
+
+  const ctrlKey = event => event.originalEvent.ctrlKey
+  const set = (slot, message) => event => ctrlKey(event) && evented.emit('OSD_MESSAGE', { slot, message })
+  const reset = slot => () => evented.emit('OSD_MESSAGE', { slot, message: '' })
+
+  if (feature.title) {
+    layer.on('mouseover', set('B1', feature.title))
+    layer.on('mouseout', reset('B1'))
+  }
+
+  if (feature.properties.w) {
+    layer.on('mouseover', set('B2', fromNow(feature.properties.w)))
+    layer.on('mouseout', reset('B2'))
+  }
+
 }
 
 const pointToLayer = function (feature, latlng) {
@@ -69,6 +84,7 @@ const pointToLayer = function (feature, latlng) {
     simpleStatusModifier: true,
     ...modifiers(feature)
   }
+
   const icons = {
     standard: icon(new ms.Symbol(sidc, symbolOptions)),
     highlighted: icon(new ms.Symbol(sidc, {
@@ -89,20 +105,6 @@ const pointToLayer = function (feature, latlng) {
   }
 
   return K(L.marker(latlng, markerOptions))(marker => {
-    const ctrlKey = event => event.originalEvent.ctrlKey
-    const set = (slot, message) => event => ctrlKey(event) && evented.emit('OSD_MESSAGE', { slot, message })
-    const reset = slot => () => evented.emit('OSD_MESSAGE', { slot, message: '' })
-
-    if (feature.title) {
-      marker.on('mouseover', set('B1', feature.title))
-      marker.on('mouseout', reset('B1'))
-    }
-
-    if (feature.properties.w) {
-      marker.on('mouseover', set('B2', fromNow(feature.properties.w)))
-      marker.on('mouseout', reset('B2'))
-    }
-
     marker.setIcon(selection.selected()
       .find(selected => selected && this.layers[selected.key])
       ? marker.options.icons.highlighted
