@@ -1,5 +1,5 @@
 import L from 'leaflet'
-import Leaflet from '../../leaflet'
+import { layers } from '../../leaflet/index'
 import settings from '../../model/settings'
 
 const defautTileProvider = {
@@ -10,7 +10,7 @@ const defautTileProvider = {
   attribution: `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors`
 }
 
-const removeTileLayers = map => Leaflet.layers(map)
+const removeTileLayers = map => layers(map)
   .filter(layer => layer instanceof L.TileLayer)
   .forEach(layer => map.removeLayer(layer))
 
