@@ -1,5 +1,6 @@
 import React from 'react'
 import POIProperties from '../components/POIProperties'
+import AOIProperties from '../components/AOIProperties'
 import L from 'leaflet'
 import uuid from 'uuid-random'
 import evented from '../evented'
@@ -36,16 +37,21 @@ const poi = (id, properties) => {
 }
 
 const aoi = (id, properties) => {
+
+  // Default to PENETRATION BOX (no labeling at all)
+  const sidc = properties.sidc || 'GFGPOAP--------'
+
   return {
     type: 'Feature',
     id: id,
     geometry: geometry(properties),
-    properties: { t: properties.name, sidc: 'GFGPSAN--------' }, // NAI
+    properties: { t: properties.name, sidc }, // NAI
     actions: {
       update: store.update(id),
       properties: () => store.state()[id],
       paste: properties => store.add(uuid(), properties),
-      delete: () => store.remove(id)
+      delete: () => store.remove(id),
+      edit: () => <AOIProperties uuid={ id } />
     }
   }
 }

@@ -1,5 +1,5 @@
 import L from 'leaflet'
-import Leaflet from '../leaflet'
+import { layers } from '../leaflet/index'
 import evented from '../evented'
 import store from '../stores/layer-store'
 
@@ -59,7 +59,7 @@ const fitBounds = bounds => {
   map.fitBounds(bounds, { animate: true })
 }
 
-const removeLayer = name => Leaflet.layers(group)
+const removeLayer = name => layers(group)
   .filter(layer => layer.options.id === name)
   .forEach(layer => layer.remove())
 

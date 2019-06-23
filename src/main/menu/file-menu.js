@@ -12,8 +12,13 @@ const menu = {
           click: sendMessage('COMMAND_NEW_POI')
         },
         {
-          label: 'Area of Interest',
-          click: sendMessage('COMMAND_NEW_AOI'),
+          label: 'Named Area of Interest',
+          click: sendMessage('COMMAND_NEW_NAI'),
+          enabled: true
+        },
+        {
+          label: 'Target Area of Interest',
+          click: sendMessage('COMMAND_NEW_TAI'),
           enabled: true
         },
         { type: 'separator' },

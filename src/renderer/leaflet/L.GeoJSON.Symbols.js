@@ -8,6 +8,7 @@ import { K } from '../../shared/combinators'
 import selection from '../components/App.selection'
 import evented from '../evented'
 import { fromNow } from '../../shared/datetime'
+import vectorFactories from './vector-factories'
 
 const MODIFIER_MAP = {
   f: 'reinforcedReduced',
@@ -50,6 +51,21 @@ const onEachFeature = function (feature, layer) {
     const preventMarkerRemoval = feature.geometry.type === 'Point'
     layer.pm.enable({ preventMarkerRemoval })
   })
+
+  const ctrlKey = event => event.originalEvent.ctrlKey
+  const set = (slot, message) => event => ctrlKey(event) && evented.emit('OSD_MESSAGE', { slot, message })
+  const reset = slot => () => evented.emit('OSD_MESSAGE', { slot, message: '' })
+
+  if (feature.title) {
+    layer.on('mouseover', set('B1', feature.title))
+    layer.on('mouseout', reset('B1'))
+  }
+
+  if (feature.properties.w) {
+    layer.on('mouseover', set('B2', fromNow(feature.properties.w)))
+    layer.on('mouseout', reset('B2'))
+  }
+
 }
 
 const pointToLayer = function (feature, latlng) {
@@ -62,7 +78,13 @@ const pointToLayer = function (feature, latlng) {
     iconAnchor: new L.Point(symbol.getAnchor().x, symbol.getAnchor().y)
   })
 
-  const symbolOptions = { size: this.options.size(), ...modifiers(feature) }
+  const symbolOptions = {
+    size: this.options.size(),
+    colorMode: 'Light', // default: light
+    simpleStatusModifier: true,
+    ...modifiers(feature)
+  }
+
   const icons = {
     standard: icon(new ms.Symbol(sidc, symbolOptions)),
     highlighted: icon(new ms.Symbol(sidc, {
@@ -83,20 +105,6 @@ const pointToLayer = function (feature, latlng) {
   }
 
   return K(L.marker(latlng, markerOptions))(marker => {
-    const ctrlKey = event => event.originalEvent.ctrlKey
-    const set = (slot, message) => event => ctrlKey(event) && evented.emit('OSD_MESSAGE', { slot, message })
-    const reset = slot => () => evented.emit('OSD_MESSAGE', { slot, message: '' })
-
-    if (feature.title) {
-      marker.on('mouseover', set('B1', feature.title))
-      marker.on('mouseout', reset('B1'))
-    }
-
-    if (feature.properties.w) {
-      marker.on('mouseover', set('B2', fromNow(feature.properties.w)))
-      marker.on('mouseout', reset('B2'))
-    }
-
     marker.setIcon(selection.selected()
       .find(selected => selected && this.layers[selected.key])
       ? marker.options.icons.highlighted
@@ -180,6 +188,45 @@ const moveFeature = function (id, lat, lng) {
   marker.setLatLng(L.latLng(lat, lng))
 }
 
+const geometryToLayer = function (geojson, options) {
+  // Either we find a SIDC/function specific layer factory or
+  // we use generic Leaflet method.
+  const { sidc } = geojson.properties
+  const functionId = sidc ? sidc.substring(4, 10) : '------'
+  const factory = vectorFactories[functionId] || L.GeoJSON.geometryToLayer
+
+  if (typeof factory !== 'function') return
+  return factory(geojson, options)
+}
+
+/**
+ * Hook-in to provide own function geometryToLayer().
+ */
+const addData = function (geojson) {
+
+  const features = L.Util.isArray(geojson) ? geojson : geojson.features
+
+  if (features) {
+    // When collection, add individual features recursively and return.
+    features
+      .filter(feature => feature.geometries || feature.geometry || feature.features || feature.coordinates)
+      .forEach(feature => this.addData(feature))
+    return this
+  }
+
+  const options = this.options
+  if (options.filter && !options.filter(geojson)) return this
+  const layer = geometryToLayer(geojson, options)
+  if (!layer) return this
+
+  layer.feature = L.GeoJSON.asFeature(geojson)
+  layer.defaultOptions = layer.options
+  this.resetStyle(layer)
+
+  if (options.onEachFeature) options.onEachFeature(geojson, layer)
+  return this.addLayer(layer)
+}
+
 L.GeoJSON.Symbols = L.GeoJSON.extend({
   options: defaultOptions,
   key,
@@ -190,5 +237,6 @@ L.GeoJSON.Symbols = L.GeoJSON.extend({
   addFeature,
   removeFeature,
   replaceFeature,
-  moveFeature
+  moveFeature,
+  addData
 })
