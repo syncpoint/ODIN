@@ -1,4 +1,3 @@
-
 const of = (initialDelay, callback) => object => {
   let timeout = null
 
