@@ -35,14 +35,26 @@ L.Boundary = L.Polyline.extend({
 
     // Received echelon/backdrop pairs for easy reference.
     this.labels = []
+    this.onZoomEnd = ({ target: map }) => {
+      const currentZoom = this.zoom
+      this.zoom = map.getZoom()
+      if (currentZoom < 11 && this.zoom >= 11) {
+        this._createLabels()
+      } else if (currentZoom >= 11 && this.zoom < 11) {
+        this._removeLabels()
+      }
+    }
   },
 
   onAdd (map) {
     L.Polyline.prototype.onAdd.call(this, map)
+    map.on('zoomend', this.onZoomEnd)
+    this.zoom = map.getZoom()
     this._createLabels()
   },
 
   onRemove (map) {
+    map.off('zoomend', this.onZoomEnd)
     this._removeLabels()
     L.Polygon.prototype.onRemove.call(this, map)
   },
@@ -71,8 +83,9 @@ L.Boundary = L.Polyline.extend({
    */
   _createLabels () {
     this._removeLabels()
-    const parent = this._path.parentElement
+    if (this.zoom < 11) return
 
+    const parent = this._path.parentElement
     const group = echelons[this.options.b]
     if (!group) return /* nothing to do. */
 
