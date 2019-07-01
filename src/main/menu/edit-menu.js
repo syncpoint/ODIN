@@ -1,5 +1,3 @@
-import preferences from './preferences-submenu'
-
 const menu = {
   label: 'Edit',
   submenu: [
@@ -22,9 +20,6 @@ const menu = {
 
 if (process.platform === 'darwin') {
   menu.submenu.push({ type: 'separator' })
-} else {
-  menu.submenu.push({ type: 'separator' })
-  menu.submenu.push(preferences)
 }
 
 export default menu
