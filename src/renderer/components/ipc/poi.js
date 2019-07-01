@@ -1,6 +1,7 @@
 import uuid from 'uuid-random'
 import store from '../../stores/poi-store'
 import mouseInput from '../map/mouse-input'
+import selection from '../App.selection'
 
 export const COMMAND_NEW_POI = () => () => {
   mouseInput.pickPoint({
@@ -11,7 +12,15 @@ export const COMMAND_NEW_POI = () => () => {
   })
 }
 
+
 const area = sidc => ({ map }) => () => {
+  map.pm.disableGlobalEditMode()
+  selection.deselect()
+
+  const onCreate = ({ layer }) => {
+    store.add(uuid(), { latlngs: layer._latlngs, sidc })
+    layer.remove(map)
+  }
 
   const options = {
     tooltips: false,
@@ -20,11 +29,12 @@ const area = sidc => ({ map }) => () => {
     hintlineStyle: { color: 'red', weight: 2, dashArray: [5, 5] }
   }
 
-  map.once('pm:create', ({ layer }) => {
-    store.add(uuid(), { latlngs: layer._latlngs, sidc })
-    layer.remove(map)
+  // Remove creation listener, once edit mode was canceled.
+  map.once('pm:globaleditmodetoggled', ({ enabled }) => {
+    if (!enabled) map.off('pm:create', onCreate)
   })
 
+  map.once('pm:create', onCreate)
   map.pm.enableDraw('Polygon', options)
 }
 
