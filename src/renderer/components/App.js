@@ -21,7 +21,8 @@ const mapOptions = {
   zoom,
   zoomControl: false, // default: true
   minZoom: 3, // 1:70 million
-  attributionControl: false
+  attributionControl: false,
+  doubleClickZoom: false // disable for now
 }
 
 class App extends React.Component {
