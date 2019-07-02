@@ -26,7 +26,8 @@ const area = sidc => ({ map }) => () => {
     tooltips: false,
     cursorMarker: true, // does not seem to work without a marker
     templineStyle: { color: 'red', weight: 2 },
-    hintlineStyle: { color: 'red', weight: 2, dashArray: [5, 5] }
+    hintlineStyle: { color: 'red', weight: 2, dashArray: [5, 5] },
+    finishOn: 'dblclick'
   }
 
   // Remove creation listener, once edit mode was canceled.
