@@ -36,7 +36,8 @@ class POIProperties extends React.Component {
     const callback = () => mouseInput.pickPoint({
       prompt: 'Pick a new location...',
       picked: ({ lat, lng }) => {
-        store.move(this.props.uuid, { lat, lng })
+        console.log('lat/lng', lat, lng)
+        store.move(this.props.uuid)({ lat, lng })
         this.setState({ ...this.state, lat, lng, hidden: false })
       }
     })
