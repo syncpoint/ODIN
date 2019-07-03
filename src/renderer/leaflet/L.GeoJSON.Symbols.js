@@ -49,10 +49,15 @@ const onEachFeature = function (feature, layer) {
     map.pm.disableGlobalEditMode()
     this.select(id)
 
-    if (layer.setStyle) {
+    if (layer.setStyle && layer.options.style) {
+      // Either a function or style object:
+      const style = typeof layer.options.style === 'function'
+        ? layer.options.style(layer.feature)
+        : layer.options.style
+
       layer.setStyle({ color: 'red', weight: 2, dashArray: [5, 5] })
-      map.once('pm:globaleditmodetoggled', event => {
-        layer.setStyle(layer.options.style(layer.feature))
+      map.once('pm:globaleditmodetoggled', () => {
+        layer.setStyle(style)
       })
     }
 

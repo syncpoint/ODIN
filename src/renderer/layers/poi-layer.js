@@ -68,7 +68,8 @@ evented.on('MAP_CREATED', map => {
       fillColor: 'none',
       color: 'black',
       weight: 3,
-      opacity: 1
+      opacity: 1,
+      dashArray: []
     }
   })
   symbols.addTo(map)
