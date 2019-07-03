@@ -45,8 +45,16 @@ const onEachFeature = function (feature, layer) {
 
   layer.on('click', event => {
     const { target } = event
-    target._map.pm.disableGlobalEditMode()
+    const map = target._map
+    map.pm.disableGlobalEditMode()
     this.select(id)
+
+    if (layer.setStyle) {
+      layer.setStyle({ color: 'red', weight: 2, dashArray: [5, 5] })
+      map.once('pm:globaleditmodetoggled', event => {
+        layer.setStyle(layer.options.style(layer.feature))
+      })
+    }
 
     const preventMarkerRemoval = feature.geometry.type === 'Point'
     layer.pm.enable({ preventMarkerRemoval })
