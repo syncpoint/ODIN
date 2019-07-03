@@ -83,7 +83,8 @@ const addLayer = (name, layer) => {
         fillColor: 'none',
         color: color(sidc ? sidc.charAt(1) : 'X'),
         weight: 3,
-        opacity: 1
+        opacity: 1,
+        dashArray: []
       }
     }
   })
