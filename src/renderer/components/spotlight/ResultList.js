@@ -8,13 +8,20 @@ import { noop } from '../../../shared/combinators'
 class ResultList extends React.Component {
 
   handleListKeyDown (event) {
-    const { onChange } = this.props
+    const { onChange, selectedItem, setSelectedItem } = this.props
 
     switch (event.key) {
       case 'Escape': {
         event.stopPropagation()
         onChange('')
         break
+      }
+      case 'ArrowUp': {
+        setSelectedItem(selectedItem - 1)
+        break
+      }
+      case 'ArrowDown': {
+        setSelectedItem(selectedItem + 1)
       }
     }
   }
@@ -38,17 +45,22 @@ class ResultList extends React.Component {
   }
 
   render () {
-    const { classes, rows } = this.props
+    const { classes, rows, selectedItem, setSelectedItem } = this.props
+    console.log(selectedItem)
     const display = rows.length ? 'block' : 'none'
-
-    const listItems = () => (rows || []).map(row => (
+    const listItems = () => (rows || []).map((row, index, arr) => (
       <ListItem
         button
         divider={ true }
         key={ row.key }
-        onClick={ () => this.invokeAction('action', row.key) }
+        onClick={ () => {
+          this.invokeAction('action', row.key)
+          setSelectedItem(index)
+        }
+        }
         onDoubleClick={ () => this.handleDoubleClick(row.key) }
         onKeyDown={ () => this.handleItemKeyDown(row.key) }
+        selected={index === selectedItem}
       >
         { row.avatar }
         { row.text }
@@ -71,7 +83,9 @@ ResultList.propTypes = {
   classes: PropTypes.any.isRequired,
   options: PropTypes.any.isRequired,
   rows: PropTypes.array.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  setSelectedItem: PropTypes.func.isRequired,
+  selectedItem: PropTypes.any.isRequired
 }
 
 const styles = theme => ({

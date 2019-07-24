@@ -11,7 +11,12 @@ class Spotlight extends React.Component {
     super(props)
     this.state = {
       rows: [],
-      value: ''
+      value: '',
+      selectedItem: 2,
+      setSelectedItem: selectedItem => {
+        if (selectedItem < 0 || selectedItem >= this.state.rows.length) return
+        this.setState({ ...this.state, selectedItem })
+      }
     }
   }
 
@@ -48,7 +53,10 @@ class Spotlight extends React.Component {
   render () {
     const { classes, options } = this.props
     const { searchItems } = options
-    const { value, rows } = this.state
+    const { value, rows, setSelectedItem } = this.state
+    let selectedItem = this.state.selectedItem
+    if (selectedItem >= rows.length) selectedItem = rows.length - 1
+    console.log('ahhh')
     const style = {
       height: rows.length ? 'auto' : 'max-content'
     }
@@ -58,6 +66,8 @@ class Spotlight extends React.Component {
         rows={ rows }
         options={ options }
         onChange={ value => this.handleChange(value) }
+        selectedItem={ selectedItem }
+        setSelectedItem={ setSelectedItem }
       />
       : null
 
@@ -72,6 +82,8 @@ class Spotlight extends React.Component {
           options={ this.props.options }
           onChange={ value => this.handleChange(value) }
           value={ value }
+          setSelectedItem={ setSelectedItem }
+          selectedItem={ selectedItem }
         />
         { list() }
         {/* <Preview></Preview> */}
