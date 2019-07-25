@@ -6,8 +6,7 @@ import PropTypes from 'prop-types'
 class SearchField extends React.Component {
 
   handleKeyDown (event) {
-    const { value, options, onChange, setSelectedItem, selectedItem } = this.props
-    const { accept, close } = options
+    const { value, onChange, setSelectedItem, selectedItem, invokeAction } = this.props
 
     switch (event.key) {
       case 'Escape': {
@@ -21,23 +20,22 @@ class SearchField extends React.Component {
       }
       case 'ArrowUp': {
         setSelectedItem(selectedItem - 1)
+        event.preventDefault()
         break
       }
       case 'ArrowDown': {
         setSelectedItem(selectedItem + 1)
+        event.preventDefault()
         break
       }
       case 'Enter': {
-        if (accept) {
-          accept(value)
-          close()
-        }
+        invokeAction('action', selectedItem)
       }
     }
   }
 
   componentDidUpdate () {
-    if (!this.props.value) this.input.focus()
+    this.input.focus()
   }
 
   render () {
@@ -63,7 +61,8 @@ SearchField.propTypes = {
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   setSelectedItem: PropTypes.func.isRequired,
-  selectedItem: PropTypes.any.isRequired
+  selectedItem: PropTypes.any.isRequired,
+  invokeAction: PropTypes.func.isRequired
 }
 
 const styles = theme => ({

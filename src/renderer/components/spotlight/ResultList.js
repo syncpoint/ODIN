@@ -7,59 +7,40 @@ import { noop } from '../../../shared/combinators'
 
 class ResultList extends React.Component {
 
-  handleListKeyDown (event) {
-    const { onChange, selectedItem, setSelectedItem } = this.props
-
-    switch (event.key) {
-      case 'Escape': {
-        event.stopPropagation()
-        onChange('')
-        break
-      }
-      case 'ArrowUp': {
-        setSelectedItem(selectedItem - 1)
-        break
-      }
-      case 'ArrowDown': {
-        setSelectedItem(selectedItem + 1)
-      }
-    }
-  }
-
-  invokeAction (action, key) {
-    this.props.rows
-      .filter(row => row.key === key)
-      .forEach(row => row[action]())
-  }
-
   handleDoubleClick (key) {
-    this.invokeAction('action', key)
+    this.prepareAction(key)
     ;(this.props.options.close || noop)()
   }
 
-  handleItemKeyDown (key) {
-    switch (event.key) {
-      case 'Delete': return this.invokeAction('delete', key)
-      case 'Backspace': if (event.metaKey) return this.invokeAction('delete', key)
-    }
+  handleClick (key) {
+    const { setSelectedItem } = this.props
+    const rowPos = this.prepareAction(key)
+    setSelectedItem(rowPos)
+  }
+
+  prepareAction (key) {
+    const { invokeAction, rows } = this.props
+    const rowPos = rows.findIndex(row => row.key === key)
+    invokeAction('action', rowPos)
+    return rowPos
+  }
+
+  componentDidUpdate () {
+    const item = document.getElementsByClassName('scrollto' + this.props.selectedItem)[0]
+    if (item) item.scrollIntoView()
   }
 
   render () {
-    const { classes, rows, selectedItem, setSelectedItem } = this.props
-    console.log(selectedItem)
+    const { classes, rows, selectedItem } = this.props
     const display = rows.length ? 'block' : 'none'
     const listItems = () => (rows || []).map((row, index, arr) => (
       <ListItem
-        button
+        className={'scrollto' + index}
+        button={false}
         divider={ true }
         key={ row.key }
-        onClick={ () => {
-          this.invokeAction('action', row.key)
-          setSelectedItem(index)
-        }
-        }
+        onClick={ () => this.handleClick(row.key) }
         onDoubleClick={ () => this.handleDoubleClick(row.key) }
-        onKeyDown={ () => this.handleItemKeyDown(row.key) }
         selected={index === selectedItem}
       >
         { row.avatar }
@@ -71,7 +52,6 @@ class ResultList extends React.Component {
       <List
         className={ classes.list }
         style={ { display } }
-        onKeyDown={ event => this.handleListKeyDown(event) }
       >
         { listItems() }
       </List>
@@ -85,7 +65,8 @@ ResultList.propTypes = {
   rows: PropTypes.array.isRequired,
   onChange: PropTypes.func.isRequired,
   setSelectedItem: PropTypes.func.isRequired,
-  selectedItem: PropTypes.any.isRequired
+  selectedItem: PropTypes.any.isRequired,
+  invokeAction: PropTypes.func.isRequired
 }
 
 const styles = theme => ({
