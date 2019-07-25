@@ -12,10 +12,13 @@ class Spotlight extends React.Component {
     this.state = {
       rows: [],
       value: '',
-      selectedItem: 2,
+      selectedItem: -1,
       setSelectedItem: selectedItem => {
         if (selectedItem < 0 || selectedItem >= this.state.rows.length) return
         this.setState({ ...this.state, selectedItem })
+      },
+      invokeAction: (action, rowPos) => {
+        this.state.rows[rowPos][action]()
       }
     }
   }
@@ -53,10 +56,9 @@ class Spotlight extends React.Component {
   render () {
     const { classes, options } = this.props
     const { searchItems } = options
-    const { value, rows, setSelectedItem } = this.state
+    const { value, rows, setSelectedItem, invokeAction } = this.state
     let selectedItem = this.state.selectedItem
     if (selectedItem >= rows.length) selectedItem = rows.length - 1
-    console.log('ahhh')
     const style = {
       height: rows.length ? 'auto' : 'max-content'
     }
@@ -68,6 +70,7 @@ class Spotlight extends React.Component {
         onChange={ value => this.handleChange(value) }
         selectedItem={ selectedItem }
         setSelectedItem={ setSelectedItem }
+        invokeAction={ invokeAction }
       />
       : null
 
@@ -84,6 +87,7 @@ class Spotlight extends React.Component {
           value={ value }
           setSelectedItem={ setSelectedItem }
           selectedItem={ selectedItem }
+          invokeAction={ invokeAction }
         />
         { list() }
         {/* <Preview></Preview> */}
