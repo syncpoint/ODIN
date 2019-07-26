@@ -6,8 +6,15 @@ import PropTypes from 'prop-types'
 class SearchField extends React.Component {
 
   handleKeyDown (event) {
-    const { accept, value, onChange, setSelectedItem, selectedItem, invokeAction } = this.props
-
+    const {
+      value,
+      onChange,
+      setSelectedItem,
+      selectedItem,
+      invokeAction,
+      options
+    } = this.props
+    const { accept, close } = options
     switch (event.key) {
       case 'Escape': {
         if (value) {
