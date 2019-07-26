@@ -18,7 +18,8 @@ class Spotlight extends React.Component {
         this.setState({ ...this.state, selectedItem })
       },
       invokeAction: (action, rowPos) => {
-        this.state.rows[rowPos][action]()
+        const fun = this.state.rows[rowPos][action]
+        if (typeof fun === 'function') fun()
       }
     }
   }
