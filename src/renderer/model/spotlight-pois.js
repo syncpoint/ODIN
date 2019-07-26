@@ -29,14 +29,12 @@ export default register => {
 
     return Object.entries(poiStore.state())
       .filter(filter)
-      .map(([uuid, poi]) => {
-        return {
-          key: uuid,
-          text: <ListItemText primary={ poi.name } secondary={ 'POI' }/>,
-          action: action(poi),
-          delete: () => poiStore.remove(uuid)
-        }
-      })
+      .map(([uuid, poi]) => ({
+        key: uuid,
+        text: <ListItemText primary={ poi.name } secondary={ 'POI' }/>,
+        action: action(poi),
+        delete: () => poiStore.remove(uuid)
+      }))
   }
 
   if (poiStore.ready()) contributor.emit('updated', contribution())
