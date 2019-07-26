@@ -14,6 +14,7 @@ class SearchField extends React.Component {
       invokeAction,
       options
     } = this.props
+    const modifier = event.ctrlKey || event.metaKey
     const { accept, close } = options
     switch (event.key) {
       case 'Escape': {
@@ -40,6 +41,15 @@ class SearchField extends React.Component {
           accept(value)
           close()
         } else invokeAction('action', selectedItem)
+        break
+      }
+      case 'Backspace':
+      case 'Delete': {
+        if (modifier) {
+          invokeAction('delete', selectedItem)
+          event.preventDefault()
+        }
+        break
       }
     }
   }
