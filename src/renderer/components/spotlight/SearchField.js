@@ -32,6 +32,11 @@ class SearchField extends React.Component {
         break
       }
       case 'ArrowDown': {
+        if (modifier) {
+          invokeAction('action', selectedItem)
+          event.preventDefault()
+          break
+        }
         setSelectedItem(selectedItem + 1)
         event.preventDefault()
         break
