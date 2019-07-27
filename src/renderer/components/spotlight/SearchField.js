@@ -40,7 +40,10 @@ class SearchField extends React.Component {
         if (accept) {
           accept(value)
           close()
-        } else invokeAction('action', selectedItem)
+        } else if (selectedItem !== -1) {
+          invokeAction('action', selectedItem)
+          close()
+        }
         break
       }
       case 'Backspace':
