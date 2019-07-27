@@ -17,6 +17,10 @@ class SearchField extends React.Component {
     const modifier = event.ctrlKey || event.metaKey
     const { accept, close } = options
     switch (event.key) {
+      case 'Tab': {
+        event.preventDefault()
+        break
+      }
       case 'Escape': {
         if (value) {
           // Reset value, but prevent spotlight from closing:
