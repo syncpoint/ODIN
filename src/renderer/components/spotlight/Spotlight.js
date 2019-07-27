@@ -36,6 +36,7 @@ class Spotlight extends React.Component {
       const { searchItems } = this.props.options
       if (!searchItems) return
       searchItems.updateFilter(value)
+      if (this.state.selectedItem !== -1) this.state.setSelectedItem(0)
     }
 
     this.setState({ ...this.state, value }, updateFilter)
