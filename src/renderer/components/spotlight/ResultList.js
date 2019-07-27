@@ -27,7 +27,7 @@ class ResultList extends React.Component {
 
   componentDidUpdate () {
     const item = document.getElementsByClassName('scrollto' + this.props.selectedItem)[0]
-    if (item) item.scrollIntoView()
+    if (item) item.scrollIntoViewIfNeeded()
   }
 
   render () {
