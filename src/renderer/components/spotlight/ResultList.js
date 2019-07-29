@@ -17,9 +17,9 @@ class ResultList extends React.Component {
   }
 
   handleClick (key) {
-    const { setSelectedItem } = this.props
+    const { setSelectionIndex } = this.props
     const rowPos = this.prepareAction(key)
-    setSelectedItem(rowPos)
+    setSelectionIndex(rowPos)
   }
 
   prepareAction (key) {
@@ -30,12 +30,12 @@ class ResultList extends React.Component {
   }
 
   componentDidUpdate () {
-    const item = document.getElementsByClassName(this.createClassName(this.props.selectedItem))[0]
+    const item = document.getElementsByClassName(this.createClassName(this.props.selectionIndex))[0]
     if (item) item.scrollIntoViewIfNeeded()
   }
 
   render () {
-    const { classes, rows, selectedItem } = this.props
+    const { classes, rows, selectionIndex } = this.props
     const display = rows.length ? 'block' : 'none'
     const listItems = () => (rows || []).map((row, index) => (
       <ListItem
@@ -45,7 +45,7 @@ class ResultList extends React.Component {
         key={ row.key }
         onClick={ () => this.handleClick(row.key) }
         onDoubleClick={ () => this.handleDoubleClick(row.key) }
-        selected={index === selectedItem}
+        selected={index === selectionIndex}
       >
         { row.avatar }
         { row.text }
@@ -68,8 +68,8 @@ ResultList.propTypes = {
   options: PropTypes.any.isRequired,
   rows: PropTypes.array.isRequired,
   onChange: PropTypes.func.isRequired,
-  setSelectedItem: PropTypes.func.isRequired,
-  selectedItem: PropTypes.any.isRequired,
+  setSelectionIndex: PropTypes.func.isRequired,
+  selectionIndex: PropTypes.any.isRequired,
   invokeAction: PropTypes.func.isRequired
 }
 
