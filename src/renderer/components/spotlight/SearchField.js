@@ -3,6 +3,24 @@ import { InputBase } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 
+// REVIEW: extract key down handlers
+
+// const Tab = (event, props) => event.preventDefault()
+
+// const Escape = (event, { value, onChange }) => {
+//   if (value) {
+//     // Reset value, but prevent spotlight from closing:
+//     event.stopPropagation()
+//     onChange('')
+//   }
+//   /* let event bubble up to close spotlight. */
+// }
+
+// const keyDownHandlers = {
+//   Tab,
+//   Escape
+// }
+
 class SearchField extends React.Component {
 
   handleKeyDown (event) {
