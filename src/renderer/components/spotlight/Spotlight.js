@@ -12,20 +12,18 @@ class Spotlight extends React.Component {
     this.state = {
       rows: [],
       value: '',
-      selectionIndex: -1,
-
-      // REVIEW: convert to class member
-      setSelectionIndex: selectionIndex => {
-        if (selectionIndex < 0 || selectionIndex >= this.state.rows.length) return
-        this.setState({ ...this.state, selectionIndex })
-      },
-
-      // REVIEW: convert to class member
-      invokeAction: (action, rowPos) => {
-        const fun = this.state.rows[rowPos][action] || (() => {})
-        fun()
-      }
+      selectionIndex: -1
     }
+  }
+
+  setSelectionIndex (selectionIndex) {
+    if (selectionIndex < 0 || selectionIndex >= this.state.rows.length) return
+    this.setState({ ...this.state, selectionIndex })
+  }
+
+  invokeAction (action, rowPos) {
+    const fun = this.state.rows[rowPos][action] || (() => {})
+    fun()
   }
 
   handleKeyDown (event) {
@@ -44,7 +42,7 @@ class Spotlight extends React.Component {
       searchItems.updateFilter(value)
 
       // REVIEW: what if rows[] is empty?
-      if (this.state.selectionIndex !== -1) this.state.setSelectionIndex(0)
+      if (this.state.selectionIndex !== -1) this.setSelectionIndex(0)
     }
 
     this.setState({ ...this.state, value }, updateFilter)
@@ -66,7 +64,7 @@ class Spotlight extends React.Component {
   render () {
     const { classes, options } = this.props
     const { searchItems } = options
-    const { value, rows, setSelectionIndex, invokeAction } = this.state
+    const { value, rows } = this.state
 
     // REVIEW: remove; now unnecessary
     let selectionIndex = this.state.selectionIndex
@@ -82,8 +80,8 @@ class Spotlight extends React.Component {
         options={ options }
         onChange={ value => this.handleChange(value) }
         selectionIndex={ selectionIndex }
-        setSelectionIndex={ setSelectionIndex }
-        invokeAction={ invokeAction }
+        setSelectionIndex={ selectionIndex => this.setSelectionIndex(selectionIndex) }
+        invokeAction={ (action, rowPos) => this.invokeAction(action, rowPos) }
       />
       : null
 
@@ -98,9 +96,9 @@ class Spotlight extends React.Component {
           options={ this.props.options }
           onChange={ value => this.handleChange(value) }
           value={ value }
-          setSelectionIndex={ setSelectionIndex }
+          setSelectionIndex={ selectionIndex => this.setSelectionIndex(selectionIndex) }
+          invokeAction={ (action, rowPos) => this.invokeAction(action, rowPos) }
           selectionIndex={ selectionIndex }
-          invokeAction={ invokeAction }
         />
         { list() }
         {/* <Preview></Preview> */}
