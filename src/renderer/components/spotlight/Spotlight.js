@@ -34,8 +34,6 @@ class Spotlight extends React.Component {
   }
 
   handleChange (value) {
-
-    // REVIEW: should probably be called upon delete (layer)
     const updateFilter = () => {
       const { searchItems } = this.props.options
       if (!searchItems) return
