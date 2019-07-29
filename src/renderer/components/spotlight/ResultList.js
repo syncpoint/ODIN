@@ -7,6 +7,10 @@ import { noop } from '../../../shared/combinators'
 
 class ResultList extends React.Component {
 
+  createClassName (index) {
+    return 'spotlight:scrollto:' + index
+  }
+
   handleDoubleClick (key) {
     this.prepareAction(key)
     ;(this.props.options.close || noop)()
@@ -26,9 +30,7 @@ class ResultList extends React.Component {
   }
 
   componentDidUpdate () {
-    // REVIEW: disambiguate class name. e.g: 'spotlight:scrollto:${index}'
-    // RIVIEW: create factory function for class name
-    const item = document.getElementsByClassName('scrollto' + this.props.selectedItem)[0]
+    const item = document.getElementsByClassName(this.createClassName(this.props.selectedItem))[0]
     if (item) item.scrollIntoViewIfNeeded()
   }
 
@@ -37,7 +39,7 @@ class ResultList extends React.Component {
     const display = rows.length ? 'block' : 'none'
     const listItems = () => (rows || []).map((row, index) => (
       <ListItem
-        className={'scrollto' + index}
+        className={ this.createClassName(index) }
         button={false}
         divider={ true }
         key={ row.key }
