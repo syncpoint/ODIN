@@ -65,11 +65,7 @@ class Spotlight extends React.Component {
   render () {
     const { classes, options } = this.props
     const { searchItems } = options
-    const { value, rows } = this.state
-
-    // REVIEW: remove; now unnecessary
-    let selectionIndex = this.state.selectionIndex
-    if (selectionIndex >= rows.length) selectionIndex = rows.length - 1
+    const { value, rows, selectionIndex } = this.state
 
     const style = {
       height: rows.length ? 'auto' : 'max-content'
