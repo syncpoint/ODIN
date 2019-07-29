@@ -15,34 +15,34 @@ const Escape = (event, { value, onChange }) => {
   /* let event bubble up to close spotlight. */
 }
 
-const ArrowUp = (event, { setSelectedItem, selectedItem }) => {
-  setSelectedItem(selectedItem - 1)
+const ArrowUp = (event, { setSelectionIndex, selectionIndex }) => {
+  setSelectionIndex(selectionIndex - 1)
   event.preventDefault()
 }
 
-const ArrowDown = (event, { invokeAction, selectedItem, setSelectedItem }) => {
+const ArrowDown = (event, { invokeAction, selectionIndex, setSelectionIndex }) => {
   const modifier = event.ctrlKey || event.metaKey
   if (modifier) {
-    invokeAction('action', selectedItem)
-  } else setSelectedItem(selectedItem + 1)
+    invokeAction('action', selectionIndex)
+  } else setSelectionIndex(selectionIndex + 1)
   event.preventDefault()
 }
 
-const Enter = (event, { value, options, selectedItem, invokeAction }) => {
+const Enter = (event, { value, options, selectionIndex, invokeAction }) => {
   const { accept, close } = options
   if (accept) {
     accept(value)
     close()
-  } else if (selectedItem !== -1) {
-    invokeAction('action', selectedItem)
+  } else if (selectionIndex !== -1) {
+    invokeAction('action', selectionIndex)
     close()
   }
 }
 
-const Backspace = (event, { invokeAction, selectedItem }) => {
+const Backspace = (event, { invokeAction, selectionIndex }) => {
   const modifier = event.ctrlKey || event.metaKey
   if (modifier) {
-    invokeAction('delete', selectedItem)
+    invokeAction('delete', selectionIndex)
     event.preventDefault()
   }
 }
@@ -91,8 +91,8 @@ SearchField.propTypes = {
   options: PropTypes.any.isRequired,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
-  setSelectedItem: PropTypes.func.isRequired,
-  selectedItem: PropTypes.any.isRequired,
+  setSelectionIndex: PropTypes.func.isRequired,
+  selectionIndex: PropTypes.any.isRequired,
   invokeAction: PropTypes.func.isRequired
 }
 

@@ -12,14 +12,12 @@ class Spotlight extends React.Component {
     this.state = {
       rows: [],
       value: '',
-
-      // REVIEW: remame to selectionIndex
-      selectedItem: -1,
+      selectionIndex: -1,
 
       // REVIEW: convert to class member
-      setSelectedItem: selectedItem => {
-        if (selectedItem < 0 || selectedItem >= this.state.rows.length) return
-        this.setState({ ...this.state, selectedItem })
+      setSelectionIndex: selectionIndex => {
+        if (selectionIndex < 0 || selectionIndex >= this.state.rows.length) return
+        this.setState({ ...this.state, selectionIndex })
       },
 
       // REVIEW: convert to class member
@@ -46,7 +44,7 @@ class Spotlight extends React.Component {
       searchItems.updateFilter(value)
 
       // REVIEW: what if rows[] is empty?
-      if (this.state.selectedItem !== -1) this.state.setSelectedItem(0)
+      if (this.state.selectionIndex !== -1) this.state.setSelectionIndex(0)
     }
 
     this.setState({ ...this.state, value }, updateFilter)
@@ -68,11 +66,11 @@ class Spotlight extends React.Component {
   render () {
     const { classes, options } = this.props
     const { searchItems } = options
-    const { value, rows, setSelectedItem, invokeAction } = this.state
+    const { value, rows, setSelectionIndex, invokeAction } = this.state
 
     // REVIEW: remove; now unnecessary
-    let selectedItem = this.state.selectedItem
-    if (selectedItem >= rows.length) selectedItem = rows.length - 1
+    let selectionIndex = this.state.selectionIndex
+    if (selectionIndex >= rows.length) selectionIndex = rows.length - 1
 
     const style = {
       height: rows.length ? 'auto' : 'max-content'
@@ -83,8 +81,8 @@ class Spotlight extends React.Component {
         rows={ rows }
         options={ options }
         onChange={ value => this.handleChange(value) }
-        selectedItem={ selectedItem }
-        setSelectedItem={ setSelectedItem }
+        selectionIndex={ selectionIndex }
+        setSelectionIndex={ setSelectionIndex }
         invokeAction={ invokeAction }
       />
       : null
@@ -100,8 +98,8 @@ class Spotlight extends React.Component {
           options={ this.props.options }
           onChange={ value => this.handleChange(value) }
           value={ value }
-          setSelectedItem={ setSelectedItem }
-          selectedItem={ selectedItem }
+          setSelectionIndex={ setSelectionIndex }
+          selectionIndex={ selectionIndex }
           invokeAction={ invokeAction }
         />
         { list() }
