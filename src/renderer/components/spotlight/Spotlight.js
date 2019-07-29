@@ -38,9 +38,12 @@ class Spotlight extends React.Component {
       const { searchItems } = this.props.options
       if (!searchItems) return
       searchItems.updateFilter(value)
-
-      // REVIEW: what if rows[] is empty?
-      if (this.state.selectionIndex !== -1) this.setSelectionIndex(0)
+      if (this.state.rows.length < 0) {
+        const selectionIndex = -1
+        this.setState({ ...this.state, selectionIndex })
+      } else if (this.state.selectionIndex !== -1) {
+        this.setSelectionIndex(0)
+      }
     }
 
     this.setState({ ...this.state, value }, updateFilter)
