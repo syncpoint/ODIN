@@ -39,12 +39,12 @@ const Enter = (event, { value, options, selectionIndex, invokeAction }) => {
   }
 }
 
-const Backspace = (event, { invokeAction, selectionIndex, onChange, value }) => {
+const Backspace = (event, { invokeAction, selectionIndex, setSelectionIndex }) => {
   const modifier = event.ctrlKey || event.metaKey
   if (modifier) {
     invokeAction('delete', selectionIndex)
+    setSelectionIndex(selectionIndex - 1)
     event.preventDefault()
-    onChange(value)
   }
 }
 
