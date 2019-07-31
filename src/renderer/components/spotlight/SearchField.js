@@ -3,67 +3,67 @@ import { InputBase } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 
+
+const Tab = (event, props) => event.preventDefault()
+
+const Escape = (event, { value, onChange }) => {
+  if (value) {
+    // Reset value, but prevent spotlight from closing:
+    event.stopPropagation()
+    onChange('')
+  }
+  /* let event bubble up to close spotlight. */
+}
+
+const ArrowUp = (event, { setSelectionIndex, selectionIndex }) => {
+  setSelectionIndex(selectionIndex - 1)
+  event.preventDefault()
+}
+
+const ArrowDown = (event, { invokeAction, selectionIndex, setSelectionIndex }) => {
+  const modifier = event.ctrlKey || event.metaKey
+  if (modifier) {
+    invokeAction('action', selectionIndex)
+  } else setSelectionIndex(selectionIndex + 1)
+  event.preventDefault()
+}
+
+const Enter = (event, { value, options, selectionIndex, invokeAction }) => {
+  const { accept, close } = options
+  if (accept) {
+    accept(value)
+    close()
+  } else if (selectionIndex !== -1) {
+    invokeAction('action', selectionIndex)
+    close()
+  }
+}
+
+const Backspace = (event, { invokeAction, selectionIndex, setSelectionIndex }) => {
+  const modifier = event.ctrlKey || event.metaKey
+  if (modifier) {
+    invokeAction('delete', selectionIndex)
+    setSelectionIndex(selectionIndex - 1)
+    event.preventDefault()
+  }
+}
+
+const Delete = (event, props) => Backspace(event, props)
+
+const keyDownHandlers = {
+  Tab,
+  Escape,
+  ArrowUp,
+  ArrowDown,
+  Enter,
+  Backspace,
+  Delete
+}
+
 class SearchField extends React.Component {
 
   handleKeyDown (event) {
-    const {
-      value,
-      onChange,
-      setSelectedItem,
-      selectedItem,
-      invokeAction,
-      options
-    } = this.props
-    const modifier = event.ctrlKey || event.metaKey
-    const { accept, close } = options
-    switch (event.key) {
-      case 'Tab': {
-        event.preventDefault()
-        break
-      }
-      case 'Escape': {
-        if (value) {
-          // Reset value, but prevent spotlight from closing:
-          event.stopPropagation()
-          onChange('')
-        }
-        /* let event bubble up to close spotlight. */
-        break
-      }
-      case 'ArrowUp': {
-        setSelectedItem(selectedItem - 1)
-        event.preventDefault()
-        break
-      }
-      case 'ArrowDown': {
-        if (modifier) {
-          invokeAction('action', selectedItem)
-          event.preventDefault()
-          break
-        }
-        setSelectedItem(selectedItem + 1)
-        event.preventDefault()
-        break
-      }
-      case 'Enter': {
-        if (accept) {
-          accept(value)
-          close()
-        } else if (selectedItem !== -1) {
-          invokeAction('action', selectedItem)
-          close()
-        }
-        break
-      }
-      case 'Backspace':
-      case 'Delete': {
-        if (modifier) {
-          invokeAction('delete', selectedItem)
-          event.preventDefault()
-        }
-        break
-      }
-    }
+    keyDownHandlers[event.key] && keyDownHandlers[event.key](event, this.props)
   }
 
   componentDidUpdate () {
@@ -92,8 +92,8 @@ SearchField.propTypes = {
   options: PropTypes.any.isRequired,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
-  setSelectedItem: PropTypes.func.isRequired,
-  selectedItem: PropTypes.any.isRequired,
+  setSelectionIndex: PropTypes.func.isRequired,
+  selectionIndex: PropTypes.any.isRequired,
   invokeAction: PropTypes.func.isRequired
 }
 

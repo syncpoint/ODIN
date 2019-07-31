@@ -12,16 +12,18 @@ class Spotlight extends React.Component {
     this.state = {
       rows: [],
       value: '',
-      selectedItem: -1,
-      setSelectedItem: selectedItem => {
-        if (selectedItem < 0 || selectedItem >= this.state.rows.length) return
-        this.setState({ ...this.state, selectedItem })
-      },
-      invokeAction: (action, rowPos) => {
-        const fun = this.state.rows[rowPos][action] || (() => {})
-        fun()
-      }
+      selectionIndex: -1
     }
+  }
+
+  setSelectionIndex (selectionIndex) {
+    if (selectionIndex < 0 || selectionIndex >= this.state.rows.length) return
+    this.setState({ ...this.state, selectionIndex })
+  }
+
+  invokeAction (action, rowPos) {
+    const fun = this.state.rows[rowPos][action] || (() => {})
+    fun()
   }
 
   handleKeyDown (event) {
@@ -36,7 +38,12 @@ class Spotlight extends React.Component {
       const { searchItems } = this.props.options
       if (!searchItems) return
       searchItems.updateFilter(value)
-      if (this.state.selectedItem !== -1) this.state.setSelectedItem(0)
+      if (this.state.rows.length < 0) {
+        const selectionIndex = -1
+        this.setState({ ...this.state, selectionIndex })
+      } else if (this.state.selectionIndex !== -1) {
+        this.setSelectionIndex(0)
+      }
     }
 
     this.setState({ ...this.state, value }, updateFilter)
@@ -58,9 +65,8 @@ class Spotlight extends React.Component {
   render () {
     const { classes, options } = this.props
     const { searchItems } = options
-    const { value, rows, setSelectedItem, invokeAction } = this.state
-    let selectedItem = this.state.selectedItem
-    if (selectedItem >= rows.length) selectedItem = rows.length - 1
+    const { value, rows, selectionIndex } = this.state
+
     const style = {
       height: rows.length ? 'auto' : 'max-content'
     }
@@ -70,9 +76,9 @@ class Spotlight extends React.Component {
         rows={ rows }
         options={ options }
         onChange={ value => this.handleChange(value) }
-        selectedItem={ selectedItem }
-        setSelectedItem={ setSelectedItem }
-        invokeAction={ invokeAction }
+        selectionIndex={ selectionIndex }
+        setSelectionIndex={ selectionIndex => this.setSelectionIndex(selectionIndex) }
+        invokeAction={ (action, rowPos) => this.invokeAction(action, rowPos) }
       />
       : null
 
@@ -87,9 +93,9 @@ class Spotlight extends React.Component {
           options={ this.props.options }
           onChange={ value => this.handleChange(value) }
           value={ value }
-          setSelectedItem={ setSelectedItem }
-          selectedItem={ selectedItem }
-          invokeAction={ invokeAction }
+          setSelectionIndex={ selectionIndex => this.setSelectionIndex(selectionIndex) }
+          invokeAction={ (action, rowPos) => this.invokeAction(action, rowPos) }
+          selectionIndex={ selectionIndex }
         />
         { list() }
         {/* <Preview></Preview> */}
