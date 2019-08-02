@@ -118,11 +118,12 @@ const pointToLayer = function (feature, latlng) {
   }
 
   return K(L.marker(latlng, markerOptions))(marker => {
-    marker.setIcon(selection.selected()
-      .find(selected => selected && this.layers[selected.key])
+    const icon = selection.selected()
+      .find(selection => selection && selection.key === this.key(id))
       ? marker.options.icons.highlighted
       : marker.options.icons.standard
-    )
+
+    marker.setIcon(icon)
   })
 }
 
