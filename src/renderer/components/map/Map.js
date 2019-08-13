@@ -12,6 +12,8 @@ import { tileProvider } from '../ipc/tile-provider'
 import ipcHandlers from '../ipc/ipc'
 import coord from '../../coord-format'
 import settings from '../../model/settings'
+import './Map.layers'
+import './Map.tools'
 
 const updateScaleDisplay = map => () => {
   const level = zoomLevels[map.getZoom()]
