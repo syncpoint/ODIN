@@ -1,7 +1,7 @@
 import L from 'leaflet'
 import * as R from 'ramda'
 import './handles.css'
-import { doublyLinkedList, circularDoublyLinkedList } from '../../../shared/lists'
+import { doublyLinkedList, circularDoublyLinkedList } from '../../shared/lists'
 
 // Marker types:
 const MARKER_UPDATE = 'update-point'
@@ -16,7 +16,7 @@ const initialize = function (geometry, callback) {
 
 const onAdd = function (map) {
   // Create initial set of markers.
-  L.Shape.Polystar.latlngs(this.geometry).forEach(latlng => {
+  L.Feature.Polystar.latlngs(this.geometry).forEach(latlng => {
     const options = { type: MARKER_UPDATE, drag: this.updatePoint, mousedown: this.removePoint }
     this.appendMarker(latlng, options)
   })
@@ -97,7 +97,7 @@ const updatePoint = function () {
 const removePoint = function (event) {
   let timeout
   const { target: marker, originalEvent } = event
-  if (this.length() === L.Shape.Polystar.minimumPoints(this.geometry)) return
+  if (this.length() === L.Feature.Polystar.minimumPoints(this.geometry)) return
 
   const remove = () => {
     this.removeMarker(marker)
@@ -136,7 +136,7 @@ const addPoint = function ({ target: marker }) {
   this.list.prepend(this.createMarker(llp, options), marker)
 }
 
-L.Shape.MarkerGroup = L.LayerGroup.extend({
+L.Feature.MarkerGroup = L.LayerGroup.extend({
   initialize,
   onAdd,
   onRemove,

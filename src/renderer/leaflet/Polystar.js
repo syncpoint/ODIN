@@ -1,6 +1,6 @@
 import L from 'leaflet'
-import './L.Shape'
-import './L.MarkerGroup'
+import './Feature'
+import './MarkerGroup'
 
 const initialize = function (feature, options) {
   this.feature = feature
@@ -21,7 +21,7 @@ const onAdd = function (map) {
 
   this.renderer._rootGroup.appendChild(this.shape.element)
   this.addInteractiveTarget(this.shape.element)
-  this.update(L.Shape.Polystar.latlngs(this.feature.geometry))
+  this.update(L.Feature.Polystar.latlngs(this.feature.geometry))
 
   map.on('zoomend', () => this.update(), this)
   this.on('click', this.edit, this)
@@ -43,7 +43,7 @@ const update = function (latlngs) {
 
 const edit = function () {
   const callback = latlngs => this.update(latlngs)
-  const markerGroup = new L.Shape.MarkerGroup(this.feature.geometry, callback).addTo(this.map)
+  const markerGroup = new L.Feature.MarkerGroup(this.feature.geometry, callback).addTo(this.map)
   const editor = {
     dispose: () => this.map.removeLayer(markerGroup)
   }
@@ -56,7 +56,7 @@ const labels = function (feature) {
 }
 
 // abstract polygon/polyline.
-L.Shape.Polystar = L.Layer.extend({
+L.Feature.Polystar = L.Layer.extend({
   initialize,
   beforeAdd,
   onAdd,
@@ -66,14 +66,14 @@ L.Shape.Polystar = L.Layer.extend({
   labels
 })
 
-L.Shape.Polystar.minimumPoints = geometry => {
+L.Feature.Polystar.minimumPoints = geometry => {
   switch (geometry.type) {
     case 'LineString': return 2
     case 'Polygon': return 3
   }
 }
 
-L.Shape.Polystar.latlngs = ({ type, coordinates }) => {
+L.Feature.Polystar.latlngs = ({ type, coordinates }) => {
   switch (type) {
     case 'LineString': return coordinates.map(([lon, lat]) => L.latLng(lat, lon))
     case 'Polygon': return coordinates[0].slice(0, -1).map(([lon, lat]) => L.latLng(lat, lon))
