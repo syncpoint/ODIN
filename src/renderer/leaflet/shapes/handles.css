@@ -1,0 +1,21 @@
+.marker-icon,
+.marker-icon:focus {
+  background-color: #ffffff;
+  border: 1px solid #3388ff;
+  border-radius: 50%;
+
+  /* take border width into account => -[width|height] - 1 */
+  margin: -10px 0 0 -10px !important;
+  width: 18px !important;
+  height: 18px !important;
+  outline: 0;
+  transition: opacity ease 0.3s;
+}
+
+.marker-icon-middle,
+.marker-icon-middle:focus {
+  opacity: 0.7;
+  margin: -8px 0 0 -8px !important;
+  width: 14px !important;
+  height: 14px !important;
+}
