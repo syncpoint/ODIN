@@ -40,8 +40,7 @@ const addData = function (geojson) {
   return this.addLayer(layer)
 }
 
-L.TACGRP = {}
-L.TACGRP.FeatureGroup = L.FeatureGroup.extend({
+L.Feature.Layer = L.FeatureGroup.extend({
   initialize,
   addData
 })
