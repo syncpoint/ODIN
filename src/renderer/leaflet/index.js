@@ -8,7 +8,7 @@ import './Polyline'
 import './NamedArea'
 
 import './Symbol'
-import './FeatureGroup'
+import './Layer'
 import './TACGRP/TACGRP.C2GM'
 
 import { K } from '../../shared/combinators'

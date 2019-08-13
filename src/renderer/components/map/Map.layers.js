@@ -6,7 +6,7 @@ import store from '../../stores/layer-store'
 evented.on('MAP_CREATED', map => {
 
   const addLayer = (name, layer) => {
-    new L.TACGRP.FeatureGroup(name, layer.content).addTo(map)
+    new L.Feature.Layer(name, layer.content).addTo(map)
   }
 
   const addAllLayers = layers => Object.entries(layers)
