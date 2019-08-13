@@ -5,7 +5,6 @@ import PropTypes from 'prop-types'
 import coord from '../../renderer/coord-format'
 import store from '../stores/poi-store'
 import selection from './App.selection'
-import mouseInput from './map/mouse-input'
 
 class POIProperties extends React.Component {
   constructor (props) {
@@ -33,7 +32,7 @@ class POIProperties extends React.Component {
   }
 
   handleClick () {
-    const callback = () => mouseInput.pickPoint({
+    const callback = () => this.props.map.tools.pickPoint({
       prompt: 'Pick a new location...',
       picked: ({ lat, lng }) => {
         store.move(this.props.uuid)({ lat, lng })
@@ -147,7 +146,8 @@ const styles = theme => ({
 
 POIProperties.propTypes = {
   classes: PropTypes.any.isRequired,
-  uuid: PropTypes.any.isRequired
+  uuid: PropTypes.any.isRequired,
+  map: PropTypes.any.isRequired
 }
 
 export default withStyles(styles)(POIProperties)

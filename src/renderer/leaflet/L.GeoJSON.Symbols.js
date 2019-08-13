@@ -24,7 +24,6 @@ const defaultOptions = {
 
   // symbol size derived from feature or global settings.
   size: _ => 34,
-  draggable: false,
   selectable: false
 }
 
@@ -36,34 +35,23 @@ const modifiers = feature => Object.entries(feature.properties)
 const onEachFeature = function (feature, layer) {
   const { id, actions } = feature
   this.layers[this.key(id)] = layer
+  if (!actions || !actions.update) return
 
-  layer.on('pm:edit', event => {
-    const { target } = event
-    const latlngs = target._latlng ? target._latlng : target._latlngs
-    actions && actions.update && actions.update(latlngs)
-  })
+  // Manually add tools interface for now.
+  layer.tools = {}
 
-  layer.on('click', event => {
-    const { target } = event
-    const map = target._map
-    map.pm.disableGlobalEditMode()
-    this.select(id)
+  const latlngs = coordinates => coordinates.map(ring => ring.map(([lng, lat]) => L.latLng(lat, lng)))
+  const latlng = coordinates => L.latLng(coordinates[1], coordinates[0])
 
-    if (layer.setStyle && layer.options.style) {
-      // Either a function or style object:
-      const style = typeof layer.options.style === 'function'
-        ? layer.options.style(layer.feature)
-        : layer.options.style
-
-      layer.setStyle({ color: 'red', weight: 2, dashArray: [5, 5] })
-      map.once('pm:globaleditmodetoggled', () => {
-        layer.setStyle(style)
-      })
+  layer.on('tools:edit', event => {
+    const { geometry } = event
+    switch (geometry.type) {
+      case 'Polygon': return actions.update(latlngs(geometry.coordinates))
+      case 'Point': return actions.update(latlng(geometry.coordinates))
     }
-
-    const preventMarkerRemoval = feature.geometry.type === 'Point'
-    layer.pm.enable({ preventMarkerRemoval })
   })
+
+  layer.on('click', () => this.select(id))
 
   const ctrlKey = event => event.originalEvent.ctrlKey
   const set = (slot, message) => event => ctrlKey(event) && evented.emit('OSD_MESSAGE', { slot, message })
@@ -78,7 +66,6 @@ const onEachFeature = function (feature, layer) {
     layer.on('mouseover', set('B2', fromNow(feature.properties.w)))
     layer.on('mouseout', reset('B2'))
   }
-
 }
 
 const pointToLayer = function (feature, latlng) {
@@ -111,7 +98,7 @@ const pointToLayer = function (feature, latlng) {
   const markerOptions = {
     id, // feature identifier
     icons,
-    draggable: this.options.draggable,
+    draggable: false,
     keyboard: false, // default: true
     autoPan: true,
     autoPanSpeed: 10 // default: 10
@@ -140,6 +127,7 @@ const initialize = function (features, options) {
 
   const onSelected = object => this.selected(object)
   const onDeselected = object => this.deselected(object)
+
   this.once('remove', () => {
     selection.off('selected', onSelected)
     selection.off('deselected', onDeselected)
@@ -160,10 +148,10 @@ const select = function (id) {
 }
 
 const selected = function ({ key }) {
-  const marker = this.layers[key]
-  if (!marker) return
-  if (!marker.options.icons) return
-  marker.setIcon(marker.options.icons.highlighted)
+  const layer = this.layers[key]
+  if (!layer) return
+  if (layer.options.icons) layer.setIcon(layer.options.icons.highlighted)
+  this._map.tools.edit(layer)
 }
 
 const deselected = function ({ key }) {
@@ -187,12 +175,14 @@ const removeFeature = function (id) {
 }
 
 const replaceFeature = function (id, feature) {
-  const marker = this.layers[this.key(id)]
-  if (!marker) return
+  const layer = this.layers[this.key(id)]
+  if (!layer) return
 
-  this.removeLayer(marker)
+  this.removeLayer(layer)
   delete this.layers[this.key(id)]
   this.addData(feature)
+
+  // TODO: keep editing if already selected
 }
 
 const moveFeature = function (id, lat, lng) {
