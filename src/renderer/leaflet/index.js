@@ -5,6 +5,7 @@ import './leaflet-icons'
 import './L.Area'
 import './L.Boundary'
 import './L.GeoJSON.Symbols'
+import './tools'
 
 import { K } from '../../shared/combinators'
 

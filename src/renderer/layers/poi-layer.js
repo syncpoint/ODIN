@@ -20,50 +20,51 @@ const geometry = properties => properties.latlngs
   ? polygon(properties)
   : point(properties)
 
-const poi = (id, properties) => {
-  return {
-    type: 'Feature',
-    id: id,
-    geometry: geometry(properties),
-    properties: { t: properties.name, sidc: 'GFGPGPRI----' },
-    actions: {
-      update: store.move(id),
-      properties: () => store.state()[id],
-      paste: properties => store.add(uuid(), properties),
-      delete: () => store.remove(id),
-      edit: () => <POIProperties uuid={ id } />
-    }
-  }
-}
-
-const aoi = (id, properties) => {
-
-  // Default to PENETRATION BOX (no labeling at all)
-  const sidc = properties.sidc || 'GFGPOAP--------'
-
-  return {
-    type: 'Feature',
-    id: id,
-    geometry: geometry(properties),
-    properties: { t: properties.name, sidc }, // NAI
-    actions: {
-      update: store.update(id),
-      properties: () => store.state()[id],
-      paste: properties => store.add(uuid(), properties),
-      delete: () => store.remove(id),
-      edit: () => <AOIProperties uuid={ id } />
-    }
-  }
-}
-
-const feature = (id, properties) => (properties.latlngs ? aoi : poi)(id, properties)
-
 evented.on('MAP_CREATED', map => {
+  const poi = (id, properties) => {
+    return {
+      type: 'Feature',
+      id: id,
+      geometry: geometry(properties),
+      properties: { t: properties.name, sidc: 'GFGPGPRI----' },
+      actions: {
+        update: store.move(id),
+        properties: () => store.state()[id],
+        paste: properties => store.add(uuid(), properties),
+        delete: () => store.remove(id),
+        edit: () => <POIProperties uuid={ id } map={ map } />
+      }
+    }
+  }
+
+  const aoi = (id, properties) => {
+
+    // Default to PENETRATION BOX (no labeling at all)
+    const sidc = properties.sidc || 'GFGPOAP--------'
+
+    return {
+      type: 'Feature',
+      id: id,
+      geometry: geometry(properties),
+      properties: { t: properties.name, sidc }, // NAI
+      actions: {
+        update: store.update(id),
+        properties: () => store.state()[id],
+        paste: properties => store.add(uuid(), properties),
+        delete: () => store.remove(id),
+        edit: () => <AOIProperties uuid={ id } map={ map } />
+      }
+    }
+  }
+
+  const feature = (id, properties) => (properties.latlngs ? aoi : poi)(id, properties)
+
   const symbols = new L.GeoJSON.Symbols(null, {
     id: 'poi-layer',
     size: () => 34,
     draggable: true,
     selectable: true, // default: false
+    bubblingMouseEvents: false,
     style: {
       fillColor: 'none',
       color: 'black',

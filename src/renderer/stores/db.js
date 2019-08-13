@@ -19,6 +19,7 @@ const deleteStream = () => {
 
 // Clear entire database.
 export const clear = () => db.createReadStream({ values: false }).pipe(deleteStream())
+// clear()
 
 // ;(() => {
 //   console.log('dumping data...')
