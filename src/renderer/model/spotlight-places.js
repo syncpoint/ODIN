@@ -2,10 +2,8 @@ import EventEmitter from 'events'
 import React from 'react'
 import { ListItemText } from '@material-ui/core'
 import L from 'leaflet'
-import uuid from 'uuid-random'
 import evented from '../evented'
 import nominatim from './nominatim'
-import poiStore from '../stores/poi-store'
 
 let map
 evented.once('MAP_CREATED', reference => (map = reference))
@@ -35,12 +33,7 @@ export default register => {
         .map(row => ({
           key: row.place_id, // mandatory
           text: <ListItemText primary={ row.display_name } secondary={ 'Place' }/>,
-          action: () => {
-            evented.emit('map.center', L.latLng(row.lat, row.lon))
-
-            // If it is a result of a reverse search (i.e. POI), store it for later use.
-            if (row.poi) poiStore.add(uuid(), { name: row.poi, lat: row.lat, lng: row.lon })
-          }
+          action: () => evented.emit('map.center', L.latLng(row.lat, row.lon))
         }))
     }).then(items => contributor.emit('updated', items))
   }

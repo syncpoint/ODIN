@@ -1,7 +1,6 @@
 import EventEmitter from 'events'
 import bookmarks from '../model/spotlight-bookmarks'
 import places from '../model/spotlight-places'
-import pois from '../model/spotlight-pois'
 import layers from '../model/spotlight-layers'
 import features from '../model/spotlight-features'
 
@@ -31,7 +30,6 @@ const register = contributor => {
 }
 
 bookmarks(register)
-pois(register)
 layers(register)
 features(register)
 places(register)

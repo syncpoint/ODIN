@@ -1,11 +1,5 @@
 import 'leaflet/dist/leaflet.css'
-import 'leaflet.pm'
-import 'leaflet.pm/dist/leaflet.pm.css'
 import './leaflet-icons'
-import './L.Area'
-import './L.Boundary'
-import './L.GeoJSON.Symbols'
-import './tools'
 
 import { K } from '../../shared/combinators'
 

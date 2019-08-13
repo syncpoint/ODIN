@@ -10,7 +10,6 @@ import Spotlight from './spotlight/Spotlight'
 import { spotlightOptions } from './App.spotlight'
 import addBookmarkOptions from './App.bookmark'
 import selection from './App.selection'
-import input from './App.input'
 
 const center = L.latLng(48.65400545105681, 15.319061279296877)
 const zoom = 13
@@ -41,16 +40,10 @@ class App extends React.Component {
 
   openSpotlight (options) {
     selection.deselect() // closes any properties panel
-    input.push({
-      escape: () => this.closeSpotlight(),
-      click: () => this.closeSpotlight()
-    })
-
     this.openPanel('right', () => <Spotlight options={ options } />)
   }
 
   closeSpotlight () {
-    input.pop()
     this.closePanel('right')
   }
 
@@ -63,7 +56,6 @@ class App extends React.Component {
   closePanel (which) {
     const panels = { ...this.state.panels }
     panels[which] = R.always(null)
-    console.log('panels', panels)
     this.setState({ ...this.state, panels })
     document.getElementById('map').focus()
   }
@@ -104,7 +96,6 @@ class App extends React.Component {
     })
 
     selection.on('deselected', () => {
-      console.log('deselected')
       this.closePanel('right')
     })
   }
