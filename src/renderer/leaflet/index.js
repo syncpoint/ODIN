@@ -1,11 +1,15 @@
 import 'leaflet/dist/leaflet.css'
 import './leaflet-icons'
-import './L.SVG'
-import './L.geodesy'
-import './shapes/'
-import './L.Symbol'
-import './L.FeatureGroup'
-import './L.TACGRP/L.TACGRP.C2GM'
+import './SVG'
+import './geodesy'
+import './Feature'
+import './Polygon'
+import './Polyline'
+import './NamedArea'
+
+import './Symbol'
+import './FeatureGroup'
+import './TACGRP/TACGRP.C2GM'
 
 import { K } from '../../shared/combinators'
 

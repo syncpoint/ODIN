@@ -1,12 +1,11 @@
 import L from 'leaflet'
-import './shapes/L.Shape'
+import './Feature'
 
 const genericShape = (feature, options) => {
-  console.log('genericShape', feature.geometry)
   switch (feature.geometry.type) {
-    case 'Point': return new L.Symbol(feature)
-    case 'Polygon': return new L.Shape.Polygon(feature, options)
-    case 'LineString': return new L.Shape.Polyline(feature, options)
+    case 'Point': return new L.Feature.Symbol(feature)
+    case 'Polygon': return new L.Feature.Polygon(feature, options)
+    case 'LineString': return new L.Feature.Polyline(feature, options)
     default: return null
   }
 }
@@ -32,9 +31,8 @@ const addData = function (geojson) {
   const options = { interactive: true, bubblingMouseEvents: false }
   const sidc = feature.properties.sidc
   if (!sidc) return null
-  console.log(sidc, L.Shape)
   const key = `${sidc[0]}*${sidc[2]}*${sidc.substring(4, 10)}*****`
-  const layer = L.Shape[key] ? new L.Shape[key](feature, options) : genericShape(feature, options)
+  const layer = L.Feature[key] ? new L.Feature[key](feature, options) : genericShape(feature, options)
 
   if (!layer) return this
 

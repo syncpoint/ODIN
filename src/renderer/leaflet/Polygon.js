@@ -1,9 +1,9 @@
 import L from 'leaflet'
 import * as R from 'ramda'
-import './L.Polystar'
+import './Polystar'
 
 
-L.Shape.Polygon = L.Shape.Polystar.extend({
+L.Feature.Polygon = L.Feature.Polystar.extend({
 
   createShape (options) {
     const group = L.SVG.create('g')

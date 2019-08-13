@@ -1,7 +1,7 @@
 import L from 'leaflet'
-import './L.Polystar'
+import './Polystar'
 
-L.Shape.Polyline = L.Shape.Polystar.extend({
+L.Feature.Polyline = L.Feature.Polystar.extend({
 
   createShape (options) {
     const group = L.SVG.create('g')

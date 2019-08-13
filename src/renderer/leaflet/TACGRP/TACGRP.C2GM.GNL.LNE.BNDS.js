@@ -1,7 +1,7 @@
 import L from 'leaflet'
 import * as R from 'ramda'
 import uuid from 'uuid-random'
-import '../shapes/L.Polyline'
+import '../Polyline'
 import echelons from './echelon'
 
 const transformLabel = (centerPoint, angle) => `
@@ -15,7 +15,7 @@ const transformMask = (centerPoint, angle, bbox) => `
   rotate(${angle})
   translate(${bbox.width / -4} ${bbox.height / -4})`
 
-L.Shape['G*G*GLB---*****'] = L.Shape.Polyline.extend({
+L.Feature['G*G*GLB---*****'] = L.Feature.Polyline.extend({
 
   createShape (options) {
     const id = uuid()

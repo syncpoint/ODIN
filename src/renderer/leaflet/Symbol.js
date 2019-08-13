@@ -56,7 +56,7 @@ const onAdd = function (map) {
   L.Marker.prototype.onAdd.call(this, map)
 }
 
-L.Symbol = L.Marker.extend({
+L.Feature.Symbol = L.Marker.extend({
   options,
   initialize,
   onAdd

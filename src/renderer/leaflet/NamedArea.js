@@ -1,7 +1,7 @@
 import L from 'leaflet'
-import './L.Polygon'
+import './Polygon'
 
-L.Shape.NamedArea = L.Shape.Polygon.extend({
+L.Feature.NamedArea = L.Feature.Polygon.extend({
   labels (feature) {
     return [ `<bold>${this.name}</bold>`, feature.title ]
   }
