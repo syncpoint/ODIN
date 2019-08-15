@@ -26,6 +26,7 @@ const drawTool = map => (type, options) => {
 const editTool = map => editor => {
 
   const dispose = () => {
+    editor.commit()
     editor.dispose()
     selection.deselect()
   }
@@ -37,7 +38,6 @@ const editTool = map => editor => {
         return map.tools.dispose()
       case 'click':
       case 'keydown:return':
-        editor.commit()
         return map.tools.dispose()
     }
   }
