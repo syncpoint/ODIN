@@ -55,6 +55,11 @@ class Map extends React.Component {
     this.map = K(L.map(id, options))(map => {
       evented.emit('MAP_CREATED', map)
 
+      // We need an additional pane for editor markers on top of regular markers.
+      map.createPane('editorPane')
+      map.getPane('editorPane').style.zIndex = 620 // > markerPane (600)
+      map.getPane('editorPane').style.pointerEvents = 'none'
+
       const mapVisible = settings.map.visible()
       if (mapVisible) L.tileLayer(tileProvider().url, tileProvider()).addTo(map)
 
