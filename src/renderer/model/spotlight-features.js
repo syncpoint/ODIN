@@ -12,7 +12,8 @@ export default register => {
 
   const featureItem = (layerId, layerName) => ([featureId, feature]) => {
     const [lng, lat] = feature.geometry.coordinates
-    const url = new ms.Symbol(feature.properties.sidc).asCanvas().toDataURL()
+    const symbolOptions = { simpleStatusModifier: true }
+    const url = new ms.Symbol(feature.properties.sidc, symbolOptions).asCanvas().toDataURL()
     return {
       key: `feature://${layerId}/${featureId}`,
       avatar: (
