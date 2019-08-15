@@ -1,4 +1,5 @@
 import L from 'leaflet'
+import selection from '../components/App.selection'
 import './Feature'
 import './MarkerGroup'
 
@@ -24,15 +25,15 @@ const onAdd = function (map) {
   this.update(L.Feature.Polystar.latlngs(this.feature.geometry))
 
   map.on('zoomend', () => this.update(), this)
-  this.on('click', this.edit, this)
+  this.on('click', this.select, this)
 }
 
 const onRemove = function (map) {
-  // TODO: remove (SVG) element from `this.renderer._rootGroup`
-  // TODO: this.removeInteractiveTarget(element)
+  this.removeInteractiveTarget(this.shape.element)
+  this.renderer._rootGroup.removeChild(this.shape.element)
   map.off('zoomend', () => this.update(), this)
-  this.off('click', this.edit, this)
-  // TODO: ...
+  this.off('click', this.select, this)
+  this.map.tools.dispose() // dispose editor/selection tool
 }
 
 // Re-project shape(s) for current geometry:
@@ -41,11 +42,23 @@ const update = function (latlngs) {
   if (this.latlngs) this.shape.update(this.latlngs)
 }
 
+const select = function () {
+  selection.select(this.feature)
+  // TODO: only call this.edit() when not read-only
+  this.edit()
+}
+
 const edit = function () {
   const callback = latlngs => this.update(latlngs)
   const markerGroup = new L.Feature.MarkerGroup(this.feature.geometry, callback).addTo(this.map)
   const editor = {
-    dispose: () => this.map.removeLayer(markerGroup)
+    dispose: () => this.map.removeLayer(markerGroup),
+    commit: () => {
+      const geometry = markerGroup.toGeometry()
+      this.feature.geometry = geometry
+      this.feature.updateGeometry(geometry)
+    },
+    rollback: () => console.log('rollback')
   }
 
   this.map.tools.edit(editor)
@@ -62,6 +75,7 @@ L.Feature.Polystar = L.Layer.extend({
   onAdd,
   onRemove,
   update,
+  select,
   edit,
   labels
 })

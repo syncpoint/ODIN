@@ -53,9 +53,7 @@
   "dependencies": {
     "@material-ui/core": "^3.9.3",
     "electron-settings": "^3.2.0",
-    "geodesy": "^2.0.1",
     "leaflet": "1.5.1",
-    "leaflet.pm": "^2.1.0",
     "level": "^5.0.1",
     "milsymbol": "^2.0.0",
     "moment": "^2.24.0",

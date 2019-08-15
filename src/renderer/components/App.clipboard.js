@@ -1,16 +1,15 @@
+import Mousetrap from 'mousetrap'
 import selection from './App.selection'
 
 let memory = {}
 
-const copy = () => {
-  if (selection.empty()) return
-  memory = selection.selected().map(selected => ({
-    properties: selected.properties(),
-    paste: selected.paste
-  }))
-}
+Mousetrap.bind(['del', 'command+backspace'], _ => {
+  selection.selected()
+    .filter(selected => selected.delete)
+    .forEach(selected => selected.delete())
+})
 
-const cut = () => {
+Mousetrap.bind('mod+c', _ => {
   if (selection.empty()) return
   memory = selection.selected().map(selected => ({
     properties: selected.properties(),
@@ -20,12 +19,17 @@ const cut = () => {
   selection.selected()
     .filter(selected => selected.delete)
     .forEach(selected => selected.delete())
-}
+})
 
-const paste = () => {
+Mousetrap.bind('mod+x', _ => {
+  if (selection.empty()) return
+  memory = selection.selected().map(selected => ({
+    properties: selected.properties(),
+    paste: selected.paste
+  }))
+})
+
+Mousetrap.bind('mod+v', _ => {
   memory.forEach(({ properties, paste }) => paste(properties))
-}
+})
 
-export default {
-  copy, cut, paste
-}

@@ -80,6 +80,17 @@ const appendMarker = function (latlng, options, other) {
   this.list.append(this.createMarker(latlng, options), other)
 }
 
+const toGeometry = function () {
+  const latlngs = this.markers().map(marker => marker.getLatLng())
+  const lineString = () => latlngs.map(({ lat, lng }) => [lng, lat])
+  const polygon = () => [[...lineString(), lineString()[0]]]
+
+  switch (this.geometry.type) {
+    case 'Polygon': return { type: 'Polygon', coordinates: polygon() }
+    case 'LineString': return { type: 'LineString', coordinates: lineString() }
+  }
+}
+
 const updatePoint = function () {
   this.callback(this.markers().map(marker => marker.getLatLng()))
 
@@ -146,6 +157,7 @@ L.Feature.MarkerGroup = L.LayerGroup.extend({
   createMarker,
   removeMarker,
   appendMarker,
+  toGeometry,
 
   updatePoint,
   removePoint,
