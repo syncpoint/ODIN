@@ -1,18 +1,24 @@
-/* eslint-disable */
-
 import { Writable } from 'stream'
 import EventEmitter from 'events'
 import { ipcRenderer } from 'electron'
-import uuid from 'uuid-random'
+import now from 'nano-time'
 import { db } from './db'
 
 const evented = new EventEmitter()
 const state = {}
 let ready = false
 
-const reduce = ({ key, value }) => {
-  const name = key.match(/layer:(.*)/)[1]
-  state[name] = value
+const reduce = event => {
+  switch (event.type) {
+    case 'layer-added': state[event.layerId] = { name: event.name, show: event.show, features: [] }; break
+    case 'layer-deleted': delete state[event.layerId]; break
+    case 'layer-hidden': state[event.layerId].show = false; break
+    case 'layer-shown': state[event.layerId].show = true; break
+    case 'feature-added':
+    case 'feature-updated': state[event.layerId].features[event.featureId] = event.feature; break
+    case 'feature-deleted': delete state[event.layerId].features[event.featureId]; break
+    default: console.log('[layer-store] unhandled', event)
+  }
 }
 
 const recoverStream = reduce => new Writable({
@@ -31,75 +37,52 @@ const recoverStream = reduce => new Writable({
 db.createReadStream({
   gte: 'layer',
   lte: 'layer\xff',
-  keys: true
+  keys: false
 }).pipe(recoverStream(reduce))
+
+const persist = event => {
+  db.put(`layer:${event.layerId}:${now()}`, event)
+  reduce(event)
+  evented.emit('event', event)
+}
 
 evented.ready = () => ready
 evented.state = () => state
 
-// strategy (pessimistic): update state, save, emit event on completion
-evented.add = (name, content) => {
-  const layer = { show: true, content }
-
-  // Add unique feature ids if none are provided.
-  content.features
-    .filter(feature => !feature.id)
-    .forEach(feature => (feature.id = uuid()))
-
-  const event = state[name] ? 'replaced' : 'added'
-  state[name] = layer
-  db.put(`layer:${name}`, layer).then(() => evented.emit(event, { name, layer }))
+// Add new or replace existing layer.
+evented.addLayer = (layerId, name) => {
+  persist({ type: 'layer-added', layerId, name, show: true })
 }
 
-evented.remove = name => {
-  if (!state[name]) return
-  delete state[name]
-  db.del(`layer:${name}`).then(() => evented.emit('removed', { name }))
+// Delete zero, one or more layers.
+evented.deleteLayer = layerIds => (layerIds || Object.keys(state))
+  .filter(layerId => state[layerId])
+  .map(layerId => ({ type: 'layer-deleted', layerId }))
+  .forEach(persist)
+
+evented.hideLayer = layerIds => (layerIds || Object.keys(state))
+  .filter(layerId => state[layerId])
+  .map(layerId => ({ type: 'layer-hidden', layerId }))
+  .forEach(persist)
+
+evented.showLayer = layerIds => (layerIds || Object.keys(state))
+  .filter(layerId => state[layerId])
+  .map(layerId => ({ type: 'layer-shown', layerId }))
+  .forEach(persist)
+
+evented.addFeature = layerId => (featureId, feature) => {
+  const type = state[layerId].features[featureId] ? 'feature-updated' : 'feature-added'
+  persist({ type, layerId, featureId, feature })
 }
 
-evented.hide = name => {
-  const layer = state[name]
-  if (!layer) return
-  if (!layer.show) return
-
-  layer.show = false
-  db.put(`layer:${name}`, layer).then(() => evented.emit('hidden', { name }))
+evented.updateFeature = layerId => (featureId, feature) => {
+  persist({ type: 'feature-updated', layerId, featureId, feature })
 }
 
-evented.show = name => {
-  const layer = state[name]
-  if (!layer) return
-  if (layer.show) return
-
-  layer.show = true
-  db.put(`layer:${name}`, layer).then(() => evented.emit('shown', { name, layer }))
-}
-
-evented.removeAll = names => (names || Object.keys(state)).forEach(evented.remove)
-evented.hideAll = names => (names || Object.keys(state)).forEach(evented.hide)
-evented.showAll = names => (names || Object.keys(state)).forEach(evented.show)
-
-evented.update = (name, id) => latlngs => {
-  if (!state[name]) return
-  const layer = state[name]
-  const features = layer.content.features
-  const index = features.findIndex(feature => feature.id === id)
-  if (index === -1) return
-
-  switch (features[index].geometry.type) {
-    case 'Point':
-      features[index].geometry.coordinates = [latlngs.lng, latlngs.lat]
-      break
-    case 'LineString':
-      features[index].geometry.coordinates = latlngs.map(({ lat, lng }) => ([lng, lat]))
-      break
-    case 'Polygon':
-      const xs = latlngs[0].map(({ lat, lng }) => ([lng, lat]))
-      features[index].geometry.coordinates = [[ ...xs, xs[0]]]
-      break
-  }
-
-  db.put(`layer:${name}`, layer).then(() => {})
+evented.deleteFeature = layerId => featureId => {
+  if (!state[layerId]) return
+  if (!state[layerId].features[featureId]) return
+  persist({ type: 'feature-deleted', layerId, featureId })
 }
 
 ipcRenderer.on('COMMAND_LOAD_LAYER', (_, name, content) => {

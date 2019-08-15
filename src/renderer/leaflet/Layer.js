@@ -10,24 +10,15 @@ const genericShape = (feature, options) => {
   }
 }
 
-const initialize = function (name, geojson, options) {
+const initialize = function (features, options) {
   L.Util.setOptions(this, options)
 
-  this.name = name
-  // Name `_layers` is required by Leaflet LayerGroup:
+  // Property `_layers` is required by Leaflet LayerGroup:
   this._layers = {}
-
-  if (geojson) this.addData(geojson)
+  if (features) features.forEach(feature => this.addData(feature))
 }
 
-const addData = function (geojson) {
-  if (!geojson) return
-  if (geojson.type === 'FeatureCollection') {
-    geojson.features.forEach(feature => this.addData(feature))
-    return
-  }
-
-  const feature = geojson
+const addData = function (feature) {
   const options = { interactive: true, bubblingMouseEvents: false }
   const sidc = feature.properties.sidc
   if (!sidc) return null
@@ -35,7 +26,6 @@ const addData = function (geojson) {
   const layer = L.Feature[key] ? new L.Feature[key](feature, options) : genericShape(feature, options)
 
   if (!layer) return this
-
   layer.feature = feature
   return this.addLayer(layer)
 }

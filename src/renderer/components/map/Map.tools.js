@@ -1,15 +1,11 @@
+import Mousetrap from 'mousetrap'
 import L from 'leaflet'
 import selection from '../App.selection'
-import clipboard from '../App.clipboard'
 import evented from '../../evented'
 
 const selectionTool = _ => ({
   name: 'select',
-  handle: event => {
-    switch (event.type) {
-      case 'clipboard:paste': return clipboard.paste()
-    }
-  },
+  handle: _ => {},
   dispose: () => {}
 })
 
@@ -36,19 +32,12 @@ const editTool = map => editor => {
 
   const handle = event => {
     switch (event.type) {
-      case 'clipboard:copy': return clipboard.copy()
-      case 'clipboard:cut': return clipboard.cut()
-      case 'clipboard:paste': return clipboard.paste()
       case 'keydown:escape':
-        // TODO: reset geometry to original snapshot
-        console.log('keydown:escape')
+        editor.rollback()
         return map.tools.dispose()
       case 'click':
-      case 'keydown:return': return map.tools.dispose()
-      case 'keydown:delete':
-        selection.selected()
-          .filter(selected => selected.delete)
-          .forEach(selected => selected.delete())
+      case 'keydown:return':
+        editor.commit()
         return map.tools.dispose()
     }
   }
@@ -100,31 +89,26 @@ const pointInput = map => options => {
 L.Map.addInitHook(function () {
   let tool = selectionTool(this)
 
+  const swap = newTool => {
+    tool.dispose()
+    tool = newTool
+  }
+
+  const command = event => tool.handle(event)
+  const dispose = () => swap(selectionTool(this))
+  const draw = (type, options) => swap(drawTool(this)(type, options))
+  const edit = editor => swap(editTool(this)(editor))
+  const pickPoint = options => swap(pointInput(this)(options))
+
   const click = event => {
     // Only respond to click events from map:
     if (event.originalEvent.target !== this._container) return
     tool.handle(event)
   }
 
-  const dblclick = event => {
-    tool.handle(event)
-  }
-
   this.on('click', click)
-  this.on('dblclick', dblclick)
-
-  const swap = newTool => {
-    console.log('[tools]', newTool.name)
-    tool.dispose()
-    tool = newTool
-  }
-
-  const command = event => tool.handle(event)
-
-  const dispose = () => swap(selectionTool(this))
-  const draw = (type, options) => swap(drawTool(this)(type, options))
-  const edit = editor => swap(editTool(this)(editor))
-  const pickPoint = options => swap(pointInput(this)(options))
+  Mousetrap.bind(['escape'], _ => command({ type: 'keydown:escape' }))
+  Mousetrap.bind(['return'], _ => command({ type: 'keydown:return' }))
 
   this.tools = {
     disableMapClick: () => this.off('click', click),

@@ -18,7 +18,7 @@ evented.deselect = () => {
 }
 
 evented.selected = type => {
-  if (!type) return [selected]
+  if (!type) return selected ? [selected] : []
   else return (selected && selected.type === type) ? [selected] : []
 }
 
