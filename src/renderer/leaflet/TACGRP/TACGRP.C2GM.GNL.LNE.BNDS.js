@@ -20,7 +20,7 @@ L.Feature['G*G*GLB---*****'] = L.Feature.Polyline.extend({
   createShape (options) {
     const id = uuid()
     const group = L.SVG.create('g')
-    const outlinePath = L.SVG.path({ 'stroke-width': 10, stroke: 'black', 'opacity': 0.0 })
+    const outlinePath = L.SVG.path({ 'stroke-width': 10, stroke: 'black', fill: 'none', 'opacity': 0.0 })
     const linePath = L.SVG.path({ 'stroke-width': 2, stroke: 'black', fill: 'none', mask: `url(#mask-${id})` })
 
     // TODO: check flag options.interactive
