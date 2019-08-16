@@ -43,6 +43,7 @@ const update = function (latlngs) {
 }
 
 const select = function () {
+  if (selection.isSelected(this.feature)) return
   selection.select(this.feature)
   // TODO: only call this.edit() when not read-only
   this.edit()
@@ -51,14 +52,16 @@ const select = function () {
 const edit = function () {
   const callback = latlngs => this.update(latlngs)
   const markerGroup = new L.Feature.MarkerGroup(this.feature.geometry, callback).addTo(this.map)
+  const initialGeometry = markerGroup.toGeometry()
+
   const editor = {
-    dispose: () => this.map.removeLayer(markerGroup),
-    commit: () => {
-      const geometry = markerGroup.toGeometry()
+    dispose: (reset) => {
+      const geometry = reset ? initialGeometry : markerGroup.toGeometry()
       this.feature.geometry = geometry
-      this.feature.updateGeometry(geometry)
-    },
-    rollback: () => console.log('rollback')
+      if (reset) this.update(L.Feature.Polystar.latlngs(this.feature.geometry))
+      else this.feature.updateGeometry(geometry)
+      this.map.removeLayer(markerGroup)
+    }
   }
 
   this.map.tools.edit(editor)

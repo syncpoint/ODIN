@@ -25,20 +25,16 @@ const drawTool = map => (type, options) => {
  */
 const editTool = map => editor => {
 
-  const dispose = () => {
-    editor.commit()
-    editor.dispose()
+  const dispose = reset => {
+    editor.dispose(reset)
     selection.deselect()
   }
 
   const handle = event => {
     switch (event.type) {
-      case 'keydown:escape':
-        editor.rollback()
-        return map.tools.dispose()
+      case 'keydown:escape': return map.tools.dispose(true)
       case 'click':
-      case 'keydown:return':
-        return map.tools.dispose()
+      case 'keydown:return': return map.tools.dispose(false)
     }
   }
 
@@ -89,15 +85,15 @@ const pointInput = map => options => {
 L.Map.addInitHook(function () {
   let tool = selectionTool(this)
 
-  const swap = newTool => {
-    tool.dispose()
+  const swap = (reset, newTool) => {
+    tool.dispose(reset)
     tool = newTool
   }
 
   const command = event => tool.handle(event)
-  const dispose = () => swap(selectionTool(this))
-  const draw = (type, options) => swap(drawTool(this)(type, options))
-  const edit = editor => swap(editTool(this)(editor))
+  const dispose = reset => swap(reset, selectionTool(this))
+  const draw = (type, options) => swap(false, drawTool(this)(type, options))
+  const edit = editor => swap(false, editTool(this)(editor))
   const pickPoint = options => swap(pointInput(this)(options))
 
   const click = event => {

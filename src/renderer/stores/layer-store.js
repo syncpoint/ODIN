@@ -4,6 +4,8 @@ import { ipcRenderer } from 'electron'
 import now from 'nano-time'
 import { db } from './db'
 
+// TODO: needs snapshotting capability
+
 const evented = new EventEmitter()
 const state = {}
 let ready = false

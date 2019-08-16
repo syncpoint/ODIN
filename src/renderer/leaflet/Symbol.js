@@ -82,6 +82,7 @@ const onRemove = function (map) {
 }
 
 const select = function () {
+  if (selection.isSelected(this.feature)) return
   selection.select(this.feature)
   this.setIcon(this.icons.highlighted)
   // TODO: only call this.edit() when not read-only
@@ -98,15 +99,14 @@ const edit = function () {
   this.latlng = this.getLatLng()
 
   const editor = {
-    dispose: () => this.deselect(),
-    commit: () => {
-      const { lat, lng } = this.getLatLng()
-      const geometry = { type: 'Point', coordinates: [lng, lat] }
-      this.feature.updateGeometry(geometry)
-    },
-    rollback: () => {
+    dispose: reset => {
       this.deselect()
-      this.setLatLng(this.latlng)
+      if (reset) this.setLatLng(this.latlng)
+      else {
+        const { lat, lng } = this.getLatLng()
+        const geometry = { type: 'Point', coordinates: [lng, lat] }
+        this.feature.updateGeometry(geometry)
+      }
     }
   }
 

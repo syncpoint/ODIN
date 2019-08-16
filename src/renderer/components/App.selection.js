@@ -22,6 +22,8 @@ evented.selected = type => {
   else return (selected && selected.type === type) ? [selected] : []
 }
 
+evented.isSelected = object => selected === object
+
 evented.empty = () => !selected
 
 export default evented

@@ -1,4 +1,3 @@
-/* eslint-disable */
 import EventEmitter from 'events'
 import React from 'react'
 import LayerListItem from '../components/spotlight/LayerListItem'
