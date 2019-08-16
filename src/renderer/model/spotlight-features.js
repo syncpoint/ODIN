@@ -6,6 +6,7 @@ import ms from 'milsymbol'
 import layerStore from '../stores/layer-store'
 import evented from '../evented'
 
+
 export default register => {
   const contributor = new EventEmitter()
   const term = register(contributor)
