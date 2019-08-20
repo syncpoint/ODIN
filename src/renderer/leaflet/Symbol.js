@@ -48,7 +48,8 @@ const symbol = (feature, options) => {
 
 const options = {
   draggable: false, // only draggable in edit mode
-  autoPan: true
+  autoPan: true,
+  keyboard: false
 }
 
 const initialize = function (feature, options) {

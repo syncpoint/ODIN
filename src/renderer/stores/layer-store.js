@@ -23,6 +23,12 @@ const reduce = event => {
   }
 }
 
+const persist = event => {
+  db.put(`layer:${event.layerId}:${now()}`, event)
+  reduce(event)
+  evented.emit('event', event)
+}
+
 const recoverStream = reduce => new Writable({
   objectMode: true,
   write (chunk, _, callback) {
@@ -32,6 +38,12 @@ const recoverStream = reduce => new Writable({
   final (callback) {
     evented.emit('ready', { ...state })
     ready = true
+
+    // Create default layer with id 0:
+    if (!state[0]) {
+      persist({ type: 'layer-added', layerId: 0, name: 'Default Layer', show: true })
+    }
+
     callback()
   }
 })
@@ -41,12 +53,6 @@ db.createReadStream({
   lte: 'layer\xff',
   keys: false
 }).pipe(recoverStream(reduce))
-
-const persist = event => {
-  db.put(`layer:${event.layerId}:${now()}`, event)
-  reduce(event)
-  evented.emit('event', event)
-}
 
 evented.ready = () => ready
 evented.state = () => state
