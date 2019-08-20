@@ -1,6 +1,14 @@
 const symbolSetData = () => {
   return [
     {
+      'name': 'POI',
+      'content': [
+        { 'sidc': 'GFGPGPRI--****X' },
+        { 'sidc': 'G*GPSAN---****X' },
+        { 'sidc': 'G*GPSAT---****X' }
+      ]
+    },
+    {
       'name': 'Units',
       'content': [
         { 'sidc': 'SFG-UULC--*****' },
