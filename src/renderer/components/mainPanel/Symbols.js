@@ -3,6 +3,7 @@ import { List, ListItem } from '@material-ui/core'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import uuid from 'uuid-random'
+import L from 'leaflet'
 import evented from '../../evented'
 import store from '../../stores/layer-store'
 
@@ -10,6 +11,13 @@ import store from '../../stores/layer-store'
 class Symbols extends React.Component {
 
   onClick (sidc) {
+
+    const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4)
+    if (L.Feature[genericSIDC]) {
+      // TODO: find way to draw the feature
+      return
+    }
+
     evented.emit('tools.pick-point', {
       prompt: 'Pick a location...',
       picked: latlng => {
