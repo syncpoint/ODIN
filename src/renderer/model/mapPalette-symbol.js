@@ -4,10 +4,16 @@ import ms from 'milsymbol'
 import { findSpecificItem } from '../stores/feature-store'
 
 
+const placeholderSymbol = new ms.Symbol('')
 const specificSIDC = sidc => sidc[0] + 'F' + sidc[2] + '-' + sidc.substring(4)
 
 const avatar = sidc => {
-  const url = new ms.Symbol(sidc[0] === 'G' ? '' : sidc).asCanvas().toDataURL()
+
+  const symbol = new ms.Symbol(sidc)
+  const url = symbol.isValid(false)
+    ? symbol.asCanvas().toDataURL()
+    : placeholderSymbol.asCanvas().toDataURL()
+
   return (
     <ListItemAvatar>
       <Avatar src={ url } style={{ borderRadius: 0, width: '15%', height: '15%' }} />

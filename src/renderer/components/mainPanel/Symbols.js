@@ -1,12 +1,10 @@
-/* eslint-disable */
-
 import React from 'react'
-import L from 'leaflet'
 import { List, ListItem } from '@material-ui/core'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
-import ms from 'milsymbol'
+import uuid from 'uuid-random'
 import evented from '../../evented'
+import store from '../../stores/layer-store'
 
 // TODO: rename to feature list
 class Symbols extends React.Component {
@@ -15,14 +13,11 @@ class Symbols extends React.Component {
     evented.emit('tools.pick-point', {
       prompt: 'Pick a location...',
       picked: latlng => {
-        const marker = L.marker(latlng)
-        const icon = new ms.Symbol(sidc, { size: 34 })
-        marker.setIcon(L.divIcon({
-          className: '',
-          html: icon.asSVG(),
-          iconAnchor: new L.Point(icon.getAnchor().x, icon.getAnchor().y)
-        }))
-        evented.emit('map.marker', marker)
+        store.addFeature(0)(uuid(), {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [latlng.lng, latlng.lat] },
+          properties: { sidc }
+        })
       }
     })
   }
