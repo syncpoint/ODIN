@@ -52,9 +52,12 @@
   },
   "dependencies": {
     "@material-ui/core": "^3.9.3",
+    "@material-ui/icons": "^4.2.1",
     "electron-settings": "^3.2.0",
+    "geodesy": "^2.2.0",
     "leaflet": "1.5.1",
     "level": "^5.0.1",
+    "lunr": "^2.3.6",
     "milsymbol": "^2.0.0",
     "moment": "^2.24.0",
     "mousetrap": "^1.6.3",
