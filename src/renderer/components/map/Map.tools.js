@@ -57,6 +57,7 @@ const pointInput = map => options => {
   container.style.cursor = 'crosshair'
 
   const click = event => {
+    console.log('[pickPoint]', event)
     options.picked && options.picked(event.latlng)
     const message = options.message || ''
     evented.emit('OSD_MESSAGE', { message, duration: 1500 })
@@ -94,7 +95,7 @@ L.Map.addInitHook(function () {
   const dispose = reset => swap(reset, selectionTool(this))
   const draw = (type, options) => swap(false, drawTool(this)(type, options))
   const edit = editor => swap(false, editTool(this)(editor))
-  const pickPoint = options => swap(pointInput(this)(options))
+  const pickPoint = options => swap(false, pointInput(this)(options))
 
   const click = event => {
     // Only respond to click events from map:
@@ -105,6 +106,8 @@ L.Map.addInitHook(function () {
   this.on('click', click)
   Mousetrap.bind(['escape'], _ => command({ type: 'keydown:escape' }))
   Mousetrap.bind(['return'], _ => command({ type: 'keydown:return' }))
+
+  evented.on('tools.pick-point', options => pickPoint(options))
 
   this.tools = {
     disableMapClick: () => this.off('click', click),
