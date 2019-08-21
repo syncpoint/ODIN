@@ -10,6 +10,7 @@ settings.setPath(path.format({
 const TILE_PROVIDER = 'tileProvider'
 const HIDPI_SUPPORT = 'hiDPISupport'
 const MAP_VISIBLE = 'mapVisible'
+const PALETTE_VISIBLE = 'paletteVisible'
 const VIEW_PORT = 'viewPort'
 const DISPLAY_FILTERS = 'displayFilters'
 const COORDINATE_FORMAT = 'coordinateFormat'
@@ -26,6 +27,11 @@ export default {
     setViewPort: viewPort => settings.set(VIEW_PORT, viewPort),
     getDisplayFilters: defaultFilters => settings.get(DISPLAY_FILTERS) || defaultFilters,
     setDisplayFilters: values => settings.set(DISPLAY_FILTERS, values)
+  },
+  palette: {
+    visible: () => settings.has(PALETTE_VISIBLE) ? settings.get(PALETTE_VISIBLE) : true,
+    show: () => settings.set(PALETTE_VISIBLE, true),
+    hide: () => settings.set(PALETTE_VISIBLE, false)
   },
   tileProvider: {
     get: defaultProvider => settings.get(TILE_PROVIDER) || defaultProvider,

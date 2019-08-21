@@ -12,6 +12,7 @@ import { spotlightOptions } from './App.spotlight'
 import addBookmarkOptions from './App.bookmark'
 import selection from './App.selection'
 import './App.clipboard'
+import settings from '../model/settings'
 
 const center = L.latLng(48.65400545105681, 15.319061279296877)
 const zoom = 13
@@ -93,6 +94,16 @@ class App extends React.Component {
       }))
     })
 
+    ipcRenderer.on('COMMAND_TOGGLE_PALETTE', (_, visible) => {
+      if (visible) {
+        this.openPanel('left', () => <MainPanel/>)
+        settings.palette.show()
+      } else {
+        this.closePanel('left')
+        settings.palette.hide()
+      }
+    })
+
     selection.on('selected', object => {
       object.edit && this.openPanel('right', object.edit)
     })
@@ -101,7 +112,7 @@ class App extends React.Component {
       this.closePanel('right')
     })
 
-    this.openPanel('left', () => <MainPanel/>)
+    if (settings.palette.visible()) this.openPanel('left', () => <MainPanel/>)
   }
 
   render () {
