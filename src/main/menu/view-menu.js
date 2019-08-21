@@ -5,6 +5,7 @@ const menu = settings => {
 
   const mapVisible = settings.has('mapVisible') ? settings.get('mapVisible') : true
   const osdVisible = settings.has('osdVisible') ? settings.get('osdVisible') : true
+  const paletteVisible = settings.has('paletteVisible') ? settings.get('paletteVisible') : true
   const osdOptions = settings.get('osdOptions') ||
       ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
 
@@ -96,6 +97,16 @@ const menu = settings => {
       { role: 'zoomout' },
       { type: 'separator' },
       { role: 'togglefullscreen' },
+      {
+        label: 'Toggle Palette',
+        click: (menuItem, focusedWindow) => {
+          settings.set('paletteVisible', menuItem.checked)
+          sendMessage('COMMAND_TOGGLE_PALETTE', menuItem.checked)(menuItem, focusedWindow)
+        },
+        type: 'checkbox',
+        checked: paletteVisible,
+        accelerator: 'Super+Control+P'
+      },
       { type: 'separator' },
       {
         label: 'Show',
