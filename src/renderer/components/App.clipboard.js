@@ -6,7 +6,10 @@ let memory = {}
 Mousetrap.bind(['del', 'command+backspace'], _ => {
   selection.selected()
     .filter(selected => selected.delete)
-    .forEach(selected => selected.delete())
+    .forEach(selected => {
+      selection.deselect()
+      selected.delete()
+    })
 })
 
 Mousetrap.bind('mod+c', _ => {

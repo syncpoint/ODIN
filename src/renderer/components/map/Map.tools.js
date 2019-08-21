@@ -27,14 +27,14 @@ const editTool = map => editor => {
 
   const dispose = reset => {
     editor.dispose(reset)
-    selection.deselect()
   }
 
   const handle = event => {
     switch (event.type) {
       case 'keydown:escape': return map.tools.dispose(true)
       case 'click':
-      case 'keydown:return': return map.tools.dispose(false)
+      case 'keydown:return':
+      case 'deselected': return map.tools.dispose(false)
     }
   }
 
@@ -57,7 +57,6 @@ const pointInput = map => options => {
   container.style.cursor = 'crosshair'
 
   const click = event => {
-    console.log('[pickPoint]', event)
     options.picked && options.picked(event.latlng)
     const message = options.message || ''
     evented.emit('OSD_MESSAGE', { message, duration: 1500 })
@@ -108,6 +107,7 @@ L.Map.addInitHook(function () {
   Mousetrap.bind(['return'], _ => command({ type: 'keydown:return' }))
 
   evented.on('tools.pick-point', options => pickPoint(options))
+  selection.on('deselected', () => command({ type: 'deselected' }))
 
   this.tools = {
     disableMapClick: () => this.off('click', click),
