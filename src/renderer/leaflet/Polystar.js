@@ -71,6 +71,11 @@ const labels = function (feature) {
   return [ feature.title ]
 }
 
+const updateData = function (feature) {
+  // TODO: ...
+  console.log('[Polystar] updateData', feature)
+}
+
 // abstract polygon/polyline.
 L.Feature.Polystar = L.Layer.extend({
   initialize,
@@ -80,7 +85,8 @@ L.Feature.Polystar = L.Layer.extend({
   update,
   select,
   edit,
-  labels
+  labels,
+  updateData
 })
 
 L.Feature.Polystar.minimumPoints = geometry => {

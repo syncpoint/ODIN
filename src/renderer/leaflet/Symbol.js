@@ -119,10 +119,19 @@ const edit = function () {
   this._map.tools.edit(editor)
 }
 
+const updateData = function (feature) {
+  const latlng = L.latLng(
+    feature.geometry.coordinates[1],
+    feature.geometry.coordinates[0])
+
+  this.setLatLng(latlng)
+}
+
 L.Feature.Symbol = L.Marker.extend({
   options,
   initialize,
   onAdd,
   onRemove,
-  edit
+  edit,
+  updateData
 })
