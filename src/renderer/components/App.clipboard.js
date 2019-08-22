@@ -3,40 +3,40 @@ import selection from './App.selection'
 
 let memory = {}
 
-Mousetrap.bind(['del', 'command+backspace'], _ => {
+const copySelection = () => {
+  if (selection.empty()) return
+  memory = selection.selected()
+    .filter(selected => selected.copy)
+    .map(selected => ({
+      object: selected.copy(),
+      paste: selected.paste
+    }))
+}
+
+const deleteSelection = () => {
   selection.selected()
     .filter(selected => selected.delete)
     .forEach(selected => {
       selection.deselect()
       selected.delete()
     })
+}
+
+Mousetrap.bind(['del', 'command+backspace'], _ => {
+  deleteSelection()
 })
 
 Mousetrap.bind('mod+c', _ => {
-  if (selection.empty()) return
-  memory = selection.selected()
-    .filter(selected => selected.properties)
-    .map(selected => ({
-      properties: selected.properties(),
-      paste: selected.paste
-    }))
-
-  selection.selected()
-    .filter(selected => selected.delete)
-    .forEach(selected => selected.delete())
+  copySelection()
 })
 
 Mousetrap.bind('mod+x', _ => {
-  if (selection.empty()) return
-  memory = selection.selected()
-    .filter(selected => selected.properties)
-    .map(selected => ({
-      properties: selected.properties(),
-      paste: selected.paste
-    }))
+  copySelection()
+  deleteSelection()
 })
 
 Mousetrap.bind('mod+v', _ => {
-  memory.forEach(({ properties, paste }) => paste(properties))
+  if (!memory || !memory.forEach) return
+  memory.forEach(({ object, paste }) => paste(object))
 })
 

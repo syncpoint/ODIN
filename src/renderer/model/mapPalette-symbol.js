@@ -3,7 +3,6 @@ import { ListItemText, ListItemAvatar, Avatar } from '@material-ui/core'
 import ms from 'milsymbol'
 import { findSpecificItem } from '../stores/feature-store'
 
-
 const placeholderSymbol = new ms.Symbol('')
 const specificSIDC = sidc => sidc[0] + 'F' + sidc[2] + '-' + sidc.substring(4)
 

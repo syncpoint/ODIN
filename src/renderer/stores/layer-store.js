@@ -38,12 +38,6 @@ const recoverStream = reduce => new Writable({
   final (callback) {
     evented.emit('ready', { ...state })
     ready = true
-
-    // Create default layer with id 0:
-    if (!state[0]) {
-      persist({ type: 'layer-added', layerId: 0, name: 'Default Layer', show: true })
-    }
-
     callback()
   }
 })
@@ -79,6 +73,11 @@ evented.showLayer = layerIds => (layerIds || Object.keys(state))
   .forEach(persist)
 
 evented.addFeature = layerId => (featureId, feature) => {
+  layerId = Number.isInteger(layerId) ? layerId.toString() : layerId
+  if (layerId === '0' && !state[layerId]) {
+    console.log('creating default layer')
+    persist({ type: 'layer-added', layerId: 0, name: 'Default Layer', show: true })
+  }
   const type = state[layerId].features[featureId] ? 'feature-updated' : 'feature-added'
   persist({ type, layerId, featureId, feature })
 }
@@ -88,6 +87,7 @@ evented.updateFeature = layerId => (featureId, feature) => {
 }
 
 evented.deleteFeature = layerId => featureId => {
+  console.log('deleting feature', layerId, featureId)
   if (!state[layerId]) return
   if (!state[layerId].features[featureId]) return
   persist({ type: 'feature-deleted', layerId, featureId })
