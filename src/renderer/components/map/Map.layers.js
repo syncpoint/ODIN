@@ -2,22 +2,39 @@ import L from 'leaflet'
 import uuid from 'uuid-random'
 import evented from '../../evented'
 import store from '../../stores/layer-store'
+import undoBuffer from '../App.undo-buffer'
 
-const createFeature = (map, layerId) => ([featureId, feature]) => ({
-  featureId,
-  ...feature,
-  'delete': () => store.deleteFeature(layerId)(featureId),
-  copy: () => ({ type: feature.type, geometry: feature.geometry, properties: feature.properties }),
-  paste: object => {
-    // Only default layer (layerId: 0) can receive new features.
-    store.addFeature(0)(uuid(), ({
-      type: object.type,
-      geometry: object.geometry,
-      properties: object.properties
-    }))
-  },
-  updateGeometry: geometry => store.updateFeature(layerId)(featureId, { ...feature, geometry })
-})
+const featureAdaptor = (layerId, featureId, feature) => {
+
+  const updateGeometryCommand = (currentGeometry, newGeometry) => ({
+    run: () => {
+      feature.geometry = newGeometry
+      store.updateFeature(layerId)(featureId, { ...feature })
+    },
+    inverse: () => updateGeometryCommand(newGeometry, currentGeometry)
+  })
+
+  return {
+    featureId,
+    ...feature,
+
+    'delete': () => store.deleteFeature(layerId)(featureId),
+    copy: () => ({ type: feature.type, geometry: feature.geometry, properties: feature.properties }),
+    paste: object => {
+      // Only default layer (layerId: 0) can receive new features.
+      store.addFeature(0)(uuid(), ({
+        type: object.type,
+        geometry: object.geometry,
+        properties: object.properties
+      }))
+    },
+    updateGeometry: geometry => {
+      const command = updateGeometryCommand(feature.geometry, geometry)
+      undoBuffer.push(command)
+      command.run()
+    }
+  }
+}
 
 evented.on('MAP_CREATED', map => {
   const layers = {}
@@ -37,14 +54,15 @@ evented.on('MAP_CREATED', map => {
 
     'feature-added': ({ layerId, featureId, feature }) => {
       if (!layers[layerId]) return
-      layers[layerId].addData(createFeature(map, layerId)([featureId, feature]))
+      layers[layerId].addData(featureAdaptor(layerId, featureId, feature))
     },
 
     'feature-updated': ({ layerId, featureId, feature }) => {
       if (!layers[layerId]) return
       layers[layerId].eachLayer(featureLayer => {
-        if (featureLayer.feature.featureId !== featureId) return
-        layers[layerId].feature = feature
+        if (featureLayer.feature.featureId === featureId) {
+          featureLayer.updateData(feature)
+        }
       })
     },
 
@@ -59,8 +77,10 @@ evented.on('MAP_CREATED', map => {
 
   const createLayers = state => {
     Object.entries(state).forEach(([layerId, layer]) => {
-      const feature = createFeature(map, layerId)
-      const features = Object.entries(layer.features).map(feature)
+      const features = Object.entries(layer.features).map(([featureId, feature]) => {
+        return featureAdaptor(layerId, featureId, feature)
+      })
+
       layers[layerId] = new L.Feature.Layer(features)
       if (layer.show) layers[layerId].addTo(map)
     })

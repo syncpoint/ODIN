@@ -25,7 +25,7 @@ const buffer = {
   redo: () => {
     if (!redoStack.length()) return
     redoStack.peek().run()
-    undoStack.push(redoStack.pop.inverse())
+    undoStack.push(redoStack.pop().inverse())
   }
 }
 
