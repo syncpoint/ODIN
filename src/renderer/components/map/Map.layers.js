@@ -1,11 +1,21 @@
 import L from 'leaflet'
+import uuid from 'uuid-random'
 import evented from '../../evented'
 import store from '../../stores/layer-store'
 
-const createFeature = layerId => ([featureId, feature]) => ({
+const createFeature = (map, layerId) => ([featureId, feature]) => ({
   featureId,
   ...feature,
   'delete': () => store.deleteFeature(layerId)(featureId),
+  copy: () => ({ type: feature.type, geometry: feature.geometry, properties: feature.properties }),
+  paste: object => {
+    // Only default layer (layerId: 0) can receive new features.
+    store.addFeature(0)(uuid(), ({
+      type: object.type,
+      geometry: object.geometry,
+      properties: object.properties
+    }))
+  },
   updateGeometry: geometry => store.updateFeature(layerId)(featureId, { ...feature, geometry })
 })
 
@@ -27,7 +37,7 @@ evented.on('MAP_CREATED', map => {
 
     'feature-added': ({ layerId, featureId, feature }) => {
       if (!layers[layerId]) return
-      layers[layerId].addData(createFeature(layerId)([featureId, feature]))
+      layers[layerId].addData(createFeature(map, layerId)([featureId, feature]))
     },
 
     'feature-updated': ({ layerId, featureId, feature }) => {
@@ -49,7 +59,7 @@ evented.on('MAP_CREATED', map => {
 
   const createLayers = state => {
     Object.entries(state).forEach(([layerId, layer]) => {
-      const feature = createFeature(layerId)
+      const feature = createFeature(map, layerId)
       const features = Object.entries(layer.features).map(feature)
       layers[layerId] = new L.Feature.Layer(features)
       if (layer.show) layers[layerId].addTo(map)

@@ -70,38 +70,43 @@ const initialize = function (feature, options) {
     feature.geometry.coordinates[0])
 
   L.Marker.prototype.initialize.call(this, latlng)
+
+  this.selected = selected => {
+    if (this.feature.featureId !== selected.featureId) return
+    this.dragging.enable()
+    this.setIcon(this.icons.highlighted)
+  }
+
+  this.deselected = deselected => {
+    if (this.feature.featureId !== deselected.featureId) return
+    this.dragging.disable()
+    this.setIcon(this.icons.standard)
+  }
+
+  selection.on('selected', this.selected)
+  selection.on('deselected', this.deselected)
 }
 
 const onAdd = function (map) {
   L.Marker.prototype.onAdd.call(this, map)
-  this.on('click', this.select, this)
+  this.on('click', this.edit, this)
 }
 
 const onRemove = function (map) {
-  this.off('click', this.select, this)
+  this.off('click', this.edit, this)
   L.Marker.prototype.onRemove.call(this, map)
 }
 
-const select = function () {
+const edit = function () {
   if (selection.isSelected(this.feature)) return
   selection.select(this.feature)
-  this.setIcon(this.icons.highlighted)
-  // TODO: only call this.edit() when not read-only
-  this.edit()
-}
 
-const deselect = function () {
-  this.dragging.disable()
-  this.setIcon(this.icons.standard)
-}
-
-const edit = function () {
   // Remember original position in case dragging is cancelled:
   this.latlng = this.getLatLng()
 
   const editor = {
     dispose: reset => {
-      this.deselect()
+      if (selection.isSelected(this.feature)) selection.deselect()
       if (reset) this.setLatLng(this.latlng)
       else {
         const { lat, lng } = this.getLatLng()
@@ -111,7 +116,6 @@ const edit = function () {
     }
   }
 
-  this.dragging.enable()
   this._map.tools.edit(editor)
 }
 
@@ -120,7 +124,5 @@ L.Feature.Symbol = L.Marker.extend({
   initialize,
   onAdd,
   onRemove,
-  select,
-  deselect,
   edit
 })

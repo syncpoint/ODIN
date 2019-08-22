@@ -1,6 +1,5 @@
 import Mousetrap from 'mousetrap'
 import L from 'leaflet'
-import selection from '../App.selection'
 import evented from '../../evented'
 
 const selectionTool = _ => ({
@@ -33,8 +32,7 @@ const editTool = map => editor => {
     switch (event.type) {
       case 'keydown:escape': return map.tools.dispose(true)
       case 'click':
-      case 'keydown:return':
-      case 'deselected': return map.tools.dispose(false)
+      case 'keydown:return': return map.tools.dispose(false)
     }
   }
 
@@ -99,15 +97,13 @@ L.Map.addInitHook(function () {
   const click = event => {
     // Only respond to click events from map:
     if (event.originalEvent.target !== this._container) return
-    tool.handle(event)
+    command(event)
   }
 
   this.on('click', click)
   Mousetrap.bind(['escape'], _ => command({ type: 'keydown:escape' }))
   Mousetrap.bind(['return'], _ => command({ type: 'keydown:return' }))
-
   evented.on('tools.pick-point', options => pickPoint(options))
-  selection.on('deselected', () => command({ type: 'deselected' }))
 
   this.tools = {
     disableMapClick: () => this.off('click', click),
