@@ -56,6 +56,8 @@ const edit = function () {
 
   const editor = {
     dispose: (reset) => {
+      if (selection.isSelected(this.feature)) selection.deselect()
+
       const geometry = reset ? initialGeometry : markerGroup.toGeometry()
       this.feature.geometry = geometry
       if (reset) this.update(L.Feature.Polystar.latlngs(this.feature.geometry))
