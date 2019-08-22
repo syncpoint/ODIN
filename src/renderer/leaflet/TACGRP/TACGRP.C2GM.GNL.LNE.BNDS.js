@@ -15,7 +15,7 @@ const transformMask = (centerPoint, angle, bbox) => `
   rotate(${angle})
   translate(${bbox.width / -4} ${bbox.height / -4})`
 
-L.Feature['G*G*GLB---****X'] = L.Feature.Polyline.extend({
+L.Feature['G*G*GLB---'] = L.Feature.Polyline.extend({
 
   createShape (options) {
     const id = uuid()

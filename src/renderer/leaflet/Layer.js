@@ -22,7 +22,7 @@ const addData = function (feature) {
   const options = { interactive: true, bubblingMouseEvents: false }
   const sidc = feature.properties.sidc
   if (!sidc) return null
-  const key = `${sidc[0]}*${sidc[2]}*${sidc.substring(4, 10)}*****`
+  const key = `${sidc[0]}*${sidc[2]}*${sidc.substring(4, 10)}`
   const layer = L.Feature[key] ? new L.Feature[key](feature, options) : genericShape(feature, options)
 
   if (!layer) return this
