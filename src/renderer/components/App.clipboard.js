@@ -14,10 +14,12 @@ Mousetrap.bind(['del', 'command+backspace'], _ => {
 
 Mousetrap.bind('mod+c', _ => {
   if (selection.empty()) return
-  memory = selection.selected().map(selected => ({
-    properties: selected.properties(),
-    paste: selected.paste
-  }))
+  memory = selection.selected()
+    .filter(selected => selected.properties)
+    .map(selected => ({
+      properties: selected.properties(),
+      paste: selected.paste
+    }))
 
   selection.selected()
     .filter(selected => selected.delete)
@@ -26,10 +28,12 @@ Mousetrap.bind('mod+c', _ => {
 
 Mousetrap.bind('mod+x', _ => {
   if (selection.empty()) return
-  memory = selection.selected().map(selected => ({
-    properties: selected.properties(),
-    paste: selected.paste
-  }))
+  memory = selection.selected()
+    .filter(selected => selected.properties)
+    .map(selected => ({
+      properties: selected.properties(),
+      paste: selected.paste
+    }))
 })
 
 Mousetrap.bind('mod+v', _ => {
