@@ -50,19 +50,23 @@ const select = function () {
 }
 
 const edit = function () {
-  const callback = latlngs => this.update(latlngs)
-  const markerGroup = new L.Feature.MarkerGroup(this.feature.geometry, callback).addTo(this.map)
-  const initialGeometry = markerGroup.toGeometry()
+
+  const callback = event => {
+    switch (event.type) {
+      case 'latlngs': return this.update(event.latlngs)
+      case 'geometry': return this.feature.updateGeometry(event.geometry)
+    }
+  }
+
+  this.markerGroup = new L.Feature.MarkerGroup(this.feature.geometry, callback).addTo(this.map)
 
   const editor = {
-    dispose: (reset) => {
-      if (selection.isSelected(this.feature)) selection.deselect()
-
-      const geometry = reset ? initialGeometry : markerGroup.toGeometry()
-      this.feature.geometry = geometry
-      if (reset) this.update(L.Feature.Polystar.latlngs(this.feature.geometry))
-      else this.feature.updateGeometry(geometry)
-      this.map.removeLayer(markerGroup)
+    dispose: () => {
+      this.map.removeLayer(this.markerGroup)
+      delete this.markerGroup
+      if (selection.isSelected(this.feature)) {
+        selection.deselect()
+      }
     }
   }
 
@@ -74,8 +78,10 @@ const labels = function (feature) {
 }
 
 const updateData = function (feature) {
-  // TODO: ...
-  console.log('[Polystar] updateData', feature)
+  this.feature.geometry = feature.geometry
+  const latlngs = L.Feature.Polystar.latlngs(feature.geometry)
+  this.shape.update(latlngs)
+  if (this.markerGroup) this.markerGroup.updateGeometry(feature.geometry)
 }
 
 // abstract polygon/polyline.

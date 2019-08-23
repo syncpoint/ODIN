@@ -90,9 +90,11 @@ const initialize = function (feature, options) {
 const onAdd = function (map) {
   L.Marker.prototype.onAdd.call(this, map)
   this.on('click', this.edit, this)
+  this.on('dragend', this.onDragend, this)
 }
 
 const onRemove = function (map) {
+  this.off('dragend', this.onDragend, this)
   this.off('click', this.edit, this)
   L.Marker.prototype.onRemove.call(this, map)
 }
@@ -101,22 +103,20 @@ const edit = function () {
   if (selection.isSelected(this.feature)) return
   selection.select(this.feature)
 
-  // Remember original position in case dragging is cancelled:
-  this.latlng = this.getLatLng()
-
   const editor = {
-    dispose: reset => {
-      if (selection.isSelected(this.feature)) selection.deselect()
-      if (reset) this.setLatLng(this.latlng)
-      else {
-        const { lat, lng } = this.getLatLng()
-        const geometry = { type: 'Point', coordinates: [lng, lat] }
-        this.feature.updateGeometry(geometry)
+    dispose: () => {
+      if (selection.isSelected(this.feature)) {
+        selection.deselect()
       }
     }
   }
 
   this._map.tools.edit(editor)
+}
+
+
+const onDragend = function () {
+  this.feature.updateGeometry(this.geometry())
 }
 
 const updateData = function (feature) {
@@ -127,11 +127,18 @@ const updateData = function (feature) {
   this.setLatLng(latlng)
 }
 
+const geometry = function () {
+  const { lat, lng } = this.getLatLng()
+  return { type: 'Point', coordinates: [lng, lat] }
+}
+
 L.Feature.Symbol = L.Marker.extend({
   options,
   initialize,
   onAdd,
   onRemove,
   edit,
+  onDragend,
+  geometry,
   updateData
 })
