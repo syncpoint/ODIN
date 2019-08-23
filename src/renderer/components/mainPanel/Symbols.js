@@ -10,6 +10,10 @@ import store from '../../stores/layer-store'
 // TODO: rename to feature list
 class Symbols extends React.Component {
 
+  createClassName (parentId, index) {
+    return 'symbols:scrollto:' + parentId + '-' + index
+  }
+
   onClick (sidc) {
 
     const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4)
@@ -30,17 +34,24 @@ class Symbols extends React.Component {
     })
   }
 
+  componentDidUpdate () {
+    const { selectedSymbolIndex, parentId } = this.props
+    const item = document.getElementsByClassName(this.createClassName(parentId, selectedSymbolIndex))[0]
+    if (item) item.scrollIntoViewIfNeeded()
+  }
+
   render () {
     const style = {
       height: 'auto'
     }
-    const { symbols, classes, styleClass } = this.props
+    const { symbols, classes, styleClass, selectedSymbolIndex, parentId } = this.props
     const listItems = () => (symbols || []).map((item, index) => (
       <ListItem
-        button
+        selected={ index === selectedSymbolIndex }
         divider={ true }
         key={ index}
         onClick={ () => this.onClick(item.sidc) }
+        className={ this.createClassName(parentId, index) }
       >
         { item.avatar }
         { item.text }
@@ -73,7 +84,9 @@ const styles = theme => ({
 Symbols.propTypes = {
   symbols: PropTypes.any.isRequired,
   classes: PropTypes.any.isRequired,
-  styleClass: PropTypes.any.isRequired
+  styleClass: PropTypes.any.isRequired,
+  selectedSymbolIndex: PropTypes.any.isRequired,
+  parentId: PropTypes.any.isRequired
 }
 
 export default withStyles(styles)(Symbols)

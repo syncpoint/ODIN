@@ -17,19 +17,86 @@ class MainPanel extends React.Component {
     this.state = {
       showComponents: () => this.showSymbolsets(),
       symbolSet: symbolSet(),
-      symbols: []
+      symbols: [],
+      selectedSetIndex: -1,
+      selectedSymbolIndex: -1,
+      indexCache: 0
+    }
+    this.shouldUpdate = false
+  }
+
+  onClick (selectedSetIndex) {
+    const { symbolSet } = this.state
+    symbolSet[selectedSetIndex].open = !symbolSet[selectedSetIndex].open
+    this.shouldUpdate = true
+    this.setState({ ...this.state, symbolSet, selectedSetIndex })
+  }
+
+  selectNextElement (direction) {
+    const { symbolSet, selectedSetIndex, selectedSymbolIndex, indexCache } = this.state
+    this.shouldUpdate = true
+    if (selectedSymbolIndex === -1 && selectedSetIndex !== -1 && symbolSet[selectedSetIndex].open && direction > 0) {
+      this.setState({ ...this.state, selectedSetIndex: -1, selectedSymbolIndex: 0, indexCache: selectedSetIndex })
+    } else if (selectedSymbolIndex !== -1) {
+      const newIndex = selectedSymbolIndex + direction
+      if (newIndex === -1) {
+        this.setState({ ...this.state, selectedSetIndex: indexCache, selectedSymbolIndex: -1 })
+      } else if (newIndex === symbolSet[indexCache].symbols.length) {
+        this.setState({ ...this.state, selectedSetIndex: indexCache + 1, selectedSymbolIndex: -1 })
+      } else {
+        this.setState({ ...this.state, selectedSymbolIndex: newIndex })
+      }
+    } else {
+      const index = selectedSetIndex + direction
+      const setIndex = index >= 0 ? (index === symbolSet.length ? 0 : index) : symbolSet.length - 1
+      this.setState({ ...this.state, selectedSetIndex: setIndex })
     }
   }
 
+  shouldComponentUpdate (nextProps, nextState) {
+    if (this.shouldUpdate) {
+      this.shouldUpdate = false
+      return true
+    }
+    return false
+  }
+
   showSymbolsets () {
-    const { symbolSet } = this.state
-    const compontents = { 'header': <MapPaletteSearch update={ resultList => this.updateResultList(resultList) }/>, 'list': <SymbolSet symbolSet={ symbolSet } /> }
+    const { symbolSet, selectedSetIndex, selectedSymbolIndex, indexCache } = this.state
+    const compontents = {
+      'header':
+        <MapPaletteSearch
+          update={ resultList => this.updateResultList(resultList) }
+          setSelectedIndex={ direction => this.selectNextElement(direction) }
+          selectedSetIndex={ selectedSetIndex }
+          onClick={index => this.onClick(index) }
+        />,
+      'list':
+        <SymbolSet
+          symbolSet={ symbolSet }
+          selectedSetIndex={ selectedSetIndex }
+          selectedSymbolIndex={ selectedSymbolIndex }
+          onClick={index => this.onClick(index) }
+          indexCache={ indexCache }
+        /> }
     return compontents
   }
 
   showSearchResults () {
-    const { symbols } = this.state
-    const compontents = { 'header': <MapPaletteSearch update={ resultList => this.updateResultList(resultList) }/>, 'list': <Symbols symbols={ symbols } styleClass={ 'symbols' }/> }
+    const { symbols, selectedIndex } = this.state
+    const compontents = {
+      'header':
+        <MapPaletteSearch
+          update={ resultList => this.updateResultList(resultList) }
+          setSelectedIndex={ direction => this.selectNextElement(direction) }
+          selectedIndex={ selectedIndex }
+        />,
+      'list':
+        <Symbols
+          symbols={ symbols }
+          styleClass={ 'symbols' }
+          selectedIndex={ selectedIndex }
+        /> }
     return compontents
   }
 
