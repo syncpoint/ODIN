@@ -52,6 +52,7 @@ const pointInput = map => options => {
   evented.emit('OSD_MESSAGE', { message: prompt })
   const container = map._container
   const originalCursor = container.style.cursor
+  console.log(originalCursor)
   container.style.cursor = 'crosshair'
 
   const click = event => {
