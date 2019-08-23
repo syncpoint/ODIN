@@ -74,7 +74,7 @@ const edit = function () {
 }
 
 const labels = function (feature) {
-  return [ feature.title ]
+  return feature.title ? [ feature.title ] : []
 }
 
 const updateData = function (feature) {

@@ -24,9 +24,7 @@ const drawTool = map => (type, options) => {
  */
 const editTool = map => editor => {
 
-  const dispose = reset => {
-    editor.dispose(reset)
-  }
+  const dispose = () => editor.dispose()
 
   const handle = event => {
     switch (event.type) {
@@ -83,16 +81,16 @@ const pointInput = map => options => {
 L.Map.addInitHook(function () {
   let tool = selectionTool(this)
 
-  const swap = (reset, toolFactory) => {
-    tool.dispose(reset)
+  const swap = toolFactory => {
+    tool.dispose()
     tool = toolFactory()
   }
 
   const command = event => tool.handle(event)
-  const dispose = reset => swap(reset, () => selectionTool(this))
-  const draw = (type, options) => swap(false, () => drawTool(this)(type, options))
-  const edit = editor => swap(false, () => editTool(this)(editor))
-  const pickPoint = options => swap(false, () => pointInput(this)(options))
+  const dispose = () => swap(() => selectionTool(this))
+  const draw = (type, options) => swap(() => drawTool(this)(type, options))
+  const edit = editor => swap(() => editTool(this)(editor))
+  const pickPoint = options => swap(() => pointInput(this)(options))
 
   const click = event => {
     // Only respond to click events from map:

@@ -19,11 +19,12 @@ const featureAdaptor = (layerId, featureId, feature) => {
     ...feature,
 
     'delete': () => store.deleteFeature(layerId)(featureId),
-    copy: () => ({ type: feature.type, geometry: feature.geometry, properties: feature.properties }),
+    copy: () => ({ type: feature.type, title: feature.title, geometry: feature.geometry, properties: feature.properties }),
     paste: object => {
       // Only default layer (layerId: 0) can receive new features.
       store.addFeature(0)(uuid(), ({
         type: object.type,
+        title: object.title,
         geometry: object.geometry,
         properties: object.properties
       }))
