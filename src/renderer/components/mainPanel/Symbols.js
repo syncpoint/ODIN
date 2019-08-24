@@ -33,21 +33,17 @@ class Symbols extends React.Component {
         geometryType,
         prompt: `Draw a ${geometryType}...`,
         done: latlngs => {
-          const feature = {
+          layerStore.addFeature(0)(uuid(), {
             type: 'Feature',
             geometry: geometry(latlngs),
             properties: { sidc }
-          }
-
-          console.log('feature', feature)
-          layerStore.addFeature(0)(uuid(), feature)
+          })
         }
       })
 
       return
     }
 
-    console.log('genericSIDC', genericSIDC, feature)
     if (L.Feature[genericSIDC]) {
       // TODO: find way to draw the feature
       return

@@ -52,7 +52,7 @@ const drawTool = map => options => {
   }
 
   const handle = event => {
-    // console.log('[drawTool] handle', event)
+    // TODO: handle keydown:delete to remove last point
     switch (event.type) {
       case 'keydown:escape': return map.tools.dispose()
       case 'keydown:return': return done()
