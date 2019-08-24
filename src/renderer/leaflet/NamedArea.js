@@ -3,6 +3,8 @@ import './Polygon'
 
 L.Feature.NamedArea = L.Feature.Polygon.extend({
   labels (feature) {
-    return [ `<bold>${this.name}</bold>`, feature.title ]
+    const xs = [ `<bold>${this.name}</bold>` ]
+    if (feature.title) xs.push(feature.title)
+    return xs
   }
 })

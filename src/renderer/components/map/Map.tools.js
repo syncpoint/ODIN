@@ -11,12 +11,61 @@ const selectionTool = _ => ({
 /**
  * Draw Tool.
  */
-const drawTool = map => (type, options) => {
-  return {
-    name: 'draw',
-    handle: command => console.log('[draw] handle', command),
-    dispose: () => console.log('[draw] dispose')
+const drawTool = map => options => {
+  const prompt = options.prompt || ''
+  evented.emit('OSD_MESSAGE', { message: prompt })
+
+  const layerGroup = new L.LayerGroup().addTo(map)
+  const polyline = L.polyline([]).addTo(layerGroup)
+  const hintline = L.polyline([]).addTo(layerGroup)
+  const icon = L.divIcon({ className: 'marker-icon cursor-marker' })
+
+  const done = () => {
+    const latlngs = polyline.getLatLngs()
+
+    switch (options.geometryType) {
+      case 'line': if (latlngs.length < 2) return; break
+      case 'polygon': if (latlngs.length < 3) return; break
+    }
+
+    options.done(latlngs)
+    map.tools.dispose()
   }
+
+  const append = latlng => {
+    // Prevent adding duplicates, because of dblclick.
+    const latlngs = polyline.getLatLngs()
+    if (latlngs.length > 0 && latlngs[latlngs.length - 1].equals(latlng)) return
+    polyline.addLatLng(latlng)
+  }
+
+  const tracker = new L.Marker(map.getCenter(), { icon }).addTo(layerGroup)
+  tracker.on('click', event => append(event.latlng))
+  tracker.on('dblclick', done)
+
+  const updateTracker = latlng => {
+    tracker.setLatLng(latlng)
+    const latlngs = polyline.getLatLngs()
+    if (latlngs.length > 0) {
+      hintline.setLatLngs([latlngs[latlngs.length - 1], latlng])
+    }
+  }
+
+  const handle = event => {
+    // console.log('[drawTool] handle', event)
+    switch (event.type) {
+      case 'keydown:escape': return map.tools.dispose()
+      case 'keydown:return': return done()
+      case 'mousemove': return updateTracker(event.latlng)
+    }
+  }
+
+  const dispose = () => {
+    evented.emit('OSD_MESSAGE', { message: '' })
+    map.removeLayer(layerGroup)
+  }
+
+  return { name: 'draw', handle, dispose }
 }
 
 /**
@@ -28,17 +77,13 @@ const editTool = map => editor => {
 
   const handle = event => {
     switch (event.type) {
-      case 'keydown:escape': return map.tools.dispose(true)
+      case 'keydown:escape': return map.tools.dispose()
       case 'click':
-      case 'keydown:return': return map.tools.dispose(false)
+      case 'keydown:return': return map.tools.dispose()
     }
   }
 
-  return {
-    name: 'edit',
-    handle,
-    dispose
-  }
+  return { name: 'edit', handle, dispose }
 }
 
 /**
@@ -71,11 +116,7 @@ const pointInput = map => options => {
     evented.emit('OSD_MESSAGE', { message: '' })
   }
 
-  return {
-    name: 'point-input',
-    handle,
-    dispose
-  }
+  return { name: 'point-input', handle, dispose }
 }
 
 L.Map.addInitHook(function () {
@@ -88,7 +129,7 @@ L.Map.addInitHook(function () {
 
   const command = event => tool.handle(event)
   const dispose = () => swap(() => selectionTool(this))
-  const draw = (type, options) => swap(() => drawTool(this)(type, options))
+  const draw = options => swap(() => drawTool(this)(options))
   const edit = editor => swap(() => editTool(this)(editor))
   const pickPoint = options => swap(() => pointInput(this)(options))
 
@@ -99,9 +140,12 @@ L.Map.addInitHook(function () {
   }
 
   this.on('click', click)
-  Mousetrap.bind(['escape'], _ => command({ type: 'keydown:escape' }))
-  Mousetrap.bind(['return'], _ => command({ type: 'keydown:return' }))
+  this.on('mousemove', event => command(event))
+  Mousetrap.bind('escape', _ => command({ type: 'keydown:escape' }))
+  Mousetrap.bind('return', _ => command({ type: 'keydown:return' }))
+  Mousetrap.bind(['del', 'mod+backspace'], _ => command({ type: 'keydown:delete' }))
   evented.on('tools.pick-point', options => pickPoint(options))
+  evented.on('tools.draw', options => draw(options))
 
   this.tools = {
     disableMapClick: () => this.off('click', click),
