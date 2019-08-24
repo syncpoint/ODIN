@@ -56,7 +56,7 @@ L.Feature['G*G*GLB---'] = L.Feature.Polyline.extend({
       const segments = R.aperture(2, latlngs).map(L.LatLng.line)
 
       // Consists of different basic SVG shape types:
-      const labelDescription = echelons[this.feature.properties.sidc[11]]
+      const labelDescription = echelons[this.feature.properties.sidc[11]] || []
 
       segments.forEach(segment => {
         const label = L.SVG.g({

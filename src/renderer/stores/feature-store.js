@@ -1,6 +1,5 @@
-/* eslint-disable */
-const lunr = require('lunr')
 import featureDescriptors from './feature-descriptors.json'
+import lunr from 'lunr'
 
 const features = featureDescriptors.map(feature => {
   const { hierarchy } = feature
@@ -8,9 +7,11 @@ const features = featureDescriptors.map(feature => {
   const body = hierarchy.slice(1, hierarchy.length - 1).join(', ')
 
   return {
-    sidc: feature.sidc,
+    // Limit SIDC to first 10 characters:
+    sidc: feature.sidc.substring(0, 10),
     name: title,
-    info: body
+    info: body,
+    geometries: feature.geometries
   }
 })
 
@@ -27,15 +28,12 @@ const index = lunr(function () {
   documents().forEach(doc => this.add(doc))
 })
 
-const findSpecificItem = sidc => {
-  const genericSIDC = sidc => sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4)
+export const findSpecificItem = sidc => {
+  const genericSIDC = sidc => sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 10)
   return features.find(symbol => symbol.sidc === genericSIDC(sidc))
 }
 
-const search = term => {
+export const search = term => {
   const rows = term === '' ? [] : index.search(term)
   return rows.map(row => features[row.ref]).slice(0, 50)
 }
-
-export { findSpecificItem, search }
-

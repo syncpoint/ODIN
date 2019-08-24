@@ -5,14 +5,49 @@ import { withStyles } from '@material-ui/core/styles'
 import uuid from 'uuid-random'
 import L from 'leaflet'
 import evented from '../../evented'
-import store from '../../stores/layer-store'
+import layerStore from '../../stores/layer-store'
+import { findSpecificItem } from '../../stores/feature-store'
 
 // TODO: rename to feature list
 class Symbols extends React.Component {
 
   onClick (sidc) {
+    const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 10)
+    const feature = findSpecificItem(genericSIDC)
 
-    const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4)
+    // Check if feature is defined by single geometry (which we support):
+    if (feature.geometries && feature.geometries.length === 1) {
+      const geometryType = feature.geometries[0]
+
+      const geometry = latlngs => {
+        const lineString = () => latlngs.map(({ lat, lng }) => [lng, lat])
+        const polygon = () => [[...lineString(), lineString()[0]]]
+
+        switch (geometryType) {
+          case 'polygon': return { type: 'Polygon', coordinates: polygon() }
+          case 'line': return { type: 'LineString', coordinates: lineString() }
+        }
+      }
+
+      evented.emit('tools.draw', {
+        geometryType,
+        prompt: `Draw a ${geometryType}...`,
+        done: latlngs => {
+          const feature = {
+            type: 'Feature',
+            geometry: geometry(latlngs),
+            properties: { sidc }
+          }
+
+          console.log('feature', feature)
+          layerStore.addFeature(0)(uuid(), feature)
+        }
+      })
+
+      return
+    }
+
+    console.log('genericSIDC', genericSIDC, feature)
     if (L.Feature[genericSIDC]) {
       // TODO: find way to draw the feature
       return
@@ -21,7 +56,7 @@ class Symbols extends React.Component {
     evented.emit('tools.pick-point', {
       prompt: 'Pick a location...',
       picked: latlng => {
-        store.addFeature(0)(uuid(), {
+        layerStore.addFeature(0)(uuid(), {
           type: 'Feature',
           geometry: { type: 'Point', coordinates: [latlng.lng, latlng.lat] },
           properties: { sidc }
