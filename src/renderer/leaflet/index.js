@@ -14,8 +14,8 @@ import './TACGRP/TACGRP.C2GM'
 import { K } from '../../shared/combinators'
 
 // layers :: L.Map -> [L.Layer]
-export const layers = map => {
-  return K([])(layers => map.eachLayer(layer => layers.push(layer)))
+export const layers = container => {
+  return K([])(layers => container.eachLayer(layer => layers.push(layer)))
 }
 
 /**

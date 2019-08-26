@@ -1,6 +1,6 @@
 import Mousetrap from 'mousetrap'
 import selection from './App.selection'
-import { ResourceNames } from '../model/identifiers'
+import { ResourceNames } from '../model/resource-names'
 import * as R from 'ramda'
 
 let memory = [] // urn[]
