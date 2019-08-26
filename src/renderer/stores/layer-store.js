@@ -99,10 +99,8 @@ evented.deleteFeature = layerId => featureId => {
   persist({ type: 'feature-deleted', layerId, featureId })
 }
 
-evented.feature = (layerId, featureId) => {
-  if (!state[layerId]) return
-  return state[layerId].features[featureId]
-}
+evented.layer = layerId => state[layerId]
+evented.feature = (layerId, featureId) => state[layerId].features[featureId]
 
 // Register clipboard handlers:
 clipboard.register('feature', {

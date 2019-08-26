@@ -55,7 +55,7 @@ const edit = function () {
   const callback = event => {
     switch (event.type) {
       case 'latlngs': return this.update(event.latlngs)
-      case 'geometry': return this.feature.updateGeometry(event.geometry)
+      case 'geometry': return this.options.updateGeometry(event.geometry)
     }
   }
 

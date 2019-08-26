@@ -55,6 +55,7 @@ const options = {
 const initialize = function (feature, options) {
   options = options || {}
   this.urn = feature.urn
+  this.properties = feature.properties
 
   // Prepare standard and highlighted icons:
   this.prepareIcons(feature)
@@ -121,10 +122,11 @@ const edit = function () {
 }
 
 const onDragend = function () {
-  this.feature.updateGeometry(this.geometry())
+  this.options.updateGeometry(this.geometry())
 }
 
 const updateData = function (feature) {
+
   // TODO: move to GeoJSON helper
   const latlng = L.latLng(
     feature.geometry.coordinates[1],
@@ -132,7 +134,7 @@ const updateData = function (feature) {
 
   this.setLatLng(latlng)
 
-  if (this.feature.properties.sidc !== feature.properties.sidc) {
+  if (this.properties.sidc !== feature.properties.sidc) {
     this.prepareIcons(feature)
     const selected = selection.isSelected(this.urn)
     this.setIcon(selected ? this.icons.highlighted : this.icons.standard)
