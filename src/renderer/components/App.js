@@ -104,11 +104,13 @@ class App extends React.Component {
       }
     })
 
-    selection.on('selected', object => {
-      object.edit && this.openPanel('right', object.edit(object))
+    selection.on('selected', urn => {
+      console.log('[App] selected', urn)
+      // TODO: ask some service to provide property pane
     })
 
     selection.on('deselected', () => {
+      console.log('[App] deselected')
       this.closePanel('right')
     })
 

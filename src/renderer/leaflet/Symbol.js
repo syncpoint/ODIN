@@ -54,6 +54,7 @@ const options = {
 
 const initialize = function (feature, options) {
   options = options || {}
+  this.urn = feature.urn
 
   // Prepare standard and highlighted icons:
   this.prepareIcons(feature)
@@ -67,16 +68,14 @@ const initialize = function (feature, options) {
   L.Marker.prototype.initialize.call(this, latlng)
   this.setIcon(this.icons.standard)
 
-  this.selected = selected => {
-    if (this.feature.featureId !== selected.featureId) return
-    this.selected = true
+  this.selected = urn => {
+    if (this.urn !== urn) return
     this.dragging.enable()
     this.setIcon(this.icons.highlighted)
   }
 
-  this.deselected = deselected => {
-    if (this.feature.featureId !== deselected.featureId) return
-    this.selected = false
+  this.deselected = urn => {
+    if (this.urn !== urn) return
     this.dragging.disable()
     this.setIcon(this.icons.standard)
   }
@@ -99,20 +98,20 @@ const onAdd = function (map) {
 }
 
 const onRemove = function (map) {
-  // selection.off('deselected', this.deselected)
-  // selection.off('selected', this.selected)
+  selection.off('deselected', this.deselected)
+  selection.off('selected', this.selected)
   this.off('dragend', this.onDragend, this)
   this.off('click', this.edit, this)
   L.Marker.prototype.onRemove.call(this, map)
 }
 
 const edit = function () {
-  if (selection.isSelected(this.feature)) return
-  selection.select(this.feature)
+  if (selection.isSelected(this.urn)) return
+  selection.select(this.urn)
 
   const editor = {
     dispose: () => {
-      if (selection.isSelected(this.feature)) {
+      if (selection.isSelected(this.urn)) {
         selection.deselect()
       }
     }
@@ -121,15 +120,11 @@ const edit = function () {
   this._map.tools.edit(editor)
 }
 
-
 const onDragend = function () {
   this.feature.updateGeometry(this.geometry())
 }
 
 const updateData = function (feature) {
-  console.log('this.feature', this.feature)
-  console.log('feature', feature)
-
   // TODO: move to GeoJSON helper
   const latlng = L.latLng(
     feature.geometry.coordinates[1],
@@ -139,7 +134,8 @@ const updateData = function (feature) {
 
   if (this.feature.properties.sidc !== feature.properties.sidc) {
     this.prepareIcons(feature)
-    this.setIcon(this.selected ? this.icons.highlighted : this.icons.standard)
+    const selected = selection.isSelected(this.urn)
+    this.setIcon(selected ? this.icons.highlighted : this.icons.standard)
   }
 }
 

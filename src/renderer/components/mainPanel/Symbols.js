@@ -37,7 +37,8 @@ class Symbols extends React.Component {
       case 'point': return evented.emit('tools.pick-point', {
         prompt: 'Pick a location...',
         picked: latlng => {
-          layerStore.addFeature(0)(uuid(), {
+          const featureId = uuid()
+          layerStore.addFeature(0)(featureId, {
             type: 'Feature',
             geometry: geometry(type, latlng),
             properties: { sidc }

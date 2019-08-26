@@ -13,8 +13,9 @@ evented.select = object => {
 
 evented.deselect = () => {
   if (!selected) return
-  evented.emit('deselected', selected)
+  const tmp = selected
   selected = undefined
+  evented.emit('deselected', tmp)
 }
 
 evented.selected = type => {

@@ -1,42 +1,34 @@
 import Mousetrap from 'mousetrap'
 import selection from './App.selection'
+import { ResourceNames } from '../model/identifiers'
+import * as R from 'ramda'
 
-let memory = {}
+let memory = [] // urn[]
+const handlers = {} // nid -> handler
 
 const copySelection = () => {
-  if (selection.empty()) return
-  memory = selection.selected()
-    .filter(selected => selected.copy)
-    .map(selected => ({
-      object: selected.copy(),
-      paste: selected.paste
-    }))
+  memory = selection.selected().map(urn => {
+    const nid = ResourceNames.nid(urn)
+    return [nid, handlers[nid] && handlers[nid].properties && handlers[nid].properties(urn)]
+  })
 }
 
 const deleteSelection = () => {
-  selection.selected()
-    .filter(selected => selected.delete)
-    .forEach(selected => {
-      selection.deselect()
-      selected.delete()
-    })
+  selection.selected().forEach(urn => {
+    const nid = ResourceNames.nid(urn)
+    handlers[nid] && handlers[nid].delete && handlers[nid].delete(urn)
+  })
 }
 
-Mousetrap.bind(['del', 'command+backspace'], _ => {
-  deleteSelection()
-})
+const pasteSelection = () => {
+  memory.forEach(([nid, properties]) => handlers[nid] && handlers[nid].paste && handlers[nid].paste(properties))
+}
 
-Mousetrap.bind('mod+c', _ => {
-  copySelection()
-})
+Mousetrap.bind(['del', 'command+backspace'], deleteSelection)
+Mousetrap.bind('mod+c', copySelection)
+Mousetrap.bind('mod+x', R.compose(deleteSelection, copySelection))
+Mousetrap.bind('mod+v', pasteSelection)
 
-Mousetrap.bind('mod+x', _ => {
-  copySelection()
-  deleteSelection()
-})
-
-Mousetrap.bind('mod+v', _ => {
-  if (!memory || !memory.forEach) return
-  memory.forEach(({ object, paste }) => paste(object))
-})
-
+export const clipboard = {
+  register: (nid, handler) => (handlers[nid] = handler)
+}
