@@ -56,44 +56,51 @@ const initialize = function (feature, options) {
   options = options || {}
 
   // Prepare standard and highlighted icons:
-  this.icons = {}
-  Object.keys(symbolOptions(feature)).forEach(key => {
-    this.icons[key] = icon(symbol(feature, symbolOptions(feature)[key]))
-  })
-
-  options.icon = this.icons.standard
-
+  this.prepareIcons(feature)
   L.Util.setOptions(this, options)
 
+  // TODO: move to GeoJSON helper
   const latlng = L.latLng(
     feature.geometry.coordinates[1],
     feature.geometry.coordinates[0])
 
   L.Marker.prototype.initialize.call(this, latlng)
+  this.setIcon(this.icons.standard)
 
   this.selected = selected => {
     if (this.feature.featureId !== selected.featureId) return
+    this.selected = true
     this.dragging.enable()
     this.setIcon(this.icons.highlighted)
   }
 
   this.deselected = deselected => {
     if (this.feature.featureId !== deselected.featureId) return
+    this.selected = false
     this.dragging.disable()
     this.setIcon(this.icons.standard)
   }
+}
 
-  selection.on('selected', this.selected)
-  selection.on('deselected', this.deselected)
+const prepareIcons = function (feature) {
+  this.icons = {}
+
+  Object.keys(symbolOptions(feature)).forEach(key => {
+    this.icons[key] = icon(symbol(feature, symbolOptions(feature)[key]))
+  })
 }
 
 const onAdd = function (map) {
   L.Marker.prototype.onAdd.call(this, map)
   this.on('click', this.edit, this)
   this.on('dragend', this.onDragend, this)
+  selection.on('selected', this.selected)
+  selection.on('deselected', this.deselected)
 }
 
 const onRemove = function (map) {
+  // selection.off('deselected', this.deselected)
+  // selection.off('selected', this.selected)
   this.off('dragend', this.onDragend, this)
   this.off('click', this.edit, this)
   L.Marker.prototype.onRemove.call(this, map)
@@ -120,11 +127,20 @@ const onDragend = function () {
 }
 
 const updateData = function (feature) {
+  console.log('this.feature', this.feature)
+  console.log('feature', feature)
+
+  // TODO: move to GeoJSON helper
   const latlng = L.latLng(
     feature.geometry.coordinates[1],
     feature.geometry.coordinates[0])
 
   this.setLatLng(latlng)
+
+  if (this.feature.properties.sidc !== feature.properties.sidc) {
+    this.prepareIcons(feature)
+    this.setIcon(this.selected ? this.icons.highlighted : this.icons.standard)
+  }
 }
 
 const geometry = function () {
@@ -135,6 +151,7 @@ const geometry = function () {
 L.Feature.Symbol = L.Marker.extend({
   options,
   initialize,
+  prepareIcons,
   onAdd,
   onRemove,
   edit,

@@ -105,7 +105,7 @@ class App extends React.Component {
     })
 
     selection.on('selected', object => {
-      object.edit && this.openPanel('right', object.edit)
+      object.edit && this.openPanel('right', object.edit(object))
     })
 
     selection.on('deselected', () => {

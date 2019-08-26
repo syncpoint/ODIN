@@ -96,6 +96,11 @@ evented.deleteFeature = layerId => featureId => {
   persist({ type: 'feature-deleted', layerId, featureId })
 }
 
+evented.feature = (layerId, featureId) => {
+  if (!state[layerId]) return
+  return state[layerId].features[featureId]
+}
+
 ipcRenderer.on('COMMAND_LOAD_LAYER', (_, name, content) => {
   evented.add(name, content)
 })
