@@ -5,6 +5,7 @@ import './MarkerGroup'
 
 const initialize = function (feature, options) {
   this.feature = feature
+  this.urn = feature.urn
   L.setOptions(this, options)
 }
 
@@ -43,8 +44,8 @@ const update = function (latlngs) {
 }
 
 const select = function () {
-  if (selection.isSelected(this.feature)) return
-  selection.select(this.feature)
+  if (selection.isSelected(this.urn)) return
+  selection.select(this.urn)
   // TODO: only call this.edit() when not read-only
   this.edit()
 }
@@ -64,7 +65,7 @@ const edit = function () {
     dispose: () => {
       this.map.removeLayer(this.markerGroup)
       delete this.markerGroup
-      if (selection.isSelected(this.feature)) {
+      if (selection.isSelected(this.urn)) {
         selection.deselect()
       }
     }

@@ -2,7 +2,10 @@ import { Writable } from 'stream'
 import EventEmitter from 'events'
 import { ipcRenderer } from 'electron'
 import now from 'nano-time'
+import uuid from 'uuid-random'
+import * as R from 'ramda'
 import { db } from './db'
+import { clipboard } from '../components/App.clipboard'
 
 // TODO: needs snapshotting capability
 
@@ -100,6 +103,19 @@ evented.feature = (layerId, featureId) => {
   if (!state[layerId]) return
   return state[layerId].features[featureId]
 }
+
+// Register clipboard handlers:
+clipboard.register('feature', {
+  properties: urn => {
+    const [layerId, featureId] = urn.split(':').slice(2)
+    return R.clone(state[layerId].features[featureId])
+  },
+  'delete': urn => {
+    const [layerId, featureId] = urn.split(':').slice(2)
+    evented.deleteFeature(layerId)(featureId)
+  },
+  paste: feature => evented.addFeature(0)(uuid(), feature)
+})
 
 ipcRenderer.on('COMMAND_LOAD_LAYER', (_, name, content) => {
   evented.add(name, content)
