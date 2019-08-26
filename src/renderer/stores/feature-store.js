@@ -8,7 +8,7 @@ const features = featureDescriptors.map(feature => {
 
   return {
     // Limit SIDC to first 10 characters:
-    sidc: feature.sidc.substring(0, 10),
+    sidc: feature.sidc,
     name: title,
     info: body,
     geometries: feature.geometries
@@ -29,7 +29,7 @@ const index = lunr(function () {
 })
 
 export const findSpecificItem = sidc => {
-  const genericSIDC = sidc => sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 10)
+  const genericSIDC = sidc => sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 15)
   return features.find(symbol => symbol.sidc === genericSIDC(sidc))
 }
 

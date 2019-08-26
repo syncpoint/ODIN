@@ -3,62 +3,60 @@ import { List, ListItem } from '@material-ui/core'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import uuid from 'uuid-random'
-import L from 'leaflet'
 import evented from '../../evented'
 import layerStore from '../../stores/layer-store'
 import { findSpecificItem } from '../../stores/feature-store'
+
+const geometryType = descriptor => {
+  if (!descriptor.geometries) return 'point'
+  if (descriptor.geometries.length === 1) return descriptor.geometries[0]
+  return null
+}
+
+const geometry = (geometryType, latlngs) => {
+  if (geometryType === 'point') return { type: 'Point', coordinates: [latlngs.lng, latlngs.lat] }
+  const lineString = () => latlngs.map(({ lat, lng }) => [lng, lat])
+  const polygon = () => [[...lineString(), lineString()[0]]]
+  switch (geometryType) {
+    case 'polygon': return { type: 'Polygon', coordinates: polygon() }
+    case 'line': return { type: 'LineString', coordinates: lineString() }
+  }
+}
 
 // TODO: rename to feature list
 class Symbols extends React.Component {
 
   onClick (sidc) {
-    const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 10)
-    const feature = findSpecificItem(genericSIDC)
+    // TODO: move to GeoJSON/Feature/SIDC helper.
+    const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 15)
+    const featureDescriptor = findSpecificItem(genericSIDC)
+    const type = geometryType(featureDescriptor)
+    if (!type) return
 
-    // Check if feature is defined by single geometry (which we support):
-    if (feature.geometries && feature.geometries.length === 1) {
-      const geometryType = feature.geometries[0]
-
-      const geometry = latlngs => {
-        const lineString = () => latlngs.map(({ lat, lng }) => [lng, lat])
-        const polygon = () => [[...lineString(), lineString()[0]]]
-
-        switch (geometryType) {
-          case 'polygon': return { type: 'Polygon', coordinates: polygon() }
-          case 'line': return { type: 'LineString', coordinates: lineString() }
-        }
-      }
-
-      evented.emit('tools.draw', {
-        geometryType,
-        prompt: `Draw a ${geometryType}...`,
-        done: latlngs => {
+    switch (type) {
+      case 'point': return evented.emit('tools.pick-point', {
+        prompt: 'Pick a location...',
+        picked: latlng => {
           layerStore.addFeature(0)(uuid(), {
             type: 'Feature',
-            geometry: geometry(latlngs),
+            geometry: geometry(type, latlng),
             properties: { sidc }
           })
         }
       })
-
-      return
+      case 'line':
+      case 'polygon': return evented.emit('tools.draw', {
+        geometryType: type,
+        prompt: `Draw a ${type}...`,
+        done: latlngs => {
+          layerStore.addFeature(0)(uuid(), {
+            type: 'Feature',
+            geometry: geometry(type, latlngs),
+            properties: { sidc }
+          })
+        }
+      })
     }
-
-    if (L.Feature[genericSIDC]) {
-      // TODO: find way to draw the feature
-      return
-    }
-
-    evented.emit('tools.pick-point', {
-      prompt: 'Pick a location...',
-      picked: latlng => {
-        layerStore.addFeature(0)(uuid(), {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [latlng.lng, latlng.lat] },
-          properties: { sidc }
-        })
-      }
-    })
   }
 
   render () {
