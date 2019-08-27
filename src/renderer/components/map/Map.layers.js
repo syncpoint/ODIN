@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import L from 'leaflet'
 import evented from '../../evented'
 import { K } from '../../../shared/combinators'
@@ -24,16 +22,16 @@ const genericShape = (feature, options) => {
 
 const featureLayer = (layerId, featureId, feature) => {
 
-  const updateGeometryCommand = (currentGeometry, newGeometry) => ({
-    run: () => {
-      feature.geometry = newGeometry
-      store.updateFeature(layerId)(featureId, { ...feature })
-    },
-    inverse: () => updateGeometryCommand(newGeometry, currentGeometry)
-  })
+  // const updateGeometryCommand = (currentGeometry, newGeometry) => ({
+  //   run: () => {
+  //     feature.geometry = newGeometry
+  //     store.updateFeature(layerId)(featureId, { ...feature })
+  //   },
+  //   inverse: () => updateGeometryCommand(newGeometry, currentGeometry)
+  // })
 
   const updateGeometry = geometry => {
-    const command = updateGeometryCommand(feature.geometry, geometry)
+    const command = store.commands.updateGeometry(layerId, featureId)(geometry)
     undoBuffer.push(command)
     command.run()
   }
@@ -56,7 +54,7 @@ const featureLayers = (layerId, features) =>
     .map(([featureId, feature]) => featureLayer(layerId, featureId, feature))
 
 const groupLayer = (layerId, featureLayers) =>
-  K(new L.LayerGroup(featureLayers))(layer => layer.urn = layerUrn(layerId))
+  K(new L.LayerGroup(featureLayers))(layer => (layer.urn = layerUrn(layerId)))
 
 const groupLayers = layers =>
   Object.entries(layers)

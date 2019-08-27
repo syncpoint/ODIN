@@ -102,7 +102,26 @@ evented.deleteFeature = layerId => featureId => {
 evented.layer = layerId => state[layerId]
 evented.feature = (layerId, featureId) => state[layerId].features[featureId]
 
-// Register clipboard handlers:
+// Command API ==>
+
+const commands = {}
+evented.commands = commands
+
+commands.updateGeometry = (layerId, featureId) => geometry => {
+  // Capture current situation:
+  const snapshot = evented.feature(layerId, featureId)
+  const currentGeometry = R.clone(snapshot.geometry)
+
+  const command = (currentGeometry, geometry) => ({
+    run: () => evented.updateFeature(layerId)(featureId, { ...snapshot, geometry }),
+    inverse: () => command(geometry, currentGeometry)
+  })
+
+  return command(currentGeometry, geometry)
+}
+
+// Clipboard handlers ==>
+
 clipboard.register('feature', {
   properties: urn => {
     const [layerId, featureId] = urn.split(':').slice(2)
