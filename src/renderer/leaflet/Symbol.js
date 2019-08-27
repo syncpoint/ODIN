@@ -6,10 +6,12 @@ import selection from '../components/App.selection'
 
 const MODIFIER_MAP = {
   f: 'reinforcedReduced',
+  g: 'staffComments',
   m: 'higherFormation',
   q: 'direction',
   t: 'uniqueDesignation',
-  z: 'speed'
+  z: 'speed',
+  aa: 'specialHeadquarters'
 }
 
 const icon = symbol => L.divIcon({
@@ -134,11 +136,9 @@ const updateData = function (feature) {
 
   this.setLatLng(latlng)
 
-  if (this.properties.sidc !== feature.properties.sidc) {
-    this.prepareIcons(feature)
-    const selected = selection.isSelected(this.urn)
-    this.setIcon(selected ? this.icons.highlighted : this.icons.standard)
-  }
+  this.prepareIcons(feature)
+  const selected = selection.isSelected(this.urn)
+  this.setIcon(selected ? this.icons.highlighted : this.icons.standard)
 }
 
 const geometry = function () {
