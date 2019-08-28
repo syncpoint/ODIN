@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as R from 'ramda'
 import React from 'react'
 import {
@@ -9,32 +8,8 @@ import {
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import layerStore from '../../stores/layer-store'
-
-const decodeModifier = sidc => {
-  switch (sidc[10]) {
-    case '-': return { modifierHQ: false, modifierTF: false, modifierFD: false } // 000
-    case '*': return { modifierHQ: false, modifierTF: false, modifierFD: false } // 000
-    case 'F': return { modifierHQ: false, modifierTF: false, modifierFD: true }  // 001
-    case 'E': return { modifierHQ: false, modifierTF: true, modifierFD: false }  // 010
-    case 'G': return { modifierHQ: false, modifierTF: true, modifierFD: true }   // 011
-    case 'A': return { modifierHQ: true, modifierTF: false, modifierFD: false }  // 100
-    case 'C': return { modifierHQ: true, modifierTF: false, modifierFD: true }   // 101
-    case 'B': return { modifierHQ: true, modifierTF: true, modifierFD: false }   // 110
-    case 'D': return { modifierHQ: true, modifierTF: true, modifierFD: true }    // 111
-  }
-}
-
-const encodeModifier = state => {
-  const { modifierHQ, modifierTF, modifierFD } = state
-  if (!modifierHQ && !modifierTF && !modifierFD) return '*'
-  else if (!modifierHQ && !modifierTF && modifierFD) return 'F'
-  else if (!modifierHQ && modifierTF && !modifierFD) return 'E'
-  else if (!modifierHQ && modifierTF && modifierFD) return 'G'
-  else if (modifierHQ && !modifierTF && !modifierFD) return 'A'
-  else if (modifierHQ && !modifierTF && modifierFD) return 'C'
-  else if (modifierHQ && modifierTF && !modifierFD) return 'B'
-  else if (modifierHQ && modifierTF && modifierFD) return 'D'
-}
+import { Modifier } from './SIDC'
+import { SelectEchelon } from './SelectEchelon'
 
 class UnitProperties extends React.Component {
   constructor (props) {
@@ -56,20 +31,20 @@ class UnitProperties extends React.Component {
       hostility: sidc[1],
       echelon: sidc[11],
       status: sidc[3],
-      ...decodeModifier(sidc)
+      ...Modifier.decode(sidc)
     }
   }
 
   feature () {
     const sidc =
-      this.props.feature.properties.sidc.substring(0, 1) + // 0
-      this.state.hostility + // 1
-      this.props.feature.properties.sidc.substring(2, 3) + // 2
-      this.state.status + // 3
-      this.props.feature.properties.sidc.substring(4, 10) + // 2-9
-      encodeModifier(this.state) + // 10
-      this.state.echelon + // 11
-      this.props.feature.properties.sidc.substring(12) // 12-14
+      this.props.feature.properties.sidc.substring(0, 1) +
+      this.state.hostility +
+      this.props.feature.properties.sidc.substring(2, 3) +
+      this.state.status +
+      this.props.feature.properties.sidc.substring(4, 10) +
+      Modifier.encode(this.state) +
+      this.state.echelon +
+      this.props.feature.properties.sidc.substring(12)
 
     const properties = {
       ...this.props.feature.properties,
@@ -102,7 +77,6 @@ class UnitProperties extends React.Component {
   render () {
     const { status } = this.state
     const operationalStatusDisabled = status === 'A'
-    const { modifierHQ, modifierTF, modifierFD } = this.state
 
     return (
       <Paper
@@ -172,25 +146,12 @@ class UnitProperties extends React.Component {
           <MenuItem value={'K'}>Faker</MenuItem>
         </Select>
 
-        <Select
+        <SelectEchelon
           className={ this.props.classes.echelon }
           label={'Echelon'}
           value={ this.state.echelon }
           onChange={ event => this.updateField('echelon', event.target.value) }
-        >
-          <MenuItem value={'*'}>N/A</MenuItem>
-          <MenuItem value={'A'}>Team/Crew</MenuItem>
-          <MenuItem value={'B'}>Squad</MenuItem>
-          <MenuItem value={'C'}>Section</MenuItem>
-          <MenuItem value={'D'}>Platoon</MenuItem>
-          <MenuItem value={'E'}>Company</MenuItem>
-          <MenuItem value={'F'}>Battalion</MenuItem>
-          <MenuItem value={'G'}>Regiment/Group</MenuItem>
-          <MenuItem value={'H'}>Brigade</MenuItem>
-          <MenuItem value={'I'}>Division</MenuItem>
-          <MenuItem value={'J'}>Corps</MenuItem>
-          <MenuItem value={'K'}>Army</MenuItem>
-        </Select>
+        />
 
         <FormLabel component="legend" className={ this.props.classes.statusLabel }>Status</FormLabel>
         <RadioGroup
@@ -232,10 +193,10 @@ class UnitProperties extends React.Component {
         <div className={ this.props.classes.specialType }>
           <FormControlLabel
             control={ <Checkbox color="secondary" checked={ this.state.modifierHQ } /> }
-            label="Headquarter"
+            label="Headquarters"
             labelPlacement="top"
             onChange={ event => this.updateField('modifierHQ', event.target.checked) }
-            />
+          />
           <FormControlLabel
             control={ <Checkbox color="secondary" checked={ this.state.modifierTF } /> }
             label="Task Force"
@@ -252,36 +213,36 @@ class UnitProperties extends React.Component {
 
         <FormLabel component="legend" className={ this.props.classes.reinforcedReducedLabel }>Reinforced/Reduced</FormLabel>
         <div className={ this.props.classes.reinforced }>
-        <RadioGroup
-          value={ this.state.reinforcedReduced }
-          onChange={ event => this.updateField('reinforcedReduced', event.target.value) }
-          className={ this.props.classes.reinforcedReducedGroup }
-        >
-          <FormControlLabel
-            value=""
-            control={ <Radio color="secondary" /> }
-            label="None"
-            labelPlacement="top"
-          />
-          <FormControlLabel
-            value="(+)"
-            control={ <Radio color="secondary" /> }
-            label="(+)"
-            labelPlacement="top"
-          />
-          <FormControlLabel
-            value="(—)"
-            control={ <Radio color="secondary" /> }
-            label="(—)"
-            labelPlacement="top"
-          />
-          <FormControlLabel
-            value="(±)"
-            control={ <Radio color="secondary" /> }
-            label="(±)"
-            labelPlacement="top"
-          />
-        </RadioGroup>
+          <RadioGroup
+            value={ this.state.reinforcedReduced }
+            onChange={ event => this.updateField('reinforcedReduced', event.target.value) }
+            className={ this.props.classes.reinforcedReducedGroup }
+          >
+            <FormControlLabel
+              value=""
+              control={ <Radio color="secondary" /> }
+              label="None"
+              labelPlacement="top"
+            />
+            <FormControlLabel
+              value="(+)"
+              control={ <Radio color="secondary" /> }
+              label="(+)"
+              labelPlacement="top"
+            />
+            <FormControlLabel
+              value="(—)"
+              control={ <Radio color="secondary" /> }
+              label="(—)"
+              labelPlacement="top"
+            />
+            <FormControlLabel
+              value="(±)"
+              control={ <Radio color="secondary" /> }
+              label="(±)"
+              labelPlacement="top"
+            />
+          </RadioGroup>
         </div>
       </Paper>
     )
@@ -297,7 +258,7 @@ const styles = theme => ({
     background: 'rgba(252, 252, 255, 0.9)',
 
     display: 'grid',
-    gridGap: '1em',
+    gridGap: '0.5em',
     gridTemplateColumns: 'auto auto',
     gridAutoRows: 'min-content'
   },

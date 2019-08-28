@@ -8,7 +8,6 @@ const propertiesPane = urn => {
   return handler ? handler.propertiesPane(urn) : null
 }
 
-
 export const editors = {
   register: (nid, handler) => (handlers[nid] = handler),
   propertiesPane
