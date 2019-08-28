@@ -42,23 +42,10 @@ L.Feature['G*G*GLB---'] = L.Feature.Polyline.extend({
     clip.appendChild(whiteMask)
     const blackMasks = [] // holds backdrop rectangles for each echelon label
 
-    const update = latlngs => {
-      const path = [latlngs]
-      const d = L.SVG.pointsToPath(options.layerPoints(path))
-      outlinePath.setAttribute('d', d)
-      linePath.setAttribute('d', d)
+    const drawLabels = (latlngs, description) => {
+      if (description.length === 0) return
 
-      // Remove all labels/masks before re-adding them:
-      labels.forEach(label => group.removeChild(label))
-      labels.length = 0
-      blackMasks.forEach(mask => clip.removeChild(mask))
-      blackMasks.length = 0
-      const segments = R.aperture(2, latlngs).map(L.LatLng.line)
-
-      // Consists of different basic SVG shape types:
-      const labelDescription = echelons[this.feature.properties.sidc[11]] || []
-
-      segments.forEach(segment => {
+      R.aperture(2, latlngs).map(L.LatLng.line).forEach(segment => {
         const label = L.SVG.g({
           'stroke-width': 4,
           'stroke': 'black',
@@ -66,7 +53,7 @@ L.Feature['G*G*GLB---'] = L.Feature.Polyline.extend({
         })
 
         // Derive SVG from label description and add to label group:
-        labelDescription.forEach(description => {
+        description.forEach(description => {
           const element = L.SVG.create(description.type)
           L.SVG.setAttributes(element)(description)
           label.appendChild(element)
@@ -89,6 +76,23 @@ L.Feature['G*G*GLB---'] = L.Feature.Polyline.extend({
         clip.appendChild(blackMask)
         blackMasks.push(blackMask)
       })
+    }
+
+    const update = latlngs => {
+      const path = [latlngs]
+      const d = L.SVG.pointsToPath(options.layerPoints(path))
+      outlinePath.setAttribute('d', d)
+      linePath.setAttribute('d', d)
+
+      // Remove all labels/masks before re-adding them:
+      labels.forEach(label => group.removeChild(label))
+      labels.length = 0
+      blackMasks.forEach(mask => clip.removeChild(mask))
+      blackMasks.length = 0
+
+      // Consists of different basic SVG shape types:
+      const labelDescription = echelons[this.feature.properties.sidc[11]] || []
+      drawLabels(latlngs, labelDescription)
 
       const groupBBox = group.getBBox()
       L.SVG.setAttributes(whiteMask)({ ...L.SVG.inflate(groupBBox, 10) })

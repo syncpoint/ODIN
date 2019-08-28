@@ -5,6 +5,7 @@ import layerStore from '../../stores/layer-store'
 import UnitProperties from './UnitProperties'
 import AreaProperties from './AreaProperties'
 import EquipmentProperties from './EquipmentProperties'
+import BoundaryLineProperties from './BoundaryLineProperties'
 
 const featureClasses = {
   U: {
@@ -30,12 +31,18 @@ const featureClasses = {
 
   A: {
     description: 'Areas',
-    patterns: [/^G.G.SA.*$/],
+    // TODO: check if one pattern is enough: /^G.G..A.*$/
+    patterns: [/^G.G.SA.*$/, /G*G*GA.*/, /G*G*OA.*/],
     pane: (layerId, featureId, feature) => <AreaProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
   },
 
   N: { description: 'Nuclear' },
-  BL: { description: 'Boundary Lines', patterns: [/^G.G.GLB---....X$/] },
+
+  BL: {
+    description: 'Boundary Lines',
+    patterns: [/^G.G.GLB---....X$/],
+    pane: (layerId, featureId, feature) => <BoundaryLineProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
+  },
   'B/C': { description: 'Bio/Chemical' }
 }
 
