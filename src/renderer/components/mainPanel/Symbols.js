@@ -3,6 +3,7 @@ import { List, ListItem } from '@material-ui/core'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import uuid from 'uuid-random'
+import ms from 'milsymbol'
 import evented from '../../evented'
 import layerStore from '../../stores/layer-store'
 import { findSpecificItem } from '../../stores/feature-store'
@@ -27,11 +28,19 @@ const geometry = (geometryType, latlngs) => {
 class Symbols extends React.Component {
 
   onClick (sidc) {
+
     // TODO: move to GeoJSON/Feature/SIDC helper.
     const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 15)
     const featureDescriptor = findSpecificItem(genericSIDC)
     const type = geometryType(featureDescriptor)
-    if (!type) return
+
+    const geometryHint = () => evented.emit('OSD_MESSAGE', {
+      message: `Sorry, the feature's geometry is not supported, yet.`,
+      duration: 5000
+    })
+
+    if (!type) return geometryHint()
+    if (type === 'point' && !(new ms.Symbol(sidc, {}).isValid())) return geometryHint()
 
     switch (type) {
       case 'point': return evented.emit('tools.pick-point', {
