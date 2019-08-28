@@ -2,16 +2,13 @@ import * as R from 'ramda'
 import React from 'react'
 import {
   Paper, TextField, Select, MenuItem,
-  FormLabel, FormControlLabel,
-  Checkbox, RadioGroup, Radio
+  FormLabel, FormControlLabel, RadioGroup, Radio
 } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import layerStore from '../../stores/layer-store'
-import { Modifier } from './SIDC'
-import { SelectEchelon } from './SelectEchelon'
 
-class UnitProperties extends React.Component {
+class EquipmentProperties extends React.Component {
   constructor (props) {
     const { feature } = props
     const { title, properties } = feature
@@ -21,17 +18,17 @@ class UnitProperties extends React.Component {
 
     this.state = {
       name: title || '',
-      reinforcedReduced: properties.f || '',
       staffComments: properties.g || '',
-      higherFormation: properties.m || '',
       direction: properties.q || '',
       uniqueDesignation: properties.t || '',
       speed: properties.z || '',
-      specialHeadquarters: properties.aa || '',
       hostility: sidc[1],
-      echelon: sidc[11],
       status: sidc[3],
-      ...Modifier.decodeUnit(sidc)
+      additionalInformation: properties.h || '',
+      hostile: properties.n || '',
+      modifier: sidc.substring(10, 12),
+      quantity: properties.c || '',
+      type: properties.v || ''
     }
   }
 
@@ -42,20 +39,20 @@ class UnitProperties extends React.Component {
       this.props.feature.properties.sidc.substring(2, 3) +
       this.state.status +
       this.props.feature.properties.sidc.substring(4, 10) +
-      Modifier.encodeUnit(this.state) +
-      this.state.echelon +
-      this.props.feature.properties.sidc.substring(12)
+      this.state.modifier +
+      this.props.feature.properties.sidc.substring(11)
 
     const properties = {
       ...this.props.feature.properties,
       sidc,
-      f: this.state.reinforcedReduced,
+      c: this.state.quantity,
       g: this.state.staffComments,
-      m: this.state.higherFormation,
+      h: this.state.additionalInformation,
+      n: this.state.hostile,
       q: this.state.direction,
       t: this.state.uniqueDesignation,
-      z: this.state.speed,
-      aa: this.state.specialHeadquarters
+      v: this.state.type,
+      z: this.state.speed
     }
 
     return {
@@ -98,10 +95,10 @@ class UnitProperties extends React.Component {
         />
 
         <TextField
-          className={ this.props.classes.higherFormation }
-          label={'Higher Formation'}
-          value={ this.state.higherFormation }
-          onChange={ event => this.updateField('higherFormation', event.target.value) }
+          className={ this.props.classes.quantity }
+          label={'Quantity'}
+          value={ this.state.quantity }
+          onChange={ event => this.updateField('quantity', event.target.value) }
         />
 
         <TextField
@@ -118,6 +115,13 @@ class UnitProperties extends React.Component {
         />
 
         <TextField
+          label={'Type'}
+          className={ this.props.classes.type }
+          value={ this.state.type }
+          onChange={ event => this.updateField('type', event.target.value) }
+        />
+
+        <TextField
           label={'Staff Comments'}
           className={ this.props.classes.staffComments }
           value={ this.state.staffComments }
@@ -125,10 +129,10 @@ class UnitProperties extends React.Component {
         />
 
         <TextField
-          label={'Special C2 HQ'}
-          className={ this.props.classes.specialHeadquarters }
-          value={ this.state.specialHeadquarters }
-          onChange={ event => this.updateField('specialHeadquarters', event.target.value) }
+          className={ this.props.classes.additionalInformation }
+          label={'Additional Information'}
+          value={ this.state.additionalInformation }
+          onChange={ event => this.updateField('additionalInformation', event.target.value) }
         />
 
         <Select
@@ -146,12 +150,31 @@ class UnitProperties extends React.Component {
           <MenuItem value={'K'}>Faker</MenuItem>
         </Select>
 
-        <SelectEchelon
-          className={ this.props.classes.echelon }
-          label={'Echelon'}
-          value={ this.state.echelon }
-          onChange={ event => this.updateField('echelon', event.target.value) }
-        />
+        <Select
+          className={ this.props.classes.modifier }
+          label={'Mobility'}
+          value={ this.state.modifier }
+          onChange={ event => this.updateField('modifier', event.target.value) }
+        >
+          <MenuItem value={'**'}>N/A</MenuItem>
+          <MenuItem value={'MO'}>Wheeled</MenuItem>
+          <MenuItem value={'MP'}>Cross Country</MenuItem>
+          <MenuItem value={'MQ'}>Tracked</MenuItem>
+          <MenuItem value={'MR'}>Wheeled/Tracked</MenuItem>
+          <MenuItem value={'MS'}>Towed</MenuItem>
+          <MenuItem value={'MT'}>Rail</MenuItem>
+          <MenuItem value={'MU'}>Over the Snow</MenuItem>
+          <MenuItem value={'MV'}>Sled</MenuItem>
+          <MenuItem value={'MW'}>Pack Animals</MenuItem>
+
+          {/*
+            Possibly wrong in milsymbol (Barge: MX, Amphibious: MY)
+            see https://github.com/spatialillusions/milsymbol/issues/224
+          */}
+
+          <MenuItem value={'MY'}>Barge</MenuItem>
+          <MenuItem value={'MZ'}>Amphibious</MenuItem>
+        </Select>
 
         <FormLabel component="legend" className={ this.props.classes.statusLabel }>Status</FormLabel>
         <RadioGroup
@@ -188,62 +211,6 @@ class UnitProperties extends React.Component {
           <MenuItem value={'X'}>Destroyed</MenuItem>
           <MenuItem value={'F'}>Full to Capacity</MenuItem>
         </Select>
-
-        <FormLabel component="legend" className={ this.props.classes.modifierLabel }>Modifier</FormLabel>
-        <div className={ this.props.classes.modifier }>
-          <FormControlLabel
-            control={ <Checkbox color="secondary" checked={ this.state.modifierHQ } /> }
-            label="Headquarters"
-            labelPlacement="top"
-            onChange={ event => this.updateField('modifierHQ', event.target.checked) }
-          />
-          <FormControlLabel
-            control={ <Checkbox color="secondary" checked={ this.state.modifierTF } /> }
-            label="Task Force"
-            labelPlacement="top"
-            onChange={ event => this.updateField('modifierTF', event.target.checked) }
-          />
-          <FormControlLabel
-            control={ <Checkbox color="secondary" checked={ this.state.modifierFD } /> }
-            label="Feint/Dummy"
-            labelPlacement="top"
-            onChange={ event => this.updateField('modifierFD', event.target.checked) }
-          />
-        </div>
-
-        <FormLabel component="legend" className={ this.props.classes.reinforcedReducedLabel }>Reinforced/Reduced</FormLabel>
-        <div className={ this.props.classes.reinforcedReduced }>
-          <RadioGroup
-            value={ this.state.reinforcedReduced }
-            onChange={ event => this.updateField('reinforcedReduced', event.target.value) }
-            className={ this.props.classes.reinforcedReducedGroup }
-          >
-            <FormControlLabel
-              value=""
-              control={ <Radio color="secondary" /> }
-              label="None"
-              labelPlacement="top"
-            />
-            <FormControlLabel
-              value="(+)"
-              control={ <Radio color="secondary" /> }
-              label="(+)"
-              labelPlacement="top"
-            />
-            <FormControlLabel
-              value="(—)"
-              control={ <Radio color="secondary" /> }
-              label="(—)"
-              labelPlacement="top"
-            />
-            <FormControlLabel
-              value="(±)"
-              control={ <Radio color="secondary" /> }
-              label="(±)"
-              labelPlacement="top"
-            />
-          </RadioGroup>
-        </div>
       </Paper>
     )
   }
@@ -264,12 +231,11 @@ const styles = theme => ({
   },
   name: { gridColumn: '1 / span 2' },
   uniqueDesignation: {},
-  higherFormation: {},
   direction: {},
+  type: { gridColumn: '1 / span 2' },
   staffComments: { gridColumn: '1 / span 2' },
-  specialHeadquarters: { gridColumn: '1 / span 2' },
+  additionalInformation: { gridColumn: '1 / span 2' },
   hostility: {},
-  echelon: {},
 
   statusLabel: { gridColumn: '1 / span 2' },
   present: { gridColumn: 1 },
@@ -277,21 +243,14 @@ const styles = theme => ({
   anticipated: { gridColumn: 1 },
 
   modifierLabel: { gridColumn: '1 / span 2' },
-  modifier: { gridColumn: '1 / span 2' },
-
-  reinforcedReducedLabel: { gridColumn: '1 / span 2' },
-  reinforcedReducedGroup: {
-    display: 'grid',
-    gridTemplateColumns: 'auto auto auto auto'
-  },
-  reinforcedReduced: { gridColumn: '1 / span 2' }
+  specialType: { gridColumn: '1 / span 2' }
 })
 
-UnitProperties.propTypes = {
+EquipmentProperties.propTypes = {
   classes: PropTypes.any.isRequired,
   feature: PropTypes.any.isRequired,
   layerId: PropTypes.string.isRequired,
   featureId: PropTypes.string.isRequired
 }
 
-export default withStyles(styles)(UnitProperties)
+export default withStyles(styles)(EquipmentProperties)

@@ -4,6 +4,7 @@ import { editors } from './editors'
 import layerStore from '../../stores/layer-store'
 import UnitProperties from './UnitProperties'
 import AreaProperties from './AreaProperties'
+import EquipmentProperties from './EquipmentProperties'
 
 const featureClasses = {
   U: {
@@ -12,7 +13,12 @@ const featureClasses = {
     pane: (layerId, featureId, feature) => <UnitProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
   },
 
-  E: { description: 'Equipment', patterns: [/^S.G.E.*$/] },
+  E: {
+    description: 'Equipment',
+    patterns: [/^S.G.E.*$/],
+    pane: (layerId, featureId, feature) => <EquipmentProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
+  },
+
   I: { description: 'Installations', patterns: [/^S.G.I.*$/] }, // S.G.......H.*
   SI: { description: 'Signals Intelligence', patterns: [/^I.*$/] },
   SO: { description: 'Stability Operations', patterns: [/^O.*$/] },

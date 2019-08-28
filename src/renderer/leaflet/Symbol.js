@@ -5,11 +5,14 @@ import { K } from '../../shared/combinators'
 import selection from '../components/App.selection'
 
 const MODIFIER_MAP = {
+  c: 'quantity',
   f: 'reinforcedReduced',
   g: 'staffComments',
+  h: 'additionalInformation',
   m: 'higherFormation',
   q: 'direction',
   t: 'uniqueDesignation',
+  v: 'type',
   z: 'speed',
   aa: 'specialHeadquarters'
 }
