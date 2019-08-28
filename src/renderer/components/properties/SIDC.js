@@ -1,5 +1,5 @@
 export const Modifier = {
-  decode: sidc => {
+  decodeUnit: sidc => {
     switch (sidc[10]) {
       case '-': return { modifierHQ: false, modifierTF: false, modifierFD: false }
       case '*': return { modifierHQ: false, modifierTF: false, modifierFD: false }
@@ -13,7 +13,7 @@ export const Modifier = {
     }
   },
 
-  encode: state => {
+  encodeUnit: state => {
     const { modifierHQ, modifierTF, modifierFD } = state
     if (!modifierHQ && !modifierTF && !modifierFD) return '*'
     else if (!modifierHQ && !modifierTF && modifierFD) return 'F'

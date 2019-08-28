@@ -46,7 +46,6 @@ class AreaProperties extends React.Component {
   }
 
   updateField (name, value) {
-    console.log(name, value)
     const { layerId, featureId } = this.props
     const state = R.clone(this.state)
     state[name] = value
@@ -93,7 +92,7 @@ class AreaProperties extends React.Component {
 
         <FormControlLabel
           control={ <Checkbox color="secondary" checked={ this.state.hostile } /> }
-          label="Hostile (ENY)"
+          label="Hostile (Enemy)"
           labelPlacement="end"
           onChange={ event => this.updateField('hostile', hostile(event)) }
         />
