@@ -1,5 +1,4 @@
 import L from 'leaflet'
-import * as R from 'ramda'
 import './Polystar'
 
 
@@ -20,13 +19,6 @@ L.Feature.Polygon = L.Feature.Polystar.extend({
     const label = L.SVG.text({ 'font-size': 12 })
     group.appendChild(label)
 
-    // Create tspans for label lines, but don't add them just yet.
-    const tspans = R.range(0, options.labels().length).map(() => L.SVG.tspan({
-      dy: '1.2em',
-      'text-anchor': 'middle',
-      'alignment-baseline': 'central'
-    }))
-
     const update = latlngs => {
       const path = [[...latlngs, latlngs[0]]]
       const d = L.SVG.pointsToPath(options.layerPoints(path))
@@ -34,20 +26,28 @@ L.Feature.Polygon = L.Feature.Polystar.extend({
       linePath.setAttribute('d', d)
 
       // Update labels:
-      // polygon centroid algorithm; only uses the first ring if there are multiple
+      // Polygon centroid algorithm; only uses the first ring if there are multiple.
       const center = L.Point.centroid(options.layerPoints([latlngs])[0])
       label.setAttribute('x', center.x)
       label.setAttribute('y', center.y)
 
-      options.labels().forEach((line, index) => {
+      // Create tspans for label lines; clear out tspans first:
+      while (label.lastChild) label.removeChild(label.lastChild)
+
+      options.labels().forEach(line => {
+        const tspan = L.SVG.tspan({
+          dy: '1.2em',
+          'text-anchor': 'middle',
+          'alignment-baseline': 'central'
+        })
+
         const match = line.match(/<bold>(.*)<\/bold>/)
         const bold = (match && !!match[1]) || false
-        tspans[index].textContent = bold ? match[1] : line
-        tspans[index].setAttribute('x', center.x)
-        tspans[index].setAttribute('font-weight', bold ? 'bold' : 'normal')
-        label.appendChild(tspans[index])
+        tspan.textContent = bold ? match[1] : line
+        tspan.setAttribute('x', center.x)
+        tspan.setAttribute('font-weight', bold ? 'bold' : 'normal')
+        label.appendChild(tspan)
       })
-
       label.setAttribute('transform', `translate(0 ${label.getBBox().height / -1.5})`)
     }
 

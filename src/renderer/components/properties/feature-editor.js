@@ -3,6 +3,7 @@ import * as R from 'ramda'
 import { editors } from './editors'
 import layerStore from '../../stores/layer-store'
 import UnitProperties from './UnitProperties'
+import AreaProperties from './AreaProperties'
 
 const featureClasses = {
   U: {
@@ -10,6 +11,7 @@ const featureClasses = {
     patterns: [/^S.G.U.*$/],
     pane: (layerId, featureId, feature) => <UnitProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
   },
+
   E: { description: 'Equipment', patterns: [/^S.G.E.*$/] },
   I: { description: 'Installations', patterns: [/^S.G.I.*$/] }, // S.G.......H.*
   SI: { description: 'Signals Intelligence', patterns: [/^I.*$/] },
@@ -19,7 +21,13 @@ const featureClasses = {
   EI: { description: 'EMS Installations', patterns: [/^E.O.......H.*$/, /^E.F.......H.*$/] },
   P: { description: 'Points', patterns: [/^G.G.GP.*$/, /G.G.AP.*/] },
   L: { description: 'Lines' },
-  A: { description: 'Areas', patterns: [/^G.G.SA.*$/] },
+
+  A: {
+    description: 'Areas',
+    patterns: [/^G.G.SA.*$/],
+    pane: (layerId, featureId, feature) => <AreaProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
+  },
+
   N: { description: 'Nuclear' },
   BL: { description: 'Boundary Lines', patterns: [/^G.G.GLB---....X$/] },
   'B/C': { description: 'Bio/Chemical' }

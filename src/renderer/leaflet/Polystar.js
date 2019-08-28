@@ -75,11 +75,11 @@ const edit = function () {
 }
 
 const labels = function (feature) {
-  return feature.title ? [ feature.title ] : []
+  return feature.properties.t ? [ feature.properties.t ] : []
 }
 
 const updateData = function (feature) {
-  this.feature.geometry = feature.geometry
+  this.feature = feature
   const latlngs = L.Feature.Polystar.latlngs(feature.geometry)
   this.shape.update(latlngs)
   if (this.markerGroup) this.markerGroup.updateGeometry(feature.geometry)
