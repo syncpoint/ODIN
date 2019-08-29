@@ -106,13 +106,11 @@ class App extends React.Component {
     })
 
     selection.on('selected', urn => {
-      console.log('[App] selected', urn)
       const paneFactory = editors.propertiesPane(urn)
       if (paneFactory) this.openPanel('right', paneFactory)
     })
 
     selection.on('deselected', () => {
-      console.log('[App] deselected')
       this.closePanel('right')
     })
 
