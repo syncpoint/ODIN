@@ -10,8 +10,12 @@ import { clipboard } from '../components/App.clipboard'
 // TODO: needs snapshotting capability
 
 const evented = new EventEmitter()
-const state = {}
+const state = {
+  '0': { name: 'Default Layer', show: true, features: [] }
+}
+
 let ready = false
+let eventCount = 0
 
 const handlers = {
   'layer-added': ({ layerId, name, show }) => (state[layerId] = { name, show, features: [] }),
@@ -24,13 +28,14 @@ const handlers = {
 }
 
 const reduce = event => {
+  eventCount += 1
   const handler = handlers[event.type]
   if (handler) return handler(event)
   else console.log('[layer-store] unhandled', event)
 }
 
 const persist = event => {
-  db.put(`layer:${event.layerId}:${now()}`, event)
+  db.put(`layer:journal:${now()}`, event)
   reduce(event)
   evented.emit('event', event)
 }
@@ -42,6 +47,7 @@ const recoverStream = reduce => new Writable({
     callback()
   },
   final (callback) {
+    console.log('eventCount', eventCount)
     evented.emit('ready', { ...state })
     ready = true
     callback()
@@ -49,10 +55,11 @@ const recoverStream = reduce => new Writable({
 })
 
 db.createReadStream({
-  gte: 'layer',
-  lte: 'layer\xff',
+  gte: 'layer:journal',
+  lte: 'layer:journal\xff',
   keys: false
 }).pipe(recoverStream(reduce))
+
 
 evented.ready = () => ready
 evented.state = () => state
@@ -81,7 +88,7 @@ evented.showLayer = layerIds => (layerIds || Object.keys(state))
 evented.addFeature = layerId => (featureId, feature) => {
   layerId = Number.isInteger(layerId) ? layerId.toString() : layerId
   if (layerId === '0' && !state[layerId]) {
-    persist({ type: 'layer-added', layerId: 0, name: 'Default Layer', show: true })
+    persist({ type: 'layer-added', layerId: '0', name: 'Default Layer', show: true })
   }
 
   // Feature already exists -> bail out.
@@ -90,7 +97,13 @@ evented.addFeature = layerId => (featureId, feature) => {
 }
 
 evented.updateFeature = layerId => (featureId, feature) => {
-  persist({ type: 'feature-updated', layerId, featureId, feature })
+  // NOTE: Allows for partial updates:
+  persist({
+    type: 'feature-updated',
+    layerId,
+    featureId,
+    feature: { ...state[layerId].features[featureId], ...feature }
+  })
 }
 
 evented.deleteFeature = layerId => featureId => {

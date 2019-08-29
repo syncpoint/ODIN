@@ -57,8 +57,7 @@ class EquipmentProperties extends React.Component {
 
     return {
       title: this.state.name,
-      properties,
-      geometry: this.props.feature.geometry
+      properties
     }
   }
 
