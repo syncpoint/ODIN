@@ -12,7 +12,7 @@ class MapPaletteSearch extends React.Component {
   }
 
   handleKeyDown (event) {
-    const { setSelectedIndex, selectedSetIndex, onClick } = this.props
+    const { setSelectedIndex, selectedSetIndex, elementSelected, selectedSymbolIndex } = this.props
     switch (event.key) {
       case 'Escape':
         this.onChange('')
@@ -26,7 +26,7 @@ class MapPaletteSearch extends React.Component {
         event.preventDefault()
         break
       case 'Enter':
-        if (selectedSetIndex !== -1) onClick(selectedSetIndex)
+        elementSelected(selectedSetIndex, selectedSymbolIndex, -1)
         break
     }
   }
@@ -86,7 +86,8 @@ MapPaletteSearch.propTypes = {
   update: PropTypes.func.isRequired,
   setSelectedIndex: PropTypes.func.isRequired,
   selectedSetIndex: PropTypes.any.isRequired,
-  onClick: PropTypes.func.isRequired
+  selectedSymbolIndex: PropTypes.any.isRequired,
+  elementSelected: PropTypes.func.isRequired
 }
 
 export default withStyles(styles)(MapPaletteSearch)

@@ -7,6 +7,10 @@ import SymbolSet from './SymbolSet'
 import symbolSet from '../../model/mapPalette-symbolSet'
 import Symbols from './Symbols'
 import { symbolList } from '../../model/mapPalette-symbol'
+import uuid from 'uuid-random'
+import L from 'leaflet'
+import evented from '../../evented'
+import store from '../../stores/layer-store'
 
 
 class MainPanel extends React.Component {
@@ -25,11 +29,42 @@ class MainPanel extends React.Component {
     this.shouldUpdate = false
   }
 
-  onClick (selectedSetIndex) {
+  elementSelected (selectedSetIndex, selectedSymbolIndex, parentId) {
+    selectedSetIndex !== -1 ? this.elementSetSelected(selectedSetIndex) : this.elementSymbolSelected(selectedSymbolIndex, parentId)
+  }
+
+  elementSetSelected (selectedSetIndex) {
     const { symbolSet } = this.state
-    symbolSet[selectedSetIndex].open = !symbolSet[selectedSetIndex].open
     this.shouldUpdate = true
-    this.setState({ ...this.state, symbolSet, selectedSetIndex })
+    symbolSet[selectedSetIndex].open = !symbolSet[selectedSetIndex].open
+    this.setState({ ...this.state, symbolSet, selectedSetIndex, selectedSymbolIndex: -1 })
+  }
+
+  elementSymbolSelected (selectedSymbolIndex, parentId) {
+    const { symbolSet, indexCache } = this.state
+    const setId = parentId === -1 ? indexCache : parentId
+    const set = symbolSet[setId]
+    const symbol = set.symbols[selectedSymbolIndex]
+    const sidc = symbol.sidc
+
+    const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4)
+    if (L.Feature[genericSIDC]) {
+      // TODO: find way to draw the feature
+      return
+    }
+
+    evented.emit('tools.pick-point', {
+      prompt: 'Pick a location...',
+      picked: latlng => {
+        store.addFeature(0)(uuid(), {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [latlng.lng, latlng.lat] },
+          properties: { sidc }
+        })
+      }
+    })
+
+    this.setState({ ...this.state, symbolSet, selectedSetIndex: -1, selectedSymbolIndex: -1 })
   }
 
   selectNextElement (direction) {
@@ -49,7 +84,11 @@ class MainPanel extends React.Component {
     } else {
       const index = selectedSetIndex + direction
       const setIndex = index >= 0 ? (index === symbolSet.length ? 0 : index) : symbolSet.length - 1
-      this.setState({ ...this.state, selectedSetIndex: setIndex })
+      const set = symbolSet[setIndex]
+      if (setIndex === selectedSetIndex - 1 && set.open) {
+        const symbolIndex = set.symbols.length - 1
+        this.setState({ ...this.state, selectedSetIndex: -1, selectedSymbolIndex: symbolIndex, indexCache: setIndex })
+      } else this.setState({ ...this.state, selectedSetIndex: setIndex })
     }
   }
 
@@ -69,14 +108,15 @@ class MainPanel extends React.Component {
           update={ resultList => this.updateResultList(resultList) }
           setSelectedIndex={ direction => this.selectNextElement(direction) }
           selectedSetIndex={ selectedSetIndex }
-          onClick={index => this.onClick(index) }
+          elementSelected={(setIndex, symbolIndex, parentId) => this.elementSelected(setIndex, symbolIndex, parentId) }
+          selectedSymbolIndex={ selectedSymbolIndex }
         />,
       'list':
         <SymbolSet
           symbolSet={ symbolSet }
           selectedSetIndex={ selectedSetIndex }
           selectedSymbolIndex={ selectedSymbolIndex }
-          onClick={index => this.onClick(index) }
+          elementSelected={(setIndex, symbolIndex, parentId) => this.elementSelected(setIndex, symbolIndex, parentId) }
           indexCache={ indexCache }
         /> }
     return compontents

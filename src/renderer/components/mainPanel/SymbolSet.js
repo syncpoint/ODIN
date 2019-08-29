@@ -10,16 +10,26 @@ import PropTypes from 'prop-types'
 class SymbolSet extends React.Component {
 
   onClick (key) {
-    const { symbolSet, onClick } = this.props
+    const { symbolSet, elementSelected } = this.props
     const index = symbolSet.findIndex(item => item.key === key)
-    onClick(index)
+    elementSelected(index, -1, -1)
+  }
+
+  componentDidUpdate () {
+    const { selectedSetIndex } = this.props
+    const item = document.getElementsByClassName(this.createClassName(selectedSetIndex))[0]
+    if (item) item.scrollIntoViewIfNeeded()
+  }
+
+  createClassName (index) {
+    return 'symbolset:scrollto:' + index
   }
 
   render () {
     const style = {
       height: 'auto'
     }
-    const { classes, symbolSet, selectedSetIndex, selectedSymbolIndex, indexCache } = this.props
+    const { classes, symbolSet, selectedSetIndex, selectedSymbolIndex, indexCache, elementSelected } = this.props
     const listItems = () => (symbolSet || []).map((item, index) => {
       const childIndex = index === indexCache ? selectedSymbolIndex : -1
       return (
@@ -30,12 +40,13 @@ class SymbolSet extends React.Component {
             selected={ index === selectedSetIndex }
             key={ item.key }
             onClick={ () => this.onClick(item.key) }
+            className={ this.createClassName(index) }
           >
             {item.open ? <ExpandLess /> : <ExpandMore />}
             { item.text }
           </ListItem>
           <Collapse in={item.open} timeout={ 0 } unmountOnExit>
-            <Symbols symbols={item.symbols} styleClass={'symbolInSet'} selectedSymbolIndex={childIndex} parentId={index}/>
+            <Symbols symbols={item.symbols} styleClass={'symbolInSet'} selectedSymbolIndex={childIndex} parentId={index} elementSelected={elementSelected} />
           </Collapse>
         </React.Fragment>
       )
@@ -63,7 +74,7 @@ SymbolSet.propTypes = {
   classes: PropTypes.any.isRequired,
   symbolSet: PropTypes.any.isRequired,
   selectedSetIndex: PropTypes.any.isRequired,
-  onClick: PropTypes.func.isRequired,
+  elementSelected: PropTypes.func.isRequired,
   selectedSymbolIndex: PropTypes.any.isRequired,
   indexCache: PropTypes.any.isRequired
 }
