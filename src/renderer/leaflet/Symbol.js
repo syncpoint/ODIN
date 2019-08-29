@@ -59,7 +59,6 @@ const options = {
 
 const initialize = function (feature, options) {
   options = options || {}
-  this.urn = feature.urn
   this.properties = feature.properties
 
   // Prepare standard and highlighted icons:
@@ -72,7 +71,6 @@ const initialize = function (feature, options) {
     feature.geometry.coordinates[0])
 
   L.Marker.prototype.initialize.call(this, latlng)
-  this.setIcon(this.icons.standard)
 
   this.selected = urn => {
     if (this.urn !== urn) return
@@ -101,6 +99,9 @@ const onAdd = function (map) {
   this.on('dragend', this.onDragend, this)
   selection.on('selected', this.selected)
   selection.on('deselected', this.deselected)
+
+  this.setIcon(selection.isSelected(this.urn) ? this.icons.highlighted : this.icons.standard)
+  if (selection.isPreselected(this.urn)) setImmediate(() => this.edit())
 }
 
 const onRemove = function (map) {
