@@ -18,6 +18,8 @@ const deleteSelection = () => {
     const nid = ResourceNames.nid(urn)
     handlers[nid] && handlers[nid].delete && handlers[nid].delete(urn)
   })
+
+  selection.deselect()
 }
 
 const pasteSelection = () => {
