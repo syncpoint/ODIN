@@ -15,26 +15,12 @@ const initialize = function (geometry, callback) {
   this.list = geometry.type === 'LineString' ? doublyLinkedList() : circularDoublyLinkedList()
 }
 
-const onAdd = function (map) {
-  // Create initial set of markers.
-  L.Feature.Polystar.latlngs(this.geometry).forEach(latlng => {
-    const options = { type: MARKER_UPDATE, drag: this.updatePoint, mousedown: this.removePoint }
-    this.appendMarker(latlng, options)
-  })
-
-  this.markers().forEach(marker => {
-    if (!marker.succ) return
-    const latlng = L.LatLng.midpoint([marker.getLatLng(), marker.succ.getLatLng()])
-    const options = { type: MARKER_ADD, drag: this.addPoint }
-    this.appendMarker(latlng, options, marker)
-  })
+const onAdd = function () {
+  this.setup()
 }
 
 const onRemove = function () {
-  this.list.filter(() => true).forEach(marker => {
-    this.removeLayer(marker)
-    this.list.remove(marker)
-  })
+  this.dispose()
 }
 
 const markers = function () {
@@ -58,9 +44,8 @@ const createMarker = function (latlng, options) {
   marker.on('click', () => {}) // must not bubble up to map.
   marker.on('drag', options.drag, this)
 
-  if (options.mousedown) {
-    marker.on('mousedown', options.mousedown, this)
-  }
+  if (options.dragend) marker.on('dragend', options.dragend, this)
+  if (options.mousedown) marker.on('mousedown', options.mousedown, this)
 
   marker.type = options.type
   marker.addTo(this)
@@ -92,8 +77,13 @@ const toGeometry = function () {
   }
 }
 
+const emitGeometry = function () {
+  this.callback({ type: 'geometry', geometry: this.toGeometry() })
+}
+
 const updatePoint = function () {
-  this.callback(this.markers().map(marker => marker.getLatLng()))
+  const latlngs = this.markers().map(marker => marker.getLatLng())
+  this.callback({ type: 'latlngs', latlngs })
 
   // Update mid-point marker positions:
   this.markers().forEach(marker => {
@@ -114,6 +104,7 @@ const removePoint = function (event) {
   const remove = () => {
     this.removeMarker(marker)
     this.updatePoint()
+    this.emitGeometry()
   }
 
   const clearTimer = () => {
@@ -138,6 +129,7 @@ const addPoint = function ({ target: marker }) {
   L.DomUtil.removeClass(marker._icon, 'marker-icon-middle')
   marker.off('drag', this.addPoint, this)
   marker.on('drag', this.updatePoint, this)
+  marker.on('dragend', this.emitGeometry, this)
   marker.on('mousedown', this.removePoint, this)
 
   // Insert two mid-point markers before and after target marker:
@@ -146,6 +138,40 @@ const addPoint = function ({ target: marker }) {
   this.list.append(this.createMarker(lls, options), marker)
   const llp = L.LatLng.midpoint([marker.getLatLng(), marker.pred.getLatLng()])
   this.list.prepend(this.createMarker(llp, options), marker)
+}
+
+const setup = function () {
+  // Create initial set of markers.
+  L.Feature.Polystar.latlngs(this.geometry).forEach(latlng => {
+    const options = {
+      type: MARKER_UPDATE,
+      drag: this.updatePoint,
+      dragend: this.emitGeometry,
+      mousedown: this.removePoint
+    }
+    this.appendMarker(latlng, options)
+  })
+
+  this.markers().forEach(marker => {
+    if (!marker.succ) return
+    const latlng = L.LatLng.midpoint([marker.getLatLng(), marker.succ.getLatLng()])
+    const options = { type: MARKER_ADD, drag: this.addPoint }
+    this.appendMarker(latlng, options, marker)
+  })
+}
+
+const dispose = function () {
+  this.list.filter(() => true).forEach(marker => {
+    this.removeLayer(marker)
+    this.list.remove(marker)
+    // TODO: do we need marker.dispose() to cleanup listener?
+  })
+}
+
+const updateGeometry = function (geometry) {
+  this.dispose()
+  this.geometry = geometry
+  this.setup()
 }
 
 L.Feature.MarkerGroup = L.LayerGroup.extend({
@@ -160,7 +186,12 @@ L.Feature.MarkerGroup = L.LayerGroup.extend({
   appendMarker,
   toGeometry,
 
+  emitGeometry,
   updatePoint,
   removePoint,
-  addPoint
+  addPoint,
+
+  setup,
+  dispose,
+  updateGeometry
 })

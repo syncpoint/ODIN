@@ -2,7 +2,10 @@ import { Writable } from 'stream'
 import EventEmitter from 'events'
 import { ipcRenderer } from 'electron'
 import now from 'nano-time'
+import uuid from 'uuid-random'
+import * as R from 'ramda'
 import { db } from './db'
+import { clipboard } from '../components/App.clipboard'
 
 // TODO: needs snapshotting capability
 
@@ -10,17 +13,20 @@ const evented = new EventEmitter()
 const state = {}
 let ready = false
 
+const handlers = {
+  'layer-added': ({ layerId, name, show }) => (state[layerId] = { name, show, features: [] }),
+  'layer-deleted': ({ layerId }) => delete state[layerId],
+  'layer-hidden': ({ layerId }) => (state[layerId].show = false),
+  'layer-shown': ({ layerId }) => (state[layerId].show = true),
+  'feature-added': ({ layerId, featureId, feature }) => (state[layerId].features[featureId] = feature),
+  'feature-updated': ({ layerId, featureId, feature }) => (state[layerId].features[featureId] = feature),
+  'feature-deleted': ({ layerId, featureId }) => delete state[layerId].features[featureId]
+}
+
 const reduce = event => {
-  switch (event.type) {
-    case 'layer-added': state[event.layerId] = { name: event.name, show: event.show, features: [] }; break
-    case 'layer-deleted': delete state[event.layerId]; break
-    case 'layer-hidden': state[event.layerId].show = false; break
-    case 'layer-shown': state[event.layerId].show = true; break
-    case 'feature-added':
-    case 'feature-updated': state[event.layerId].features[event.featureId] = event.feature; break
-    case 'feature-deleted': delete state[event.layerId].features[event.featureId]; break
-    default: console.log('[layer-store] unhandled', event)
-  }
+  const handler = handlers[event.type]
+  if (handler) return handler(event)
+  else console.log('[layer-store] unhandled', event)
 }
 
 const persist = event => {
@@ -75,11 +81,12 @@ evented.showLayer = layerIds => (layerIds || Object.keys(state))
 evented.addFeature = layerId => (featureId, feature) => {
   layerId = Number.isInteger(layerId) ? layerId.toString() : layerId
   if (layerId === '0' && !state[layerId]) {
-    console.log('creating default layer')
     persist({ type: 'layer-added', layerId: 0, name: 'Default Layer', show: true })
   }
-  const type = state[layerId].features[featureId] ? 'feature-updated' : 'feature-added'
-  persist({ type, layerId, featureId, feature })
+
+  // Feature already exists -> bail out.
+  if (state[layerId].features[featureId]) return
+  persist({ type: 'feature-added', layerId, featureId, feature })
 }
 
 evented.updateFeature = layerId => (featureId, feature) => {
@@ -87,11 +94,45 @@ evented.updateFeature = layerId => (featureId, feature) => {
 }
 
 evented.deleteFeature = layerId => featureId => {
-  console.log('deleting feature', layerId, featureId)
   if (!state[layerId]) return
   if (!state[layerId].features[featureId]) return
   persist({ type: 'feature-deleted', layerId, featureId })
 }
+
+evented.layer = layerId => state[layerId]
+evented.feature = (layerId, featureId) => state[layerId].features[featureId]
+
+// Command API ==>
+
+const commands = {}
+evented.commands = commands
+
+commands.updateGeometry = (layerId, featureId) => geometry => {
+  // Capture current situation:
+  const snapshot = evented.feature(layerId, featureId)
+  const currentGeometry = R.clone(snapshot.geometry)
+
+  const command = (currentGeometry, geometry) => ({
+    run: () => evented.updateFeature(layerId)(featureId, { ...snapshot, geometry }),
+    inverse: () => command(geometry, currentGeometry)
+  })
+
+  return command(currentGeometry, geometry)
+}
+
+// Clipboard handlers ==>
+
+clipboard.register('feature', {
+  properties: urn => {
+    const [layerId, featureId] = urn.split(':').slice(2)
+    return R.clone(state[layerId].features[featureId])
+  },
+  'delete': urn => {
+    const [layerId, featureId] = urn.split(':').slice(2)
+    evented.deleteFeature(layerId)(featureId)
+  },
+  paste: feature => evented.addFeature(0)(uuid(), feature)
+})
 
 ipcRenderer.on('COMMAND_LOAD_LAYER', (_, name, content) => {
   evented.add(name, content)
