@@ -5,7 +5,6 @@ import './MarkerGroup'
 
 const initialize = function (feature, options) {
   this.feature = feature
-  this.urn = feature.urn
   L.setOptions(this, options)
 }
 
@@ -26,14 +25,16 @@ const onAdd = function (map) {
   this.update(L.Feature.Polystar.latlngs(this.feature.geometry))
 
   map.on('zoomend', () => this.update(), this)
-  this.on('click', this.select, this)
+  this.on('click', this.edit, this)
+
+  if (selection.isPreselected(this.urn)) setImmediate(() => this.edit())
 }
 
 const onRemove = function (map) {
   this.removeInteractiveTarget(this.shape.element)
   this.renderer._rootGroup.removeChild(this.shape.element)
   map.off('zoomend', () => this.update(), this)
-  this.off('click', this.select, this)
+  this.off('click', this.edit, this)
   this.map.tools.dispose() // dispose editor/selection tool
 }
 
@@ -43,14 +44,10 @@ const update = function (latlngs) {
   if (this.latlngs) this.shape.update(this.latlngs)
 }
 
-const select = function () {
+const edit = function () {
+
   if (selection.isSelected(this.urn)) return
   selection.select(this.urn)
-  // TODO: only call this.edit() when not read-only
-  this.edit()
-}
-
-const edit = function () {
 
   const callback = event => {
     switch (event.type) {
@@ -92,7 +89,6 @@ L.Feature.Polystar = L.Layer.extend({
   onAdd,
   onRemove,
   update,
-  select,
   edit,
   labels,
   updateData

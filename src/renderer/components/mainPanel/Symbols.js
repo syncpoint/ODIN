@@ -7,6 +7,8 @@ import ms from 'milsymbol'
 import evented from '../../evented'
 import layerStore from '../../stores/layer-store'
 import { findSpecificItem } from '../../stores/feature-store'
+import { ResourceNames } from '../../model/resource-names'
+import selection from '../App.selection'
 
 const geometryType = descriptor => {
   if (!descriptor.geometries) return 'point'
@@ -47,6 +49,7 @@ class Symbols extends React.Component {
         prompt: 'Pick a location...',
         picked: latlng => {
           const featureId = uuid()
+          selection.preselect(ResourceNames.featureId('0', featureId))
           layerStore.addFeature(0)(featureId, {
             type: 'Feature',
             geometry: geometry(type, latlng),
@@ -59,7 +62,9 @@ class Symbols extends React.Component {
         geometryType: type,
         prompt: `Draw a ${type}...`,
         done: latlngs => {
-          layerStore.addFeature(0)(uuid(), {
+          const featureId = uuid()
+          selection.preselect(ResourceNames.featureId('0', featureId))
+          layerStore.addFeature(0)(featureId, {
             type: 'Feature',
             geometry: geometry(type, latlngs),
             properties: { sidc }

@@ -22,14 +22,6 @@ const genericShape = (feature, options) => {
 
 const featureLayer = (layerId, featureId, feature) => {
 
-  // const updateGeometryCommand = (currentGeometry, newGeometry) => ({
-  //   run: () => {
-  //     feature.geometry = newGeometry
-  //     store.updateFeature(layerId)(featureId, { ...feature })
-  //   },
-  //   inverse: () => updateGeometryCommand(newGeometry, currentGeometry)
-  // })
-
   const updateGeometry = geometry => {
     const command = store.commands.updateGeometry(layerId, featureId)(geometry)
     undoBuffer.push(command)
