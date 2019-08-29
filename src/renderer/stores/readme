@@ -1,0 +1,12 @@
+FEATURE DESCRIPTORS
+
+Feature descriptors are derived from MIP/MIG database.
+Possible geometries seem off at times.
+We apply some 'heuristics' in determining the 'one geometry' to use per feature.
+
+A)  If milsymbols recognizes a given SIDC the geometry is assumed to be POINT.
+B)  If geometries contains a single geoemtry, it should be a safe game.
+B1) All orbit (5)/fan (12) areas are single geometry entries.
+C)  For two or more geometries, things more or less undefined.
+
+NOTE:  Ellipses are excluded. They seem special cases of polygons.

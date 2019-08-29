@@ -1,73 +1,87 @@
 import L from 'leaflet'
-import uuid from 'uuid-random'
 import evented from '../../evented'
+import { K } from '../../../shared/combinators'
 import store from '../../stores/layer-store'
+import undoBuffer from '../App.undo-buffer'
+import { ResourceNames } from '../../model/resource-names'
 
-const createFeature = (map, layerId) => ([featureId, feature]) => ({
-  featureId,
-  ...feature,
-  'delete': () => store.deleteFeature(layerId)(featureId),
-  copy: () => ({ type: feature.type, geometry: feature.geometry, properties: feature.properties }),
-  paste: object => {
-    // Only default layer (layerId: 0) can receive new features.
-    store.addFeature(0)(uuid(), ({
-      type: object.type,
-      geometry: object.geometry,
-      properties: object.properties
-    }))
-  },
-  updateGeometry: geometry => store.updateFeature(layerId)(featureId, { ...feature, geometry })
-})
+const layers = container => K([])(layers => container.eachLayer(layer => layers.push(layer)))
+const filterLayers = (container, urn) => layers(container).filter(layer => layer.urn === urn)
+
+const layerUrn = layerId => ResourceNames.layerId(layerId)
+const featureUrn = (layerId, featureId) => ResourceNames.featureId(layerId, featureId)
+
+const genericShape = (feature, options) => {
+  switch (feature.geometry.type) {
+    case 'Point': return new L.Feature.Symbol(feature, options)
+    case 'Polygon': return new L.Feature.Polygon(feature, options)
+    case 'LineString': return new L.Feature.Polyline(feature, options)
+    default: return null
+  }
+}
+
+const featureLayer = (layerId, featureId, feature) => {
+
+  const updateGeometry = geometry => {
+    const command = store.commands.updateGeometry(layerId, featureId)(geometry)
+    undoBuffer.push(command)
+    command.run()
+  }
+
+  const options = {
+    interactive: true,
+    bubblingMouseEvents: false,
+    updateGeometry
+  }
+
+  const sidc = feature.properties.sidc
+  const key = `${sidc[0]}*${sidc[2]}*${sidc.substring(4, 10)}`
+  const layer = L.Feature[key] ? new L.Feature[key](feature, options) : genericShape(feature, options)
+  layer.urn = featureUrn(layerId, featureId)
+  return layer
+}
+
+const featureLayers = (layerId, features) =>
+  Object.entries(features)
+    .map(([featureId, feature]) => featureLayer(layerId, featureId, feature))
+
+const groupLayer = (layerId, featureLayers) =>
+  K(new L.LayerGroup(featureLayers))(layer => (layer.urn = layerUrn(layerId)))
+
+const groupLayers = layers =>
+  Object.entries(layers)
+    .filter(([_, layer]) => layer.show)
+    .map(([layerId, layer]) => [layerId, featureLayers(layerId, layer.features)])
+    .map(([layerId, featureLayers]) => groupLayer(layerId, featureLayers))
+
+const removeLayer = container => urn =>
+  layers(container)
+    .filter(layer => layer.urn === urn)
+    .forEach(layer => container.removeLayer(layer))
+
 
 evented.on('MAP_CREATED', map => {
-  const layers = {}
 
   const handlers = {
-    'layer-added': ({ layerId }) => {
-      layers[layerId] = new L.Feature.Layer([]).addTo(map)
-    },
+    'layer-added': ({ layerId }) => groupLayer(layerId, []).addTo(map),
+    'layer-deleted': ({ layerId }) => removeLayer(map)(layerUrn(layerId)),
+    'layer-hidden': ({ layerId }) => removeLayer(map)(layerUrn(layerId)),
+    'layer-shown': ({ layerId }) => groupLayers([store.layer(layerId)]).forEach(layer => layer.addTo(map)),
 
-    'layer-deleted': ({ layerId }) => {
-      map.removeLayer(layers[layerId])
-      delete layers[layerId]
-    },
+    'feature-added': ({ layerId, featureId, feature }) => filterLayers(map, layerUrn(layerId))
+      .forEach(layer => featureLayer(layerId, featureId, feature).addTo(layer)),
 
-    'layer-shown': ({ layerId }) => layers[layerId].addTo(map),
-    'layer-hidden': ({ layerId }) => map.removeLayer(layers[layerId]),
+    'feature-updated': ({ layerId, featureId, feature }) => filterLayers(map, layerUrn(layerId))
+      .forEach(group => filterLayers(group, featureUrn(layerId, featureId))
+        .forEach(layer => layer.updateData(feature))),
 
-    'feature-added': ({ layerId, featureId, feature }) => {
-      if (!layers[layerId]) return
-      layers[layerId].addData(createFeature(map, layerId)([featureId, feature]))
-    },
-
-    'feature-updated': ({ layerId, featureId, feature }) => {
-      if (!layers[layerId]) return
-      layers[layerId].eachLayer(featureLayer => {
-        if (featureLayer.feature.featureId !== featureId) return
-        layers[layerId].feature = feature
-      })
-    },
-
-    'feature-deleted': ({ layerId, featureId }) => {
-      if (!layers[layerId]) return
-      layers[layerId].eachLayer(featureLayer => {
-        if (featureLayer.feature.featureId !== featureId) return
-        layers[layerId].removeLayer(featureLayer)
-      })
-    }
+    'feature-deleted': ({ layerId, featureId }) => filterLayers(map, layerUrn(layerId))
+      .forEach(group => filterLayers(group, featureUrn(layerId, featureId))
+        .forEach(feature => feature.remove()))
   }
 
-  const createLayers = state => {
-    Object.entries(state).forEach(([layerId, layer]) => {
-      const feature = createFeature(map, layerId)
-      const features = Object.entries(layer.features).map(feature)
-      layers[layerId] = new L.Feature.Layer(features)
-      if (layer.show) layers[layerId].addTo(map)
-    })
-  }
-
+  const onReady = state => groupLayers(state).forEach(layer => layer.addTo(map))
   store.on('event', event => (handlers[event.type] || (() => {}))(event))
-
-  if (store.ready()) createLayers(store.state())
-  else store.on('ready', createLayers)
+  if (store.ready()) onReady(store.state())
+  else store.on('ready', onReady)
 })

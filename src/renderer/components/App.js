@@ -13,6 +13,7 @@ import addBookmarkOptions from './App.bookmark'
 import selection from './App.selection'
 import './App.clipboard'
 import settings from '../model/settings'
+import editors from './properties/'
 
 const center = L.latLng(48.65400545105681, 15.319061279296877)
 const zoom = 13
@@ -104,8 +105,9 @@ class App extends React.Component {
       }
     })
 
-    selection.on('selected', object => {
-      object.edit && this.openPanel('right', object.edit)
+    selection.on('selected', urn => {
+      const paneFactory = editors.propertiesPane(urn)
+      if (paneFactory) this.openPanel('right', paneFactory)
     })
 
     selection.on('deselected', () => {
@@ -117,7 +119,6 @@ class App extends React.Component {
 
   render () {
     const { panels } = this.state
-    console.log(this.props)
     return (
       <div>
         <Map

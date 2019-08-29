@@ -8,10 +8,28 @@ import symbolSet from '../../model/mapPalette-symbolSet'
 import Symbols from './Symbols'
 import { symbolList } from '../../model/mapPalette-symbol'
 import uuid from 'uuid-random'
-import L from 'leaflet'
 import evented from '../../evented'
-import store from '../../stores/layer-store'
+import ms from 'milsymbol'
+import layerStore from '../../stores/layer-store'
+import { findSpecificItem } from '../../stores/feature-store'
+import { ResourceNames } from '../../model/resource-names'
+import selection from '../App.selection'
 
+const geometryType = descriptor => {
+  if (!descriptor.geometries) return 'point'
+  if (descriptor.geometries.length === 1) return descriptor.geometries[0]
+  return null
+}
+
+const geometry = (geometryType, latlngs) => {
+  if (geometryType === 'point') return { type: 'Point', coordinates: [latlngs.lng, latlngs.lat] }
+  const lineString = () => latlngs.map(({ lat, lng }) => [lng, lat])
+  const polygon = () => [[...lineString(), lineString()[0]]]
+  switch (geometryType) {
+    case 'polygon': return { type: 'Polygon', coordinates: polygon() }
+    case 'line': return { type: 'LineString', coordinates: lineString() }
+  }
+}
 
 class MainPanel extends React.Component {
 
@@ -24,53 +42,83 @@ class MainPanel extends React.Component {
       symbols: [],
       selectedSetIndex: -1,
       selectedSymbolIndex: -1,
-      indexCache: 0
+      indexCache: -1
     }
     this.shouldUpdate = false
   }
 
   elementSelected (selectedSetIndex, selectedSymbolIndex, parentId) {
+    this.shouldUpdate = true
     selectedSetIndex !== -1 ? this.elementSetSelected(selectedSetIndex) : this.elementSymbolSelected(selectedSymbolIndex, parentId)
   }
 
   elementSetSelected (selectedSetIndex) {
     const { symbolSet } = this.state
-    this.shouldUpdate = true
     symbolSet[selectedSetIndex].open = !symbolSet[selectedSetIndex].open
     this.setState({ ...this.state, symbolSet, selectedSetIndex, selectedSymbolIndex: -1 })
   }
 
   elementSymbolSelected (selectedSymbolIndex, parentId) {
-    const { symbolSet, indexCache } = this.state
+    const { symbolSet, indexCache, symbols } = this.state
     const setId = parentId === -1 ? indexCache : parentId
-    const set = symbolSet[setId]
-    const symbol = set.symbols[selectedSymbolIndex]
+    const getSymbolFromSet = (selectedSymbolIndex, setId) => {
+      const set = symbolSet[setId]
+      return set.symbols[selectedSymbolIndex]
+    }
+    const symbol = this.type === 'symbols' ? symbols[selectedSymbolIndex] : getSymbolFromSet(selectedSymbolIndex, setId)
     const sidc = symbol.sidc
 
-    const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4)
-    if (L.Feature[genericSIDC]) {
-      // TODO: find way to draw the feature
-      return
-    }
+    // TODO: move to GeoJSON/Feature/SIDC helper.
+    const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 15)
+    const featureDescriptor = findSpecificItem(genericSIDC)
+    const type = geometryType(featureDescriptor)
 
-    evented.emit('tools.pick-point', {
-      prompt: 'Pick a location...',
-      picked: latlng => {
-        store.addFeature(0)(uuid(), {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [latlng.lng, latlng.lat] },
-          properties: { sidc }
-        })
-      }
+    const geometryHint = () => evented.emit('OSD_MESSAGE', {
+      message: `Sorry, the feature's geometry is not supported, yet.`,
+      duration: 5000
     })
+    this.setState({ ...this.state, symbolSet, selectedSetIndex: -1, selectedSymbolIndex, indexCache: setId })
+    if (!type) return geometryHint()
+    if (type === 'point' && !(new ms.Symbol(sidc, {}).isValid())) return geometryHint()
 
-    this.setState({ ...this.state, symbolSet, selectedSetIndex: -1, selectedSymbolIndex: -1 })
+    switch (type) {
+      case 'point': return evented.emit('tools.pick-point', {
+        prompt: 'Pick a location...',
+        picked: latlng => {
+          const featureId = uuid()
+          selection.preselect(ResourceNames.featureId('0', featureId))
+          layerStore.addFeature(0)(featureId, {
+            type: 'Feature',
+            geometry: geometry(type, latlng),
+            properties: { sidc }
+          })
+        }
+      })
+      case 'line':
+      case 'polygon': return evented.emit('tools.draw', {
+        geometryType: type,
+        prompt: `Draw a ${type}...`,
+        done: latlngs => {
+          const featureId = uuid()
+          selection.preselect(ResourceNames.featureId('0', featureId))
+          layerStore.addFeature(0)(featureId, {
+            type: 'Feature',
+            geometry: geometry(type, latlngs),
+            properties: { sidc }
+          })
+        }
+      })
+    }
   }
 
   selectNextElement (direction) {
-    const { symbolSet, selectedSetIndex, selectedSymbolIndex, indexCache } = this.state
+    const { symbolSet, selectedSetIndex, selectedSymbolIndex, indexCache, symbols } = this.state
     this.shouldUpdate = true
-    if (selectedSymbolIndex === -1 && selectedSetIndex !== -1 && symbolSet[selectedSetIndex].open && direction > 0) {
+    if (this.type === 'symbols') {
+      const index = selectedSymbolIndex + direction
+      const symbolIndex = index >= 0 ? (index === symbols.length ? 0 : index) : symbols.length - 1
+      this.setState({ ...this.state, selectedSymbolIndex: symbolIndex })
+    } else if (selectedSymbolIndex === -1 && selectedSetIndex !== -1 && symbolSet[selectedSetIndex].open && direction > 0) {
       this.setState({ ...this.state, selectedSetIndex: -1, selectedSymbolIndex: 0, indexCache: selectedSetIndex })
     } else if (selectedSymbolIndex !== -1) {
       const newIndex = selectedSymbolIndex + direction
@@ -102,6 +150,7 @@ class MainPanel extends React.Component {
 
   showSymbolsets () {
     const { symbolSet, selectedSetIndex, selectedSymbolIndex, indexCache } = this.state
+    this.type = 'sets'
     const compontents = {
       'header':
         <MapPaletteSearch
@@ -123,19 +172,24 @@ class MainPanel extends React.Component {
   }
 
   showSearchResults () {
-    const { symbols, selectedIndex } = this.state
+    const { selectedSetIndex, selectedSymbolIndex, symbols } = this.state
+    this.type = 'symbols'
     const compontents = {
       'header':
         <MapPaletteSearch
           update={ resultList => this.updateResultList(resultList) }
           setSelectedIndex={ direction => this.selectNextElement(direction) }
-          selectedIndex={ selectedIndex }
+          selectedSetIndex={ selectedSetIndex }
+          elementSelected={(setIndex, symbolIndex, parentId) => this.elementSelected(setIndex, symbolIndex, parentId) }
+          selectedSymbolIndex={ selectedSymbolIndex }
         />,
       'list':
         <Symbols
           symbols={ symbols }
           styleClass={ 'symbols' }
-          selectedIndex={ selectedIndex }
+          selectedSymbolIndex={ selectedSymbolIndex }
+          parentId={ -1 }
+          elementSelected={(setIndex, symbolIndex, parentId) => this.elementSelected(setIndex, symbolIndex, parentId) }
         /> }
     return compontents
   }
@@ -143,7 +197,8 @@ class MainPanel extends React.Component {
   updateResultList (resultList) {
     const showComponents = resultList.length === 0 ? () => this.showSymbolsets() : () => this.showSearchResults()
     const symbols = symbolList(resultList)
-    this.setState({ ...this.state, showComponents, symbols })
+    this.shouldUpdate = true
+    this.setState({ ...this.state, showComponents, symbols, selectedSymbolIndex: -1 })
   }
 
   render () {

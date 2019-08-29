@@ -6,6 +6,7 @@ import { withStyles } from '@material-ui/core/styles'
 // TODO: rename to feature list
 class Symbols extends React.Component {
 
+
   createClassName (parentId, index) {
     return 'symbols:scrollto:' + parentId + '-' + index
   }

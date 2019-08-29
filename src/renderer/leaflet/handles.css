@@ -19,3 +19,9 @@
   width: 14px !important;
   height: 14px !important;
 }
+
+.cursor-marker {
+  cursor: crosshair;
+  pointer-events: none;
+  display: block !important;
+}

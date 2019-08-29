@@ -5,11 +5,16 @@ import { K } from '../../shared/combinators'
 import selection from '../components/App.selection'
 
 const MODIFIER_MAP = {
+  c: 'quantity',
   f: 'reinforcedReduced',
+  g: 'staffComments',
+  h: 'additionalInformation',
   m: 'higherFormation',
   q: 'direction',
   t: 'uniqueDesignation',
-  z: 'speed'
+  v: 'type',
+  z: 'speed',
+  aa: 'specialHeadquarters'
 }
 
 const icon = symbol => L.divIcon({
@@ -54,64 +59,67 @@ const options = {
 
 const initialize = function (feature, options) {
   options = options || {}
+  this.properties = feature.properties
 
   // Prepare standard and highlighted icons:
-  this.icons = {}
-  Object.keys(symbolOptions(feature)).forEach(key => {
-    this.icons[key] = icon(symbol(feature, symbolOptions(feature)[key]))
-  })
-
-  options.icon = this.icons.standard
-
+  this.prepareIcons(feature)
   L.Util.setOptions(this, options)
 
+  // TODO: move to GeoJSON helper
   const latlng = L.latLng(
     feature.geometry.coordinates[1],
     feature.geometry.coordinates[0])
 
   L.Marker.prototype.initialize.call(this, latlng)
 
-  this.selected = selected => {
-    if (this.feature.featureId !== selected.featureId) return
+  this.selected = urn => {
+    if (this.urn !== urn) return
     this.dragging.enable()
     this.setIcon(this.icons.highlighted)
   }
 
-  this.deselected = deselected => {
-    if (this.feature.featureId !== deselected.featureId) return
+  this.deselected = urn => {
+    if (this.urn !== urn) return
     this.dragging.disable()
     this.setIcon(this.icons.standard)
   }
+}
 
-  selection.on('selected', this.selected)
-  selection.on('deselected', this.deselected)
+const prepareIcons = function (feature) {
+  this.icons = {}
+
+  Object.keys(symbolOptions(feature)).forEach(key => {
+    this.icons[key] = icon(symbol(feature, symbolOptions(feature)[key]))
+  })
 }
 
 const onAdd = function (map) {
   L.Marker.prototype.onAdd.call(this, map)
   this.on('click', this.edit, this)
+  this.on('dragend', this.onDragend, this)
+  selection.on('selected', this.selected)
+  selection.on('deselected', this.deselected)
+
+  this.setIcon(selection.isSelected(this.urn) ? this.icons.highlighted : this.icons.standard)
+  if (selection.isPreselected(this.urn)) setImmediate(() => this.edit())
 }
 
 const onRemove = function (map) {
+  selection.off('deselected', this.deselected)
+  selection.off('selected', this.selected)
+  this.off('dragend', this.onDragend, this)
   this.off('click', this.edit, this)
   L.Marker.prototype.onRemove.call(this, map)
 }
 
 const edit = function () {
-  if (selection.isSelected(this.feature)) return
-  selection.select(this.feature)
-
-  // Remember original position in case dragging is cancelled:
-  this.latlng = this.getLatLng()
+  if (selection.isSelected(this.urn)) return
+  selection.select(this.urn)
 
   const editor = {
-    dispose: reset => {
-      if (selection.isSelected(this.feature)) selection.deselect()
-      if (reset) this.setLatLng(this.latlng)
-      else {
-        const { lat, lng } = this.getLatLng()
-        const geometry = { type: 'Point', coordinates: [lng, lat] }
-        this.feature.updateGeometry(geometry)
+    dispose: () => {
+      if (selection.isSelected(this.urn)) {
+        selection.deselect()
       }
     }
   }
@@ -119,10 +127,37 @@ const edit = function () {
   this._map.tools.edit(editor)
 }
 
+const onDragend = function () {
+  this.options.updateGeometry(this.geometry())
+}
+
+const updateData = function (feature) {
+
+  // TODO: move to GeoJSON helper
+  const latlng = L.latLng(
+    feature.geometry.coordinates[1],
+    feature.geometry.coordinates[0])
+
+  this.setLatLng(latlng)
+
+  this.prepareIcons(feature)
+  const selected = selection.isSelected(this.urn)
+  this.setIcon(selected ? this.icons.highlighted : this.icons.standard)
+}
+
+const geometry = function () {
+  const { lat, lng } = this.getLatLng()
+  return { type: 'Point', coordinates: [lng, lat] }
+}
+
 L.Feature.Symbol = L.Marker.extend({
   options,
   initialize,
+  prepareIcons,
   onAdd,
   onRemove,
-  edit
+  edit,
+  onDragend,
+  geometry,
+  updateData
 })

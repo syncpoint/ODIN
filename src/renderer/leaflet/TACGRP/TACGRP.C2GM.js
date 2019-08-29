@@ -7,6 +7,7 @@ L.Feature['G*G*GAE---'] = L.Feature.NamedArea.extend({ name: 'EA' })
 L.Feature['G*G*GAD---'] = L.Feature.NamedArea.extend({ name: 'DZ' })
 L.Feature['G*G*GAX---'] = L.Feature.NamedArea.extend({ name: 'EZ' })
 L.Feature['G*G*GAP---'] = L.Feature.NamedArea.extend({ name: 'PZ' })
+L.Feature['G*G*GAL---'] = L.Feature.NamedArea.extend({ name: 'LZ' })
 
 // OFFENSE (TACGRP.C2GM.OFF.ARS)
 L.Feature['G*G*OAK---'] = L.Feature.NamedArea.extend({ name: 'ATK' })

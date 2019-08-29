@@ -25,14 +25,16 @@ const onAdd = function (map) {
   this.update(L.Feature.Polystar.latlngs(this.feature.geometry))
 
   map.on('zoomend', () => this.update(), this)
-  this.on('click', this.select, this)
+  this.on('click', this.edit, this)
+
+  if (selection.isPreselected(this.urn)) setImmediate(() => this.edit())
 }
 
 const onRemove = function (map) {
   this.removeInteractiveTarget(this.shape.element)
   this.renderer._rootGroup.removeChild(this.shape.element)
   map.off('zoomend', () => this.update(), this)
-  this.off('click', this.select, this)
+  this.off('click', this.edit, this)
   this.map.tools.dispose() // dispose editor/selection tool
 }
 
@@ -42,25 +44,27 @@ const update = function (latlngs) {
   if (this.latlngs) this.shape.update(this.latlngs)
 }
 
-const select = function () {
-  if (selection.isSelected(this.feature)) return
-  selection.select(this.feature)
-  // TODO: only call this.edit() when not read-only
-  this.edit()
-}
-
 const edit = function () {
-  const callback = latlngs => this.update(latlngs)
-  const markerGroup = new L.Feature.MarkerGroup(this.feature.geometry, callback).addTo(this.map)
-  const initialGeometry = markerGroup.toGeometry()
+
+  if (selection.isSelected(this.urn)) return
+  selection.select(this.urn)
+
+  const callback = event => {
+    switch (event.type) {
+      case 'latlngs': return this.update(event.latlngs)
+      case 'geometry': return this.options.updateGeometry(event.geometry)
+    }
+  }
+
+  this.markerGroup = new L.Feature.MarkerGroup(this.feature.geometry, callback).addTo(this.map)
 
   const editor = {
-    dispose: (reset) => {
-      const geometry = reset ? initialGeometry : markerGroup.toGeometry()
-      this.feature.geometry = geometry
-      if (reset) this.update(L.Feature.Polystar.latlngs(this.feature.geometry))
-      else this.feature.updateGeometry(geometry)
-      this.map.removeLayer(markerGroup)
+    dispose: () => {
+      this.map.removeLayer(this.markerGroup)
+      delete this.markerGroup
+      if (selection.isSelected(this.urn)) {
+        selection.deselect()
+      }
     }
   }
 
@@ -68,7 +72,14 @@ const edit = function () {
 }
 
 const labels = function (feature) {
-  return [ feature.title ]
+  return feature.properties.t ? [ feature.properties.t ] : []
+}
+
+const updateData = function (feature) {
+  this.feature = feature
+  const latlngs = L.Feature.Polystar.latlngs(feature.geometry)
+  this.shape.update(latlngs)
+  if (this.markerGroup) this.markerGroup.updateGeometry(feature.geometry)
 }
 
 // abstract polygon/polyline.
@@ -78,9 +89,9 @@ L.Feature.Polystar = L.Layer.extend({
   onAdd,
   onRemove,
   update,
-  select,
   edit,
-  labels
+  labels,
+  updateData
 })
 
 L.Feature.Polystar.minimumPoints = geometry => {
