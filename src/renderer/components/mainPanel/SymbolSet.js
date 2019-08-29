@@ -10,34 +10,47 @@ import PropTypes from 'prop-types'
 class SymbolSet extends React.Component {
 
   onClick (key) {
-    const symbolSet = this.props.symbolSet
+    const { symbolSet, elementSelected } = this.props
     const index = symbolSet.findIndex(item => item.key === key)
-    symbolSet[index].open = !symbolSet[index].open
-    this.setState({ ...this.state, symbolSet })
+    elementSelected(index, -1, -1)
+  }
+
+  componentDidUpdate () {
+    const { selectedSetIndex } = this.props
+    const item = document.getElementsByClassName(this.createClassName(selectedSetIndex))[0]
+    if (item) item.scrollIntoViewIfNeeded()
+  }
+
+  createClassName (index) {
+    return 'symbolset:scrollto:' + index
   }
 
   render () {
     const style = {
       height: 'auto'
     }
-    const { classes, symbolSet } = this.props
-    const listItems = () => (symbolSet || []).map(item => (
-      <React.Fragment key= {item.key}>
-        <ListItem
-          button
-          divider={ true }
-          key={ item.key }
-          onClick={ () => this.onClick(item.key) }
-        >
-          {item.open ? <ExpandLess /> : <ExpandMore />}
-          { item.text }
-        </ListItem>
-        <Collapse in={item.open} timeout="auto" unmountOnExit>
-          <Symbols symbols={item.symbols} styleClass={'symbolInSet'} />
-        </Collapse>
-      </React.Fragment>
-
-    ))
+    const { classes, symbolSet, selectedSetIndex, selectedSymbolIndex, indexCache, elementSelected } = this.props
+    const listItems = () => (symbolSet || []).map((item, index) => {
+      const childIndex = index === indexCache ? selectedSymbolIndex : -1
+      return (
+        <React.Fragment key= {item.key}>
+          <ListItem
+            button = { false }
+            divider={ true }
+            selected={ index === selectedSetIndex }
+            key={ item.key }
+            onClick={ () => this.onClick(item.key) }
+            className={ this.createClassName(index) }
+          >
+            {item.open ? <ExpandLess /> : <ExpandMore />}
+            { item.text }
+          </ListItem>
+          <Collapse in={item.open} timeout={ 0 } unmountOnExit>
+            <Symbols symbols={item.symbols} styleClass={'symbolInSet'} selectedSymbolIndex={childIndex} parentId={index} elementSelected={elementSelected} />
+          </Collapse>
+        </React.Fragment>
+      )
+    })
     return (
       <List
         elevation={ 4 }
@@ -59,7 +72,11 @@ const styles = theme => ({
 
 SymbolSet.propTypes = {
   classes: PropTypes.any.isRequired,
-  symbolSet: PropTypes.any.isRequired
+  symbolSet: PropTypes.any.isRequired,
+  selectedSetIndex: PropTypes.any.isRequired,
+  elementSelected: PropTypes.func.isRequired,
+  selectedSymbolIndex: PropTypes.any.isRequired,
+  indexCache: PropTypes.any.isRequired
 }
 
 export default withStyles(styles)(SymbolSet)

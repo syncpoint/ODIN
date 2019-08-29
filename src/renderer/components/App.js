@@ -119,7 +119,6 @@ class App extends React.Component {
 
   render () {
     const { panels } = this.state
-
     return (
       <div>
         <Map

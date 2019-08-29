@@ -11,6 +11,30 @@ class MapPaletteSearch extends React.Component {
     this.timer = ''
   }
 
+  handleKeyDown (event) {
+    const { setSelectedIndex, selectedSetIndex, elementSelected, selectedSymbolIndex } = this.props
+    switch (event.key) {
+      case 'Escape':
+        this.onChange('')
+        break
+      case 'ArrowDown':
+        setSelectedIndex(+1)
+        event.preventDefault()
+        break
+      case 'ArrowUp':
+        setSelectedIndex(-1)
+        event.preventDefault()
+        break
+      case 'Enter':
+        elementSelected(selectedSetIndex, selectedSymbolIndex, -1)
+        break
+    }
+  }
+
+  componentDidUpdate () {
+    this.input.focus()
+  }
+
   prepareSearchTerm (raw) {
     const list = raw.split(' ')
     const termlist = list.map(item => {
@@ -36,6 +60,8 @@ class MapPaletteSearch extends React.Component {
         placeholder={ 'Search...' }
         onChange={ event => this.onChange(event.target.value) }
         autoFocus
+        onKeyDown={ event => this.handleKeyDown(event) }
+        inputRef={ input => (this.input = input) }
       />
     )
   }
@@ -57,7 +83,11 @@ const styles = theme => ({
 })
 
 MapPaletteSearch.propTypes = {
-  update: PropTypes.func.isRequired
+  update: PropTypes.func.isRequired,
+  setSelectedIndex: PropTypes.func.isRequired,
+  selectedSetIndex: PropTypes.any.isRequired,
+  selectedSymbolIndex: PropTypes.any.isRequired,
+  elementSelected: PropTypes.func.isRequired
 }
 
 export default withStyles(styles)(MapPaletteSearch)
