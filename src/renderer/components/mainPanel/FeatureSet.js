@@ -2,7 +2,7 @@ import React from 'react'
 import { List, ListItem, Collapse } from '@material-ui/core'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
-import Symbols from './Symbols'
+import Features from './Features'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 
@@ -29,9 +29,9 @@ class FeatureSet extends React.Component {
     const style = {
       height: 'auto'
     }
-    const { classes, featureSet, selectedSetIndex, selectedSymbolIndex, indexCache, elementSelected } = this.props
+    const { classes, featureSet, selectedSetIndex, selectedFeatureIndex, indexCache, elementSelected } = this.props
     const listItems = () => (featureSet || []).map((item, index) => {
-      const childIndex = index === indexCache ? selectedSymbolIndex : -1
+      const childIndex = index === indexCache ? selectedFeatureIndex : -1
       return (
         <React.Fragment key= {item.key}>
           <ListItem
@@ -46,7 +46,7 @@ class FeatureSet extends React.Component {
             { item.text }
           </ListItem>
           <Collapse in={item.open} timeout={ 0 } unmountOnExit>
-            <Symbols symbols={item.symbols} styleClass={'symbolInSet'} selectedSymbolIndex={childIndex} parentId={index} elementSelected={elementSelected} />
+            <Features features={item.features} styleClass={'featureInSet'} selectedFeatureIndex={childIndex} parentId={index} elementSelected={elementSelected} />
           </Collapse>
         </React.Fragment>
       )
@@ -75,7 +75,7 @@ FeatureSet.propTypes = {
   featureSet: PropTypes.any.isRequired,
   selectedSetIndex: PropTypes.any.isRequired,
   elementSelected: PropTypes.func.isRequired,
-  selectedSymbolIndex: PropTypes.any.isRequired,
+  selectedFeatureIndex: PropTypes.any.isRequired,
   indexCache: PropTypes.any.isRequired
 }
 

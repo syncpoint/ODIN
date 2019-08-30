@@ -30,7 +30,7 @@ const index = lunr(function () {
 
 export const findSpecificItem = sidc => {
   const genericSIDC = sidc => sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 15)
-  return features.find(symbol => symbol.sidc === genericSIDC(sidc))
+  return features.find(feature => feature.sidc === genericSIDC(sidc))
 }
 
 export const search = term => {
