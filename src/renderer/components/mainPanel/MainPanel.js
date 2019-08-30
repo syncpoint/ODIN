@@ -71,15 +71,21 @@ class MainPanel extends React.Component {
     // TODO: move to GeoJSON/Feature/SIDC helper.
     const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 15)
     const featureDescriptor = findSpecificItem(genericSIDC)
-    const type = geometryType(featureDescriptor)
+    let type = geometryType(featureDescriptor)
 
     const geometryHint = () => evented.emit('OSD_MESSAGE', {
       message: `Sorry, the feature's geometry is not supported, yet.`,
       duration: 5000
     })
+
     this.setState({ ...this.state, symbolSet, selectedSetIndex: -1, selectedSymbolIndex, indexCache: setId })
+
+    if (type === 'point' || !type) {
+      if (!new ms.Symbol(sidc, {}).isValid()) return geometryHint()
+      else type = 'point'
+    }
+
     if (!type) return geometryHint()
-    if (type === 'point' && !(new ms.Symbol(sidc, {}).isValid())) return geometryHint()
 
     switch (type) {
       case 'point': return evented.emit('tools.pick-point', {
