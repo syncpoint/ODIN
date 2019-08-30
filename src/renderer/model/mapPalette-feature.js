@@ -26,27 +26,24 @@ const featureListFromSidc = list => {
   return list.map(element => {
     const sidc = specificSIDC(element.sidc)
     const elementInfo = findSpecificItem(element.sidc)
-
-    return {
-      key: elementInfo.name,
-      sidc: sidc,
-      text: <ListItemText primary={ elementInfo.name } secondary={ elementInfo.info } />,
-      avatar: avatar(sidc)
-    }
+    return toObject(elementInfo, sidc)
   })
 }
 
 const featureList = list => {
   return list.map(element => {
     const sidc = specificSIDC(element.sidc)
-    return {
-      key: element.name,
-      sidc: sidc,
-      text: <ListItemText primary={ element.name } secondary={ element.info } />,
-      avatar: avatar(sidc)
-    }
+    return toObject(element, sidc)
   })
 }
 
+const toObject = (element, sidc) => {
+  return {
+    key: element.name,
+    sidc: sidc,
+    text: <ListItemText primary={ element.name } secondary={ element.info } />,
+    avatar: avatar(sidc)
+  }
+}
 
 export { featureList, featureListFromSidc }
