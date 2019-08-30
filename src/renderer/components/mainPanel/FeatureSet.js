@@ -7,11 +7,11 @@ import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 
 
-class SymbolSet extends React.Component {
+class FeatureSet extends React.Component {
 
   onClick (key) {
-    const { symbolSet, elementSelected } = this.props
-    const index = symbolSet.findIndex(item => item.key === key)
+    const { featureSet, elementSelected } = this.props
+    const index = featureSet.findIndex(item => item.key === key)
     elementSelected(index, -1, -1)
   }
 
@@ -22,15 +22,15 @@ class SymbolSet extends React.Component {
   }
 
   createClassName (index) {
-    return 'symbolset:scrollto:' + index
+    return 'featureSet:scrollto:' + index
   }
 
   render () {
     const style = {
       height: 'auto'
     }
-    const { classes, symbolSet, selectedSetIndex, selectedSymbolIndex, indexCache, elementSelected } = this.props
-    const listItems = () => (symbolSet || []).map((item, index) => {
+    const { classes, featureSet, selectedSetIndex, selectedSymbolIndex, indexCache, elementSelected } = this.props
+    const listItems = () => (featureSet || []).map((item, index) => {
       const childIndex = index === indexCache ? selectedSymbolIndex : -1
       return (
         <React.Fragment key= {item.key}>
@@ -70,13 +70,13 @@ const styles = theme => ({
   }
 })
 
-SymbolSet.propTypes = {
+FeatureSet.propTypes = {
   classes: PropTypes.any.isRequired,
-  symbolSet: PropTypes.any.isRequired,
+  featureSet: PropTypes.any.isRequired,
   selectedSetIndex: PropTypes.any.isRequired,
   elementSelected: PropTypes.func.isRequired,
   selectedSymbolIndex: PropTypes.any.isRequired,
   indexCache: PropTypes.any.isRequired
 }
 
-export default withStyles(styles)(SymbolSet)
+export default withStyles(styles)(FeatureSet)

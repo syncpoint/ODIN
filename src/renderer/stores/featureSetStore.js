@@ -1,4 +1,4 @@
-const symbolSetData = () => {
+const featureSetData = () => {
   return [
     {
       'name': 'POI',
@@ -56,4 +56,4 @@ const symbolSetData = () => {
   ]
 }
 
-export default symbolSetData
+export default featureSetData
