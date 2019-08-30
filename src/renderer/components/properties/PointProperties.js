@@ -21,8 +21,14 @@ class PointProperties extends React.Component {
   }
 
   feature () {
+    const sidc =
+      this.props.feature.properties.sidc[0] +
+      (this.state.hostile ? 'H' : 'F') +
+      this.props.feature.properties.sidc.substring(2)
+
     const properties = {
       ...this.props.feature.properties,
+      sidc,
       h: this.state.additionalInformation,
       n: this.state.hostile,
       t: this.state.uniqueDesignation
