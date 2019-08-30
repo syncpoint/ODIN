@@ -34,5 +34,12 @@ ipcRenderer.on('COMMAND_COORD_FORMAT', (_, args) => {
 })
 
 export default {
-  format: latlng => currentFormat(latlng)
+
+  format: latlng => {
+    try {
+      return currentFormat(latlng)
+    } catch (e) {
+      return ''
+    }
+  }
 }
