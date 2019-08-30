@@ -3,8 +3,8 @@ import Paper from '@material-ui/core/Paper'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import MapPaletteSearch from './MapPaletteSearch'
-import SymbolSet from './SymbolSet'
-import symbolSet from '../../model/mapPalette-symbolSet'
+import FeatureSet from './FeatureSet'
+import featureSet from '../../model/mapPalette-featureSet'
 import Symbols from './Symbols'
 import { symbolList } from '../../model/mapPalette-symbol'
 import uuid from 'uuid-random'
@@ -38,7 +38,7 @@ class MainPanel extends React.Component {
 
     this.state = {
       showComponents: () => this.showSymbolsets(),
-      symbolSet: symbolSet(),
+      featureSet: featureSet(),
       symbols: [],
       selectedSetIndex: -1,
       selectedSymbolIndex: -1,
@@ -53,16 +53,16 @@ class MainPanel extends React.Component {
   }
 
   elementSetSelected (selectedSetIndex) {
-    const { symbolSet } = this.state
-    symbolSet[selectedSetIndex].open = !symbolSet[selectedSetIndex].open
-    this.setState({ ...this.state, symbolSet, selectedSetIndex, selectedSymbolIndex: -1 })
+    const { featureSet } = this.state
+    featureSet[selectedSetIndex].open = !featureSet[selectedSetIndex].open
+    this.setState({ ...this.state, featureSet, selectedSetIndex, selectedSymbolIndex: -1 })
   }
 
   elementSymbolSelected (selectedSymbolIndex, parentId) {
-    const { symbolSet, indexCache, symbols } = this.state
+    const { featureSet, indexCache, symbols } = this.state
     const setId = parentId === -1 ? indexCache : parentId
     const getSymbolFromSet = (selectedSymbolIndex, setId) => {
-      const set = symbolSet[setId]
+      const set = featureSet[setId]
       return set.symbols[selectedSymbolIndex]
     }
     const symbol = this.type === 'symbols' ? symbols[selectedSymbolIndex] : getSymbolFromSet(selectedSymbolIndex, setId)
@@ -71,21 +71,15 @@ class MainPanel extends React.Component {
     // TODO: move to GeoJSON/Feature/SIDC helper.
     const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 15)
     const featureDescriptor = findSpecificItem(genericSIDC)
-    let type = geometryType(featureDescriptor)
+    const type = geometryType(featureDescriptor)
 
     const geometryHint = () => evented.emit('OSD_MESSAGE', {
       message: `Sorry, the feature's geometry is not supported, yet.`,
       duration: 5000
     })
-
-    this.setState({ ...this.state, symbolSet, selectedSetIndex: -1, selectedSymbolIndex, indexCache: setId })
-
-    if (type === 'point' || !type) {
-      if (!new ms.Symbol(sidc, {}).isValid()) return geometryHint()
-      else type = 'point'
-    }
-
+    this.setState({ ...this.state, featureSet, selectedSetIndex: -1, selectedSymbolIndex, indexCache: setId })
     if (!type) return geometryHint()
+    if (type === 'point' && !(new ms.Symbol(sidc, {}).isValid())) return geometryHint()
 
     switch (type) {
       case 'point': return evented.emit('tools.pick-point', {
@@ -118,27 +112,27 @@ class MainPanel extends React.Component {
   }
 
   selectNextElement (direction) {
-    const { symbolSet, selectedSetIndex, selectedSymbolIndex, indexCache, symbols } = this.state
+    const { featureSet, selectedSetIndex, selectedSymbolIndex, indexCache, symbols } = this.state
     this.shouldUpdate = true
     if (this.type === 'symbols') {
       const index = selectedSymbolIndex + direction
       const symbolIndex = index >= 0 ? (index === symbols.length ? 0 : index) : symbols.length - 1
       this.setState({ ...this.state, selectedSymbolIndex: symbolIndex })
-    } else if (selectedSymbolIndex === -1 && selectedSetIndex !== -1 && symbolSet[selectedSetIndex].open && direction > 0) {
+    } else if (selectedSymbolIndex === -1 && selectedSetIndex !== -1 && featureSet[selectedSetIndex].open && direction > 0) {
       this.setState({ ...this.state, selectedSetIndex: -1, selectedSymbolIndex: 0, indexCache: selectedSetIndex })
     } else if (selectedSymbolIndex !== -1) {
       const newIndex = selectedSymbolIndex + direction
       if (newIndex === -1) {
         this.setState({ ...this.state, selectedSetIndex: indexCache, selectedSymbolIndex: -1 })
-      } else if (newIndex === symbolSet[indexCache].symbols.length) {
+      } else if (newIndex === featureSet[indexCache].symbols.length) {
         this.setState({ ...this.state, selectedSetIndex: indexCache + 1, selectedSymbolIndex: -1 })
       } else {
         this.setState({ ...this.state, selectedSymbolIndex: newIndex })
       }
     } else {
       const index = selectedSetIndex + direction
-      const setIndex = index >= 0 ? (index === symbolSet.length ? 0 : index) : symbolSet.length - 1
-      const set = symbolSet[setIndex]
+      const setIndex = index >= 0 ? (index === featureSet.length ? 0 : index) : featureSet.length - 1
+      const set = featureSet[setIndex]
       if (setIndex === selectedSetIndex - 1 && set.open) {
         const symbolIndex = set.symbols.length - 1
         this.setState({ ...this.state, selectedSetIndex: -1, selectedSymbolIndex: symbolIndex, indexCache: setIndex })
@@ -155,7 +149,7 @@ class MainPanel extends React.Component {
   }
 
   showSymbolsets () {
-    const { symbolSet, selectedSetIndex, selectedSymbolIndex, indexCache } = this.state
+    const { featureSet, selectedSetIndex, selectedSymbolIndex, indexCache } = this.state
     this.type = 'sets'
     const compontents = {
       'header':
@@ -167,8 +161,8 @@ class MainPanel extends React.Component {
           selectedSymbolIndex={ selectedSymbolIndex }
         />,
       'list':
-        <SymbolSet
-          symbolSet={ symbolSet }
+        <FeatureSet
+          featureSet={ featureSet }
           selectedSetIndex={ selectedSetIndex }
           selectedSymbolIndex={ selectedSymbolIndex }
           elementSelected={(setIndex, symbolIndex, parentId) => this.elementSelected(setIndex, symbolIndex, parentId) }
