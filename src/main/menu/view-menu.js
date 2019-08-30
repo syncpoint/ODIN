@@ -105,7 +105,7 @@ const menu = settings => {
         },
         type: 'checkbox',
         checked: paletteVisible,
-        accelerator: 'Super+Control+P'
+        accelerator: 'CmdOrCtrl+P'
       },
       { type: 'separator' },
       {
