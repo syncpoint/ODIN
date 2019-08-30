@@ -5,8 +5,8 @@ import { withStyles } from '@material-ui/core/styles'
 import MapPaletteSearch from './MapPaletteSearch'
 import FeatureSet from './FeatureSet'
 import featureSet from '../../model/mapPalette-featureSet'
-import Symbols from './Symbols'
-import { symbolList } from '../../model/mapPalette-symbol'
+import Features from './Features'
+import { featureList } from '../../model/mapPalette-feature'
 import uuid from 'uuid-random'
 import evented from '../../evented'
 import ms from 'milsymbol'
@@ -37,36 +37,36 @@ class MainPanel extends React.Component {
     super(props)
 
     this.state = {
-      showComponents: () => this.showSymbolsets(),
+      showComponents: () => this.showFeatureSets(),
       featureSet: featureSet(),
-      symbols: [],
+      features: [],
       selectedSetIndex: -1,
-      selectedSymbolIndex: -1,
+      selectedFeatureIndex: -1,
       indexCache: -1
     }
     this.shouldUpdate = false
   }
 
-  elementSelected (selectedSetIndex, selectedSymbolIndex, parentId) {
+  elementSelected (selectedSetIndex, selectedFeatureIndex, parentId) {
     this.shouldUpdate = true
-    selectedSetIndex !== -1 ? this.elementSetSelected(selectedSetIndex) : this.elementSymbolSelected(selectedSymbolIndex, parentId)
+    selectedSetIndex !== -1 ? this.elementSetSelected(selectedSetIndex) : this.elementFeatureSelected(selectedFeatureIndex, parentId)
   }
 
   elementSetSelected (selectedSetIndex) {
     const { featureSet } = this.state
     featureSet[selectedSetIndex].open = !featureSet[selectedSetIndex].open
-    this.setState({ ...this.state, featureSet, selectedSetIndex, selectedSymbolIndex: -1 })
+    this.setState({ ...this.state, featureSet, selectedSetIndex, selectedFeatureIndex: -1 })
   }
 
-  elementSymbolSelected (selectedSymbolIndex, parentId) {
-    const { featureSet, indexCache, symbols } = this.state
+  elementFeatureSelected (selectedFeatureIndex, parentId) {
+    const { featureSet, indexCache, features } = this.state
     const setId = parentId === -1 ? indexCache : parentId
-    const getSymbolFromSet = (selectedSymbolIndex, setId) => {
+    const getFeatureFromSet = (selectedFeatureIndex, setId) => {
       const set = featureSet[setId]
-      return set.symbols[selectedSymbolIndex]
+      return set.features[selectedFeatureIndex]
     }
-    const symbol = this.type === 'symbols' ? symbols[selectedSymbolIndex] : getSymbolFromSet(selectedSymbolIndex, setId)
-    const sidc = symbol.sidc
+    const feature = this.type === 'features' ? features[selectedFeatureIndex] : getFeatureFromSet(selectedFeatureIndex, setId)
+    const sidc = feature.sidc
 
     // TODO: move to GeoJSON/Feature/SIDC helper.
     const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 15)
@@ -77,7 +77,7 @@ class MainPanel extends React.Component {
       message: `Sorry, the feature's geometry is not supported, yet.`,
       duration: 5000
     })
-    this.setState({ ...this.state, featureSet, selectedSetIndex: -1, selectedSymbolIndex, indexCache: setId })
+    this.setState({ ...this.state, featureSet, selectedSetIndex: -1, selectedFeatureIndex, indexCache: setId })
     if (!type) return geometryHint()
     if (type === 'point' && !(new ms.Symbol(sidc, {}).isValid())) return geometryHint()
 
@@ -112,30 +112,30 @@ class MainPanel extends React.Component {
   }
 
   selectNextElement (direction) {
-    const { featureSet, selectedSetIndex, selectedSymbolIndex, indexCache, symbols } = this.state
+    const { featureSet, selectedSetIndex, selectedFeatureIndex, indexCache, features } = this.state
     this.shouldUpdate = true
-    if (this.type === 'symbols') {
-      const index = selectedSymbolIndex + direction
-      const symbolIndex = index >= 0 ? (index === symbols.length ? 0 : index) : symbols.length - 1
-      this.setState({ ...this.state, selectedSymbolIndex: symbolIndex })
-    } else if (selectedSymbolIndex === -1 && selectedSetIndex !== -1 && featureSet[selectedSetIndex].open && direction > 0) {
-      this.setState({ ...this.state, selectedSetIndex: -1, selectedSymbolIndex: 0, indexCache: selectedSetIndex })
-    } else if (selectedSymbolIndex !== -1) {
-      const newIndex = selectedSymbolIndex + direction
+    if (this.type === 'features') {
+      const index = selectedFeatureIndex + direction
+      const featureIndex = index >= 0 ? (index === features.length ? 0 : index) : features.length - 1
+      this.setState({ ...this.state, selectedFeatureIndex: featureIndex })
+    } else if (selectedFeatureIndex === -1 && selectedSetIndex !== -1 && featureSet[selectedSetIndex].open && direction > 0) {
+      this.setState({ ...this.state, selectedSetIndex: -1, selectedFeatureIndex: 0, indexCache: selectedSetIndex })
+    } else if (selectedFeatureIndex !== -1) {
+      const newIndex = selectedFeatureIndex + direction
       if (newIndex === -1) {
-        this.setState({ ...this.state, selectedSetIndex: indexCache, selectedSymbolIndex: -1 })
-      } else if (newIndex === featureSet[indexCache].symbols.length) {
-        this.setState({ ...this.state, selectedSetIndex: indexCache + 1, selectedSymbolIndex: -1 })
+        this.setState({ ...this.state, selectedSetIndex: indexCache, selectedFeatureIndex: -1 })
+      } else if (newIndex === featureSet[indexCache].features.length) {
+        this.setState({ ...this.state, selectedSetIndex: indexCache + 1, selectedFeatureIndex: -1 })
       } else {
-        this.setState({ ...this.state, selectedSymbolIndex: newIndex })
+        this.setState({ ...this.state, selectedFeatureIndex: newIndex })
       }
     } else {
       const index = selectedSetIndex + direction
       const setIndex = index >= 0 ? (index === featureSet.length ? 0 : index) : featureSet.length - 1
       const set = featureSet[setIndex]
       if (setIndex === selectedSetIndex - 1 && set.open) {
-        const symbolIndex = set.symbols.length - 1
-        this.setState({ ...this.state, selectedSetIndex: -1, selectedSymbolIndex: symbolIndex, indexCache: setIndex })
+        const featureIndex = set.features.length - 1
+        this.setState({ ...this.state, selectedSetIndex: -1, selectedFeatureIndex: featureIndex, indexCache: setIndex })
       } else this.setState({ ...this.state, selectedSetIndex: setIndex })
     }
   }
@@ -148,8 +148,8 @@ class MainPanel extends React.Component {
     return false
   }
 
-  showSymbolsets () {
-    const { featureSet, selectedSetIndex, selectedSymbolIndex, indexCache } = this.state
+  showFeatureSets () {
+    const { featureSet, selectedSetIndex, selectedFeatureIndex, indexCache } = this.state
     this.type = 'sets'
     const compontents = {
       'header':
@@ -157,48 +157,48 @@ class MainPanel extends React.Component {
           update={ resultList => this.updateResultList(resultList) }
           setSelectedIndex={ direction => this.selectNextElement(direction) }
           selectedSetIndex={ selectedSetIndex }
-          elementSelected={(setIndex, symbolIndex, parentId) => this.elementSelected(setIndex, symbolIndex, parentId) }
-          selectedSymbolIndex={ selectedSymbolIndex }
+          elementSelected={(setIndex, featureIndex, parentId) => this.elementSelected(setIndex, featureIndex, parentId) }
+          selectedFeatureIndex={ selectedFeatureIndex }
         />,
       'list':
         <FeatureSet
           featureSet={ featureSet }
           selectedSetIndex={ selectedSetIndex }
-          selectedSymbolIndex={ selectedSymbolIndex }
-          elementSelected={(setIndex, symbolIndex, parentId) => this.elementSelected(setIndex, symbolIndex, parentId) }
+          selectedFeatureIndex={ selectedFeatureIndex }
+          elementSelected={(setIndex, featureIndex, parentId) => this.elementSelected(setIndex, featureIndex, parentId) }
           indexCache={ indexCache }
         /> }
     return compontents
   }
 
   showSearchResults () {
-    const { selectedSetIndex, selectedSymbolIndex, symbols } = this.state
-    this.type = 'symbols'
+    const { selectedSetIndex, selectedFeatureIndex, features } = this.state
+    this.type = 'features'
     const compontents = {
       'header':
         <MapPaletteSearch
           update={ resultList => this.updateResultList(resultList) }
           setSelectedIndex={ direction => this.selectNextElement(direction) }
           selectedSetIndex={ selectedSetIndex }
-          elementSelected={(setIndex, symbolIndex, parentId) => this.elementSelected(setIndex, symbolIndex, parentId) }
-          selectedSymbolIndex={ selectedSymbolIndex }
+          elementSelected={(setIndex, featureIndex, parentId) => this.elementSelected(setIndex, featureIndex, parentId) }
+          selectedFeatureIndex={ selectedFeatureIndex }
         />,
       'list':
-        <Symbols
-          symbols={ symbols }
-          styleClass={ 'symbols' }
-          selectedSymbolIndex={ selectedSymbolIndex }
+        <Features
+          features={ features }
+          styleClass={ 'features' }
+          selectedFeatureIndex={ selectedFeatureIndex }
           parentId={ -1 }
-          elementSelected={(setIndex, symbolIndex, parentId) => this.elementSelected(setIndex, symbolIndex, parentId) }
+          elementSelected={(setIndex, featureIndex, parentId) => this.elementSelected(setIndex, featureIndex, parentId) }
         /> }
     return compontents
   }
 
   updateResultList (resultList) {
-    const showComponents = resultList.length === 0 ? () => this.showSymbolsets() : () => this.showSearchResults()
-    const symbols = symbolList(resultList)
+    const showComponents = resultList.length === 0 ? () => this.showFeatureSets() : () => this.showSearchResults()
+    const features = featureList(resultList)
     this.shouldUpdate = true
-    this.setState({ ...this.state, showComponents, symbols, selectedSymbolIndex: -1 })
+    this.setState({ ...this.state, showComponents, features, selectedFeatureIndex: -1 })
   }
 
   render () {

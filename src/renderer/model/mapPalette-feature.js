@@ -3,15 +3,15 @@ import { ListItemText, ListItemAvatar, Avatar } from '@material-ui/core'
 import ms from 'milsymbol'
 import { findSpecificItem } from '../stores/feature-store'
 
-const placeholderSymbol = new ms.Symbol('')
+const placeholderFeature = new ms.Symbol('')
 const specificSIDC = sidc => sidc[0] + 'F' + sidc[2] + '-' + sidc.substring(4)
 
 const avatar = sidc => {
 
-  const symbol = new ms.Symbol(sidc)
-  const url = symbol.isValid(false)
-    ? symbol.asCanvas().toDataURL()
-    : placeholderSymbol.asCanvas().toDataURL()
+  const feature = new ms.Symbol(sidc)
+  const url = feature.isValid(false)
+    ? feature.asCanvas().toDataURL()
+    : placeholderFeature.asCanvas().toDataURL()
 
   return (
     <ListItemAvatar>
@@ -22,7 +22,7 @@ const avatar = sidc => {
 
 // TODO: remove duplicate code
 
-const symbolListFromSidc = list => {
+const featureListFromSidc = list => {
   return list.map(element => {
     const sidc = specificSIDC(element.sidc)
     const elementInfo = findSpecificItem(element.sidc)
@@ -36,7 +36,7 @@ const symbolListFromSidc = list => {
   })
 }
 
-const symbolList = list => {
+const featureList = list => {
   return list.map(element => {
     const sidc = specificSIDC(element.sidc)
     return {
@@ -49,4 +49,4 @@ const symbolList = list => {
 }
 
 
-export { symbolList, symbolListFromSidc }
+export { featureList, featureListFromSidc }
