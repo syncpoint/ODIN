@@ -13,8 +13,7 @@ const importFile = filename => {
       const basename = path.basename(filename, '.json')
       const layerId = uuid()
       store.addLayer(layerId, basename)
-      const addFeature = store.addFeature(layerId)
-      json.features.forEach(feature => addFeature(uuid(), feature))
+      json.features.forEach(feature => store.addFeature(layerId)(uuid(), feature))
     }
   } catch (err) {
     console.error(err)

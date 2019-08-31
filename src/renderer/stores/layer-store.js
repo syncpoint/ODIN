@@ -15,7 +15,6 @@ const state = {
 }
 
 let ready = false
-let eventCount = 0
 
 const handlers = {
   'layer-added': ({ layerId, name, show }) => (state[layerId] = { name, show, features: [] }),
@@ -28,7 +27,6 @@ const handlers = {
 }
 
 const reduce = event => {
-  eventCount += 1
   const handler = handlers[event.type]
   if (handler) return handler(event)
   else console.log('[layer-store] unhandled', event)
@@ -47,7 +45,6 @@ const recoverStream = reduce => new Writable({
     callback()
   },
   final (callback) {
-    console.log('eventCount', eventCount)
     evented.emit('ready', { ...state })
     ready = true
     callback()
@@ -76,12 +73,12 @@ evented.deleteLayer = layerIds => (layerIds || Object.keys(state))
   .forEach(persist)
 
 evented.hideLayer = layerIds => (layerIds || Object.keys(state))
-  .filter(layerId => state[layerId])
+  .filter(layerId => state[layerId] && state[layerId].show)
   .map(layerId => ({ type: 'layer-hidden', layerId }))
   .forEach(persist)
 
 evented.showLayer = layerIds => (layerIds || Object.keys(state))
-  .filter(layerId => state[layerId])
+  .filter(layerId => state[layerId] && !state[layerId].show)
   .map(layerId => ({ type: 'layer-shown', layerId }))
   .forEach(persist)
 
