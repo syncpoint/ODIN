@@ -88,6 +88,9 @@ evented.addFeature = layerId => (featureId, feature) => {
     persist({ type: 'layer-added', layerId: '0', name: 'Default Layer', show: true })
   }
 
+  // Implicitly show layer when currently hidden.
+  if (!state[layerId].show) evented.showLayer([layerId])
+
   // Feature already exists -> bail out.
   if (state[layerId].features[featureId]) return
   persist({ type: 'feature-added', layerId, featureId, feature })
