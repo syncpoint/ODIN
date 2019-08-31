@@ -73,12 +73,12 @@ evented.deleteLayer = layerIds => (layerIds || Object.keys(state))
   .forEach(persist)
 
 evented.hideLayer = layerIds => (layerIds || Object.keys(state))
-  .filter(layerId => state[layerId] && state[layerId].show)
+  .filter(layerId => state[layerId])
   .map(layerId => ({ type: 'layer-hidden', layerId }))
   .forEach(persist)
 
 evented.showLayer = layerIds => (layerIds || Object.keys(state))
-  .filter(layerId => state[layerId] && !state[layerId].show)
+  .filter(layerId => state[layerId])
   .map(layerId => ({ type: 'layer-shown', layerId }))
   .forEach(persist)
 
