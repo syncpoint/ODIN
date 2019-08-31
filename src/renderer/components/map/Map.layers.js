@@ -66,7 +66,11 @@ evented.on('MAP_CREATED', map => {
     'layer-added': ({ layerId }) => groupLayer(layerId, []).addTo(map),
     'layer-deleted': ({ layerId }) => removeLayer(map)(layerUrn(layerId)),
     'layer-hidden': ({ layerId }) => removeLayer(map)(layerUrn(layerId)),
-    'layer-shown': ({ layerId }) => groupLayers([store.layer(layerId)]).forEach(layer => layer.addTo(map)),
+    'layer-shown': ({ layerId }) => {
+      const layers = {}
+      layers[layerId] = store.layer(layerId)
+      groupLayers(layers).forEach(layer => layer.addTo(map))
+    },
 
     'feature-added': ({ layerId, featureId, feature }) => filterLayers(map, layerUrn(layerId))
       .forEach(layer => featureLayer(layerId, featureId, feature).addTo(layer)),
