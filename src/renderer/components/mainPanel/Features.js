@@ -4,16 +4,16 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 
 // TODO: rename to feature list
-class Symbols extends React.Component {
+class Features extends React.Component {
 
 
   createClassName (parentId, index) {
-    return 'symbols:scrollto:' + parentId + '-' + index
+    return 'features:scrollto:' + parentId + '-' + index
   }
 
   componentDidUpdate () {
-    const { selectedSymbolIndex, parentId } = this.props
-    const item = document.getElementsByClassName(this.createClassName(parentId, selectedSymbolIndex))[0]
+    const { selectedFeatureIndex, parentId } = this.props
+    const item = document.getElementsByClassName(this.createClassName(parentId, selectedFeatureIndex))[0]
     if (item) item.scrollIntoViewIfNeeded()
   }
 
@@ -21,10 +21,10 @@ class Symbols extends React.Component {
     const style = {
       height: 'auto'
     }
-    const { symbols, classes, styleClass, selectedSymbolIndex, parentId, elementSelected } = this.props
-    const listItems = () => (symbols || []).map((item, index) => (
+    const { features, classes, styleClass, selectedFeatureIndex, parentId, elementSelected } = this.props
+    const listItems = () => (features || []).map((item, index) => (
       <ListItem
-        selected={ index === selectedSymbolIndex }
+        selected={ index === selectedFeatureIndex }
         divider={ true }
         key={ index }
         onClick={ () => elementSelected(-1, index, parentId) }
@@ -47,24 +47,24 @@ class Symbols extends React.Component {
 }
 
 const styles = theme => ({
-  symbolInSet: {
+  featureInSet: {
     maxHeight: 'auto',
     gridArea: 'content'
   },
-  symbols: {
+  features: {
     maxHeight: 'fill-available',
     gridArea: 'content',
     overflow: 'auto'
   }
 })
 
-Symbols.propTypes = {
-  symbols: PropTypes.any.isRequired,
+Features.propTypes = {
+  features: PropTypes.any.isRequired,
   classes: PropTypes.any.isRequired,
   styleClass: PropTypes.any.isRequired,
-  selectedSymbolIndex: PropTypes.any.isRequired,
+  selectedFeatureIndex: PropTypes.any.isRequired,
   parentId: PropTypes.any.isRequired,
   elementSelected: PropTypes.func.isRequired
 }
 
-export default withStyles(styles)(Symbols)
+export default withStyles(styles)(Features)
