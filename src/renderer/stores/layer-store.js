@@ -18,6 +18,7 @@ let eventCount = 0
 let ready = false
 
 const handlers = {
+  'snapshot': ({ snapshot }) => (state = snapshot),
   'layer-added': ({ layerId, name, show }) => (state[layerId] = { name, show, features: {} }),
   'layer-deleted': ({ layerId }) => delete state[layerId],
   'layer-hidden': ({ layerId }) => (state[layerId].show = false),
@@ -53,9 +54,10 @@ const recoverStream = reduce => new Writable({
   }
 })
 
+// TODO: interval is not really needed, strict evebt count will do
 setInterval(() => {
   if (eventCount > 500) {
-    db.put(`layer:snapshot:${now()}`, state)
+    db.put(`layer:snapshot:${now()}`, { type: 'snapshot', snapshot: state })
     eventCount = 0
   }
 }, 5 * 60 * 1000)
@@ -63,14 +65,14 @@ setInterval(() => {
 const replaySnapshot = () => new Promise((resolve, reject) => {
   let timestamp
 
-  const handleSnapshot = ({ key, value: snapshot }) => {
+  const handleSnapshot = ({ key, value }) => {
     timestamp = key.split(':')[2]
-    state = snapshot
+    reduce(value)
   }
 
   db.createReadStream({
-    gte: 'layer:snapshot',
-    lte: 'layer:snapshot\xff',
+    gte: 'layer:snapshot:',
+    lte: 'layer:snapshot:\xff',
     keys: true,
     reverse: true,
     limit: 1
