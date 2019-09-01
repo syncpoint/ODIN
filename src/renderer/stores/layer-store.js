@@ -54,7 +54,7 @@ const recoverStream = reduce => new Writable({
   }
 })
 
-// TODO: interval is not really needed, strict evebt count will do
+// TODO: interval is not really needed, strict event count will do
 setInterval(() => {
   if (eventCount > 500) {
     db.put(`layer:snapshot:${now()}`, { type: 'snapshot', snapshot: state })
