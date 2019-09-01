@@ -7,7 +7,7 @@ import * as R from 'ramda'
 import { db } from './db'
 import { clipboard } from '../components/App.clipboard'
 
-// TODO: needs snapshotting capability
+// TODO: purge snapshots
 
 const evented = new EventEmitter()
 let state = {
