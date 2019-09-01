@@ -10,14 +10,15 @@ import { clipboard } from '../components/App.clipboard'
 // TODO: needs snapshotting capability
 
 const evented = new EventEmitter()
-const state = {
-  '0': { name: 'Default Layer', show: true, features: [] }
+let state = {
+  '0': { name: 'Default Layer', show: true, features: {} }
 }
 
+let eventCount = 0
 let ready = false
 
 const handlers = {
-  'layer-added': ({ layerId, name, show }) => (state[layerId] = { name, show, features: [] }),
+  'layer-added': ({ layerId, name, show }) => (state[layerId] = { name, show, features: {} }),
   'layer-deleted': ({ layerId }) => delete state[layerId],
   'layer-hidden': ({ layerId }) => (state[layerId].show = false),
   'layer-shown': ({ layerId }) => (state[layerId].show = true),
@@ -27,6 +28,7 @@ const handlers = {
 }
 
 const reduce = event => {
+  eventCount += 1
   const handler = handlers[event.type]
   if (handler) return handler(event)
   else console.log('[layer-store] unhandled', event)
@@ -51,12 +53,39 @@ const recoverStream = reduce => new Writable({
   }
 })
 
-db.createReadStream({
-  gte: 'layer:journal',
-  lte: 'layer:journal\xff',
-  keys: false
-}).pipe(recoverStream(reduce))
+setInterval(() => {
+  if (eventCount > 500) {
+    db.put(`layer:snapshot:${now()}`, state)
+    eventCount = 0
+  }
+}, 5 * 60 * 1000)
 
+const replaySnapshot = () => new Promise((resolve, reject) => {
+  let timestamp
+
+  const handleSnapshot = ({ key, value: snapshot }) => {
+    timestamp = key.split(':')[2]
+    state = snapshot
+  }
+
+  db.createReadStream({
+    gte: 'layer:snapshot',
+    lte: 'layer:snapshot\xff',
+    keys: true,
+    reverse: true,
+    limit: 1
+  }).on('data', handleSnapshot)
+    .on('end', () => resolve(timestamp))
+    .on('error', err => reject(err))
+})
+
+replaySnapshot().then(timestamp => {
+  db.createReadStream({
+    gte: `layer:journal:${timestamp || ''}`,
+    lte: 'layer:journal:\xff',
+    keys: false
+  }).pipe(recoverStream(reduce))
+})
 
 evented.ready = () => ready
 evented.state = () => state
