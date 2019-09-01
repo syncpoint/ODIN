@@ -23,7 +23,7 @@ export default register => {
 
   const layerItem = (layerId, layerName, show) => {
     const [label, ...tags] = layerName.split(':')
-    const props = { label, tags, checked: show, onChange: handleChange(layerId) }
+    const props = { label, tags: ['Layer', ...tags], checked: show, onChange: handleChange(layerId) }
     return {
       key: `layer://${layerId}`,
       text: <LayerListItem { ...props }/>,

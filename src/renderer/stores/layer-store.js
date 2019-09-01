@@ -63,6 +63,9 @@ evented.state = () => state
 
 // Add new or replace existing layer.
 evented.addLayer = (layerId, name) => {
+  // Delete layer with same name, if one exists:
+  const existing = Object.entries(state).find(([_, layer]) => layer.name === name)
+  if (existing) persist({ type: 'layer-deleted', layerId: existing[0] })
   persist({ type: 'layer-added', layerId, name, show: true })
 }
 
@@ -89,7 +92,7 @@ evented.addFeature = layerId => (featureId, feature) => {
   }
 
   // Implicitly show layer when currently hidden.
-  if (!state[layerId].show) evented.showLayer([layerId])
+  if (!state[layerId].show) persist({ type: 'layer-shown', layerId })
 
   // Feature already exists -> bail out.
   if (state[layerId].features[featureId]) return
