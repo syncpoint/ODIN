@@ -1,4 +1,3 @@
-import { Writable } from 'stream'
 import EventEmitter from 'events'
 import { ipcRenderer } from 'electron'
 import now from 'nano-time'
@@ -29,7 +28,12 @@ const handlers = {
 }
 
 const reduce = event => {
-  eventCount += 1
+  if (eventCount < 500) eventCount += 1
+  else {
+    db.put(`layer:snapshot:${now()}`, { type: 'snapshot', snapshot: state })
+    eventCount = 0
+  }
+
   const handler = handlers[event.type]
   if (handler) return handler(event)
   else console.log('[layer-store] unhandled', event)
@@ -41,28 +45,28 @@ const persist = event => {
   evented.emit('event', event)
 }
 
-const recoverStream = reduce => new Writable({
-  objectMode: true,
-  write (chunk, _, callback) {
-    reduce(chunk)
-    callback()
-  },
-  final (callback) {
-    evented.emit('ready', { ...state })
-    ready = true
-    callback()
-  }
+const snapshotOptions = () => ({
+  gte: 'layer:snapshot:',
+  lte: 'layer:snapshot:\xff',
+  keys: true,
+  reverse: true,
+  limit: 1
 })
 
-// TODO: interval is not really needed, strict event count will do
-setInterval(() => {
-  if (eventCount > 500) {
-    db.put(`layer:snapshot:${now()}`, { type: 'snapshot', snapshot: state })
-    eventCount = 0
-  }
-}, 5 * 60 * 1000)
+const journalOptions = timestamp => ({
+  gte: `layer:journal:${timestamp || ''}`,
+  lte: 'layer:journal:\xff',
+  keys: false
+})
 
-const replaySnapshot = () => new Promise((resolve, reject) => {
+const replayJournal = options => new Promise((resolve, reject) => {
+  db.createReadStream(options)
+    .on('data', event => reduce(event))
+    .on('error', err => reject(err))
+    .on('end', () => resolve())
+})
+
+const replaySnapshot = options => new Promise((resolve, reject) => {
   let timestamp
 
   const handleSnapshot = ({ key, value }) => {
@@ -70,24 +74,19 @@ const replaySnapshot = () => new Promise((resolve, reject) => {
     reduce(value)
   }
 
-  db.createReadStream({
-    gte: 'layer:snapshot:',
-    lte: 'layer:snapshot:\xff',
-    keys: true,
-    reverse: true,
-    limit: 1
-  }).on('data', handleSnapshot)
-    .on('end', () => resolve(timestamp))
+  db.createReadStream(options)
+    .on('data', handleSnapshot)
     .on('error', err => reject(err))
+    .on('end', () => resolve(timestamp)) // undefined: no snapshot
 })
 
-replaySnapshot().then(timestamp => {
-  db.createReadStream({
-    gte: `layer:journal:${timestamp || ''}`,
-    lte: 'layer:journal:\xff',
-    keys: false
-  }).pipe(recoverStream(reduce))
-})
+replaySnapshot(snapshotOptions())
+  .then(timestamp => journalOptions(timestamp))
+  .then(options => replayJournal(options))
+  .then(() => {
+    evented.emit('ready', { ...state })
+    ready = true
+  })
 
 evented.ready = () => ready
 evented.state = () => state
