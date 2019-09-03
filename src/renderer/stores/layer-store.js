@@ -15,6 +15,7 @@ let state = {
 
 let eventCount = 0
 let ready = false
+const reducers = []
 
 const handlers = {
   'snapshot': ({ snapshot }) => (state = snapshot),
@@ -43,50 +44,56 @@ const persist = event => {
   db.put(`layer:journal:${now()}`, event)
   reduce(event)
   evented.emit('event', event)
+  reducers.forEach(reduce => reduce(event))
 }
 
-const snapshotOptions = () => ({
-  gte: 'layer:snapshot:',
-  lte: 'layer:snapshot:\xff',
-  keys: true,
-  reverse: true,
-  limit: 1
-})
-
-const journalOptions = timestamp => ({
-  gte: `layer:journal:${timestamp || ''}`,
-  lte: 'layer:journal:\xff',
-  keys: false
-})
-
-const replayJournal = options => new Promise((resolve, reject) => {
-  db.createReadStream(options)
-    .on('data', event => reduce(event))
-    .on('error', err => reject(err))
-    .on('end', () => resolve())
-})
-
-const replaySnapshot = options => new Promise((resolve, reject) => {
-  let timestamp
-
-  const handleSnapshot = ({ key, value }) => {
-    timestamp = key.split(':')[2]
-    reduce(value)
-  }
-
-  db.createReadStream(options)
-    .on('data', handleSnapshot)
-    .on('error', err => reject(err))
-    .on('end', () => resolve(timestamp)) // undefined: no snapshot
-})
-
-replaySnapshot(snapshotOptions())
-  .then(timestamp => journalOptions(timestamp))
-  .then(options => replayJournal(options))
-  .then(() => {
-    evented.emit('ready', { ...state })
-    ready = true
+const replay = reduce => {
+  const snapshotOptions = () => ({
+    gte: 'layer:snapshot:',
+    lte: 'layer:snapshot:\xff',
+    keys: true,
+    reverse: true,
+    limit: 1
   })
+
+  const journalOptions = timestamp => ({
+    gte: `layer:journal:${timestamp || ''}`,
+    lte: 'layer:journal:\xff',
+    keys: false
+  })
+
+  const replayJournal = options => new Promise((resolve, reject) => {
+    db.createReadStream(options)
+      .on('data', event => reduce(event))
+      .on('error', err => reject(err))
+      .on('end', () => resolve())
+  })
+
+  const replaySnapshot = options => new Promise((resolve, reject) => {
+    let timestamp
+
+    const handleSnapshot = ({ key, value }) => {
+      timestamp = key.split(':')[2]
+      reduce(value)
+    }
+
+    db.createReadStream(options)
+      .on('data', handleSnapshot)
+      .on('error', err => reject(err))
+      .on('end', () => resolve(timestamp)) // undefined: no snapshot
+  })
+
+  return replaySnapshot(snapshotOptions())
+    .then(timestamp => journalOptions(timestamp))
+    .then(options => replayJournal(options))
+    .then(() => reduce({ type: 'replay-ready' }))
+}
+
+replay(reduce).then(() => {
+  evented.emit('ready', { ...state })
+  ready = true
+  reducers.push(reduce)
+})
 
 evented.ready = () => ready
 evented.state = () => state
@@ -145,8 +152,14 @@ evented.deleteFeature = layerId => featureId => {
   persist({ type: 'feature-deleted', layerId, featureId })
 }
 
+// TODO: remove when we have projections
 evented.layer = layerId => state[layerId]
 evented.feature = (layerId, featureId) => state[layerId].features[featureId]
+
+evented.register = reduce => {
+  replay(reduce)
+  reducers.push(reduce)
+}
 
 // Command API ==>
 
