@@ -63,6 +63,7 @@ const removeLayer = container => urn =>
 evented.on('MAP_CREATED', map => {
 
   const handlers = {
+    'snapshot': ({ snapshot }) => groupLayers(snapshot).forEach(layer => layer.addTo(map)),
     'layer-added': ({ layerId }) => groupLayer(layerId, []).addTo(map),
     'layer-deleted': ({ layerId }) => removeLayer(map)(layerUrn(layerId)),
     'layer-hidden': ({ layerId }) => removeLayer(map)(layerUrn(layerId)),
@@ -84,8 +85,9 @@ evented.on('MAP_CREATED', map => {
         .forEach(feature => feature.remove()))
   }
 
-  const onReady = state => groupLayers(state).forEach(layer => layer.addTo(map))
-  store.on('event', event => (handlers[event.type] || (() => {}))(event))
-  if (store.ready()) onReady(store.state())
-  else store.on('ready', onReady)
+  store.register(event => {
+    const handler = handlers[event.type]
+    if (handler) return handler(event)
+    else console.log('[map layers] unhandled', event)
+  })
 })
