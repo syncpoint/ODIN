@@ -46,4 +46,7 @@ export default register => {
     }, [])
 
   contributor.updateFilter = () => contributor.emit('updated', contribution())
+  layerStore.on('event', event => {
+    contributor.emit('updated', contribution())
+  })
 }

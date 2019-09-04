@@ -9,7 +9,6 @@ const LayerListItem = props => (
       <Switch
         edge="end"
         checked={ props.checked }
-        onChange={ (_, checked) => props.onChange(checked) }
       />
     </ListItemSecondaryAction>
   </div>
@@ -18,7 +17,6 @@ const LayerListItem = props => (
 LayerListItem.propTypes = {
   tags: PropTypes.array.isRequired,
   checked: PropTypes.bool.isRequired,
-  onChange: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired
 }
 

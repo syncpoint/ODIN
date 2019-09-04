@@ -37,6 +37,7 @@ class ResultList extends React.Component {
   render () {
     const { classes, rows, selectionIndex } = this.props
     const display = rows.length ? 'block' : 'none'
+
     const listItems = () => (rows || []).map((row, index) => (
       <ListItem
         className={ this.createClassName(index) }
