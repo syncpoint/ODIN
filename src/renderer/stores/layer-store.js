@@ -9,9 +9,7 @@ import { clipboard } from '../components/App.clipboard'
 // TODO: purge snapshots
 
 const evented = new EventEmitter()
-let state = {
-  '0': { name: 'Default Layer', show: true, features: {} }
-}
+let state = {}
 
 let eventCount = 0
 let ready = false

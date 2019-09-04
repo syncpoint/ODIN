@@ -1,12 +1,8 @@
 import L from 'leaflet'
 import evented from '../../evented'
-import { K } from '../../../shared/combinators'
 import store from '../../stores/layer-store'
 import undoBuffer from '../App.undo-buffer'
 import { ResourceNames } from '../../model/resource-names'
-
-const layers = container => K([])(layers => container.eachLayer(layer => layers.push(layer)))
-const filterLayers = (container, urn) => layers(container).filter(layer => layer.urn === urn)
 
 const layerUrn = layerId => ResourceNames.layerId(layerId)
 const featureUrn = (layerId, featureId) => ResourceNames.featureId(layerId, featureId)
@@ -20,8 +16,7 @@ const genericShape = (feature, options) => {
   }
 }
 
-const featureLayer = (layerId, featureId, feature) => {
-
+const adaptFeature = (layerId, featureId, feature) => {
   const updateGeometry = geometry => {
     const command = store.commands.updateGeometry(layerId, featureId)(geometry)
     undoBuffer.push(command)
@@ -37,57 +32,70 @@ const featureLayer = (layerId, featureId, feature) => {
   const sidc = feature.properties.sidc
   const key = `${sidc[0]}*${sidc[2]}*${sidc.substring(4, 10)}`
   const layer = L.Feature[key] ? new L.Feature[key](feature, options) : genericShape(feature, options)
-  layer.urn = featureUrn(layerId, featureId)
   return layer
 }
 
-const featureLayers = (layerId, features) =>
-  Object.entries(features)
-    .map(([featureId, feature]) => featureLayer(layerId, featureId, feature))
-
-const groupLayer = (layerId, featureLayers) =>
-  K(new L.LayerGroup(featureLayers))(layer => (layer.urn = layerUrn(layerId)))
-
-const groupLayers = layers =>
-  Object.entries(layers)
-    .filter(([_, layer]) => layer.show)
-    .map(([layerId, layer]) => [layerId, featureLayers(layerId, layer.features)])
-    .map(([layerId, featureLayers]) => groupLayer(layerId, featureLayers))
-
-const removeLayer = container => urn =>
-  layers(container)
-    .filter(layer => layer.urn === urn)
-    .forEach(layer => container.removeLayer(layer))
-
-
 evented.on('MAP_CREATED', map => {
+  let replaying = true
+  let state = {}
 
-  const handlers = {
-    'snapshot': ({ snapshot }) => groupLayers(snapshot).forEach(layer => layer.addTo(map)),
-    'layer-added': ({ layerId }) => groupLayer(layerId, []).addTo(map),
-    'layer-deleted': ({ layerId }) => removeLayer(map)(layerUrn(layerId)),
-    'layer-hidden': ({ layerId }) => removeLayer(map)(layerUrn(layerId)),
-    'layer-shown': ({ layerId }) => {
-      const layers = {}
-      layers[layerId] = store.layer(layerId)
-      groupLayers(layers).forEach(layer => layer.addTo(map))
+  // layers :: urn -> (layer group | feature layer)
+  const layers = {}
+
+  const deleteLayer = urn => { layers[urn].remove(); delete layers[urn] }
+
+  const render = {
+    'replay-ready': () => Object.entries(state).reduce((acc, [layerId, layer]) => {
+      const featureLayers = Object.entries(layer.features).map(([featureId, feature]) => {
+        const urn = featureUrn(layerId, featureId)
+        acc[urn] = adaptFeature(layerId, featureId, feature)
+        acc[urn].urn = urn
+        return layers[urn]
+      })
+
+      const urn = layerUrn(layerId)
+      acc[urn] = new L.LayerGroup(featureLayers)
+      if (layer.show) acc[urn].addTo(map)
+      return acc
+    }, layers),
+
+    'layer-added': ({ layerId, show }) => {
+      const urn = layerUrn(layerId)
+      layers[urn] = new L.LayerGroup([])
+      if (show) layers[urn].addTo(map)
     },
 
-    'feature-added': ({ layerId, featureId, feature }) => filterLayers(map, layerUrn(layerId))
-      .forEach(layer => featureLayer(layerId, featureId, feature).addTo(layer)),
+    'layer-deleted': ({ layerId }) => deleteLayer(layerUrn(layerId)),
+    'layer-hidden': ({ layerId }) => layers[layerUrn(layerId)].remove(),
+    'layer-shown': ({ layerId }) => layers[layerUrn(layerId)].addTo(map),
 
-    'feature-updated': ({ layerId, featureId, feature }) => filterLayers(map, layerUrn(layerId))
-      .forEach(group => filterLayers(group, featureUrn(layerId, featureId))
-        .forEach(layer => layer.updateData(feature))),
+    'feature-added': ({ layerId, featureId, feature }) => {
+      const urn = featureUrn(layerId, featureId)
+      layers[urn] = adaptFeature(layerId, featureId, feature)
+      layers[urn].urn = urn
+      layers[urn].addTo(layers[layerUrn(layerId)])
+    },
 
-    'feature-deleted': ({ layerId, featureId }) => filterLayers(map, layerUrn(layerId))
-      .forEach(group => filterLayers(group, featureUrn(layerId, featureId))
-        .forEach(feature => feature.remove()))
+    'feature-updated': ({ layerId, featureId, feature }) => layers[featureUrn(layerId, featureId)].updateData(feature),
+    'feature-deleted': ({ layerId, featureId }) => deleteLayer(featureUrn(layerId, featureId))
+  }
+
+  const handlers = {
+    'snapshot': ({ snapshot }) => (state = snapshot),
+    'replay-ready': () => (replaying = false),
+    'layer-added': ({ layerId, show }) => (state[layerId] = { show, features: {} }),
+    'layer-deleted': ({ layerId }) => delete state[layerId],
+    'layer-hidden': ({ layerId }) => (state[layerId].show = false),
+    'layer-shown': ({ layerId }) => (state[layerId].show = true),
+    'feature-added': ({ layerId, featureId, feature }) => (state[layerId].features[featureId] = feature),
+    'feature-updated': ({ layerId, featureId, feature }) => (state[layerId].features[featureId] = feature),
+    'feature-deleted': ({ layerId, featureId }) => delete state[layerId].features[featureId]
   }
 
   store.register(event => {
-    const handler = handlers[event.type]
-    if (handler) return handler(event)
-    else console.log('[map layers] unhandled', event)
+    if (!handlers[event.type]) return
+    handlers[event.type](event)
+    if (replaying || !render[event.type]) return
+    render[event.type](event)
   })
 })
