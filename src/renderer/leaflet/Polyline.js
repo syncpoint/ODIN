@@ -6,7 +6,7 @@ L.Feature.Polyline = L.Feature.Polystar.extend({
   createShape (options) {
     const group = L.SVG.create('g')
     const outlinePath = L.SVG.path({ 'stroke-width': 10, stroke: 'black', fill: 'none', 'opacity': 0.0 })
-    const linePath = L.SVG.path({ 'stroke-width': 2, stroke: 'black', fill: 'none' })
+    const linePath = L.SVG.path({ 'stroke-width': 4, stroke: 'black', fill: 'none' })
 
     // TODO: check flag options.interactive
     L.DomUtil.addClass(outlinePath, 'leaflet-interactive')
@@ -17,7 +17,8 @@ L.Feature.Polyline = L.Feature.Polystar.extend({
 
     const update = latlngs => {
       const path = [latlngs]
-      const d = L.SVG.pointsToPath(options.layerPoints(path))
+      const [closed, smooth] = [false, false]
+      const d = L.SVG.pointsToPath(options.layerPoints(path), closed, smooth)
       outlinePath.setAttribute('d', d)
       linePath.setAttribute('d', d)
     }
