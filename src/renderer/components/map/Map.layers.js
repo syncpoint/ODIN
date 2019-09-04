@@ -3,6 +3,7 @@ import evented from '../../evented'
 import store from '../../stores/layer-store'
 import undoBuffer from '../App.undo-buffer'
 import { ResourceNames } from '../../model/resource-names'
+import { K } from '../../../shared/combinators'
 
 const layerUrn = layerId => ResourceNames.layerId(layerId)
 const featureUrn = (layerId, featureId) => ResourceNames.featureId(layerId, featureId)
@@ -35,6 +36,27 @@ const adaptFeature = (layerId, featureId, feature) => {
   return layer
 }
 
+const bounds = bbox => {
+  if (!bbox) return
+  if (typeof bbox !== 'string') return
+
+  const bounds = (lat1, lng1, lat2, lng2) => L.latLngBounds(L.latLng(lat1, lng1), L.latLng(lat2, lng2))
+
+  // Format: PostGIS (ST_Extent())
+  const regex = /BOX\((.*)[ ]+(.*)[, ]+(.*)[ ]+(.*)\)/
+  const match = bbox.match(regex)
+  if (match) {
+    /* eslint-disable no-unused-vars */
+    const [_, lng1, lat1, lng2, lat2] = match
+    return bounds(lat1, lng1, lat2, lng2)
+    /* eslint-enable no-unused-vars */
+  }
+
+  // Format: GeoJSON (simple array)
+  const [lng1, lat1, lng2, lat2] = JSON.parse(bbox)
+  return bounds(lat1, lng1, lat2, lng2)
+}
+
 evented.on('MAP_CREATED', map => {
   let replaying = true
   let state = {}
@@ -65,6 +87,12 @@ evented.on('MAP_CREATED', map => {
       if (show) layers[urn].addTo(map)
     },
 
+    'bounds-updated': ({ layerId, bbox }) => {
+      K(bounds(bbox))(bounds => {
+        if (bounds) map.fitBounds(bounds)
+      })
+    },
+
     'layer-deleted': ({ layerId }) => deleteLayer(layerUrn(layerId)),
     'layer-hidden': ({ layerId }) => layers[layerUrn(layerId)].remove(),
     'layer-shown': ({ layerId }) => layers[layerUrn(layerId)].addTo(map),
@@ -93,8 +121,7 @@ evented.on('MAP_CREATED', map => {
   }
 
   store.register(event => {
-    if (!handlers[event.type]) return
-    handlers[event.type](event)
+    handlers[event.type] && handlers[event.type](event)
     if (replaying || !render[event.type]) return
     render[event.type](event)
   })
