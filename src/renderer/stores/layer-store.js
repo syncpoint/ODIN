@@ -1,4 +1,3 @@
-import EventEmitter from 'events'
 import { ipcRenderer } from 'electron'
 import now from 'nano-time'
 import uuid from 'uuid-random'
@@ -8,7 +7,7 @@ import { clipboard } from '../components/App.clipboard'
 
 // TODO: purge snapshots
 
-const evented = new EventEmitter()
+const evented = {}
 let state = {}
 
 let eventCount = 0
@@ -39,7 +38,6 @@ const reduce = event => {
 const persist = event => {
   db.put(`layer:journal:${now()}`, event)
   reduce(event)
-  evented.emit('event', event)
   reducers.forEach(reduce => reduce(event))
 }
 
