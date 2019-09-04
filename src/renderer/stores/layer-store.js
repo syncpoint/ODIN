@@ -12,7 +12,6 @@ const evented = new EventEmitter()
 let state = {}
 
 let eventCount = 0
-let ready = false
 const reducers = []
 
 const handlers = {
@@ -34,8 +33,7 @@ const reduce = event => {
   }
 
   const handler = handlers[event.type]
-  if (handler) return handler(event)
-  else console.log('[layer-store] unhandled', event)
+  if (handler) handler(event)
 }
 
 const persist = event => {
@@ -87,14 +85,7 @@ const replay = reduce => {
     .then(() => reduce({ type: 'replay-ready' }))
 }
 
-replay(reduce).then(() => {
-  evented.emit('ready', { ...state })
-  ready = true
-  reducers.push(reduce)
-})
-
-evented.ready = () => ready
-evented.state = () => state
+replay(reduce).then(() => reducers.push(reduce))
 
 // Add new or replace existing layer.
 evented.addLayer = (layerId, name) => {
