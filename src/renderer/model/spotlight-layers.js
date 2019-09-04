@@ -64,9 +64,9 @@ export default register => {
     return items
   }
 
-  store.register(event => {
-    console.log('[spotlight-layers]', event)
-  })
+  // store.register(event => {
+  //   console.log('[spotlight-layers]', event)
+  // })
 
   if (store.ready()) contributor.emit('updated', contribution())
   else store.once('ready', () => contributor.emit('updated', contribution()))
