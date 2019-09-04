@@ -16,6 +16,7 @@ const reducers = []
 const handlers = {
   'snapshot': ({ snapshot }) => (state = snapshot),
   'layer-added': ({ layerId, name, show }) => (state[layerId] = { name, show, features: {} }),
+  'bounds-updated': ({ layerId, bbox }) => (state[layerId].bbox = bbox),
   'layer-deleted': ({ layerId }) => delete state[layerId],
   'layer-hidden': ({ layerId }) => (state[layerId].show = false),
   'layer-shown': ({ layerId }) => (state[layerId].show = true),
@@ -91,6 +92,11 @@ evented.addLayer = (layerId, name) => {
   const existing = Object.entries(state).find(([_, layer]) => layer.name === name)
   if (existing) persist({ type: 'layer-deleted', layerId: existing[0] })
   persist({ type: 'layer-added', layerId, name, show: true })
+}
+
+evented.updateBounds = (layerId, bbox) => {
+  if (!state[layerId]) return
+  persist({ type: 'bounds-updated', layerId, bbox })
 }
 
 // Delete zero, one or more layers.
