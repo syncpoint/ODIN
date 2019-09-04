@@ -17,8 +17,11 @@ class Spotlight extends React.Component {
   }
 
   setSelectionIndex (selectionIndex) {
-    if (selectionIndex < 0 || selectionIndex >= this.state.rows.length) return
-    this.setState({ ...this.state, selectionIndex })
+    // Update selection index on next tick to make sure that row update doesn't get lost:
+    setImmediate(() => {
+      if (selectionIndex < 0 || selectionIndex >= this.state.rows.length) return
+      this.setState({ ...this.state, selectionIndex })
+    })
   }
 
   invokeAction (action, rowPos) {
