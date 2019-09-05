@@ -5,10 +5,10 @@ import * as R from 'ramda'
 import { db } from './db'
 import { clipboard } from '../components/App.clipboard'
 
-// TODO: purge snapshots
+// TODO: purge snapshots/events
 
 const evented = {}
-let state = {}
+let state = {} // in-memory snapshot
 
 let eventCount = 0
 const reducers = []
@@ -139,7 +139,6 @@ evented.deleteFeature = layerId => featureId => {
   persist({ type: 'feature-deleted', layerId, featureId })
 }
 
-// TODO: remove when we have projections
 evented.layer = layerId => state[layerId]
 evented.feature = (layerId, featureId) => state[layerId].features[featureId]
 
@@ -158,12 +157,12 @@ commands.updateGeometry = (layerId, featureId) => geometry => {
   const snapshot = evented.feature(layerId, featureId)
   const currentGeometry = R.clone(snapshot.geometry)
 
-  const command = (currentGeometry, geometry) => ({
+  const factory = (currentGeometry, geometry) => ({
     run: () => evented.updateFeature(layerId)(featureId, { ...snapshot, geometry }),
-    inverse: () => command(geometry, currentGeometry)
+    inverse: () => factory(geometry, currentGeometry)
   })
 
-  return command(currentGeometry, geometry)
+  return factory(currentGeometry, geometry)
 }
 
 // Clipboard handlers ==>
