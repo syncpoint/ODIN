@@ -8,7 +8,7 @@ const features = featureDescriptors.map(feature => {
 
   return {
     // Limit SIDC to first 10 characters:
-    sidc: feature.sidc,
+    sidc: feature.sidc.substring(0, 10),
     name: title,
     info: body,
     geometries: feature.geometries
@@ -19,7 +19,6 @@ const documents = () => features.map((element, index) => (
   { id: index, title: element.name, body: element.info }
 ))
 
-
 const index = lunr(function () {
   this.field('title')
   this.field('body')
@@ -29,8 +28,8 @@ const index = lunr(function () {
 })
 
 export const findSpecificItem = sidc => {
-  const genericSIDC = sidc => sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 15)
-  return features.find(feature => feature.sidc === genericSIDC(sidc))
+  const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 10)
+  return features.find(feature => feature.sidc === genericSIDC)
 }
 
 export const search = term => {
