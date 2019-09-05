@@ -8,12 +8,12 @@ import store from '../../stores/layer-store'
 const importFile = filename => {
   try {
     const json = JSON.parse(fs.readFileSync(filename))
-    // TODO: assign UUIDs to layer and features
     if (json.type === 'FeatureCollection') {
       const basename = path.basename(filename, '.json')
       const layerId = uuid()
       store.addLayer(layerId, basename)
       json.features.forEach(feature => store.addFeature(layerId)(uuid(), feature))
+      if (json.bbox) store.updateBounds(layerId, json.bbox)
     }
   } catch (err) {
     console.error(err)
