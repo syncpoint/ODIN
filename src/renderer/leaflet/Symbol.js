@@ -3,6 +3,8 @@ import ms from 'milsymbol'
 import { fromNow } from '../../shared/datetime'
 import { K } from '../../shared/combinators'
 import selection from '../components/App.selection'
+import evented from '../evented'
+import { findSpecificItem } from '../stores/feature-store'
 
 const MODIFIER_MAP = {
   c: 'quantity',
@@ -59,6 +61,7 @@ const options = {
 
 const initialize = function (feature, options) {
   options = options || {}
+  this.title = feature.title
   this.properties = feature.properties
 
   // Prepare standard and highlighted icons:
@@ -83,6 +86,21 @@ const initialize = function (feature, options) {
     this.dragging.disable()
     this.setIcon(this.icons.standard)
   }
+
+  const item = findSpecificItem(this.properties.sidc)
+
+  this.mouseover = event => {
+    if (!event.originalEvent.ctrlKey) return
+    if (item && item.name) evented.emit('OSD_MESSAGE', { slot: 'B1', message: item.name })
+    if (this.title) evented.emit('OSD_MESSAGE', { slot: 'B2', message: this.title })
+    if (this.properties.w) evented.emit('OSD_MESSAGE', { slot: 'B3', message: fromNow(this.properties.w) })
+  }
+
+  this.mouseout = () => {
+    evented.emit('OSD_MESSAGE', { slot: 'B1', message: '' })
+    evented.emit('OSD_MESSAGE', { slot: 'B2', message: '' })
+    evented.emit('OSD_MESSAGE', { slot: 'B3', message: '' })
+  }
 }
 
 const prepareIcons = function (feature) {
@@ -95,10 +113,13 @@ const prepareIcons = function (feature) {
 
 const onAdd = function (map) {
   L.Marker.prototype.onAdd.call(this, map)
+
   this.on('click', this.edit, this)
   this.on('dragend', this.onDragend, this)
   selection.on('selected', this.selected)
   selection.on('deselected', this.deselected)
+  this.on('mouseover', this.mouseover)
+  this.on('mouseout', this.mouseout)
 
   this.setIcon(selection.isSelected(this.urn) ? this.icons.highlighted : this.icons.standard)
   if (selection.isPreselected(this.urn)) setImmediate(() => this.edit())
@@ -109,6 +130,8 @@ const onRemove = function (map) {
   selection.off('selected', this.selected)
   this.off('dragend', this.onDragend, this)
   this.off('click', this.edit, this)
+  this.off('mouseover', this.mouseover)
+  this.off('mouseout', this.mouseout)
   L.Marker.prototype.onRemove.call(this, map)
 }
 
