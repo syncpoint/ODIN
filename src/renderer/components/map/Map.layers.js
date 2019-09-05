@@ -1,9 +1,11 @@
+import { ipcRenderer } from 'electron'
 import L from 'leaflet'
 import evented from '../../evented'
 import store from '../../stores/layer-store'
 import undoBuffer from '../App.undo-buffer'
 import { ResourceNames } from '../../model/resource-names'
 import { K } from '../../../shared/combinators'
+import settings from '../../model/settings'
 
 const layerUrn = layerId => ResourceNames.layerId(layerId)
 const featureUrn = (layerId, featureId) => ResourceNames.featureId(layerId, featureId)
@@ -17,7 +19,7 @@ const genericShape = (feature, options) => {
   }
 }
 
-const adaptFeature = (layerId, featureId, feature) => {
+const adaptFeature = (layerId, featureId, feature, lineSmoothing) => {
   const updateGeometry = geometry => {
     const command = store.commands.updateGeometry(layerId, featureId)(geometry)
     undoBuffer.push(command)
@@ -27,6 +29,7 @@ const adaptFeature = (layerId, featureId, feature) => {
   const options = {
     interactive: true,
     bubblingMouseEvents: false,
+    lineSmoothing,
     updateGeometry
   }
 
@@ -58,6 +61,7 @@ const bounds = bbox => {
 }
 
 evented.on('MAP_CREATED', map => {
+  let lineSmoothing = settings.map.getLineSmoothing()
   let replaying = true
   let state = {}
 
@@ -66,21 +70,22 @@ evented.on('MAP_CREATED', map => {
 
   const deleteLayer = urn => { layers[urn].remove(); delete layers[urn] }
 
+  const refreshView = () => Object.entries(state).reduce((acc, [layerId, layer]) => {
+    const featureLayers = Object.entries(layer.features).map(([featureId, feature]) => {
+      const urn = featureUrn(layerId, featureId)
+      acc[urn] = adaptFeature(layerId, featureId, feature, lineSmoothing)
+      acc[urn].urn = urn
+      return layers[urn]
+    })
+
+    const urn = layerUrn(layerId)
+    acc[urn] = new L.LayerGroup(featureLayers)
+    if (layer.show) acc[urn].addTo(map)
+    return acc
+  }, layers)
+
   const render = {
-    'replay-ready': () => Object.entries(state).reduce((acc, [layerId, layer]) => {
-      const featureLayers = Object.entries(layer.features).map(([featureId, feature]) => {
-        const urn = featureUrn(layerId, featureId)
-        acc[urn] = adaptFeature(layerId, featureId, feature)
-        acc[urn].urn = urn
-        return layers[urn]
-      })
-
-      const urn = layerUrn(layerId)
-      acc[urn] = new L.LayerGroup(featureLayers)
-      if (layer.show) acc[urn].addTo(map)
-      return acc
-    }, layers),
-
+    'replay-ready': () => refreshView(),
     'layer-added': ({ layerId, show }) => {
       const urn = layerUrn(layerId)
       layers[urn] = new L.LayerGroup([])
@@ -99,13 +104,18 @@ evented.on('MAP_CREATED', map => {
 
     'feature-added': ({ layerId, featureId, feature }) => {
       const urn = featureUrn(layerId, featureId)
-      layers[urn] = adaptFeature(layerId, featureId, feature)
+      layers[urn] = adaptFeature(layerId, featureId, feature, lineSmoothing)
       layers[urn].urn = urn
       layers[urn].addTo(layers[layerUrn(layerId)])
     },
 
     'feature-updated': ({ layerId, featureId, feature }) => layers[featureUrn(layerId, featureId)].updateData(feature),
-    'feature-deleted': ({ layerId, featureId }) => deleteLayer(featureUrn(layerId, featureId))
+    'feature-deleted': ({ layerId, featureId }) => deleteLayer(featureUrn(layerId, featureId)),
+    'options-updated': () => {
+      // Tear down every visible layer and build from scratch.
+      Object.values(layers).forEach(layer => layer.remove())
+      refreshView()
+    }
   }
 
   const handlers = {
@@ -124,5 +134,11 @@ evented.on('MAP_CREATED', map => {
     handlers[event.type] && handlers[event.type](event)
     if (replaying || !render[event.type]) return
     render[event.type](event)
+  })
+
+  ipcRenderer.on('COMMAND_TOGGLE_LINE_SMOOTHING', (_, args) => {
+    lineSmoothing = args
+    settings.map.setLineSmoothing(args)
+    render['options-updated']()
   })
 })

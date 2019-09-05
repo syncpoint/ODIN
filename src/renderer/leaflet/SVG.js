@@ -1,5 +1,6 @@
 import L from 'leaflet'
 import { K } from '../../shared/combinators'
+import { svgPath, bezierCommand } from './smooth'
 
 const setAttribute = (o, [k, v]) => K(o)(o => o.setAttribute(k, v))
 L.SVG.setAttributes = o => attrs => Object.entries(attrs).reduce(setAttribute, o)
@@ -32,3 +33,12 @@ L.SVG.transformBackdrop = (center, bbox, angle) => `
   rotate(${angle - 90})
   scale(1.4 1.2)
   translate(${bbox.x} ${bbox.y})`
+
+const pointsToPath = L.SVG.pointsToPath
+L.SVG.pointsToPath = (rings, closed, smooth) => {
+  if (!smooth) return pointsToPath(rings, closed)
+  else {
+    const points = rings[0].map(({ x, y }) => [x, y])
+    return svgPath(points, bezierCommand)
+  }
+}
