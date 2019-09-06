@@ -9,6 +9,10 @@ import './NamedArea'
 
 import './Symbol'
 import './TACGRP/TACGRP.C2GM'
+import './TACGRP/TACGRP.TSK'
+
+import './Shape'
+import './Corridor2Point'
 
 import { K } from '../../shared/combinators'
 

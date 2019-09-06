@@ -71,14 +71,22 @@ evented.on('MAP_CREATED', map => {
   const deleteLayer = urn => { layers[urn].remove(); delete layers[urn] }
 
   const refreshView = () => Object.entries(state).reduce((acc, [layerId, layer]) => {
-    const featureLayers = Object.entries(layer.features).map(([featureId, feature]) => {
-      const urn = featureUrn(layerId, featureId)
-      acc[urn] = adaptFeature(layerId, featureId, feature, lineSmoothing)
-      acc[urn].urn = urn
-      return layers[urn]
-    })
+
+    const featureLayers = Object.entries(layer.features)
+      .map(([featureId, feature]) => {
+        const urn = featureUrn(layerId, featureId)
+        const layer = adaptFeature(layerId, featureId, feature, lineSmoothing)
+        return [urn, layer]
+      })
+      .filter(([_, layer]) => layer)
+      .map(([urn, layer]) => {
+        acc[urn] = layer
+        acc[urn].urn = urn
+        return layers[urn]
+      })
 
     const urn = layerUrn(layerId)
+
     acc[urn] = new L.LayerGroup(featureLayers)
     if (layer.show) acc[urn].addTo(map)
     return acc
@@ -104,7 +112,10 @@ evented.on('MAP_CREATED', map => {
 
     'feature-added': ({ layerId, featureId, feature }) => {
       const urn = featureUrn(layerId, featureId)
-      layers[urn] = adaptFeature(layerId, featureId, feature, lineSmoothing)
+      const layer = adaptFeature(layerId, featureId, feature, lineSmoothing)
+      if (!layer) return
+
+      layers[urn] = layer
       layers[urn].urn = urn
       layers[urn].addTo(layers[layerUrn(layerId)])
     },
