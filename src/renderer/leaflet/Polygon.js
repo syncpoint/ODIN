@@ -5,6 +5,7 @@ L.Feature.Polygon = L.Feature.Polystar.extend({
 
   createShape (options) {
     const group = L.SVG.create('g')
+    // TODO: get styling from options
     const outlinePath = L.SVG.path({ 'stroke-width': 10, stroke: 'black', fill: 'none', 'opacity': 0.0 })
     const linePath = L.SVG.path({ 'stroke-width': 3, stroke: 'black', fill: 'none' })
 
