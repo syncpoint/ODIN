@@ -8,7 +8,6 @@ const MARKER_UPDATE = 'update-point'
 const MARKER_ADD = 'add-point'
 
 const initialize = function (geometry, callback) {
-  // TODO: add marker group to editorPane
   L.LayerGroup.prototype.initialize.call(this)
   this.geometry = geometry
   this.callback = callback

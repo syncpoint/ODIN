@@ -9,6 +9,8 @@ import { handleMarker } from './Markers'
  */
 export const editor = shape => (map, geometry) => {
   const disposables = disposable.of()
+
+  // TODO: replace with callback
   const geometries = new Readable({ objectMode: true, read: () => {} })
   const markerGroup = K(new L.LayerGroup())(layer => map.addLayer(layer))
   disposables.addDisposable(() => map.removeLayer(markerGroup))

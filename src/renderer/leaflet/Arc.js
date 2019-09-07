@@ -1,5 +1,6 @@
 import L from 'leaflet'
 import './Shape'
+import { wrap360 } from './geodesy'
 
 /**
  * Circle segment (arc) with fixed size angle and mnmRange = 0.
@@ -30,8 +31,19 @@ const createGeometry = function (feature) {
     geometry.points = fn => ['C', 'O', 'S'].forEach(id => fn(id, geometry[id]))
     geometry.update = (id, latlng) => {
       if (handlers[id]) return handlers[id](latlng)
-      else return create(center, orientAngle, maxRange)
+      else return create(center, wrap360(orientAngle), maxRange)
     }
+
+    // NOTE: We only supply what's necessary for a merge with previous state.
+    geometry.geoJSON = () => ({
+      geometry: {
+        coordinates: [center.lng, center.lat]
+      },
+      properties: {
+        geometry_orient_angle: wrap360(orientAngle),
+        geometry_max_range: maxRange
+      }
+    })
 
     return geometry
   }

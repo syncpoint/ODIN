@@ -1,4 +1,3 @@
-/* eslint-disable */
 import L from 'leaflet'
 import selection from '../components/App.selection'
 import './SVG'
@@ -34,7 +33,7 @@ const onRemove = function (map) {
   map.off('zoomend', this.update, this)
   this.off('click', this.edit, this)
   this.renderer._rootGroup.removeChild(this._group)
-  // TODO: ...
+  this.map.tools.dispose() // dispose editor/selection tool
 }
 
 const shape = function () {
@@ -84,9 +83,9 @@ const edit = function () {
   selection.select(this.urn)
 
   const callback = geometry => {
-    console.log('geometry', geometry)
     this.geometry = geometry
     this.update()
+    geometry.geoJSON && this.options.update(geometry.geoJSON())
   }
 
   this.editor = editors[this.editorType](this.map, this.geometry)
@@ -150,6 +149,12 @@ const updateLabels = function () {
   }
 }
 
+const updateData = function (feature) {
+  this.feature = feature
+  this.geometry = this.createGeometry(feature)
+  this.update()
+}
+
 L.Shape = L.Layer.extend({
   initialize,
   beforeAdd,
@@ -163,7 +168,8 @@ L.Shape = L.Layer.extend({
   edit,
   update,
   updatePath,
-  updateLabels
+  updateLabels,
+  updateData
 })
 
 L.Shape.arrow = (latlng, length, bearing) => [

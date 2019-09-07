@@ -1,4 +1,3 @@
-import { polygonEditor } from './Polygon'
 import { corridorNPointEditor } from './CorridorNPoint'
 import { editor } from './Generic'
 import * as Shapes from './Shapes'
@@ -10,4 +9,3 @@ editors['orbit'] = editor(Shapes.orbitShape)
 editors['fan'] = editor(Shapes.fanShape)
 editors['arc'] = editor(Shapes.arcShape)
 editors['npt-corridor'] = corridorNPointEditor(Shapes.corridorNPointShape)
-editors['polygon'] = polygonEditor(Shapes.noShape)
