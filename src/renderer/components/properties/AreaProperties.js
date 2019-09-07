@@ -1,21 +1,17 @@
-import * as R from 'ramda'
 import React from 'react'
 import { Paper, TextField, FormControlLabel, Checkbox } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
-import layerStore from '../../stores/layer-store'
 import { SelectEchelon } from './SelectEchelon'
+import FeatureProperties from './FeatureProperties'
 
+class AreaProperties extends FeatureProperties {
 
-class AreaProperties extends React.Component {
-  constructor (props) {
-    super(props)
-
-    const { feature } = props
+  extractState (feature) {
     const { title, properties } = feature
     const { sidc } = properties
 
-    this.state = {
+    return {
       name: title || '',
       uniqueDesignation: properties.t || '',
       echelon: sidc[11],
@@ -42,15 +38,6 @@ class AreaProperties extends React.Component {
       title: this.state.name,
       properties
     }
-  }
-
-  updateField (name, value) {
-    const { layerId, featureId } = this.props
-    const state = R.clone(this.state)
-    state[name] = value
-    this.setState(state, () => {
-      layerStore.updateFeature(layerId)(featureId, this.feature())
-    })
   }
 
   render () {
@@ -120,10 +107,7 @@ const styles = theme => ({
 })
 
 AreaProperties.propTypes = {
-  classes: PropTypes.any.isRequired,
-  feature: PropTypes.any.isRequired,
-  layerId: PropTypes.string.isRequired,
-  featureId: PropTypes.string.isRequired
+  classes: PropTypes.any.isRequired
 }
 
 export default withStyles(styles)(AreaProperties)
