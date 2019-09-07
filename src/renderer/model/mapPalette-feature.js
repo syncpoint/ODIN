@@ -14,8 +14,16 @@ const avatar = sidc => {
     : placeholderFeature.asCanvas().toDataURL()
 
   return (
-    <ListItemAvatar>
-      <Avatar src={ url } style={{ borderRadius: 0, width: '15%', height: '15%' }} />
+    <ListItemAvatar style={{ width: '20%', marginTop: 0 }}>
+      <Avatar
+        src={ url }
+        style={{
+          borderRadius: 0,
+          marginRight: 14,
+          width: 'auto',
+          height: 'auto'
+        }}
+      />
     </ListItemAvatar>
   )
 }

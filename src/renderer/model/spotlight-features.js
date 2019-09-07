@@ -20,8 +20,16 @@ export default register => {
     return {
       key: ResourceNames.featureId(layerId, featureId),
       avatar: (
-        <ListItemAvatar>
-          <Avatar src={ url } style={{ borderRadius: 0, width: '15%', height: '15%' }} />
+        <ListItemAvatar style={{ width: '20%', marginTop: 0 }}>
+          <Avatar
+            src={ url }
+            style={{
+              borderRadius: 0,
+              marginRight: 14,
+              width: 'auto',
+              height: 'auto'
+            }}
+          />
         </ListItemAvatar>
       ),
       text: <ListItemText primary={ feature.title } secondary={ `${layerName}` }/>,
