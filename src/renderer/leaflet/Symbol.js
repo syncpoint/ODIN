@@ -151,7 +151,7 @@ const edit = function () {
 }
 
 const onDragend = function () {
-  this.options.updateGeometry(this.geometry())
+  this.options.update({ geometry: this.geometry() })
 }
 
 const updateData = function (feature) {
