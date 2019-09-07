@@ -129,15 +129,13 @@ evented.addFeature = layerId => (featureId, feature) => {
   persist({ type: 'feature-added', layerId, featureId, feature })
 }
 
-evented.updateFeature = layerId => (featureId, feature) => {
+evented.updateFeature = layerId => (featureId, feature) => persist({
+  type: 'feature-updated',
+  layerId,
+  featureId,
   // NOTE: Allows for partial updates:
-  persist({
-    type: 'feature-updated',
-    layerId,
-    featureId,
-    feature: { ...state[layerId].features[featureId], ...feature }
-  })
-}
+  feature: R.mergeDeepRight(state[layerId].features[featureId], feature)
+})
 
 evented.deleteFeature = layerId => featureId => {
   if (!state[layerId]) return
@@ -158,17 +156,14 @@ evented.register = reduce => {
 const commands = {}
 evented.commands = commands
 
-commands.updateGeometry = (layerId, featureId) => geometry => {
-  // Capture current situation:
-  const snapshot = evented.feature(layerId, featureId)
-  const currentGeometry = R.clone(snapshot.geometry)
-
-  const factory = (currentGeometry, geometry) => ({
-    run: () => evented.updateFeature(layerId)(featureId, { ...snapshot, geometry }),
-    inverse: () => factory(geometry, currentGeometry)
+commands.update = (layerId, featureId) => feature => {
+  const factory = (current, feature) => ({
+    run: () => evented.updateFeature(layerId)(featureId, feature),
+    inverse: () => factory(feature, current)
   })
 
-  return factory(currentGeometry, geometry)
+  const current = R.clone(evented.feature(layerId, featureId))
+  return factory(current, feature)
 }
 
 // Clipboard handlers ==>

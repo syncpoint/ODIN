@@ -20,8 +20,8 @@ const genericShape = (feature, options) => {
 }
 
 const adaptFeature = (layerId, featureId, feature, lineSmoothing) => {
-  const updateGeometry = geometry => {
-    const command = store.commands.updateGeometry(layerId, featureId)(geometry)
+  const update = feature => {
+    const command = store.commands.update(layerId, featureId)(feature)
     undoBuffer.push(command)
     command.run()
   }
@@ -30,7 +30,7 @@ const adaptFeature = (layerId, featureId, feature, lineSmoothing) => {
     interactive: true,
     bubblingMouseEvents: false,
     lineSmoothing,
-    updateGeometry
+    update: update
   }
 
   const sidc = feature.properties.sidc
