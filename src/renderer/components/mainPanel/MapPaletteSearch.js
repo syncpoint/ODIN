@@ -75,8 +75,8 @@ const styles = theme => ({
   searchField: {
     paddingLeft: '12px',
     paddingRight: '8px',
-    paddingTop: theme.spacing.unit,
-    paddingBottom: theme.spacing.unit,
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
     fontSize: '120%',
     gridArea: 'input'
   }
