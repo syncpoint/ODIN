@@ -1,5 +1,6 @@
 import L from 'leaflet'
 import '../NamedArea'
+import './TACGRP.C2GM.GNL.ARS.SRHARA'
 import './TACGRP.C2GM.GNL.LNE.BNDS'
 
 L.Feature['G*G*GAA---'] = L.Feature.NamedArea.extend({ name: 'AA' })
