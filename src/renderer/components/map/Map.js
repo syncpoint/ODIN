@@ -4,7 +4,6 @@ import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { ipcRenderer } from 'electron'
 import evented from '../../evented'
-import { panes } from '../../leaflet/'
 import { K } from '../../../shared/combinators'
 import { zoomLevels } from './zoom-levels'
 import { defaultValues } from '../ipc/display-filters'
@@ -31,9 +30,10 @@ const updateDisplayFilter = map => values => {
     .map(([name, { value, unit }]) => `${name}(${value}${unit})`)
     .join(' ')
 
-  panes(layer => layer /* instanceof L.TileLayer */)(map)
-    .map(pane => pane.style)
-    .forEach(style => (style.filter = filter))
+  const include = name => ['tilePane', 'markerPane', 'overlayPane'].includes(name)
+  Object.entries(map.getPanes())
+    .filter(([name, _]) => include(name))
+    .forEach(([_, pane]) => (pane.style.filter = filter))
 }
 
 const updateCoordinateDisplay = ({ latlng }) => {
