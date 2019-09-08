@@ -1,34 +1,20 @@
 import React from 'react'
-import { ListItemText, ListItemAvatar, Avatar } from '@material-ui/core'
+import { ListItemText } from '@material-ui/core'
 import ms from 'milsymbol'
 import { findSpecificItem } from '../stores/feature-store'
+import ListItemSymbol from '../components/ListItemSymbol'
 
-const placeholderFeature = new ms.Symbol('')
+const placeholderSymbol = new ms.Symbol('')
 const specificSIDC = sidc => sidc[0] + 'F' + sidc[2] + '-' + sidc.substring(4)
 
 const avatar = sidc => {
+  const symbol = new ms.Symbol(sidc)
+  const url = symbol.isValid(false)
+    ? symbol.asCanvas().toDataURL()
+    : placeholderSymbol.asCanvas().toDataURL()
 
-  const feature = new ms.Symbol(sidc)
-  const url = feature.isValid(false)
-    ? feature.asCanvas().toDataURL()
-    : placeholderFeature.asCanvas().toDataURL()
-
-  return (
-    <ListItemAvatar style={{ width: '20%', marginTop: 0 }}>
-      <Avatar
-        src={ url }
-        style={{
-          borderRadius: 0,
-          marginRight: 14,
-          width: 'auto',
-          height: 'auto'
-        }}
-      />
-    </ListItemAvatar>
-  )
+  return <ListItemSymbol src={ url }/>
 }
-
-// TODO: remove duplicate code
 
 const featureListFromSidc = list => {
   return list.map(element => {
