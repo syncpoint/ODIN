@@ -20,11 +20,3 @@ import { K } from '../../shared/combinators'
 export const layers = container => {
   return K([])(layers => container.eachLayer(layer => layers.push(layer)))
 }
-
-/**
- * HTML `style` attributes for all matching layers (</div>) panes.
- * layerPanes :: (</div> a) => (L.Layer -> boolean) -> L.Map -> [a]
- */
-export const panes = predicate => map => layers(map)
-  .filter(predicate)
-  .map(layer => layer.getPane())
