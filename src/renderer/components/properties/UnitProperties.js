@@ -237,7 +237,7 @@ class UnitProperties extends FeatureProperties {
 
 const styles = theme => ({
   paper: {
-    padding: theme.spacing.unit * 4,
+    padding: theme.spacing(4),
     height: 'auto',
     pointerEvents: 'auto',
     gridArea: 'R',

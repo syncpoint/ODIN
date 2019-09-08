@@ -46,7 +46,7 @@ class ResultList extends React.Component {
         key={ row.key }
         onClick={ () => this.handleClick(row.key) }
         onDoubleClick={ () => this.handleDoubleClick(row.key) }
-        selected={index === selectionIndex}
+        selected={ index === selectionIndex }
       >
         { row.avatar }
         { row.text }

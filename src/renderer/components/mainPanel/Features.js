@@ -3,9 +3,7 @@ import { List, ListItem } from '@material-ui/core'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 
-// TODO: rename to feature list
 class Features extends React.Component {
-
 
   createClassName (parentId, index) {
     return 'features:scrollto:' + parentId + '-' + index
