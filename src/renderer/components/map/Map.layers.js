@@ -81,11 +81,22 @@ evented.on('MAP_CREATED', map => {
     const urn = layerUrn(layerId)
     acc[urn] = new L.LayerGroup(featureLayers)
     if (layer.show) acc[urn].addTo(map)
+
     return acc
   }, layers)
 
   const render = {
-    'replay-ready': () => refreshView(),
+    'replay-ready': () => {
+      refreshView()
+      const filter = Object.entries(settings.map.getDisplayFilters())
+        .map(([name, { value, unit }]) => `${name}(${value}${unit})`)
+        .join(' ')
+
+      const include = name => ['tilePane', 'markerPane', 'overlayPane'].includes(name)
+      Object.entries(map.getPanes())
+        .filter(([name, _]) => include(name))
+        .forEach(([_, pane]) => (pane.style.filter = filter))
+    },
     'layer-added': ({ layerId, show }) => {
       const urn = layerUrn(layerId)
       layers[urn] = new L.LayerGroup([])
