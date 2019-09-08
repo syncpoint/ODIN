@@ -1,11 +1,12 @@
 import EventEmitter from 'events'
 import React from 'react'
-import { ListItemText, ListItemAvatar, Avatar } from '@material-ui/core'
+import { ListItemText } from '@material-ui/core'
 import L from 'leaflet'
 import ms from 'milsymbol'
 import store from '../stores/layer-store'
 import evented from '../evented'
 import { ResourceNames } from './resource-names'
+import ListItemSymbol from '../components/ListItemSymbol'
 
 export default register => {
   let replaying = true
@@ -19,19 +20,7 @@ export default register => {
     const url = new ms.Symbol(feature.properties.sidc, symbolOptions).asCanvas().toDataURL()
     return {
       key: ResourceNames.featureId(layerId, featureId),
-      avatar: (
-        <ListItemAvatar style={{ width: '20%', marginTop: 0 }}>
-          <Avatar
-            src={ url }
-            style={{
-              borderRadius: 0,
-              marginRight: 14,
-              width: 'auto',
-              height: 'auto'
-            }}
-          />
-        </ListItemAvatar>
-      ),
+      avatar: <ListItemSymbol src={ url }/>,
       text: <ListItemText primary={ feature.title } secondary={ `${layerName}` }/>,
       action: () => evented.emit('map.center', L.latLng(lat, lng)),
       delete: () => store.deleteFeature(layerId)([featureId])
