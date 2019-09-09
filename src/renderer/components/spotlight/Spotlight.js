@@ -111,7 +111,6 @@ const styles = theme => ({
   paper: {
     pointerEvents: 'auto',
     gridArea: 'R',
-    background: 'rgba(252, 252, 255, 0.9)',
 
     // Layout:
     display: 'grid',

@@ -84,7 +84,6 @@ const styles = theme => ({
     height: 'auto',
     pointerEvents: 'auto',
     gridArea: 'R',
-    background: 'rgba(252, 252, 255, 0.9)',
 
     display: 'grid',
     gridGap: '0.5em',
