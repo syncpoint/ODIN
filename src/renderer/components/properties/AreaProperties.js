@@ -77,7 +77,7 @@ class AreaProperties extends FeatureProperties {
         />
 
         <FormControlLabel
-          control={ <Checkbox color="secondary" checked={ this.state.hostile } /> }
+          control={ <Checkbox color="secondary" checked={ this.state.hostile === 'ENY' } /> }
           label="Hostile (Enemy)"
           labelPlacement="end"
           onChange={ event => this.updateField('hostile', hostile(event)) }

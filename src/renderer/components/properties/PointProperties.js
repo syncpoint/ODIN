@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React from 'react'
 import { Paper, TextField, FormControlLabel, Checkbox } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
@@ -67,7 +69,7 @@ class PointProperties extends FeatureProperties {
         />
 
         <FormControlLabel
-          control={ <Checkbox color="secondary" checked={ this.state.hostile } /> }
+          control={ <Checkbox color="secondary" checked={ this.state.hostile === 'ENY' } /> }
           label="Hostile (Enemy)"
           labelPlacement="end"
           onChange={ event => this.updateField('hostile', hostile(event)) }
