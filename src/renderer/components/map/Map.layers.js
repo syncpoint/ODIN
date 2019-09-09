@@ -71,12 +71,14 @@ evented.on('MAP_CREATED', map => {
   const deleteLayer = urn => { layers[urn].remove(); delete layers[urn] }
 
   const refreshView = () => Object.entries(state).reduce((acc, [layerId, layer]) => {
-    const featureLayers = Object.entries(layer.features).map(([featureId, feature]) => {
-      const urn = featureUrn(layerId, featureId)
-      acc[urn] = adaptFeature(layerId, featureId, feature, lineSmoothing)
-      acc[urn].urn = urn
-      return layers[urn]
-    })
+    const featureLayers = Object.entries(layer.features)
+      .filter(([_, feature]) => feature.properties.sidc)
+      .map(([featureId, feature]) => {
+        const urn = featureUrn(layerId, featureId)
+        acc[urn] = adaptFeature(layerId, featureId, feature, lineSmoothing)
+        acc[urn].urn = urn
+        return layers[urn]
+      })
 
     const urn = layerUrn(layerId)
     acc[urn] = new L.LayerGroup(featureLayers)
@@ -114,6 +116,7 @@ evented.on('MAP_CREATED', map => {
     'layer-shown': ({ layerId }) => layers[layerUrn(layerId)].addTo(map),
 
     'feature-added': ({ layerId, featureId, feature }) => {
+      if (!feature.properties.sidc) return console.log('missing SIDC', feature)
       const urn = featureUrn(layerId, featureId)
       layers[urn] = adaptFeature(layerId, featureId, feature, lineSmoothing)
       layers[urn].urn = urn
