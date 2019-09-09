@@ -39,7 +39,7 @@ const symbolOptions = feature => ({
   highlighted: {
     size: 34,
     colorMode: 'Light', // default: light
-    monoColor: 'white',
+      monoColor: 'white',
     outlineColor: 'black',
     outlineWidth: 6,
     ...modifiers(feature)
