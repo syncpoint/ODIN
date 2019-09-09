@@ -15,9 +15,16 @@ import { findSpecificItem } from '../../stores/feature-store'
 import { ResourceNames } from '../../model/resource-names'
 import selection from '../App.selection'
 
-const geometryType = descriptor => {
+const geometryType = (descriptor, sidc) => {
+  const includes = type => descriptor.geometries.includes(type)
+  const validSymbol = () => new ms.Symbol(sidc, {}).isValid()
+
   if (!descriptor.geometries) return 'point'
   if (descriptor.geometries.length === 1) return descriptor.geometries[0]
+
+  // Guess-work...
+  if (includes('point') && validSymbol()) return 'point'
+
   return null
 }
 
@@ -71,15 +78,15 @@ class MainPanel extends React.Component {
     // TODO: move to GeoJSON/Feature/SIDC helper.
     const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 15)
     const featureDescriptor = findSpecificItem(genericSIDC)
-    const type = geometryType(featureDescriptor)
+    const type = geometryType(featureDescriptor, sidc)
 
     const geometryHint = () => evented.emit('OSD_MESSAGE', {
       message: `Sorry, the feature's geometry is not supported, yet.`,
       duration: 5000
     })
+
     this.setState({ ...this.state, featureSet, selectedSetIndex: -1, selectedFeatureIndex, indexCache: setId })
     if (!type) return geometryHint()
-    if (type === 'point' && !(new ms.Symbol(sidc, {}).isValid())) return geometryHint()
 
     switch (type) {
       case 'point': return evented.emit('tools.pick-point', {

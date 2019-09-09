@@ -16,6 +16,16 @@ const avatar = sidc => {
   return <ListItemSymbol src={ url }/>
 }
 
+
+const toObject = (element, sidc) => {
+  return {
+    key: element.name,
+    sidc: sidc,
+    text: <ListItemText primary={ element.name } secondary={ element.info } />,
+    avatar: avatar(sidc)
+  }
+}
+
 const featureListFromSidc = list => {
   return list.map(element => {
     const sidc = specificSIDC(element.sidc)
@@ -29,15 +39,6 @@ const featureList = list => {
     const sidc = specificSIDC(element.sidc)
     return toObject(element, sidc)
   })
-}
-
-const toObject = (element, sidc) => {
-  return {
-    key: element.name,
-    sidc: sidc,
-    text: <ListItemText primary={ element.name } secondary={ element.info } />,
-    avatar: avatar(sidc)
-  }
 }
 
 export { featureList, featureListFromSidc }
