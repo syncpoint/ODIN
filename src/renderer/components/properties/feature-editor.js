@@ -17,7 +17,10 @@ const featureClasses = {
 
   E: {
     description: 'Equipment',
-    patterns: [/^S.G.E.*$/],
+    patterns: [
+      /^S.G.E.*$/,
+      /^S.[S|U|A|P].*$/ // SEA SURFACE, SUBSURFACE, AIR AND TRACK
+    ],
     pane: (layerId, featureId, feature) => <EquipmentProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
   },
 
