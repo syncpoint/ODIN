@@ -11,6 +11,26 @@ L.SVG.path = attrs => L.SVG.setAttributes(L.SVG.create('path'))(attrs)
 L.SVG.text = attrs => L.SVG.setAttributes(L.SVG.create('text'))(attrs)
 L.SVG.tspan = attrs => L.SVG.setAttributes(L.SVG.create('tspan'))(attrs)
 L.SVG.g = attrs => L.SVG.setAttributes(L.SVG.create('g'))(attrs)
+L.SVG.pattern = attrs => L.SVG.setAttributes(L.SVG.create('pattern'))(attrs)
+
+L.SVG.diagonalPattern = (id, styles) => {
+  const pattern = L.SVG.pattern({
+    id,
+    patternUnits: 'userSpaceOnUse',
+    width: 4,
+    height: 8,
+    patternTransform: 'rotate(-45)'
+  })
+
+  const patternPath = L.SVG.path({
+    stroke: styles.stroke,
+    'stroke-width': 2,
+    d: 'M -1,2 l 6,0'
+  })
+
+  pattern.appendChild(patternPath)
+  return pattern
+}
 
 // inflate :: SVGRect => number => SVGRect-like
 L.SVG.inflate = (rect, delta) => ({
