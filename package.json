@@ -58,6 +58,7 @@
     "leaflet": "1.5.1",
     "level": "^5.0.1",
     "lunr": "^2.3.6",
+    "mathjs": "^6.2.1",
     "milsymbol": "^2.0.0",
     "moment": "^2.24.0",
     "mousetrap": "^1.6.3",

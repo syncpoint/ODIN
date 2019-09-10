@@ -1,5 +1,9 @@
+/* eslint-disable */
 import L from 'leaflet'
 import uuid from 'uuid-random'
+import * as math from 'mathjs'
+import * as R from 'ramda'
+import selection from '../components/App.selection'
 
 const ColorSchemes = {
   dark: {
@@ -40,21 +44,36 @@ const Geometry = geometry => {
 // * points (pixel coordinates)
 // * styles (stroke-weight, color, fill, line-smoothing, etc.)
 // * labels (content, alignment, placement)
-const polygon = (root, options) => {
-  console.log('polygon', options)
+const polygon = (renderer, options) => {
+  console.log('[polygon]', options)
   const { styles } = options
 
   const group = L.SVG.create('g')
   const defs = L.SVG.create('defs')
   group.appendChild(defs)
 
-  // TODO: get styles from options
+  const box = L.SVG.rect({ 'stroke-width': 0.5, stroke: 'red', 'stroke-dasharray': '10 5', fill: 'none' })
+  const centerMarker = L.SVG.circle({ r: 5, stroke: 'red', fill: 'red' })
+  const intersections = R.range(0, 4).map(() => L.SVG.circle({ r: 15, 'stroke-width': 2, stroke: 'red', fill: 'none' }))
+
+  group.appendChild(box)
+  group.appendChild(centerMarker)
+  intersections.forEach(element => group.appendChild(element))
+
+
+  // Transparent path to increase clickable area:
+  const outlinePath = L.SVG.path({ 'stroke-width': 10, stroke: 'red', fill: 'none', 'opacity': 0.0 })
   const linePath = L.SVG.path({
     'stroke-width': styles.strokeWidth,
     'stroke-dasharray': styles.strokeDashArray,
     stroke: styles.stroke,
     'fill-opacity': styles.fillOpacity
   })
+
+  if (options.interactive) {
+    L.DomUtil.addClass(outlinePath, 'leaflet-interactive')
+    L.DomUtil.addClass(linePath, 'leaflet-interactive')
+  }
 
   if (styles.fill === 'diagonal') {
     const patternId = `pattern-${uuid()}`
@@ -64,26 +83,101 @@ const polygon = (root, options) => {
     linePath.setAttribute('fill', styles.fill)
   }
 
+  // => labels
+
+  options.labels.forEach(label => {
+    console.log('label', label)
+  })
+
+  // <= labels
+
+  group.appendChild(outlinePath)
   group.appendChild(linePath)
-  root.appendChild(group)
+  renderer._rootGroup.appendChild(group)
 
   const dispose = () => {
-    root.removeChild(group)
+    renderer._rootGroup.removeChild(group)
   }
 
   const updateLayerPoints = layerPoints => {
+    const bounds = L.bounds(layerPoints[0])
+    L.SVG.setAttributes(box)({
+      x: bounds.min.x,
+      y: bounds.min.y,
+      width: bounds.getSize().x,
+      height: bounds.getSize().y
+    })
+
+    const centroid = L.Point.centroid(layerPoints[0])
+    L.SVG.setAttributes(centerMarker)({
+      cx: centroid.x,
+      cy: centroid.y
+    })
+
+    const intersectionPoints = R.aperture(2, layerPoints[0]).reduce((acc, segment) => {
+      const segmenBounds = L.bounds(segment)
+
+      {
+        const w = [segment[0].x, segment[0].y]
+        const x = [segment[1].x, segment[1].y]
+        const y = [centroid.x, centroid.y]
+        const z = [bounds.min.x, centroid.y]
+        const intersection = math.intersect(w, x, y, z)
+        if (intersection) {
+          const point = L.point(intersection[0], intersection[1])
+          if (segmenBounds.contains(point)) acc.push(point)
+        }
+      }
+
+      {
+        const w = [segment[0].x, segment[0].y]
+        const x = [segment[1].x, segment[1].y]
+        const y = [centroid.x, centroid.y]
+        const z = [centroid.x, bounds.min.y]
+        const intersection = math.intersect(w, x, y, z)
+        if (intersection) {
+          const point = L.point(intersection[0], intersection[1])
+          if (segmenBounds.contains(point)) acc.push(point)
+        }
+      }
+
+      return acc
+    }, [])
+
+    if (intersectionPoints.length === 4) {
+      intersectionPoints.forEach((point, index) => {
+        L.SVG.setAttributes(intersections[index])({
+          cx: point.x,
+          cy: point.y
+        })
+      })
+    } else {
+      console.log('# intersections', intersectionPoints.length)
+    }
+
     const d = L.SVG.pointsToPath(layerPoints,
       true,
       options.lineSmoothing
     )
 
+    outlinePath.setAttribute('d', d)
     linePath.setAttribute('d', d)
   }
 
+  const updateStyles = styles => {
+    L.SVG.setAttributes(linePath)({
+      'stroke-dasharray': styles.strokeDashArray,
+      stroke: styles.stroke,
+      'fill-opacity': styles.fillOpacity
+    })
+  }
 
   return {
     dispose,
-    updateLayerPoints
+    updateLayerPoints,
+    updateStyles,
+    // We must expose group element to handle interactive targets on layer.
+    element: group
   }
 }
 
@@ -108,10 +202,27 @@ const styleOptions = feature => {
 
   return {
     stroke: stroke(),
+    patternStroke: stroke(),
     strokeWidth: 3,
     strokeDashArray: strokeDashArray(),
     fill: 'none'
   }
+}
+
+// Zero, one or more labels with one or more lines each.
+const labelOptions = feature => {
+  return [
+    {
+      // INSIDE:  center
+      // BORDER:  north | south | east | west | northeast | northwest
+      // OUTSIDE: bottom | topleft
+      placement: 'center',
+
+      // center | left
+      alignment: 'center',
+      lines: ['<bold>TAI</bold>', feature.properties.t]
+    }
+  ]
 }
 
 const options = {
@@ -128,39 +239,90 @@ const beforeAdd = function (map) {
 }
 
 const onAdd = function (map) {
-  this.zoomend = () => {
-    if (!this.shape) return
-    this.shape.updateLayerPoints(this.layerPoints(map))
-  }
+  this.zoomend = () => this.onGeometry && this.onGeometry(this.feature.geometry)
+  this.click = () => this.edit(map)
+
   map.on('zoomend', this.zoomend)
+  this.on('click', this.click)
 
   const shapeOptions = {
     styles: styleOptions(this.feature),
-    labels: {}
+    labels: labelOptions(this.feature)
   }
 
+  shapeOptions.interactive = this.options.interactive
+
   // Add feature specific styles.
-  // shapeOptions.styles.fill = 'diagonal'
+  shapeOptions.styles.fill = 'diagonal'
   // shapeOptions.styles.fillOpacity = '0.2'
+  // shapeOptions.styles.stroke = 'black'
+  // shapeOptions.styles.patternStroke = ColorSchemes['dark'].yellow
 
-  console.log('this.options', this.options)
+  this.shape = polygon(map.getRenderer(this), shapeOptions)
 
-  this.shape = polygon(this.renderer._rootGroup, shapeOptions)
-  this.shape.updateLayerPoints(this.layerPoints(map))
+  this.onLatLngs = latlngs => {
+    latlngs = [...latlngs, latlngs[0]]
+    const layerPoints = latlngs.map(latlng => map.latLngToLayerPoint(latlng))
+    this.shape.updateLayerPoints([layerPoints])
+  }
+
+  this.onGeometry = geometry => {
+    const rings = Geometry(geometry).latlng()
+    const layerPoints = rings.map(ring => ring.map(latlng => map.latLngToLayerPoint(latlng)))
+    this.shape.updateLayerPoints(layerPoints)
+  }
+
+  if (this.options.interactive) this.addInteractiveTarget(this.shape.element)
+  this.onGeometry(this.feature.geometry)
 }
 
 const onRemove = function (map) {
+  if (this.options.interactive) this.removeInteractiveTarget(this.shape.element)
+  this.off('click', this.click)
   map.off('zoomend', this.zoomend)
+  delete this.click
   delete this.zoomend
+  this.shape.dispose()
 }
 
-/**
- * Project feature's geometry to layer points.
- */
-const layerPoints = function (map) {
-  // NOTE: last = first for polygons:
-  const rings = Geometry(this.feature.geometry).latlng()
-  return rings.map(ring => ring.map(latlng => map.latLngToLayerPoint(latlng)))
+const edit = function (map) {
+
+  if (selection.isSelected(this.urn)) return
+  selection.select(this.urn)
+
+  const callback = event => {
+    switch (event.type) {
+      case 'latlngs': return this.onLatLngs(event.latlngs)
+      case 'geometry': return this.options.update({ geometry: event.geometry })
+    }
+  }
+
+  this.markerGroup = new L.Feature.MarkerGroup(this.feature.geometry, callback)
+  this.markerGroup.addTo(map)
+
+  const editor = {
+    dispose: () => {
+      map.removeLayer(this.markerGroup)
+      delete this.markerGroup
+      if (selection.isSelected(this.urn)) {
+        selection.deselect()
+      }
+    }
+  }
+
+  map.tools.edit(editor)
+}
+
+const updateData = function (feature) {
+  console.log('[updateData]', feature)
+  const styles = styleOptions(feature)
+  this.shape.updateStyles(styles)
+
+  // TODO: deep compare properties and update shape options accordingly
+
+  this.feature = feature
+  this.onGeometry && this.onGeometry(feature.geometry)
+  this.markerGroup && this.markerGroup.updateGeometry(feature.geometry)
 }
 
 L.Feature.PolygonArea = L.Layer.extend({
@@ -170,5 +332,6 @@ L.Feature.PolygonArea = L.Layer.extend({
   onAdd,
   onRemove,
 
-  layerPoints
+  edit,
+  updateData
 })
