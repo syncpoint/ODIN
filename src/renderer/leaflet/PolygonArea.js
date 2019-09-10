@@ -45,43 +45,33 @@ const Geometry = geometry => {
 // * styles (stroke-weight, color, fill, line-smoothing, etc.)
 // * labels (content, alignment, placement)
 const polygon = (renderer, options) => {
-  console.log('[polygon]', options)
-  const { styles } = options
+  const elementCache = {}
+  const cache = (id, element) => dispose => {
+    elementCache[id] && elementCache[id]()
+    elementCache[id] = dispose
+    return element
+  }
 
   const group = L.SVG.create('g')
   const defs = L.SVG.create('defs')
   group.appendChild(defs)
 
-  const box = L.SVG.rect({ 'stroke-width': 0.5, stroke: 'red', 'stroke-dasharray': '10 5', fill: 'none' })
-  const centerMarker = L.SVG.circle({ r: 5, stroke: 'red', fill: 'red' })
-  const intersections = R.range(0, 4).map(() => L.SVG.circle({ r: 15, 'stroke-width': 2, stroke: 'red', fill: 'none' }))
-
-  group.appendChild(box)
-  group.appendChild(centerMarker)
-  intersections.forEach(element => group.appendChild(element))
-
-
   // Transparent path to increase clickable area:
   const outlinePath = L.SVG.path({ 'stroke-width': 10, stroke: 'red', fill: 'none', 'opacity': 0.0 })
-  const linePath = L.SVG.path({
-    'stroke-width': styles.strokeWidth,
-    'stroke-dasharray': styles.strokeDashArray,
-    stroke: styles.stroke,
-    'fill-opacity': styles.fillOpacity
-  })
+  const linePath = L.SVG.path({})
 
   if (options.interactive) {
     L.DomUtil.addClass(outlinePath, 'leaflet-interactive')
     L.DomUtil.addClass(linePath, 'leaflet-interactive')
   }
 
-  if (styles.fill === 'diagonal') {
-    const patternId = `pattern-${uuid()}`
-    defs.appendChild(L.SVG.diagonalPattern(patternId, styles))
-    linePath.setAttribute('fill', `url(#${patternId})`)
-  } else {
-    linePath.setAttribute('fill', styles.fill)
-  }
+  // TODO: remove when done
+  const box = L.SVG.rect({ 'stroke-width': 0.5, stroke: 'red', 'stroke-dasharray': '10 5', fill: 'none' })
+  const centerMarker = L.SVG.circle({ r: 5, stroke: 'red', fill: 'red' })
+  const intersections = R.range(0, 4).map(() => L.SVG.circle({ r: 15, 'stroke-width': 2, stroke: 'red', fill: 'none' }))
+  group.appendChild(box)
+  group.appendChild(centerMarker)
+  intersections.forEach(element => group.appendChild(element))
 
   // => labels
 
@@ -99,7 +89,7 @@ const polygon = (renderer, options) => {
     renderer._rootGroup.removeChild(group)
   }
 
-  const updateLayerPoints = layerPoints => {
+  const updateLayerPoints = (layerPoints, smoothing) => {
     const bounds = L.bounds(layerPoints[0])
     L.SVG.setAttributes(box)({
       x: bounds.min.x,
@@ -120,8 +110,8 @@ const polygon = (renderer, options) => {
       {
         const w = [segment[0].x, segment[0].y]
         const x = [segment[1].x, segment[1].y]
-        const y = [centroid.x, centroid.y]
-        const z = [bounds.min.x, centroid.y]
+        const y = [bounds.min.x, centroid.y]
+        const z = [bounds.max.x, centroid.y]
         const intersection = math.intersect(w, x, y, z)
         if (intersection) {
           const point = L.point(intersection[0], intersection[1])
@@ -132,8 +122,8 @@ const polygon = (renderer, options) => {
       {
         const w = [segment[0].x, segment[0].y]
         const x = [segment[1].x, segment[1].y]
-        const y = [centroid.x, centroid.y]
-        const z = [centroid.x, bounds.min.y]
+        const y = [centroid.x, bounds.min.y]
+        const z = [centroid.x, bounds.max.y]
         const intersection = math.intersect(w, x, y, z)
         if (intersection) {
           const point = L.point(intersection[0], intersection[1])
@@ -145,6 +135,19 @@ const polygon = (renderer, options) => {
     }, [])
 
     if (intersectionPoints.length === 4) {
+      // Bring order to chaos.
+      // Each point should have the correct placement: 'north', 'south', etc.
+      const eastWest = R.sortBy(R.prop('x'))(intersectionPoints)
+      const northSouth = R.sortBy(R.prop('y'))(intersectionPoints)
+      const placement = {
+        west: eastWest[0],
+        east: eastWest[3],
+        north: northSouth[0],
+        south: northSouth[3]
+      }
+
+      console.log('placement', placement)
+
       intersectionPoints.forEach((point, index) => {
         L.SVG.setAttributes(intersections[index])({
           cx: point.x,
@@ -157,7 +160,7 @@ const polygon = (renderer, options) => {
 
     const d = L.SVG.pointsToPath(layerPoints,
       true,
-      options.lineSmoothing
+      !!smoothing
     )
 
     outlinePath.setAttribute('d', d)
@@ -166,10 +169,21 @@ const polygon = (renderer, options) => {
 
   const updateStyles = styles => {
     L.SVG.setAttributes(linePath)({
+      'stroke-width': styles.strokeWidth,
       'stroke-dasharray': styles.strokeDashArray,
       stroke: styles.stroke,
-      'fill-opacity': styles.fillOpacity
+      'fill-opacity': styles.fillOpacity,
+      'stroke-linejoin': 'round'
     })
+
+    if (styles.fill === 'diagonal') {
+      const patternId = `pattern-${uuid()}`
+      const pattern = cache('pattern', L.SVG.diagonalPattern(patternId, styles))(() => defs.removeChild(pattern))
+      defs.appendChild(pattern)
+      linePath.setAttribute('fill', `url(#${patternId})`)
+    } else {
+      linePath.setAttribute('fill', styles.fill)
+    }
   }
 
   return {
@@ -205,24 +219,29 @@ const styleOptions = feature => {
     patternStroke: stroke(),
     strokeWidth: 3,
     strokeDashArray: strokeDashArray(),
-    fill: 'none'
+    fill: 'none' // TODO: supply from PolygonArea client
   }
 }
 
 // Zero, one or more labels with one or more lines each.
 const labelOptions = feature => {
-  return [
-    {
-      // INSIDE:  center
-      // BORDER:  north | south | east | west | northeast | northwest
-      // OUTSIDE: bottom | topleft
-      placement: 'center',
+  const labels = ['north', 'south', 'east', 'west'].map(placement => ({
+    placement,
+    lines: [placement.toUpperCase()]
+  }))
 
-      // center | left
-      alignment: 'center',
-      lines: ['<bold>TAI</bold>', feature.properties.t]
-    }
-  ]
+  labels.push({
+    // INSIDE:  center
+    // BORDER:  north | south | east | west | northeast | northwest
+    // OUTSIDE: bottom | topleft
+    placement: 'center',
+
+    // center | left
+    alignment: 'center',
+    lines: ['<bold>TAI</bold>', feature.properties.t]
+  })
+
+  return labels
 }
 
 const options = {
@@ -251,29 +270,24 @@ const onAdd = function (map) {
   }
 
   shapeOptions.interactive = this.options.interactive
-
-  // Add feature specific styles.
-  shapeOptions.styles.fill = 'diagonal'
-  // shapeOptions.styles.fillOpacity = '0.2'
-  // shapeOptions.styles.stroke = 'black'
-  // shapeOptions.styles.patternStroke = ColorSchemes['dark'].yellow
-
   this.shape = polygon(map.getRenderer(this), shapeOptions)
 
   this.onLatLngs = latlngs => {
     latlngs = [...latlngs, latlngs[0]]
     const layerPoints = latlngs.map(latlng => map.latLngToLayerPoint(latlng))
-    this.shape.updateLayerPoints([layerPoints])
+    this.shape.updateLayerPoints([layerPoints], this.options.lineSmoothing)
   }
 
   this.onGeometry = geometry => {
     const rings = Geometry(geometry).latlng()
     const layerPoints = rings.map(ring => ring.map(latlng => map.latLngToLayerPoint(latlng)))
-    this.shape.updateLayerPoints(layerPoints)
+    this.shape.updateLayerPoints(layerPoints, this.options.lineSmoothing)
   }
 
   if (this.options.interactive) this.addInteractiveTarget(this.shape.element)
   this.onGeometry(this.feature.geometry)
+  const styles = styleOptions(this.feature)
+  this.shape.updateStyles(styles)
 }
 
 const onRemove = function (map) {
@@ -315,8 +329,7 @@ const edit = function (map) {
 
 const updateData = function (feature) {
   console.log('[updateData]', feature)
-  const styles = styleOptions(feature)
-  this.shape.updateStyles(styles)
+  this.shape.updateStyles(styleOptions(feature))
 
   // TODO: deep compare properties and update shape options accordingly
 
