@@ -7,6 +7,7 @@ L.SVG.setAttributes = o => attrs => Object.entries(attrs).reduce(setAttribute, o
 
 L.SVG.mask = attrs => L.SVG.setAttributes(L.SVG.create('mask'))(attrs)
 L.SVG.rect = attrs => L.SVG.setAttributes(L.SVG.create('rect'))(attrs)
+L.SVG.circle = attrs => L.SVG.setAttributes(L.SVG.create('circle'))(attrs)
 L.SVG.path = attrs => L.SVG.setAttributes(L.SVG.create('path'))(attrs)
 L.SVG.text = attrs => L.SVG.setAttributes(L.SVG.create('text'))(attrs)
 L.SVG.tspan = attrs => L.SVG.setAttributes(L.SVG.create('tspan'))(attrs)
@@ -23,7 +24,7 @@ L.SVG.diagonalPattern = (id, styles) => {
   })
 
   const patternPath = L.SVG.path({
-    stroke: styles.stroke,
+    stroke: styles.patternStroke || styles.stroke,
     'stroke-width': 2,
     d: 'M -1,2 l 6,0'
   })
