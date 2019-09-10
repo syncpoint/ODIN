@@ -1,5 +1,6 @@
 import L from 'leaflet'
 import '../NamedArea'
+import '../PolygonArea'
 import './TACGRP.C2GM.GNL.LNE.BNDS'
 
 L.Feature['G*G*GAA---'] = L.Feature.NamedArea.extend({ name: 'AA' })
@@ -12,6 +13,7 @@ L.Feature['G*G*OAK---'] = L.Feature.NamedArea.extend({ name: 'ATK' })
 L.Feature['G*G*OAO---'] = L.Feature.NamedArea.extend({ name: 'OBJ' })
 L.Feature['G*G*SAO---'] = L.Feature.NamedArea.extend({ name: 'AO' })
 L.Feature['G*G*SAN---'] = L.Feature.NamedArea.extend({ name: 'NAI' })
+L.Feature['G*G*SAN---'] = L.Feature.PolygonArea
 L.Feature['G*G*SAT---'] = L.Feature.NamedArea.extend({ name: 'TAI' })
 L.Feature['G*G*DAB---'] = L.Feature.Polygon // TODO: needs echelon
 L.Feature['G*F*ATS---'] = L.Feature.NamedArea.extend({ name: 'SMOKE' }) // TODO: W/W1
