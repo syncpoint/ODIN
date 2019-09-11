@@ -45,6 +45,7 @@ const Geometry = geometry => {
 // * styles (stroke-weight, color, fill, line-smoothing, etc.)
 // * labels (content, alignment, placement)
 const polygon = (renderer, options) => {
+  const id = uuid()
   const elementCache = {}
   const cache = (id, element) => dispose => {
     elementCache[id] && elementCache[id]()
@@ -56,30 +57,21 @@ const polygon = (renderer, options) => {
   const defs = L.SVG.create('defs')
   group.appendChild(defs)
 
+  // Label Clipping:
+  const clip = L.SVG.mask({ id: `mask-${id}` })
+  defs.appendChild(clip)
+  const whiteMask = L.SVG.rect({ fill: 'white' })
+  clip.appendChild(whiteMask)
+
   // Transparent path to increase clickable area:
   const outlinePath = L.SVG.path({ 'stroke-width': 10, stroke: 'red', fill: 'none', 'opacity': 0.0 })
-  const linePath = L.SVG.path({})
+  const linePath = L.SVG.path({ })
+  const labels = {}
 
   if (options.interactive) {
     L.DomUtil.addClass(outlinePath, 'leaflet-interactive')
     L.DomUtil.addClass(linePath, 'leaflet-interactive')
   }
-
-  // TODO: remove when done
-  const box = L.SVG.rect({ 'stroke-width': 0.5, stroke: 'red', 'stroke-dasharray': '10 5', fill: 'none' })
-  const centerMarker = L.SVG.circle({ r: 5, stroke: 'red', fill: 'red' })
-  const intersections = R.range(0, 4).map(() => L.SVG.circle({ r: 15, 'stroke-width': 2, stroke: 'red', fill: 'none' }))
-  group.appendChild(box)
-  group.appendChild(centerMarker)
-  intersections.forEach(element => group.appendChild(element))
-
-  // => labels
-
-  options.labels.forEach(label => {
-    console.log('label', label)
-  })
-
-  // <= labels
 
   group.appendChild(outlinePath)
   group.appendChild(linePath)
@@ -91,18 +83,8 @@ const polygon = (renderer, options) => {
 
   const updateLayerPoints = (layerPoints, smoothing) => {
     const bounds = L.bounds(layerPoints[0])
-    L.SVG.setAttributes(box)({
-      x: bounds.min.x,
-      y: bounds.min.y,
-      width: bounds.getSize().x,
-      height: bounds.getSize().y
-    })
-
     const centroid = L.Point.centroid(layerPoints[0])
-    L.SVG.setAttributes(centerMarker)({
-      cx: centroid.x,
-      cy: centroid.y
-    })
+    const placement = { center: centroid }
 
     const intersectionPoints = R.aperture(2, layerPoints[0]).reduce((acc, segment) => {
       const segmenBounds = L.bounds(segment)
@@ -139,21 +121,78 @@ const polygon = (renderer, options) => {
       // Each point should have the correct placement: 'north', 'south', etc.
       const eastWest = R.sortBy(R.prop('x'))(intersectionPoints)
       const northSouth = R.sortBy(R.prop('y'))(intersectionPoints)
-      const placement = {
-        west: eastWest[0],
-        east: eastWest[3],
-        north: northSouth[0],
-        south: northSouth[3]
+      placement.west = eastWest[0]
+      placement.east = eastWest[3],
+      placement.north = northSouth[0]
+      placement.south = northSouth[3]
+
+      // => labels
+
+      Object.values(labels).forEach(label => group.removeChild(label))
+
+      const textAnchor = alignment => {
+        switch (alignment) {
+          case 'left': return 'start'
+          case 'right': return 'end'
+          case 'center': return 'middle'
+          default: return 'middle'
+        }
       }
 
-      console.log('placement', placement)
-
-      intersectionPoints.forEach((point, index) => {
-        L.SVG.setAttributes(intersections[index])({
-          cx: point.x,
-          cy: point.y
+      options.labels.forEach(label => {
+        labels[label.placement] = L.SVG.text({
+          'font-size': 18,
+          x: placement[label.placement].x,
+          y: placement[label.placement].y
         })
+
+        label.lines.forEach((line, index) => {
+          if (!index) {
+            const match = line.match(/<bold>(.*)<\/bold>/)
+            const bold = (match && !!match[1]) || false
+            labels[label.placement].textContent = bold ? match[1] : line
+            labels[label.placement].setAttribute('font-weight', bold ? 'bold' : 'normal')
+            labels[label.placement].setAttribute('text-anchor', textAnchor(label.alignment))
+            labels[label.placement].setAttribute('alignment-baseline', 'central')
+
+          } else {
+            const tspan = L.SVG.tspan({
+              dy: '1.2em',
+              'text-anchor': textAnchor(label.alignment),
+              'alignment-baseline': 'central'
+            })
+
+            const match = line.match(/<bold>(.*)<\/bold>/)
+            const bold = (match && !!match[1]) || false
+            tspan.textContent = bold ? match[1] : line
+            tspan.setAttribute('x', placement[label.placement].x)
+            tspan.setAttribute('font-weight', bold ? 'bold' : 'normal')
+            labels[label.placement].appendChild(tspan)
+          }
+        })
+
+        group.appendChild(labels[label.placement])
+        const labelBox = labels[label.placement].getBBox()
+        const tx =
+          label.alignment === 'left' ? -labelBox.width / 2 :
+          label.alignment === 'right' ? labelBox.width / 2 : 0
+
+        labels[label.placement].setAttribute('transform', `translate(${tx} ${9 - labelBox.height / 2})`)
+
+        const maskBox = L.SVG.inflate(labels[label.placement].getBBox(), 8)
+        const blackMask = L.SVG.rect({
+          x: maskBox.x + tx,
+          y: maskBox.y + 9 - labelBox.height / 2,
+          width: maskBox.width,
+          height: maskBox.height,
+          fill: 'black'
+        })
+
+        clip.appendChild(blackMask)
       })
+
+      // <= labels
+
     } else {
       console.log('# intersections', intersectionPoints.length)
     }
@@ -165,6 +204,8 @@ const polygon = (renderer, options) => {
 
     outlinePath.setAttribute('d', d)
     linePath.setAttribute('d', d)
+    const groupBBox = group.getBBox()
+    L.SVG.setAttributes(whiteMask)({ ...L.SVG.inflate(groupBBox, 20) })
   }
 
   const updateStyles = styles => {
@@ -173,9 +214,10 @@ const polygon = (renderer, options) => {
       'stroke-dasharray': styles.strokeDashArray,
       stroke: styles.stroke,
       'fill-opacity': styles.fillOpacity,
-      'stroke-linejoin': 'round'
+      'stroke-linejoin': 'round',
     })
 
+    linePath.setAttribute('mask', `url(#mask-${id})`)
     if (styles.fill === 'diagonal') {
       const patternId = `pattern-${uuid()}`
       const pattern = cache('pattern', L.SVG.diagonalPattern(patternId, styles))(() => defs.removeChild(pattern))
@@ -225,21 +267,41 @@ const styleOptions = feature => {
 
 // Zero, one or more labels with one or more lines each.
 const labelOptions = feature => {
+  // const labels = ['north', 'south', 'east', 'west'].map(placement => ({
+  //   placement,
+  //   lines: [placement.toUpperCase(), 'SECONDS LINE', '<bold>THIRD LINE</bold>']
+  // }))
+
+  // labels.push({
+  //   // INSIDE:  center
+  //   // BORDER:  north | south | east | west | northeast | northwest
+  //   // OUTSIDE: bottom | topleft
+  //   placement: 'center',
+
+  //   // center | left
+  //   alignment: 'center',
+  //   lines: ['<bold>TAI</bold>', feature.properties.t, '12345', 'WWWXXXWWW', '12345', 'WWWXXXWWW']
+  // })
+
+  // const labels = [
+  //   {
+  //     placement: 'center',
+  //     alignment: 'left',
+  //     lines: [
+  //       '<bold>ACA</bold>',
+  //       '53ID (M)',
+  //       'MIN ALT: 500 FT AGL',
+  //       'MAX ALT: 3000 FT AGL',
+  //       'GRIDS: NK2313 to NK3013',
+  //       'TIME FROM: 281400ZAPR',
+  //       'TIME TO: 281530ZAPR'
+  //     ]
+  //   }
+
   const labels = ['north', 'south', 'east', 'west'].map(placement => ({
     placement,
-    lines: [placement.toUpperCase()]
+    lines: ['<bold>M</bold>']
   }))
-
-  labels.push({
-    // INSIDE:  center
-    // BORDER:  north | south | east | west | northeast | northwest
-    // OUTSIDE: bottom | topleft
-    placement: 'center',
-
-    // center | left
-    alignment: 'center',
-    lines: ['<bold>TAI</bold>', feature.properties.t]
-  })
 
   return labels
 }
@@ -328,7 +390,6 @@ const edit = function (map) {
 }
 
 const updateData = function (feature) {
-  console.log('[updateData]', feature)
   this.shape.updateStyles(styleOptions(feature))
 
   // TODO: deep compare properties and update shape options accordingly
