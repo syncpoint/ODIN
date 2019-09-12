@@ -2997,7 +2997,6 @@
       "DETAINEE HOLDING AREA"
     ],
     "geometries": [
-      "point",
       "polygon"
     ]
   },
@@ -8578,7 +8577,6 @@
       "FORWARD ARMING AND REFUELING AREA (FARP)"
     ],
     "geometries": [
-      "point",
       "polygon"
     ]
   },
@@ -8913,6 +8911,9 @@
       "OBSTACLES",
       "MINEFIELDS",
       "MINED AREA"
+    ],
+    "geometries": [
+      "polygon"
     ]
   },
   {

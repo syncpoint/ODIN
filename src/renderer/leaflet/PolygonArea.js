@@ -3,22 +3,6 @@ import L from 'leaflet'
 import selection from '../components/App.selection'
 import polygonShape from './polygon-shape'
 
-const ColorSchemes = {
-  dark: {
-    red: 'RGB(200, 0, 0)',
-    blue: 'RGB(0, 107, 140)',
-    green: 'RGB(0, 160, 0)',
-    yellow: 'RGB(225, 220, 0)',
-    purple: 'RGB(80, 0, 80)'
-  },
-  medium: {
-    red: 'RGB(255, 48, 49)',
-    blue: 'RGB(0, 168, 220)',
-    green: 'RGB(0, 226, 0)',
-    yellow: 'RGB(255, 255, 0)',
-    purple: '128, 0, 128'
-  }
-}
 
 // GeoJSON geometry helper.
 const Geometry = geometry => {
@@ -38,35 +22,6 @@ const Geometry = geometry => {
   }
 }
 
-
-const styleOptions = feature => {
-  const colorSchemes = ColorSchemes['dark']
-
-  const { sidc, n } = feature.properties
-  const stroke = () => {
-    if (n === 'ENY') return colorSchemes.red
-
-    switch (sidc[1]) {
-      case 'F': return colorSchemes.blue
-      case 'H': return colorSchemes.red
-      case 'N': return colorSchemes.green
-      default: return 'black'
-    }
-  }
-
-  const strokeDashArray = () => {
-    if (sidc[3] === 'A') return '10 5'
-  }
-
-  return {
-    clipping: 'none',
-    stroke: stroke(),
-    patternStroke: stroke(),
-    strokeWidth: 3,
-    strokeDashArray: strokeDashArray(),
-    fill: 'none' // TODO: supply from PolygonArea client
-  }
-}
 
 // Zero, one or more labels with one or more lines each.
 const labelOptions = feature => {
@@ -120,8 +75,10 @@ const options = {
   dummy: false
 }
 
-const initialize = function (feature, options) {
+const initialize = function (feature, renderOptions, options) {
   this.feature = feature
+  this.renderOptions = renderOptions
+  console.log('renderOptions', renderOptions)
   L.setOptions(this, options)
 }
 
@@ -137,8 +94,8 @@ const onAdd = function (map) {
   this.on('click', this.click)
 
   const shapeOptions = {
-    styles: styleOptions(this.feature),
-    labels: labelOptions(this.feature)
+    styles: this.renderOptions.styles(this.feature),
+    labels: this.renderOptions.labels(this.feature)
   }
 
   const rings = Geometry(this.feature.geometry).latlng()
@@ -160,8 +117,9 @@ const onAdd = function (map) {
 
   if (this.options.interactive) this.addInteractiveTarget(this.shape.element)
   this.onGeometry(this.feature.geometry)
-  const styles = styleOptions(this.feature)
-  this.shape = this.shape.updateStyles(styles)
+
+  // FIXME: why do we need this here?
+  this.shape = this.shape.updateStyles(this.renderOptions.styles(this.feature))
 }
 
 const onRemove = function (map) {
@@ -206,8 +164,8 @@ const updateData = function (feature) {
   this.feature = feature
 
   // TODO: deep compare properties and update shape options accordingly
-  this.shape = this.shape.updateStyles(styleOptions(feature))
-  this.shape = this.shape.updateLabels(labelOptions(feature))
+  this.shape = this.shape.updateStyles(this.renderOptions.styles(feature))
+  this.shape = this.shape.updateLabels(this.renderOptions.labels(feature))
 
   this.onGeometry && this.onGeometry(feature.geometry)
   this.markerGroup && this.markerGroup.updateGeometry(feature.geometry)
