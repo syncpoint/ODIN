@@ -98,7 +98,7 @@ const renderLabels = (cache, clipping, labels, points) => {
   cache.element('group').appendChild(cache.element('labels'))
 
   labels.forEach(descriptor => {
-    descriptor.fontSize = descriptor.fontSize || 16
+    descriptor.fontSize = descriptor.fontSize || 12
 
     const label = text(descriptor)
 

@@ -11,6 +11,7 @@ const layerUrn = layerId => ResourceNames.layerId(layerId)
 const featureUrn = (layerId, featureId) => ResourceNames.featureId(layerId, featureId)
 
 const genericShape = (feature, options) => {
+  if (!feature.geometry) return null
   switch (feature.geometry.type) {
     case 'Point': return new L.Feature.Symbol(feature, options)
     case 'Polygon': return new L.Feature.Polygon(feature, options)
