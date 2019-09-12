@@ -2,14 +2,6 @@ import L from 'leaflet'
 import uuid from 'uuid-random'
 
 export const backdropClipping = cache => {
-  console.log('cache', cache)
-  // const backdrops = []
-
-  const reset = () => {
-    // backdrops.forEach(element => group.removeChild(element))
-    // backdrops.length = 0
-  }
-
   const withLabel = (element, tx, ty) => {
     const box = L.SVG.inflate(element.getBBox(), 4)
     const backdrop = L.SVG.rect({
@@ -27,7 +19,7 @@ export const backdropClipping = cache => {
   }
 
   return {
-    reset,
+    reset: () => {},
     withLabel,
     withPath: () => {},
     finish: () => {}
