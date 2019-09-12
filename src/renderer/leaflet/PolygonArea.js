@@ -59,6 +59,7 @@ const styleOptions = feature => {
   }
 
   return {
+    clipping: 'none',
     stroke: stroke(),
     patternStroke: stroke(),
     strokeWidth: 3,
@@ -93,6 +94,7 @@ const labelOptions = feature => {
   //   {
   //     placement: 'center',
   //     alignment: 'left',
+  //     fontSize: 18,
   //     lines: [
   //       '<bold>ACA</bold>',
   //       '53ID (M)',
@@ -106,6 +108,7 @@ const labelOptions = feature => {
   // ]
 
   // const labels = ['north', 'south', 'east', 'west'].map(placement => ({
+  //   fontSize: 18,
   //   placement,
   //   lines: ['<bold>M</bold>']
   // }))
@@ -138,25 +141,27 @@ const onAdd = function (map) {
     labels: labelOptions(this.feature)
   }
 
+  const rings = Geometry(this.feature.geometry).latlng()
+  const points = rings.map(ring => ring.map(latlng => map.latLngToLayerPoint(latlng)))
   shapeOptions.interactive = this.options.interactive
-  this.shape = polygonShape(map.getRenderer(this), shapeOptions)
+  this.shape = polygonShape(map.getRenderer(this), points, shapeOptions)
 
   this.onLatLngs = latlngs => {
     latlngs = [...latlngs, latlngs[0]]
     const layerPoints = latlngs.map(latlng => map.latLngToLayerPoint(latlng))
-    this.shape.updateLayerPoints([layerPoints], this.options.lineSmoothing)
+    this.shape = this.shape.updatePoints([layerPoints], this.options.lineSmoothing)
   }
 
   this.onGeometry = geometry => {
     const rings = Geometry(geometry).latlng()
     const layerPoints = rings.map(ring => ring.map(latlng => map.latLngToLayerPoint(latlng)))
-    this.shape.updateLayerPoints(layerPoints, this.options.lineSmoothing)
+    this.shape = this.shape.updatePoints(layerPoints, this.options.lineSmoothing)
   }
 
   if (this.options.interactive) this.addInteractiveTarget(this.shape.element)
   this.onGeometry(this.feature.geometry)
   const styles = styleOptions(this.feature)
-  this.shape.updateStyles(styles)
+  this.shape = this.shape.updateStyles(styles)
 }
 
 const onRemove = function (map) {
@@ -166,6 +171,7 @@ const onRemove = function (map) {
   delete this.click
   delete this.zoomend
   this.shape.dispose()
+  map.tools.dispose() // dispose editor/selection tool
 }
 
 const edit = function (map) {
@@ -197,11 +203,12 @@ const edit = function (map) {
 }
 
 const updateData = function (feature) {
-  this.shape.updateStyles(styleOptions(feature))
+  this.feature = feature
 
   // TODO: deep compare properties and update shape options accordingly
+  this.shape = this.shape.updateStyles(styleOptions(feature))
+  this.shape = this.shape.updateLabels(labelOptions(feature))
 
-  this.feature = feature
   this.onGeometry && this.onGeometry(feature.geometry)
   this.markerGroup && this.markerGroup.updateGeometry(feature.geometry)
 }

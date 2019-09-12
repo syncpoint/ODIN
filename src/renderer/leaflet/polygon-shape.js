@@ -2,7 +2,7 @@ import L from 'leaflet'
 import uuid from 'uuid-random'
 import * as math from 'mathjs'
 import * as R from 'ramda'
-import { maskClipping } from './polygon-clipping'
+import { maskClipping, backdropClipping, noClipping } from './polygon-clipping'
 
 const axisIntersect = (points, y, z) => R.aperture(2, points).reduce((acc, segment) => {
   const w = [segment[0].x, segment[0].y]
@@ -54,124 +54,172 @@ const labelPositions = ring => {
   return placement
 }
 
-export default (renderer, options) => {
-  const elementCache = {}
-  const cache = (id, element) => dispose => {
-    elementCache[id] && elementCache[id]()
-    elementCache[id] = dispose
+const elementCache = () => {
+  const cache = {}
+
+  const put = (id, element) => dispose => {
+    cache[id] && cache[id].dispose(cache[id].element)
+    cache[id] = { element, dispose }
     return element
   }
 
-  const group = L.SVG.create('g')
-  const defs = L.SVG.create('defs')
-  group.appendChild(defs)
-  const clipping = maskClipping(group, defs)
+  const element = id => cache[id].element
+  const dispose = () => Object.values(cache).forEach(({ element, dispose }) => dispose(element))
+  return { put, element, dispose }
+}
+
+const noop = () => {}
+
+const clippingStrategy = clipping => cache => {
+  switch (clipping) {
+    case 'mask': return maskClipping(cache)
+    case 'backdrop': return backdropClipping(cache)
+    default: return noClipping(cache)
+  }
+}
+
+const renderLabels = (cache, clipping, labels, points) => {
+  const placement = labelPositions(points[0])
+
+  const text = label => L.SVG.text({
+    'font-size': label.fontSize,
+    'text-anchor': textAnchor(label.alignment),
+    'alignment-baseline': 'central',
+    y: placement[label.placement].y
+  })
+
+  const tspan = label => L.SVG.tspan({
+    dy: '1.2em',
+    'text-anchor': textAnchor(label.alignment),
+    'alignment-baseline': 'central'
+  })
+
+  cache.put('labels', L.SVG.create('g'))(element => cache.element('group').removeChild(element))
+  cache.element('group').appendChild(cache.element('labels'))
+
+  labels.forEach(descriptor => {
+    descriptor.fontSize = descriptor.fontSize || 16
+
+    const label = text(descriptor)
+
+    const textElement = index => index
+      ? label.appendChild(tspan(descriptor))
+      : label
+
+    descriptor.lines.filter(line => line).forEach((line, index) => {
+      const element = textElement(index)
+
+      const match = line.match(/<bold>(.*)<\/bold>/)
+      const bold = (match && !!match[1]) || false
+      element.textContent = bold ? match[1] : line
+      element.setAttribute('x', placement[descriptor.placement].x)
+      element.setAttribute('font-weight', bold ? 'bold' : 'normal')
+    })
+
+    // Move whole label into place.
+    // Bounding box is only available AFTER text
+    // was added to a live SVG parent element.
+    cache.element('labels').appendChild(label)
+
+    const box = label.getBBox()
+    const ty = descriptor.fontSize / 2 - box.height / 2
+    const tx = descriptor.alignment === 'left'
+      ? -box.width / 2
+      : descriptor.alignment === 'right'
+        ? box.width / 2
+        : 0
+
+    // Note: Label's bounding box (bbox) does NOT move with transformation.
+    label.setAttribute('transform', `translate(${tx} ${ty})`)
+    clipping.withLabel(label, tx, ty)
+  })
+}
+
+const renderPath = (cache, points, smoothing) => {
+  const d = L.SVG.pointsToPath(points, true, !!smoothing)
+  cache.element('outline').setAttribute('d', d)
+  cache.element('path').setAttribute('d', d)
+}
+
+export default (renderer, points, options) => {
+  const cache = elementCache()
+
+  cache.put('root', renderer._rootGroup)(noop)
+  cache.put('group', L.SVG.create('g'))(element => cache.element('root').removeChild(element))
+  cache.put('defs', L.SVG.create('defs'))(noop)
+  cache.put('labels', L.SVG.create('g'))(element => cache.element('group').removeChild(element))
+
+  cache.element('group').appendChild(cache.element('defs'))
+  cache.element('group').appendChild(cache.element('labels'))
+
+  const clipping = clippingStrategy(options.styles.clipping)(cache)
 
   // Transparent path to increase clickable area:
-  const outlinePath = L.SVG.path({ 'stroke-width': 10, stroke: 'red', fill: 'none', 'opacity': 0.0 })
-  const linePath = L.SVG.path({ })
-  const labels = {}
+  cache.put('outline', L.SVG.path({ 'stroke-width': 10, stroke: 'red', fill: 'none', 'opacity': 0.0 }))(noop)
+  cache.put('path', L.SVG.path({}))(noop)
 
   if (options.interactive) {
-    L.DomUtil.addClass(outlinePath, 'leaflet-interactive')
-    L.DomUtil.addClass(linePath, 'leaflet-interactive')
+    L.DomUtil.addClass(cache.element('outline'), 'leaflet-interactive')
+    L.DomUtil.addClass(cache.element('path'), 'leaflet-interactive')
   }
 
-  group.appendChild(outlinePath)
-  group.appendChild(linePath)
-  renderer._rootGroup.appendChild(group)
+  cache.element('group').appendChild(cache.element('outline'))
+  cache.element('group').appendChild(cache.element('path'))
+  cache.element('root').appendChild(cache.element('group'))
 
-  const dispose = () => {
-    renderer._rootGroup.removeChild(group)
-  }
+  const dispose = () => cache.dispose()
 
-  const updateLayerPoints = (layerPoints, smoothing) => {
-    clipping.reset()
-    Object.values(labels).forEach(label => group.removeChild(label))
-    const placement = labelPositions(layerPoints[0])
+  // Closure over styles, labels and points.
+  const create = ({ styles, labels, points }) => {
 
-    const text = label => L.SVG.text({
-      'font-size': label.fontSize,
-      'text-anchor': textAnchor(label.alignment),
-      'alignment-baseline': 'central',
-      y: placement[label.placement].y
-    })
+    const updatePoints = (points, smoothing) => {
+      clipping.reset()
+      renderLabels(cache, clipping, labels, points)
+      renderPath(cache, points, smoothing)
+      clipping.finish()
+      return create({ styles, labels, points })
+    }
 
-    const tspan = label => L.SVG.tspan({
-      dy: '1.2em',
-      'text-anchor': textAnchor(label.alignment),
-      'alignment-baseline': 'central'
-    })
+    const updateLabels = labels => {
+      renderLabels(cache, clipping, labels, points)
+      return create({ styles, labels, points })
+    }
 
-    options.labels.forEach(label => {
-      label.fontSize = label.fontSize || 16
-      labels[label.placement] = text(label)
-
-      const textElement = index => index
-        ? labels[label.placement].appendChild(tspan(label))
-        : labels[label.placement]
-
-      label.lines.forEach((line, index) => {
-        const element = textElement(index)
-        const match = line.match(/<bold>(.*)<\/bold>/)
-        const bold = (match && !!match[1]) || false
-        element.textContent = bold ? match[1] : line
-        element.setAttribute('x', placement[label.placement].x)
-        element.setAttribute('font-weight', bold ? 'bold' : 'normal')
+    const updateStyles = styles => {
+      L.SVG.setAttributes(cache.element('path'))({
+        'stroke-width': styles.strokeWidth,
+        'stroke-dasharray': styles.strokeDashArray,
+        stroke: styles.stroke,
+        'fill-opacity': styles.fillOpacity,
+        'stroke-linejoin': 'round'
       })
 
-      // Move whole label into place.
-      // Bounding box is only available AFTER text
-      // was added to a live SVG parent element.
-      group.appendChild(labels[label.placement])
+      clipping.withPath(cache.element('path'))
 
-      const box = labels[label.placement].getBBox()
-      const ty = label.fontSize / 2 - box.height / 2
-      const tx = label.alignment === 'left'
-        ? -box.width / 2
-        : label.alignment === 'right'
-          ? box.width / 2
-          : 0
+      if (styles.fill === 'diagonal') {
+        const patternId = `pattern-${uuid()}`
+        cache.put('pattern', L.SVG.diagonalPattern(patternId, styles))(element => {
+          cache.element('defs').removeChild(element)
+        })
 
-      // Note: Label's bounding box (bbox) does NOT move with transformation.
-      labels[label.placement].setAttribute('transform', `translate(${tx} ${ty})`)
-      clipping.withLabel(labels[label.placement], tx, ty)
-    })
+        cache.element('defs').appendChild(cache.element('pattern'))
+        cache.element('path').setAttribute('fill', `url(#${patternId})`)
+      } else {
+        cache.element('path').setAttribute('fill', styles.fill)
+      }
 
-    // <= labels
+      return create({ styles, labels, points })
+    }
 
-    const d = L.SVG.pointsToPath(layerPoints, true, !!smoothing)
-    outlinePath.setAttribute('d', d)
-    linePath.setAttribute('d', d)
-    clipping.finish()
-  }
-
-  const updateStyles = styles => {
-    L.SVG.setAttributes(linePath)({
-      'stroke-width': styles.strokeWidth,
-      'stroke-dasharray': styles.strokeDashArray,
-      stroke: styles.stroke,
-      'fill-opacity': styles.fillOpacity,
-      'stroke-linejoin': 'round'
-    })
-
-    clipping.withPath(linePath)
-
-    if (styles.fill === 'diagonal') {
-      const patternId = `pattern-${uuid()}`
-      const pattern = cache('pattern', L.SVG.diagonalPattern(patternId, styles))(() => defs.removeChild(pattern))
-      defs.appendChild(pattern)
-      linePath.setAttribute('fill', `url(#${patternId})`)
-    } else {
-      linePath.setAttribute('fill', styles.fill)
+    return {
+      dispose,
+      updatePoints,
+      updateStyles,
+      updateLabels,
+      // We must expose group element to handle interactive targets on layer.
+      element: cache.element('group')
     }
   }
 
-  return {
-    dispose,
-    updateLayerPoints,
-    updateStyles,
-    // We must expose group element to handle interactive targets on layer.
-    element: group
-  }
+  return create({ styles: options.styles, labels: options.labels, points })
 }
