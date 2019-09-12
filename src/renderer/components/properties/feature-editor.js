@@ -46,6 +46,8 @@ const featureClasses = {
       /^G.G.SA.*$/,
       /G.G.GA.*/,
       /G.G.OA.*/,
+      /G.G.DA.*/, // defense areas
+      /G.G.AA.*/, // aviation areas
       /G.M.OU----.*/,
       /G.S.A.*/,
       /G.F.A.*/

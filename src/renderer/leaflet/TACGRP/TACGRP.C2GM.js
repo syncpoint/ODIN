@@ -72,6 +72,22 @@ const namedArea = name => {
   }
 }
 
+const titleOnlyArea = () => {
+  return (feature, options) => {
+    const renderOptions = {
+      styles,
+      labels: feature => [
+        {
+          placement: 'center',
+          alignment: 'center',
+          lines: [feature.properties.t]
+        }
+      ]
+    }
+    return new L.Feature.PolygonArea(feature, renderOptions, options)
+  }
+}
+
 L.Feature['G*G*GAA---'] = namedArea('AA')
 L.Feature['G*G*GAE---'] = namedArea('EA')
 L.Feature['G*G*GAD---'] = namedArea('DZ')
@@ -84,7 +100,39 @@ L.Feature['G*G*SAO---'] = namedArea('AO')
 L.Feature['G*G*SAN---'] = namedArea('NAI')
 L.Feature['G*G*SAT---'] = namedArea('TAI')
 
-L.Feature['G*G*DAB---'] = L.Feature.Polygon // TODO: needs echelon
+// TODO: needs echelon
+L.Feature['G*G*DAB---'] = titleOnlyArea()
+L.Feature['G*G*DABP--'] = (feature, options) => {
+  const renderOptions = {
+    styles: feature => ({ ...styles(feature), clipping: 'mask' }),
+    labels: feature => {
+      const labels = [
+        {
+          placement: 'center',
+          alignment: 'center',
+          lines: [
+            `(P) ${feature.properties.t}`,
+            effectiveLine(feature.properties)
+          ]
+        }
+      ]
+
+      if (feature.properties.n) {
+        ['east', 'west'].map(placement => {
+          labels.push({
+            placement,
+            fontSize: 16,
+            lines: ['ENY']
+          })
+        })
+      }
+
+      return labels
+    }
+  }
+
+  return new L.Feature.PolygonArea(feature, renderOptions, options)
+}
 
 L.Feature['G*F*ATS---'] = (feature, options) => {
   const renderOptions = {
@@ -298,6 +346,114 @@ L.Feature['G*G*GAY---'] = (feature, options) => {
         {
           placement: 'center',
           lines: [feature.properties.h]
+        }
+      ]
+
+      return labels
+    }
+  }
+
+  return new L.Feature.PolygonArea(feature, renderOptions, options)
+}
+
+const missleEnganementZone = name => (feature, options) => {
+  const renderOptions = {
+    styles: feature => ({ ...styles(feature), clipping: 'backdrop' }),
+    labels: feature => {
+      const labels = [
+        {
+          placement: 'center',
+          alignment: 'left',
+          lines: [
+            `<bold>${name}</bold>`,
+            feature.properties.t,
+            feature.properties.x ? `MIN ALT: ${feature.properties.x}` : null,
+            feature.properties.x1 ? `MAX ALT: ${feature.properties.x1}` : null,
+            feature.properties.w ? `EFF. FROM: ${feature.properties.w}` : null,
+            feature.properties.w1 ? `EFF. TO: ${feature.properties.w1}` : null
+          ]
+        }
+      ]
+
+      return labels
+    }
+  }
+
+  return new L.Feature.PolygonArea(feature, renderOptions, options)
+}
+
+
+L.Feature['G*G*AAM---'] = missleEnganementZone('MEZ')
+L.Feature['G*G*AAML--'] = missleEnganementZone('LOMEZ')
+L.Feature['G*G*AAMH--'] = missleEnganementZone('HIMEZ')
+
+// WeaponS Free Zone
+L.Feature['G*G*AAW---'] = (feature, options) => {
+  const renderOptions = {
+    styles: feature => ({ ...styles(feature), fill: 'diagonal', clipping: 'backdrop' }),
+    labels: feature => {
+      const labels = [
+        {
+          placement: 'center',
+          alignment: 'left',
+          lines: [
+            '<bold>WFZ</bold>',
+            feature.properties.t,
+            feature.properties.w ? `EFF. FROM: ${feature.properties.w}` : null,
+            feature.properties.w1 ? `EFF. TO: ${feature.properties.w1}` : null
+          ]
+        }
+      ]
+
+      return labels
+    }
+  }
+
+  return new L.Feature.PolygonArea(feature, renderOptions, options)
+}
+
+L.Feature['G*G*AAR---'] = (feature, options) => {
+  const renderOptions = {
+    styles: feature => ({ ...styles(feature), clipping: 'backdrop' }),
+    labels: feature => {
+      const labels = [
+        {
+          placement: 'center',
+          alignment: 'left',
+          lines: [
+            '<bold>ROZ</bold>',
+            feature.properties.t,
+            feature.properties.x ? `MIN ALT: ${feature.properties.x}` : null,
+            feature.properties.x1 ? `MAX ALT: ${feature.properties.x1}` : null,
+            feature.properties.w ? `TIME FROM: ${feature.properties.w}` : null,
+            feature.properties.w1 ? `TIME TO: ${feature.properties.w1}` : null
+          ]
+        }
+      ]
+
+      return labels
+    }
+  }
+
+  return new L.Feature.PolygonArea(feature, renderOptions, options)
+}
+
+L.Feature['G*G*AAF---'] = (feature, options) => {
+  const renderOptions = {
+    styles: feature => ({ ...styles(feature), clipping: 'backdrop' }),
+    labels: feature => {
+      const labels = [
+        {
+          placement: 'center',
+          alignment: 'left',
+          lines: [
+            '<bold>SHORADEZ</bold>',
+            feature.properties.t,
+            feature.properties.x ? `MIN ALT: ${feature.properties.x}` : null,
+            feature.properties.x1 ? `MAX ALT: ${feature.properties.x1}` : null,
+            feature.properties.w ? `TIME FROM: ${feature.properties.w}` : null,
+            feature.properties.w1 ? `TIME TO: ${feature.properties.w1}` : null
+          ]
         }
       ]
 

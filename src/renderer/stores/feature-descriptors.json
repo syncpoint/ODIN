@@ -5018,8 +5018,7 @@
       "LINEAR SMOKE TARGET"
     ],
     "geometries": [
-      "line",
-      "polygon"
+      "line"
     ]
   },
   {
