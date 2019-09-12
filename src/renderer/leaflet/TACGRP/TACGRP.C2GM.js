@@ -49,6 +49,13 @@ const styles = feature => {
   }
 }
 
+const effectiveLine = properties => {
+  if (!properties.w && !properties.w1) return null
+  if (properties.w && properties.w1) return `${properties.w}-${properties.w1}`
+  if (properties.w) return `${properties.w}`
+  if (properties.w1) return `${properties.w1}`
+}
+
 const namedArea = name => {
   return (feature, options) => {
     const renderOptions = {
@@ -88,7 +95,7 @@ L.Feature['G*F*ATS---'] = (feature, options) => {
         alignment: 'center',
         lines: [
           '<bold>SMOKE</bold>',
-          `${string(feature.properties.w)}-${string(feature.properties.w1)}`
+          effectiveLine(feature.properties)
         ]
       }
     ]
@@ -98,8 +105,6 @@ L.Feature['G*F*ATS---'] = (feature, options) => {
 }
 
 L.Feature['G*S*AR----'] = namedArea('FARP')
-
-const string = s => s || ''
 
 // NOTE: No distinction: IRREGULAR/RECTANGULAR, but no CIRCULAR
 L.Feature['G*F*ACFI--'] = (feature, options) => {
@@ -112,7 +117,7 @@ L.Feature['G*F*ACFI--'] = (feature, options) => {
         lines: [
           '<bold>FFA</bold>',
           feature.properties.t,
-          `${string(feature.properties.w)}-${string(feature.properties.w1)}`
+          effectiveLine(feature.properties)
         ]
       }
     ]
@@ -133,7 +138,7 @@ L.Feature['G*F*ACNI--'] = (feature, options) => {
         lines: [
           '<bold>NFA</bold>',
           feature.properties.t,
-          `${feature.properties.w}-${feature.properties.w1}`
+          effectiveLine(feature.properties)
         ]
       }
     ]
@@ -153,7 +158,7 @@ L.Feature['G*F*ACRI--'] = (feature, options) => {
         lines: [
           '<bold>RFA</bold>',
           feature.properties.t,
-          `${string(feature.properties.w)}-${string(feature.properties.w1)}`
+          effectiveLine(feature.properties)
         ]
       }
     ]
@@ -274,6 +279,25 @@ L.Feature['G*F*ACAI--'] = (feature, options) => {
             feature.properties.w ? `EFF. FROM: ${feature.properties.w}` : null,
             feature.properties.w1 ? `EFF. TO: ${feature.properties.w1}` : null
           ]
+        }
+      ]
+
+      return labels
+    }
+  }
+
+  return new L.Feature.PolygonArea(feature, renderOptions, options)
+}
+
+// Limited Access Area
+L.Feature['G*G*GAY---'] = (feature, options) => {
+  const renderOptions = {
+    styles: feature => ({ ...styles(feature), fill: 'diagonal', clipping: 'backdrop' }),
+    labels: feature => {
+      const labels = [
+        {
+          placement: 'center',
+          lines: [feature.properties.h]
         }
       ]
 

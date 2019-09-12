@@ -74,11 +74,14 @@ evented.on('MAP_CREATED', map => {
     const featureLayers = Object.entries(layer.features)
       .filter(([_, feature]) => feature.properties.sidc)
       .map(([featureId, feature]) => {
+        const layer = adaptFeature(layerId, featureId, feature, lineSmoothing)
+        if (!layer) return null
         const urn = featureUrn(layerId, featureId)
-        acc[urn] = adaptFeature(layerId, featureId, feature, lineSmoothing)
+        acc[urn] = layer
         acc[urn].urn = urn
         return layers[urn]
       })
+      .filter(layer => layer)
 
     const urn = layerUrn(layerId)
     acc[urn] = new L.LayerGroup(featureLayers)
@@ -117,8 +120,10 @@ evented.on('MAP_CREATED', map => {
 
     'feature-added': ({ layerId, featureId, feature }) => {
       if (!feature.properties.sidc) return console.log('missing SIDC', feature)
+      const layer = adaptFeature(layerId, featureId, feature, lineSmoothing)
+      if (!layer) return console.log('feature unsupported', feature)
       const urn = featureUrn(layerId, featureId)
-      layers[urn] = adaptFeature(layerId, featureId, feature, lineSmoothing)
+      layers[urn] = layer
       layers[urn].urn = urn
       layers[urn].addTo(layers[layerUrn(layerId)])
     },

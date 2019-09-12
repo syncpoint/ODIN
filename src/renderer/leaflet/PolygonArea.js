@@ -78,7 +78,6 @@ const options = {
 const initialize = function (feature, renderOptions, options) {
   this.feature = feature
   this.renderOptions = renderOptions
-  console.log('renderOptions', renderOptions)
   L.setOptions(this, options)
 }
 
