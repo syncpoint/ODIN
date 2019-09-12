@@ -33,7 +33,13 @@ const featureClasses = {
   P: {
     description: 'Points',
     // TODO: check if one pattern is enough: /^G.G..P.*$/
-    patterns: [/^G.G.GP.*$/, /G.G.AP.*/],
+    patterns: [
+      /^G.G.GP.*$/,
+      /^G.G.AP.*$/,
+      /^G.S.P.*$/, // combat service support
+      /^G.G.DP.*$/, // defense points
+      /^G.M.BCP.*$/ // ENGINEER REGULATING POINT
+    ],
     pane: (layerId, featureId, feature) => <PointProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
   },
 
