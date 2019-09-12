@@ -42,7 +42,13 @@ const featureClasses = {
   A: {
     description: 'Areas',
     // TODO: check if one pattern is enough: /^G.G..A.*$/
-    patterns: [/^G.G.SA.*$/, /G*G*GA.*/, /G*G*OA.*/],
+    patterns: [
+      /^G.G.SA.*$/,
+      /G.G.GA.*/,
+      /G.G.OA.*/,
+      /G.M.OU----.*/,
+      /G.S.A.*/
+    ],
     pane: (layerId, featureId, feature) => <AreaProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
   },
 
