@@ -49,64 +49,80 @@ const styles = feature => {
   }
 }
 
-L.Feature['G*G*GAA---'] = L.Feature.NamedArea.extend({ name: 'AA' })
-L.Feature['G*G*GAE---'] = L.Feature.NamedArea.extend({ name: 'EA' })
-L.Feature['G*G*GAD---'] = L.Feature.NamedArea.extend({ name: 'DZ' })
-L.Feature['G*G*GAX---'] = L.Feature.NamedArea.extend({ name: 'EZ' })
-L.Feature['G*G*GAP---'] = L.Feature.NamedArea.extend({ name: 'PZ' })
-L.Feature['G*G*GAL---'] = L.Feature.NamedArea.extend({ name: 'LZ' })
-L.Feature['G*G*OAK---'] = L.Feature.NamedArea.extend({ name: 'ATK' })
-L.Feature['G*G*OAO---'] = L.Feature.NamedArea.extend({ name: 'OBJ' })
-L.Feature['G*G*SAO---'] = L.Feature.NamedArea.extend({ name: 'AO' })
-L.Feature['G*G*SAN---'] = (feature, options) => {
-  const renderOptions = {
-    styles,
-    labels: feature => [
-      {
-        placement: 'center',
-        alignment: 'center',
-        lines: ['<bold>NAI</bold>', feature.properties.t]
-      }
-    ]
+const namedArea = name => {
+  return (feature, options) => {
+    const renderOptions = {
+      styles,
+      labels: feature => [
+        {
+          placement: 'center',
+          alignment: 'center',
+          lines: [`<bold>${name}</bold>`, feature.properties.t]
+        }
+      ]
+    }
+    return new L.Feature.PolygonArea(feature, renderOptions, options)
   }
-  return new L.Feature.PolygonArea(feature, renderOptions, options)
 }
 
-L.Feature['G*G*SAT---'] = (feature, options) => {
-  const renderOptions = {
-    styles,
-    labels: feature => [
-      {
-        placement: 'center',
-        alignment: 'center',
-        lines: ['<bold>TAI</bold>', feature.properties.t]
-      }
-    ]
-  }
-  return new L.Feature.PolygonArea(feature, renderOptions, options)
-}
+L.Feature['G*G*GAA---'] = namedArea('AA')
+L.Feature['G*G*GAE---'] = namedArea('EA')
+L.Feature['G*G*GAD---'] = namedArea('DZ')
+L.Feature['G*G*GAX---'] = namedArea('EZ')
+L.Feature['G*G*GAP---'] = namedArea('PZ')
+L.Feature['G*G*GAL---'] = namedArea('LZ')
+L.Feature['G*G*OAK---'] = namedArea('ATK')
+L.Feature['G*G*OAO---'] = namedArea('OBJ')
+L.Feature['G*G*SAO---'] = namedArea('AO')
+L.Feature['G*G*SAN---'] = namedArea('NAI')
+L.Feature['G*G*SAT---'] = namedArea('TAI')
 
 L.Feature['G*G*DAB---'] = L.Feature.Polygon // TODO: needs echelon
-L.Feature['G*F*ATS---'] = L.Feature.NamedArea.extend({ name: 'SMOKE' }) // TODO: W/W1
-L.Feature['G*S*AR----'] = (feature, options) => {
+
+L.Feature['G*F*ATS---'] = (feature, options) => {
   const renderOptions = {
     styles,
     labels: feature => [
       {
         placement: 'center',
         alignment: 'center',
-        lines: ['<bold>FARP</bold>', feature.properties.t]
+        lines: [
+          '<bold>SMOKE</bold>',
+          `${string(feature.properties.w)}-${string(feature.properties.w1)}`
+        ]
       }
     ]
   }
+
   return new L.Feature.PolygonArea(feature, renderOptions, options)
 }
 
-// NOTE: No distinction: IRREGULAR/RECTANGULAR, but no CIRCULAR
-L.Feature['G*F*ACFI--'] = L.Feature.NamedArea.extend({ name: 'FFA' }) // TODO: W/W1
-L.Feature['G*F*ACFR--'] = L.Feature.NamedArea.extend({ name: 'FFA' }) // TODO: W/W1
+L.Feature['G*S*AR----'] = namedArea('FARP')
 
-// TODO: W/W1, fill pattern
+const string = s => s || ''
+
+// NOTE: No distinction: IRREGULAR/RECTANGULAR, but no CIRCULAR
+L.Feature['G*F*ACFI--'] = (feature, options) => {
+  const renderOptions = {
+    styles,
+    labels: feature => [
+      {
+        placement: 'center',
+        alignment: 'center',
+        lines: [
+          '<bold>FFA</bold>',
+          feature.properties.t,
+          `${string(feature.properties.w)}-${string(feature.properties.w1)}`
+        ]
+      }
+    ]
+  }
+
+  return new L.Feature.PolygonArea(feature, renderOptions, options)
+}
+
+L.Feature['G*F*ACFR--'] = L.Feature['G*F*ACFI--']
+
 L.Feature['G*F*ACNI--'] = (feature, options) => {
   const renderOptions = {
     styles: feature => ({ ...styles(feature), fill: 'diagonal', clipping: 'backdrop' }),
@@ -114,7 +130,11 @@ L.Feature['G*F*ACNI--'] = (feature, options) => {
       {
         placement: 'center',
         alignment: 'center',
-        lines: ['<bold>NFA</bold>', feature.properties.t]
+        lines: [
+          '<bold>NFA</bold>',
+          feature.properties.t,
+          `${feature.properties.w}-${feature.properties.w1}`
+        ]
       }
     ]
   }
@@ -122,9 +142,27 @@ L.Feature['G*F*ACNI--'] = (feature, options) => {
   return new L.Feature.PolygonArea(feature, renderOptions, options)
 }
 
-L.Feature['G*F*ACNR--'] = L.Feature.NamedArea.extend({ name: 'NFA' }) // TODO: W/W1, fill pattern
-L.Feature['G*F*ACRI--'] = L.Feature.NamedArea.extend({ name: 'RFA' }) // TODO: W/W1
-L.Feature['G*F*ACRR--'] = L.Feature.NamedArea.extend({ name: 'RFA' }) // TODO: W/W1
+L.Feature['G*F*ACNR--'] = L.Feature['G*F*ACNI--']
+L.Feature['G*F*ACRI--'] = (feature, options) => {
+  const renderOptions = {
+    styles,
+    labels: feature => [
+      {
+        placement: 'center',
+        alignment: 'center',
+        lines: [
+          '<bold>RFA</bold>',
+          feature.properties.t,
+          `${string(feature.properties.w)}-${string(feature.properties.w1)}`
+        ]
+      }
+    ]
+  }
+
+  return new L.Feature.PolygonArea(feature, renderOptions, options)
+}
+
+L.Feature['G*F*ACRR--'] = L.Feature['G*F*ACRI--']
 
 L.Feature['G*M*OFA---'] = (feature, options) => {
   const renderOptions = {
@@ -219,4 +257,29 @@ L.Feature['G*S*AD----'] = (feature, options) => {
   return new L.Feature.PolygonArea(feature, renderOptions, options)
 }
 
+L.Feature['G*F*ACAI--'] = (feature, options) => {
+  const renderOptions = {
+    styles: feature => ({ ...styles(feature), clipping: 'backdrop' }),
+    labels: feature => {
+      const labels = [
+        {
+          placement: 'center',
+          alignment: 'left',
+          lines: [
+            '<bold>ACA</bold>',
+            feature.properties.t,
+            feature.properties.x ? `MIN ALT: ${feature.properties.x}` : null,
+            feature.properties.x1 ? `MAX ALT: ${feature.properties.x1}` : null,
+            feature.properties.h ? `GRIDS: ${feature.properties.h}` : null,
+            feature.properties.w ? `EFF. FROM: ${feature.properties.w}` : null,
+            feature.properties.w1 ? `EFF. TO: ${feature.properties.w1}` : null
+          ]
+        }
+      ]
 
+      return labels
+    }
+  }
+
+  return new L.Feature.PolygonArea(feature, renderOptions, options)
+}
