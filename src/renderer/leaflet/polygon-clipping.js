@@ -1,12 +1,13 @@
 import L from 'leaflet'
 import uuid from 'uuid-random'
 
-export const backdropClipping = (group, _) => {
-  const backdrops = []
+export const backdropClipping = cache => {
+  console.log('cache', cache)
+  // const backdrops = []
 
   const reset = () => {
-    backdrops.forEach(element => group.removeChild(element))
-    backdrops.length = 0
+    // backdrops.forEach(element => group.removeChild(element))
+    // backdrops.length = 0
   }
 
   const withLabel = (element, tx, ty) => {
@@ -21,8 +22,8 @@ export const backdropClipping = (group, _) => {
       fill: 'white'
     })
 
-    backdrops.push(backdrop)
-    group.insertBefore(backdrop, element)
+    // backdrops.push(backdrop)
+    cache.element('labels').insertBefore(backdrop, element)
   }
 
   return {
@@ -33,13 +34,13 @@ export const backdropClipping = (group, _) => {
   }
 }
 
-export const maskClipping = (group, defs) => {
+export const maskClipping = cache => {
   const id = uuid()
   const clip = L.SVG.mask({ id: `mask-${id}` })
   const whiteMask = L.SVG.rect({ fill: 'white' })
   const blackMasks = []
 
-  defs.appendChild(clip)
+  cache.element('defs').appendChild(clip)
   clip.appendChild(whiteMask)
 
   const reset = () => {
@@ -68,8 +69,8 @@ export const maskClipping = (group, defs) => {
 
   const finish = () => {
     // Update white mask (necessary for proper clipping):
-    const nox = group.getBBox()
-    L.SVG.setAttributes(whiteMask)({ ...L.SVG.inflate(nox, 20) })
+    const box = cache.element('group').getBBox()
+    L.SVG.setAttributes(whiteMask)({ ...L.SVG.inflate(box, 20) })
   }
 
   return {
@@ -77,5 +78,14 @@ export const maskClipping = (group, defs) => {
     withLabel,
     withPath,
     finish
+  }
+}
+
+export const noClipping = cache => {
+  return {
+    reset: () => {},
+    withLabel: () => {},
+    withPath: () => {},
+    finish: () => {}
   }
 }
