@@ -1,8 +1,10 @@
 /* eslint-disable */
 import L from 'leaflet'
 import selection from '../components/App.selection'
+import { fromNow } from '../../shared/datetime'
 import polygonShape from './polygon-shape'
-
+import evented from '../evented'
+import { findSpecificItem } from '../stores/feature-store'
 
 // GeoJSON geometry helper.
 const Geometry = geometry => {
@@ -79,6 +81,22 @@ const initialize = function (feature, renderOptions, options) {
   this.feature = feature
   this.renderOptions = renderOptions
   L.setOptions(this, options)
+
+  const item = findSpecificItem(this.feature.properties.sidc)
+
+  this.mouseover = event => {
+    const { title, properties } = this.feature
+    if (!event.originalEvent.ctrlKey) return
+    if (item && item.name) evented.emit('OSD_MESSAGE', { slot: 'B1', message: `${item.name} (${properties.sidc})` })
+    if (title) evented.emit('OSD_MESSAGE', { slot: 'B2', message: title })
+    if (properties.w) evented.emit('OSD_MESSAGE', { slot: 'B3', message: fromNow(properties.w) })
+  }
+
+  this.mouseout = () => {
+    evented.emit('OSD_MESSAGE', { slot: 'B1', message: '' })
+    evented.emit('OSD_MESSAGE', { slot: 'B2', message: '' })
+    evented.emit('OSD_MESSAGE', { slot: 'B3', message: '' })
+  }
 }
 
 const beforeAdd = function (map) {
@@ -91,6 +109,8 @@ const onAdd = function (map) {
 
   map.on('zoomend', this.zoomend)
   this.on('click', this.click)
+  this.on('mouseover', this.mouseover)
+  this.on('mouseout', this.mouseout)
 
   const shapeOptions = {
     styles: this.renderOptions.styles(this.feature),

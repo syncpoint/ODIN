@@ -358,7 +358,7 @@ L.Feature['G*G*GAY---'] = (feature, options) => {
 
 const missleEnganementZone = name => (feature, options) => {
   const renderOptions = {
-    styles: feature => ({ ...styles(feature), clipping: 'backdrop' }),
+    styles: feature => ({ ...styles(feature), clipping: 'mask' }),
     labels: feature => {
       const labels = [
         {
@@ -414,7 +414,7 @@ L.Feature['G*G*AAW---'] = (feature, options) => {
 
 L.Feature['G*G*AAR---'] = (feature, options) => {
   const renderOptions = {
-    styles: feature => ({ ...styles(feature), clipping: 'backdrop' }),
+    styles: feature => ({ ...styles(feature), clipping: 'mask' }),
     labels: feature => {
       const labels = [
         {
@@ -440,7 +440,7 @@ L.Feature['G*G*AAR---'] = (feature, options) => {
 
 L.Feature['G*G*AAF---'] = (feature, options) => {
   const renderOptions = {
-    styles: feature => ({ ...styles(feature), clipping: 'backdrop' }),
+    styles: feature => ({ ...styles(feature), clipping: 'mask' }),
     labels: feature => {
       const labels = [
         {
@@ -453,6 +453,54 @@ L.Feature['G*G*AAF---'] = (feature, options) => {
             feature.properties.x1 ? `MAX ALT: ${feature.properties.x1}` : null,
             feature.properties.w ? `TIME FROM: ${feature.properties.w}` : null,
             feature.properties.w1 ? `TIME TO: ${feature.properties.w1}` : null
+          ]
+        }
+      ]
+
+      return labels
+    }
+  }
+
+  return new L.Feature.PolygonArea(feature, renderOptions, options)
+}
+
+L.Feature['G*S*AE----'] = (feature, options) => {
+  const renderOptions = {
+    styles: feature => ({ ...styles(feature), clipping: 'mask' }),
+    labels: feature => {
+      const labels = [
+        {
+          placement: 'center',
+          alignment: 'center',
+          lines: [
+            '<bold>EPW</bold>',
+            '<bold>HOLDING</bold>',
+            '<bold>AREA</bold>',
+            feature.properties.t
+          ]
+        }
+      ]
+
+      return labels
+    }
+  }
+
+  return new L.Feature.PolygonArea(feature, renderOptions, options)
+}
+
+L.Feature['G*S*AH----'] = (feature, options) => {
+  const renderOptions = {
+    styles: feature => ({ ...styles(feature), clipping: 'mask' }),
+    labels: feature => {
+      const labels = [
+        {
+          placement: 'center',
+          alignment: 'center',
+          lines: [
+            '<bold>REFUGEE</bold>',
+            '<bold>HOLDING</bold>',
+            '<bold>AREA</bold>',
+            feature.properties.t
           ]
         }
       ]
