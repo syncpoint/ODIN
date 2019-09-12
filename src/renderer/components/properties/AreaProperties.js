@@ -16,7 +16,11 @@ class AreaProperties extends FeatureProperties {
       uniqueDesignation: properties.t || '',
       echelon: sidc[11],
       additionalInformation: properties.h || '',
-      hostile: properties.n || ''
+      hostile: properties.n || '',
+      effectiveFrom: properties.w || '',
+      effectiveTo: properties.w1 || '',
+      altitudeFrom: properties.x || '',
+      altitudeTo: properties.x1 || ''
     }
   }
 
@@ -31,7 +35,11 @@ class AreaProperties extends FeatureProperties {
       sidc,
       h: this.state.additionalInformation,
       n: this.state.hostile,
-      t: this.state.uniqueDesignation
+      t: this.state.uniqueDesignation,
+      w: this.state.effectiveFrom,
+      w1: this.state.effectiveTo,
+      x: this.state.altitudeFrom,
+      x1: this.state.altitudeTo
     }
 
     return {
@@ -76,6 +84,34 @@ class AreaProperties extends FeatureProperties {
           onChange={ event => this.updateField('additionalInformation', event.target.value) }
         />
 
+        <TextField
+          className={ this.props.classes.effectiveFrom }
+          label={'Effective (from)'}
+          value={ this.state.effectiveFrom }
+          onChange={ event => this.updateField('effectiveFrom', event.target.value) }
+        />
+
+        <TextField
+          className={ this.props.classes.effectiveTo }
+          label={'Effective (to)'}
+          value={ this.state.effectiveTo }
+          onChange={ event => this.updateField('effectiveTo', event.target.value) }
+        />
+
+        <TextField
+          className={ this.props.classes.altitudeFrom }
+          label={'Altitude (from)'}
+          value={ this.state.altitudeFrom }
+          onChange={ event => this.updateField('altitudeFrom', event.target.value) }
+        />
+
+        <TextField
+          className={ this.props.classes.altitudeTo }
+          label={'Altitude (to)'}
+          value={ this.state.altitudeTo }
+          onChange={ event => this.updateField('altitudeTo', event.target.value) }
+        />
+
         <FormControlLabel
           control={ <Checkbox color="secondary" checked={ this.state.hostile === 'ENY' } /> }
           label="Hostile (Enemy)"
@@ -102,7 +138,11 @@ const styles = theme => ({
   name: { gridColumn: '1 / span 2' },
   uniqueDesignation: {},
   echelon: {},
-  additionalInformation: { gridColumn: '1 / span 2' }
+  additionalInformation: { gridColumn: '1 / span 2' },
+  effectiveFrom: { gridColumn: '1 / span 2' },
+  effectiveTo: { gridColumn: '1 / span 2' },
+  altitudeFrom: {},
+  altitudeTo: {}
 })
 
 AreaProperties.propTypes = {

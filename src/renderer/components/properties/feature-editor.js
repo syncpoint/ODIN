@@ -47,7 +47,8 @@ const featureClasses = {
       /G.G.GA.*/,
       /G.G.OA.*/,
       /G.M.OU----.*/,
-      /G.S.A.*/
+      /G.S.A.*/,
+      /G.F.A.*/
     ],
     pane: (layerId, featureId, feature) => <AreaProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
   },
