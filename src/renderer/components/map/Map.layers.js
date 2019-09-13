@@ -74,6 +74,7 @@ evented.on('MAP_CREATED', map => {
   const refreshView = () => Object.entries(state).reduce((acc, [layerId, layer]) => {
     const featureLayers = Object.entries(layer.features)
       .filter(([_, feature]) => feature.properties.sidc)
+      .filter(([_, feature]) => feature.geometry)
       .map(([featureId, feature]) => {
         const layer = adaptFeature(layerId, featureId, feature, lineSmoothing)
         if (!layer) return null
@@ -121,6 +122,8 @@ evented.on('MAP_CREATED', map => {
 
     'feature-added': ({ layerId, featureId, feature }) => {
       if (!feature.properties.sidc) return console.log('missing SIDC', feature)
+      if (!feature.geometry) return console.log('missing geometry', feature)
+
       const layer = adaptFeature(layerId, featureId, feature, lineSmoothing)
       if (!layer) return console.log('feature unsupported', feature)
       const urn = featureUrn(layerId, featureId)
