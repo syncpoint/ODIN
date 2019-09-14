@@ -45,37 +45,40 @@ L.Feature['G*G*GLB---'] = L.Feature.Polyline.extend({
     const drawLabels = (latlngs, description) => {
       if (description.length === 0) return
 
-      R.aperture(2, latlngs).map(L.LatLng.line).forEach(segment => {
-        const label = L.SVG.g({
-          'stroke-width': 4,
-          'stroke': 'black',
-          'fill': 'none'
+      R.aperture(2, latlngs)
+        .map(L.LatLng.line)
+        .filter(line => line) // edge case: line is undefined when points are equal.
+        .forEach(segment => {
+          const label = L.SVG.g({
+            'stroke-width': 4,
+            'stroke': 'black',
+            'fill': 'none'
+          })
+
+          // Derive SVG from label description and add to label group:
+          description.forEach(description => {
+            const element = L.SVG.create(description.type)
+            L.SVG.setAttributes(element)(description)
+            label.appendChild(element)
+          })
+
+          const centerPoint = options.layerPoint(segment.midpoint())
+          label.setAttribute('transform', transformLabel(centerPoint, segment.initialBearing + 90))
+          labels.push(label)
+          group.appendChild(label)
+
+          // Create black mask for clipping:
+          const bbox = L.SVG.inflate(label.getBBox(), 8)
+          const blackMask = L.SVG.rect({
+            fill: 'black',
+            width: bbox.width / 2,
+            height: bbox.height / 2,
+            transform: transformMask(centerPoint, segment.initialBearing + 90, bbox)
+          })
+
+          clip.appendChild(blackMask)
+          blackMasks.push(blackMask)
         })
-
-        // Derive SVG from label description and add to label group:
-        description.forEach(description => {
-          const element = L.SVG.create(description.type)
-          L.SVG.setAttributes(element)(description)
-          label.appendChild(element)
-        })
-
-        const centerPoint = options.layerPoint(segment.midpoint())
-        label.setAttribute('transform', transformLabel(centerPoint, segment.initialBearing + 90))
-        labels.push(label)
-        group.appendChild(label)
-
-        // Create black mask for clipping:
-        const bbox = L.SVG.inflate(label.getBBox(), 8)
-        const blackMask = L.SVG.rect({
-          fill: 'black',
-          width: bbox.width / 2,
-          height: bbox.height / 2,
-          transform: transformMask(centerPoint, segment.initialBearing + 90, bbox)
-        })
-
-        clip.appendChild(blackMask)
-        blackMasks.push(blackMask)
-      })
     }
 
     const update = latlngs => {
