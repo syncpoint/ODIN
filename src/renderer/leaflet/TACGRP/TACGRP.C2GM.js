@@ -1,5 +1,6 @@
 import L from 'leaflet'
 import '../PolygonArea'
+import './TACGRP.C2GM.GNL.ARS.SRHARA'
 import './TACGRP.C2GM.GNL.LNE.BNDS'
 
 const ColorSchemes = {

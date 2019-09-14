@@ -82,17 +82,19 @@ evented.on('MAP_CREATED', map => {
   const deleteLayer = urn => { layers[urn].remove(); delete layers[urn] }
 
   const refreshView = () => Object.entries(state).reduce((acc, [layerId, layer]) => {
+
     const featureLayers = Object.entries(layer.features)
-      .filter(([_, feature]) => feature.geometry)
       .map(([featureId, feature]) => {
-        const layer = adaptFeature(layerId, featureId, feature, lineSmoothing)
-        if (!layer) return null
         const urn = featureUrn(layerId, featureId)
+        const layer = adaptFeature(layerId, featureId, feature, lineSmoothing)
+        return [urn, layer]
+      })
+      .filter(([_, layer]) => layer)
+      .map(([urn, layer]) => {
         acc[urn] = layer
         acc[urn].urn = urn
         return layers[urn]
       })
-      .filter(layer => layer)
 
     const urn = layerUrn(layerId)
     acc[urn] = new L.LayerGroup(featureLayers)
