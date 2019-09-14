@@ -4,6 +4,8 @@ import * as math from 'mathjs'
 import * as R from 'ramda'
 import { maskClipping, backdropClipping, noClipping } from './polygon-clipping'
 
+const DEFAULT_FONT_SIZE = 14
+
 const axisIntersect = (points, y, z) => R.aperture(2, points).reduce((acc, segment) => {
   const w = [segment[0].x, segment[0].y]
   const x = [segment[1].x, segment[1].y]
@@ -98,7 +100,7 @@ const renderLabels = (cache, clipping, labels, points) => {
   cache.element('group').appendChild(cache.element('labels'))
 
   labels.forEach(descriptor => {
-    descriptor.fontSize = descriptor.fontSize || 12
+    descriptor.fontSize = descriptor.fontSize || DEFAULT_FONT_SIZE
 
     const label = text(descriptor)
 
