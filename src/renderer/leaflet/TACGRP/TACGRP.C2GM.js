@@ -1,5 +1,4 @@
 import L from 'leaflet'
-import '../NamedArea'
 import '../PolygonArea'
 import './TACGRP.C2GM.GNL.LNE.BNDS'
 
