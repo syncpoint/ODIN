@@ -1,5 +1,6 @@
 import { ipcRenderer } from 'electron'
 import L from 'leaflet'
+import ms from 'milsymbol'
 import evented from '../../evented'
 import store from '../../stores/layer-store'
 import undoBuffer from '../App.undo-buffer'
@@ -9,12 +10,19 @@ import settings from '../../model/settings'
 
 const layerUrn = layerId => ResourceNames.layerId(layerId)
 const featureUrn = (layerId, featureId) => ResourceNames.featureId(layerId, featureId)
+const validSymbol = sidc => new ms.Symbol(sidc, {}).isValid()
 
 const genericShape = (feature, options) => {
   if (!feature.geometry) return null
+  const { sidc } = feature.properties
+
   switch (feature.geometry.type) {
-    case 'Point': return new L.Feature.Symbol(feature, options)
-    case 'Polygon': return new L.Feature.Polygon(feature, options)
+    case 'Point': {
+      if (!sidc) return null // no generic point feature without SIDC
+      if (!validSymbol(sidc)) return null // no point features other than symbols
+      return new L.Feature.Symbol(feature, options)
+    }
+    case 'Polygon': return new L.Feature.PolygonAreaTitled(feature, options)
     case 'LineString': return new L.Feature.Polyline(feature, options)
     default: return null
   }
@@ -35,6 +43,8 @@ const adaptFeature = (layerId, featureId, feature, lineSmoothing) => {
   }
 
   const sidc = feature.properties.sidc
+  if (!sidc) return genericShape(feature, options)
+
   const key = `${sidc[0]}*${sidc[2]}*${sidc.substring(4, 10)}`
   const layer = L.Feature[key] ? new L.Feature[key](feature, options) : genericShape(feature, options)
   return layer
@@ -73,7 +83,6 @@ evented.on('MAP_CREATED', map => {
 
   const refreshView = () => Object.entries(state).reduce((acc, [layerId, layer]) => {
     const featureLayers = Object.entries(layer.features)
-      .filter(([_, feature]) => feature.properties.sidc)
       .filter(([_, feature]) => feature.geometry)
       .map(([featureId, feature]) => {
         const layer = adaptFeature(layerId, featureId, feature, lineSmoothing)
@@ -121,7 +130,6 @@ evented.on('MAP_CREATED', map => {
     'layer-shown': ({ layerId }) => layers[layerUrn(layerId)].addTo(map),
 
     'feature-added': ({ layerId, featureId, feature }) => {
-      if (!feature.properties.sidc) return console.log('missing SIDC', feature)
       if (!feature.geometry) return console.log('missing geometry', feature)
 
       const layer = adaptFeature(layerId, featureId, feature, lineSmoothing)
