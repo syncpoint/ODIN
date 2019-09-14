@@ -139,6 +139,8 @@ L.LatLng.intersection = (p1, brng1, p2, brng2) => {
 }
 
 L.LatLng.line = ([a, b]) => {
+  if (a.equals(b)) return null
+
   const initialBearing = a.initialBearingTo(b)
   const finalBearing = a.finalBearingTo(b)
 
