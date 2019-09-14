@@ -13,7 +13,7 @@ const importFile = filename => {
       const layerId = uuid()
       store.addLayer(layerId, basename)
       json.features.forEach(feature => store.addFeature(layerId)(uuid(), feature))
-      if (json.extent) store.updateBounds(layerId, json.extent)
+      if (json.bbox) store.updateBounds(layerId, json.bbox)
     }
   } catch (err) {
     console.error(err)
