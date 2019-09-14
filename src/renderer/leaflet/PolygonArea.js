@@ -1,4 +1,3 @@
-/* eslint-disable */
 import L from 'leaflet'
 import selection from '../components/App.selection'
 import { fromNow } from '../../shared/datetime'
@@ -24,65 +23,13 @@ const Geometry = geometry => {
   }
 }
 
-
-// Zero, one or more labels with one or more lines each.
-const labelOptions = feature => {
-  // const labels = ['north', 'south', 'east', 'west'].map(placement => ({
-  //   placement,
-  //   fontSize: 16,
-  //   lines: [placement.toUpperCase(), 'SECONDS LINE', '<bold>THIRD LINE</bold>']
-  // }))
-
-  const labels = [
-    {
-      fontSize: 16,
-      // INSIDE:  center
-      // BORDER:  north | south | east | west | northeast | northwest
-      // OUTSIDE: bottom | topleft
-      placement: 'center',
-
-      // center | left
-      alignment: 'center',
-      lines: ['<bold>TAI</bold>', feature.properties.t]
-    }
-  ]
-
-  // const labels = [
-  //   {
-  //     placement: 'center',
-  //     alignment: 'left',
-  //     fontSize: 18,
-  //     lines: [
-  //       '<bold>ACA</bold>',
-  //       '53ID (M)',
-  //       'MIN ALT: 500 FT AGL',
-  //       'MAX ALT: 3000 FT AGL',
-  //       'GRIDS: NK2313 to NK3013',
-  //       'TIME FROM: 281400ZAPR',
-  //       'TIME TO: 281530ZAPR'
-  //     ]
-  //   }
-  // ]
-
-  // const labels = ['north', 'south', 'east', 'west'].map(placement => ({
-  //   fontSize: 18,
-  //   placement,
-  //   lines: ['<bold>M</bold>']
-  // }))
-
-  return labels
-}
-
-const options = {
-  dummy: false
-}
-
 const initialize = function (feature, renderOptions, options) {
   this.feature = feature
   this.renderOptions = renderOptions
   L.setOptions(this, options)
 
-  const item = findSpecificItem(this.feature.properties.sidc)
+  const { sidc } = this.feature.properties
+  const item = sidc ? findSpecificItem(sidc) : null
 
   this.mouseover = event => {
     const { title, properties } = this.feature
@@ -191,7 +138,6 @@ const updateData = function (feature) {
 }
 
 L.Feature.PolygonArea = L.Layer.extend({
-  options,
   initialize,
   beforeAdd,
   onAdd,

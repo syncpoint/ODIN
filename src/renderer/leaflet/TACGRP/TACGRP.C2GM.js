@@ -35,16 +35,19 @@ const styles = feature => {
   const stroke = () => {
     if (n === 'ENY') return colorSchemes.red
 
-    switch (sidc[1]) {
+    const identity = sidc ? sidc[1] : 'U' // identity or U - UNKNOWN
+    switch (identity) {
       case 'F': return colorSchemes.blue
       case 'H': return colorSchemes.red
       case 'N': return colorSchemes.green
+      case 'U': return colorSchemes.yellow
       default: return 'black'
     }
   }
 
   const strokeDashArray = () => {
-    if (sidc[3] === 'A') return '10 5'
+    const status = sidc ? sidc[3] : 'P' // status or P - PRESENT
+    if (status === 'A') return '15 5'
   }
 
   return {
@@ -87,15 +90,16 @@ const namedArea = name => {
   }
 }
 
-const titledArea = () => {
-  return (feature, options) => {
-    const renderOptions = {
-      styles,
-      labels: feature => centerLabel([feature.properties.t])
-    }
-    return new L.Feature.PolygonArea(feature, renderOptions, options)
+const titledArea = (feature, options) => {
+  const renderOptions = {
+    styles,
+    labels: feature => centerLabel([feature.properties.t])
   }
+  return new L.Feature.PolygonArea(feature, renderOptions, options)
 }
+
+// Generic/default area:
+L.Feature.PolygonAreaTitled = titledArea
 
 L.Feature['G*G*GAA---'] = namedArea('AA')
 L.Feature['G*G*GAE---'] = namedArea('EA')
@@ -110,7 +114,7 @@ L.Feature['G*G*SAN---'] = namedArea('NAI')
 L.Feature['G*G*SAT---'] = namedArea('TAI')
 
 // TODO: needs echelon
-L.Feature['G*G*DAB---'] = titledArea()
+L.Feature['G*G*DAB---'] = titledArea
 L.Feature['G*G*DABP--'] = (feature, options) => {
   const renderOptions = {
     styles: feature => ({ ...styles(feature), clipping: 'mask' }),
