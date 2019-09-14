@@ -90,7 +90,7 @@ evented.on('MAP_CREATED', map => {
   const render = {
     'replay-ready': () => {
       refreshView()
-      const filter = Object.entries(settings.map.getDisplayFilters())
+      const filter = Object.entries(settings.map.getDisplayFilters({}))
         .map(([name, { value, unit }]) => `${name}(${value}${unit})`)
         .join(' ')
 
