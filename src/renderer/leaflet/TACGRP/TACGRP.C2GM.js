@@ -8,7 +8,8 @@ const ColorSchemes = {
     red: 'RGB(200, 0, 0)',
     blue: 'RGB(0, 107, 140)',
     green: 'RGB(0, 160, 0)',
-    yellow: 'RGB(225, 220, 0)',
+    // recommended: 'RGB(225, 220, 0)'
+    // yellow: 'RGB(225, 127, 0)',
     purple: 'RGB(80, 0, 80)'
   },
   medium: {
@@ -319,8 +320,8 @@ L.Feature['G*G*AAR---'] = (feature, options) => {
       feature.properties.t,
       feature.properties.x ? `MIN ALT: ${feature.properties.x}` : null,
       feature.properties.x1 ? `MAX ALT: ${feature.properties.x1}` : null,
-      feature.properties.w ? `TIME FROM: ${feature.properties.w}` : null,
-      feature.properties.w1 ? `TIME TO: ${feature.properties.w1}` : null
+      feature.properties.w ? `EFF. FROM: ${feature.properties.w}` : null,
+      feature.properties.w1 ? `EFF. TO: ${feature.properties.w1}` : null
     ])
   }
 
@@ -335,8 +336,8 @@ L.Feature['G*G*AAF---'] = (feature, options) => {
       feature.properties.t,
       feature.properties.x ? `MIN ALT: ${feature.properties.x}` : null,
       feature.properties.x1 ? `MAX ALT: ${feature.properties.x1}` : null,
-      feature.properties.w ? `TIME FROM: ${feature.properties.w}` : null,
-      feature.properties.w1 ? `TIME TO: ${feature.properties.w1}` : null
+      feature.properties.w ? `EFF. FROM: ${feature.properties.w}` : null,
+      feature.properties.w1 ? `EFF. TO: ${feature.properties.w1}` : null
     ])
   }
 
