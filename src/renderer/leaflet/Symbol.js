@@ -34,13 +34,11 @@ const symbolOptions = feature => ({
   standard: {
     size: 34,
     colorMode: 'Light', // default: light
-    simpleStatusModifier: true,
     ...modifiers(feature)
   },
   highlighted: {
     size: 34,
     colorMode: 'Light', // default: light
-    simpleStatusModifier: true,
     monoColor: 'white',
     outlineColor: 'black',
     outlineWidth: 6,
