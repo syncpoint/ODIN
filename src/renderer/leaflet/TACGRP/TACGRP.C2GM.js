@@ -101,7 +101,18 @@ const titledArea = (feature, options) => {
 // Generic/default area:
 L.Feature.PolygonAreaTitled = titledArea
 
-L.Feature['G*G*GAA---'] = namedArea('AA')
+L.Feature['G*G*GAA---'] = (feature, options) => {
+  const renderOptions = {
+    styles: feature => ({ ...styles(feature), clipping: 'mask' }),
+    labels: feature => {
+      const labels = centerLabel([`<bold>AA</bold>`, feature.properties.t])
+      if (feature.properties.n) return labels.concat(axisLabelsEW('ENY'))
+      else return labels
+    }
+  }
+  return new L.Feature.PolygonArea(feature, renderOptions, options)
+}
+
 L.Feature['G*G*GAE---'] = namedArea('EA')
 L.Feature['G*G*GAD---'] = namedArea('DZ')
 L.Feature['G*G*GAX---'] = namedArea('EZ')
@@ -123,8 +134,8 @@ L.Feature['G*G*DABP--'] = (feature, options) => {
         feature.properties.t ? `(P) ${feature.properties.t}` : '(P)',
         effectiveLine(feature.properties)
       ])
-      if (feature.properties.n) labels.concat(labels.push(axisLabelsEW('ENY')))
-      return labels
+      if (feature.properties.n) return labels.concat(axisLabelsEW('ENY'))
+      else return labels
     }
   }
 

@@ -19,6 +19,18 @@ class FeatureProperties extends React.Component {
       store.updateFeature(layerId)(featureId, this.feature())
     })
   }
+
+  updateFields (entries) {
+    const { layerId, featureId } = this.props
+    const state = Object.entries(entries).reduce((acc, [key, value]) => {
+      acc[key] = value
+      return acc
+    }, R.clone(this.state))
+
+    this.setState(state, () => {
+      store.updateFeature(layerId)(featureId, this.feature())
+    })
+  }
 }
 
 FeatureProperties.propTypes = {
