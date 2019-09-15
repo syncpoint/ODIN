@@ -10,14 +10,13 @@ import { Modifier } from './SIDC'
 import { SelectEchelon } from './SelectEchelon'
 import FeatureProperties from './FeatureProperties'
 
-class UnitProperties extends FeatureProperties {
+class StabilityOperationsProperties extends FeatureProperties {
   extractState (feature) {
     const { title, properties } = feature
     const { sidc } = properties
 
     return {
       name: title || '',
-      reinforcedReduced: properties.f || '',
       staffComments: properties.g || '',
       higherFormation: properties.m || '',
       direction: properties.q || '',
@@ -45,7 +44,6 @@ class UnitProperties extends FeatureProperties {
     const properties = {
       ...this.props.feature.properties,
       sidc,
-      f: this.state.reinforcedReduced,
       g: this.state.staffComments,
       m: this.state.higherFormation,
       q: this.state.direction,
@@ -196,40 +194,6 @@ class UnitProperties extends FeatureProperties {
             onChange={ event => this.updateField('modifierFD', event.target.checked) }
           />
         </div>
-
-        <FormLabel component="legend" className={ this.props.classes.reinforcedReducedLabel }>Reinforced/Reduced</FormLabel>
-        <div className={ this.props.classes.reinforcedReduced }>
-          <RadioGroup
-            value={ this.state.reinforcedReduced }
-            onChange={ event => this.updateField('reinforcedReduced', event.target.value) }
-            className={ this.props.classes.reinforcedReducedGroup }
-          >
-            <FormControlLabel
-              value=""
-              control={ <Radio color="secondary" /> }
-              label="None"
-              labelPlacement="top"
-            />
-            <FormControlLabel
-              value="(+)"
-              control={ <Radio color="secondary" /> }
-              label="(+)"
-              labelPlacement="top"
-            />
-            <FormControlLabel
-              value="(—)"
-              control={ <Radio color="secondary" /> }
-              label="(—)"
-              labelPlacement="top"
-            />
-            <FormControlLabel
-              value="(±)"
-              control={ <Radio color="secondary" /> }
-              label="(±)"
-              labelPlacement="top"
-            />
-          </RadioGroup>
-        </div>
       </Paper>
     )
   }
@@ -237,7 +201,7 @@ class UnitProperties extends FeatureProperties {
 
 const styles = theme => ({
   paper: {
-    padding: theme.spacing(4),
+    padding: theme.spacing(2),
     height: 'auto',
     pointerEvents: 'auto',
     gridArea: 'R',
@@ -262,18 +226,11 @@ const styles = theme => ({
   anticipated: { gridColumn: 1 },
 
   modifierLabel: { gridColumn: '1 / span 2' },
-  modifier: { gridColumn: '1 / span 2' },
-
-  reinforcedReducedLabel: { gridColumn: '1 / span 2' },
-  reinforcedReducedGroup: {
-    display: 'grid',
-    gridTemplateColumns: 'auto auto auto auto'
-  },
-  reinforcedReduced: { gridColumn: '1 / span 2' }
+  modifier: { gridColumn: '1 / span 2' }
 })
 
-UnitProperties.propTypes = {
+StabilityOperationsProperties.propTypes = {
   classes: PropTypes.any.isRequired
 }
 
-export default withStyles(styles)(UnitProperties)
+export default withStyles(styles)(StabilityOperationsProperties)

@@ -7,6 +7,7 @@ import AreaProperties from './AreaProperties'
 import EquipmentProperties from './EquipmentProperties'
 import BoundaryLineProperties from './BoundaryLineProperties'
 import PointProperties from './PointProperties'
+import StabilityOperationsProperties from './StabilityOperationsProperties'
 
 const featureClasses = {
   U: {
@@ -26,10 +27,17 @@ const featureClasses = {
 
   I: { description: 'Installations', patterns: [/^S.G.I.*$/] }, // S.G.......H.*
   SI: { description: 'Signals Intelligence', patterns: [/^I.*$/] },
-  SO: { description: 'Stability Operations', patterns: [/^O.*$/] },
+
+  SO: {
+    description: 'Stability Operations',
+    patterns: [/^O.*$/],
+    pane: (layerId, featureId, feature) => <StabilityOperationsProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
+  },
+
   EU: { description: 'EMS Units' },
   EEI: { description: 'EMS Equipment and Incidents', patterns: [/^E.I.*$/] },
   EI: { description: 'EMS Installations', patterns: [/^E.O.......H.*$/, /^E.F.......H.*$/] },
+
   P: {
     description: 'Points',
     // TODO: check if one pattern is enough: /^G.G..P.*$/
