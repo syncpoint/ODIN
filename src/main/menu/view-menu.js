@@ -7,6 +7,7 @@ const menu = settings => {
   const osdVisible = settings.has('osdVisible') ? settings.get('osdVisible') : true
   const paletteVisible = settings.has('paletteVisible') ? settings.get('paletteVisible') : true
   const lineSmoothing = settings.has('lineSmoothing') ? settings.get('lineSmoothing') : true
+  const labelsVisible = settings.has('labelsVisible') ? settings.get('labelsVisible') : true
   const osdOptions = settings.get('osdOptions') ||
       ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
 
@@ -109,13 +110,23 @@ const menu = settings => {
         accelerator: 'CmdOrCtrl+P'
       },
       {
-        label: 'Toggle Line Smoothing',
+        label: 'Line Smoothing',
         click: (menuItem, focusedWindow) => {
           settings.set('lineSmoothing', menuItem.checked)
-          sendMessage('COMMAND_TOGGLE_LINE_SMOOTHING', menuItem.checked)(menuItem, focusedWindow)
+          sendMessage('COMMAND_LINE_SMOOTHING', menuItem.checked)(menuItem, focusedWindow)
         },
         type: 'checkbox',
         checked: lineSmoothing
+      },
+      {
+        label: 'Labels',
+        click: (menuItem, focusedWindow) => {
+          settings.set('labelsVisible', menuItem.checked)
+          sendMessage('COMMAND_LABELS', menuItem.checked)(menuItem, focusedWindow)
+        },
+        type: 'checkbox',
+        checked: labelsVisible,
+        accelerator: 'CmdOrCtrl+L'
       },
       { type: 'separator' },
       {

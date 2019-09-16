@@ -28,7 +28,7 @@ const genericShape = (feature, options) => {
   }
 }
 
-const adaptFeature = (layerId, featureId, feature, lineSmoothing) => {
+const adaptFeature = (layerId, featureId, feature, featureOptions) => {
   const update = feature => {
     const command = store.commands.update(layerId, featureId)(feature)
     undoBuffer.push(command)
@@ -38,8 +38,8 @@ const adaptFeature = (layerId, featureId, feature, lineSmoothing) => {
   const options = {
     interactive: true,
     bubblingMouseEvents: false,
-    lineSmoothing,
-    update: update
+    update: update,
+    ...featureOptions
   }
 
   const sidc = feature.properties.sidc
@@ -72,9 +72,13 @@ const bounds = bbox => {
 }
 
 evented.on('MAP_CREATED', map => {
-  let lineSmoothing = settings.map.getLineSmoothing()
   let replaying = true
   let state = {}
+
+  const featureOptions = {
+    lineSmoothing: settings.map.getLineSmoothing(),
+    hideLabels: settings.map.getHideLabels()
+  }
 
   // layers :: urn -> (layer group | feature layer)
   const layers = {}
@@ -86,7 +90,7 @@ evented.on('MAP_CREATED', map => {
     const featureLayers = Object.entries(layer.features)
       .map(([featureId, feature]) => {
         const urn = featureUrn(layerId, featureId)
-        const layer = adaptFeature(layerId, featureId, feature, lineSmoothing)
+        const layer = adaptFeature(layerId, featureId, feature, featureOptions)
         return [urn, layer]
       })
       .filter(([_, layer]) => layer)
@@ -134,7 +138,7 @@ evented.on('MAP_CREATED', map => {
     'feature-added': ({ layerId, featureId, feature }) => {
       if (!feature.geometry) return console.log('missing geometry', feature)
 
-      const layer = adaptFeature(layerId, featureId, feature, lineSmoothing)
+      const layer = adaptFeature(layerId, featureId, feature, featureOptions)
       if (!layer) return console.log('feature unsupported', feature)
       const urn = featureUrn(layerId, featureId)
       layers[urn] = layer
@@ -169,9 +173,15 @@ evented.on('MAP_CREATED', map => {
     render[event.type](event)
   })
 
-  ipcRenderer.on('COMMAND_TOGGLE_LINE_SMOOTHING', (_, args) => {
-    lineSmoothing = args
+  ipcRenderer.on('COMMAND_LINE_SMOOTHING', (_, args) => {
+    featureOptions.lineSmoothing = args
     settings.map.setLineSmoothing(args)
+    render['options-updated']()
+  })
+
+  ipcRenderer.on('COMMAND_LABELS', (_, args) => {
+    featureOptions.hideLabels = !args
+    settings.map.setHideLabels(!args)
     render['options-updated']()
   })
 })

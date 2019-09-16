@@ -63,8 +63,8 @@ const initialize = function (feature, options) {
   this.properties = feature.properties
 
   // Prepare standard and highlighted icons:
-  this.prepareIcons(feature)
   L.Util.setOptions(this, options)
+  this.prepareIcons(feature)
 
   // TODO: move to GeoJSON helper
   const latlng = L.latLng(
@@ -103,9 +103,11 @@ const initialize = function (feature, options) {
 
 const prepareIcons = function (feature) {
   this.icons = {}
-
   Object.keys(symbolOptions(feature)).forEach(key => {
-    this.icons[key] = icon(symbol(feature, symbolOptions(feature)[key]))
+    this.icons[key] = icon(symbol(feature, {
+      ...symbolOptions(feature)[key],
+      infoFields: !this.options.hideLabels
+    }))
   })
 }
 
