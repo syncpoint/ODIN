@@ -24,12 +24,15 @@ export default register => {
       action: () => setImmediate(() => (checked ? store.hideLayer : store.showLayer)([layerId])),
       delete: () => store.deleteLayer([layerId]),
       name,
-      checked
+      checked,
+      layerId
     }
   }
 
   const masterSwitch = items => {
     const checked = items.some(item => item.checked)
+    const op = checked ? store.hideLayer : store.showLayer
+
     const props = {
       label: 'All Layers',
       tags: ['Layer'],
@@ -39,7 +42,7 @@ export default register => {
     items.unshift({
       key: 'urn:layer:',
       text: <LayerListItem { ...props }/>,
-      action: () => checked ? store.hideLayer() : store.showLayer(),
+      action: () => items.forEach(item => op([item.layerId])),
       delete: () => store.deleteLayer()
     })
   }
