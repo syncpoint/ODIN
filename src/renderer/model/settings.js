@@ -12,6 +12,7 @@ const HIDPI_SUPPORT = 'hiDPISupport'
 const MAP_VISIBLE = 'mapVisible'
 const PALETTE_VISIBLE = 'paletteVisible'
 const LINE_SMOOTHING = 'lineSmoothing'
+const HIDE_LABELS = 'hideLabels'
 const VIEW_PORT = 'viewPort'
 const DISPLAY_FILTERS = 'displayFilters'
 const COORDINATE_FORMAT = 'coordinateFormat'
@@ -29,7 +30,9 @@ export default {
     getDisplayFilters: defaultFilters => settings.get(DISPLAY_FILTERS) || defaultFilters,
     setDisplayFilters: values => settings.set(DISPLAY_FILTERS, values),
     getLineSmoothing: () => settings.get(LINE_SMOOTHING),
-    setLineSmoothing: args => settings.set(LINE_SMOOTHING, args)
+    setLineSmoothing: args => settings.set(LINE_SMOOTHING, args),
+    getHideLabels: () => settings.get(HIDE_LABELS) || false,
+    setHideLabels: value => settings.set(HIDE_LABELS, value)
   },
   palette: {
     visible: () => settings.has(PALETTE_VISIBLE) ? settings.get(PALETTE_VISIBLE) : true,

@@ -18,9 +18,7 @@ const Geometry = geometry => {
     }
   }
 
-  return {
-    latlng
-  }
+  return { latlng }
 }
 
 const initialize = function (feature, renderOptions, options) {
@@ -61,7 +59,7 @@ const onAdd = function (map) {
 
   const shapeOptions = {
     styles: this.renderOptions.styles(this.feature),
-    labels: this.renderOptions.labels(this.feature)
+    labels: this.options.hideLabels ? [] : this.renderOptions.labels(this.feature)
   }
 
   const rings = Geometry(this.feature.geometry).latlng()
@@ -131,7 +129,8 @@ const updateData = function (feature) {
 
   // TODO: deep compare properties and update shape options accordingly
   this.shape = this.shape.updateStyles(this.renderOptions.styles(feature))
-  this.shape = this.shape.updateLabels(this.renderOptions.labels(feature))
+  const labels = this.options.hideLabels ? [] : this.renderOptions.labels(this.feature)
+  this.shape = this.shape.updateLabels(labels)
 
   this.onGeometry && this.onGeometry(feature.geometry)
   this.markerGroup && this.markerGroup.updateGeometry(feature.geometry)
