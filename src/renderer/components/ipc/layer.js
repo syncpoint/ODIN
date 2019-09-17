@@ -20,6 +20,8 @@ const importFile = filename => {
   }
 }
 
+const importFiles = filenames => filenames.forEach(importFile)
+
 export const COMMAND_IMPORT_LAYER = ({ map }) => {
 
   return () => {
@@ -49,7 +51,9 @@ evented.on('MAP_CREATED', map => {
     // Extract file paths and notify main process:
     const filenames = []
     for (let file of event.dataTransfer.files) filenames.push(file.path)
-    filenames.forEach(importFile)
+    const now = Date.now()
+    importFiles(filenames)
+    console.log('import', (now - Date.now()) + ' ms')
     return false
   }
 })
