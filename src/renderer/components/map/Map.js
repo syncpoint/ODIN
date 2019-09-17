@@ -43,7 +43,7 @@ const updateCoordinateDisplay = ({ latlng }) => {
 
 class Map extends React.Component {
   componentDidMount () {
-    const { id, options, onMoveend, onZoomend } = this.props
+    const { id, options, onMoveend, onZoomend, onClick } = this.props
     const viewPort = settings.map.getViewPort()
 
     // Override center/zoom options if available from settings:
@@ -68,6 +68,11 @@ class Map extends React.Component {
       map.on('zoom', updateScaleDisplay(map))
       map.on('zoomend', event => onZoomend(event.target.getZoom()))
       map.on('mousemove', updateCoordinateDisplay)
+      map.on('click', event => {
+        console.log('click')
+        if (event.originalEvent.target !== map._container) return
+        onClick()
+      })
       map._container.focus()
     })
 
@@ -117,7 +122,8 @@ Map.propTypes = {
   center: PropTypes.any.isRequired,
   zoom: PropTypes.any.isRequired,
   onMoveend: PropTypes.func.isRequired,
-  onZoomend: PropTypes.func.isRequired
+  onZoomend: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired
 }
 
 const styles = {
