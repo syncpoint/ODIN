@@ -38,8 +38,6 @@ const styles = feature => {
     if (n === 'ENY') return colorSchemes.red
 
     const identity = sidc ? sidc[1] : 'U' // identity or U - UNKNOWN
-    console.log('identity', identity)
-
     switch (identity) {
       case 'F': return colorSchemes.blue
       case 'H': return colorSchemes.red
@@ -54,7 +52,6 @@ const styles = feature => {
     if (status === 'A') return '15 5'
   }
 
-  console.log('stroke', stroke())
   return {
     clipping: 'none',
     stroke: stroke(),
