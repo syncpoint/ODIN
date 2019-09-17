@@ -5,22 +5,28 @@ import uuid from 'uuid-random'
 import evented from '../../evented'
 import store from '../../stores/layer-store'
 
-const importFile = filename => {
-  try {
-    const json = JSON.parse(fs.readFileSync(filename))
-    if (json.type === 'FeatureCollection') {
-      const basename = path.basename(filename, '.json')
-      const layerId = uuid()
-      store.addLayer(layerId, basename)
-      json.features.forEach(feature => store.addFeature(layerId)(uuid(), feature))
-      if (json.bbox) store.updateBounds(layerId, json.bbox)
-    }
-  } catch (err) {
-    console.error(err)
-  }
-}
+const featureCollection = filename => new Promise((resolve, reject) => {
+  fs.readFile(filename, (err, data) => {
+    if (err) return reject(err)
+    resolve(JSON.parse(data.toString()))
+  })
+})
 
-const importFiles = filenames => filenames.forEach(importFile)
+const importFile = filename => featureCollection(filename).then(collection => {
+  if (collection.type !== 'FeatureCollection') return
+  const basename = path.basename(filename, '.json')
+  const layerId = uuid()
+  store.addLayer(layerId, basename)
+  collection.features.forEach(feature => store.addFeature(layerId)(uuid(), feature))
+  return [layerId, collection]
+})
+
+const importFiles = filenames => {
+  Promise.all(filenames.map(importFile)).then(layers => {
+    const [layerId, collection] = layers[layers.length - 1]
+    if (collection.bbox) store.updateBounds(layerId, collection.bbox)
+  })
+}
 
 export const COMMAND_IMPORT_LAYER = ({ map }) => {
 
@@ -51,9 +57,7 @@ evented.on('MAP_CREATED', map => {
     // Extract file paths and notify main process:
     const filenames = []
     for (let file of event.dataTransfer.files) filenames.push(file.path)
-    const now = Date.now()
     importFiles(filenames)
-    console.log('import', (now - Date.now()) + ' ms')
     return false
   }
 })
