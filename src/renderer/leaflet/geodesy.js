@@ -163,6 +163,20 @@ L.LatLng.line = ([a, b]) => {
   }
 }
 
+L.Point.area = points => {
+  const len = points.length
+  if (!len) return null
+
+  let area = 0
+
+  for (let i = 0, j = len - 1; i < len; j = i++) {
+    const f = points[i].y * points[j].x - points[j].y * points[i].x
+    area += f * 3
+  }
+
+  return area
+}
+
 L.Point.centroid = points => {
   const len = points.length
   if (!len) return null
