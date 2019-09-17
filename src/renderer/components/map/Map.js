@@ -69,7 +69,6 @@ class Map extends React.Component {
       map.on('zoomend', event => onZoomend(event.target.getZoom()))
       map.on('mousemove', updateCoordinateDisplay)
       map.on('click', event => {
-        console.log('click')
         if (event.originalEvent.target !== map._container) return
         onClick()
       })

@@ -73,7 +73,7 @@ const featureClasses = {
 
   BL: {
     description: 'Boundary Lines',
-    patterns: [/^G.G.GLB---....X$/],
+    patterns: [/^G.G.GLB---.*$/],
     pane: (layerId, featureId, feature) => <BoundaryLineProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
   },
   'B/C': { description: 'Bio/Chemical' }
