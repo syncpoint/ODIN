@@ -9,7 +9,8 @@ const ColorSchemes = {
     blue: 'RGB(0, 107, 140)',
     green: 'RGB(0, 160, 0)',
     // recommended: 'RGB(225, 220, 0)'
-    // yellow: 'RGB(225, 127, 0)',
+    // more orange than yellow: 'RGB(225, 127, 0)'
+    yellow: 'RGB(225, 127, 0)',
     purple: 'RGB(80, 0, 80)'
   },
   medium: {
@@ -37,6 +38,8 @@ const styles = feature => {
     if (n === 'ENY') return colorSchemes.red
 
     const identity = sidc ? sidc[1] : 'U' // identity or U - UNKNOWN
+    console.log('identity', identity)
+
     switch (identity) {
       case 'F': return colorSchemes.blue
       case 'H': return colorSchemes.red
@@ -51,6 +54,7 @@ const styles = feature => {
     if (status === 'A') return '15 5'
   }
 
+  console.log('stroke', stroke())
   return {
     clipping: 'none',
     stroke: stroke(),
