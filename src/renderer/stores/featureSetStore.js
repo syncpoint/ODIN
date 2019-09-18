@@ -1,67 +1,92 @@
 const featureSetData = () => {
   return [
     {
-      'name': 'Combat - Units',
+      name: 'Combat Units (Ground)',
+      content: [
+        'SFGPUCI---*****',
+        'SFGPUCIM--*****',
+        'SFGPUCIA--*****',
+        'SFGPUCIZ--*****',
+        'SFGPUCII--*****',
+        'SFGPUCF---*****',
+        'SFGPUCFHE-*****',
+        'SFGPUCFTCM*****',
+        'SFGPUCFM--*****',
+        'SFGPUCFS--*****',
+        'SFGPUCFR--*****',
+        'SFGPUCFRSS*****',
+        'SFGPUCFTR-*****',
+        'SFGPUCR---*****',
+        'SFGPUCRVA-*****',
+        'SFGPUCS---*****',
+        'SFGPUCD---*****',
+        'SFGPUCAA--*****',
+        'SFGPUCA---*****',
+        'SFGPUCAAA-*****'
+      ]
+    },
+    {
+      'name': 'Combat Units (Air)',
       'content': [
-        { 'sidc': 'SFGPUCI---*****' },
-        { 'sidc': 'SFGPUCIA--*****' },
-        { 'sidc': 'SFGPUCA---*****' },
-        { 'sidc': 'SFGPUCIZ--*****' },
-        { 'sidc': 'SFGPUCAA--*****' },
-        { 'sidc': 'SFGPUCAAA-*****' },
-        { 'sidc': 'SFFP------*****' },
-        { 'sidc': 'SFFPGR----*****' },
-        { 'sidc': 'SFGPUSS---*****' },
-        { 'sidc': 'SFG-UCR---*****' },
-        { 'sidc': 'SFG-UUS---*****' },
-        { 'sidc': 'SFG-UCFTR-*****' },
-        { 'sidc': 'SFGPUCD---*****' },
-        { 'sidc': 'SFGPUCDMH-*****' },
-        { 'sidc': 'SFG-USM---*****' },
-        { 'sidc': 'SFG-UCE---*****' },
-        { 'sidc': 'SFG-UCEC--*****' },
-        { 'sidc': 'SFGPUCEN--*****' },
-        { 'sidc': 'SFGPUSX---*****' }
+        'SFGPUCV---*****',
+        'SFGPUCVF--*****',
+        'SFGPUCVFU-*****',
+        'SFGPUCVFA-*****',
+        'SFGPUCVFR-*****',
+        'SFGPUCVR--*****',
+        'SFGPUCVRA-*****',
+        'SFGPUCVRS-*****',
+        'SFGPUCVRU-*****',
+        'SFGPUCVRUE*****',
+        'SFGPUCVRM-*****',
+        'SFGPUCVRUC*****',
+        'SFGPUCVRW-*****',
+        'SFGPUCVRUM*****',
+        'SFGPUCVS--*****',
+        'SFGPUCVC--*****',
+        'SFGPUCVV--*****',
+        'SFGPUCVU--*****',
+        'SFGPUCVUF-*****',
+        'SFGPUCVUR-*****'
       ]
     },
     {
       'name': 'Support - Units',
       'content': [
-        { 'sidc': 'SFGPUS----*****' },
-        { 'sidc': 'SFGPUCS---*****' },
-        { 'sidc': 'SFGPUSS1--*****' },
-        { 'sidc': 'SFGPUST---*****' },
-        { 'sidc': 'SFGPUSTM--*****' },
-        { 'sidc': 'SFGPUSTR--*****' },
-        { 'sidc': 'SFGPUUSR--*****' },
-        { 'sidc': 'SFGPUUSRW-*****' },
-        { 'sidc': 'SFGPUUMSE-*****' },
-        { 'sidc': 'SFGPUUMSED*****' },
-        { 'sidc': 'SFGPUUMSEJ*****' },
-        { 'sidc': 'SFGPUULM--*****' },
-        { 'sidc': 'SFGPUUL---*****' },
-        { 'sidc': 'SFGPUUA---*****' },
-        { 'sidc': 'SFGPUUAD--*****' },
-        { 'sidc': 'SFGPUUABR-*****' },
-        { 'sidc': 'SFGPUUACR-*****' }
-
+        'SFGPUS----*****',
+        'SFGPUCS---*****',
+        'SFGPUSS1--*****',
+        'SFGPUST---*****',
+        'SFGPUSTM--*****',
+        'SFGPUSTR--*****',
+        'SFGPUUSR--*****',
+        'SFGPUUSRW-*****',
+        'SFGPUUMSE-*****',
+        'SFGPUUMSED*****',
+        'SFGPUUMSEJ*****',
+        'SFGPUULM--*****',
+        'SFGPUUL---*****',
+        'SFGPUUA---*****',
+        'SFGPUUAD--*****',
+        'SFGPUUABR-*****',
+        'SFGPUUACR-*****'
       ]
     },
     {
       'name': 'Tactical Graphics',
       'content': [
-        { 'sidc': 'GFGPGLB---****X' },
-        { 'sidc': 'GFG-GAA---****X' },
-        { 'sidc': 'GFG-OAO---****X' },
-        { 'sidc': 'G*G*SAO---****X' }
+        'GFGPGLB---****X',
+        'GFG-GAA---****X',
+        'GFG-OAO---****X',
+        'G*G*SAO---****X'
       ]
     },
     {
       'name': 'POI',
       'content': [
-        { 'sidc': 'GFGPGPRI--****X' },
-        { 'sidc': 'G*GPSAN---****X' },
-        { 'sidc': 'G*GPSAT---****X' }
+        'GFGPGPRI--****X',
+        'G*GPSAN---****X',
+        'G*GPSAT---****X'
       ]
     }
   ]
