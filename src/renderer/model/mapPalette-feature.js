@@ -28,8 +28,8 @@ const toObject = (element, sidc) => {
 
 const featureListFromSidc = list => {
   return list.map(element => {
-    const sidc = specificSIDC(element.sidc)
-    const elementInfo = findSpecificItem(element.sidc)
+    const sidc = specificSIDC(element)
+    const elementInfo = findSpecificItem(element)
     return toObject(elementInfo, sidc)
   })
 }
