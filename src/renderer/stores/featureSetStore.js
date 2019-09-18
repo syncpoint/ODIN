@@ -8,9 +8,7 @@ const featureSetData = () => {
     return acc
   }, [])
 
-  const x = Object.entries(sets).map(([name, content]) => ({ name, content }))
-  console.log(x)
-  return x
+  return Object.entries(sets).map(([name, content]) => ({ name, content }))
 }
 
 export default featureSetData

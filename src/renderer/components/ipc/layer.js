@@ -28,21 +28,40 @@ const importFiles = filenames => {
   })
 }
 
-export const COMMAND_IMPORT_LAYER = ({ map }) => {
+export const COMMAND_IMPORT_LAYER = () => () => {
+  const filters = [
+    { name: 'Layers', extensions: ['json'] },
+    { name: 'All Files', extensions: ['*'] }
+  ]
 
-  return () => {
-    const filters = [
-      { name: 'Layers', extensions: ['json'] },
-      { name: 'All Files', extensions: ['*'] }
-    ]
+  const filenames = remote.dialog.showOpenDialog({
+    filters,
+    properties: ['openFile', 'multiSelections']
+  })
 
-    const filenames = remote.dialog.showOpenDialog({
-      filters,
-      properties: ['openFile', 'multiSelections']
-    })
+  if (filenames) filenames.forEach(importFile)
+}
 
-    if (filenames) filenames.forEach(importFile)
+export const COMMAND_EXPORT_DEFAULT_LAYER = () => () => {
+  const filters = [
+    { name: 'Layers', extensions: ['json'] },
+    { name: 'All Files', extensions: ['*'] }
+  ]
+
+  const filePath = remote.dialog.showSaveDialog({
+    filters
+  })
+
+  // For now, default layer only:
+  const features = Object.entries(store.layer('0').features).map(([_, feature]) => feature)
+  const layer = {
+    type: 'FeatureCollection',
+    features: features
   }
+
+  fs.writeFile(filePath, JSON.stringify(layer), err => {
+    if (err) evented.emit('OSD_MESSAGE', { message: err.message, duration: 5000 })
+  })
 }
 
 // Hook-in drag and drop capabilities:
