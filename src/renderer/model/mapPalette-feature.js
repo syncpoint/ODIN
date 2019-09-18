@@ -18,6 +18,8 @@ const avatar = sidc => {
 
 
 const toObject = (element, sidc) => {
+  if (!element || !element.name) return null
+
   return {
     key: element.name,
     sidc: sidc,
@@ -31,7 +33,7 @@ const featureListFromSidc = list => {
     const sidc = specificSIDC(element)
     const elementInfo = findSpecificItem(element)
     return toObject(elementInfo, sidc)
-  })
+  }).filter(entry => entry)
 }
 
 const featureList = list => {
