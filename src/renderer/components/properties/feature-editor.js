@@ -12,7 +12,10 @@ import StabilityOperationsProperties from './StabilityOperationsProperties'
 const featureClasses = {
   U: {
     description: 'Units',
-    patterns: [/^S.G.U.*$/],
+    patterns: [
+      /^S.G.U.*$/,
+      /^S.F.*$/ // SPECIAL OPERATIONS FORCES (SOF) UNIT
+    ],
     pane: (layerId, featureId, feature) => <UnitProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
   },
 
