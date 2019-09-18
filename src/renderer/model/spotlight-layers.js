@@ -33,8 +33,9 @@ export default register => {
     const checked = items.some(item => item.checked)
     const op = checked ? store.hideLayer : store.showLayer
 
+    const label = term() ? `All Layers (matching '${term()}')` : 'All Layers'
     const props = {
-      label: 'All Layers',
+      label,
       tags: ['Layer'],
       checked: checked
     }
