@@ -77,7 +77,9 @@ evented.on('MAP_CREATED', map => {
 
   const featureOptions = {
     lineSmoothing: settings.map.getLineSmoothing(),
-    hideLabels: settings.map.getHideLabels()
+    hideLabels: map.getZoom() < 12
+      ? true
+      : settings.map.getHideLabels()
   }
 
   // layers :: urn -> (layer group | feature layer)
@@ -183,5 +185,14 @@ evented.on('MAP_CREATED', map => {
     featureOptions.hideLabels = !args
     settings.map.setHideLabels(!args)
     render['options-updated']()
+  })
+
+  map.on('zoomend', event => {
+    const hideLabels = featureOptions.hideLabels
+    featureOptions.hideLabels = event.target.getZoom() < 12
+      ? true
+      : settings.map.getHideLabels()
+
+    if (hideLabels !== featureOptions.hideLabels) render['options-updated']()
   })
 })
