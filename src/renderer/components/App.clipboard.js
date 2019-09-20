@@ -26,7 +26,7 @@ const pasteSelection = () => {
   memory.forEach(([nid, properties]) => handlers[nid] && handlers[nid].paste && handlers[nid].paste(properties))
 }
 
-Mousetrap.bind(['del', 'command+backspace'], deleteSelection)
+Mousetrap.bind(['del', 'command+backspace', 'ctrl+backspace'], deleteSelection)
 Mousetrap.bind('mod+c', copySelection)
 Mousetrap.bind('mod+x', R.compose(deleteSelection, copySelection))
 Mousetrap.bind('mod+v', pasteSelection)
