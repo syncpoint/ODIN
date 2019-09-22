@@ -84,7 +84,7 @@ const renderLabels = (cache, clipping, labels, points) => {
   const placement = labelPositions(points[0])
 
   // Don't display labels for 'small' areas.
-  const area = L.Point.area(points[0])
+  const area = Math.abs(L.Point.area(points[0]))
   if (area < 100000) labels = []
 
   const text = label => L.SVG.text({
