@@ -81,7 +81,6 @@ class EquipmentProperties extends FeatureProperties {
         />
 
         <TextField
-          className={ this.props.classes.quantity }
           label={'Quantity'}
           value={ this.state.quantity }
           onChange={ event => this.updateField('quantity', event.target.value) }
@@ -95,7 +94,6 @@ class EquipmentProperties extends FeatureProperties {
 
         <TextField
           label={'Direction'}
-          className={ this.props.classes.direction }
           value={ this.state.direction }
           onChange={ event => this.updateField('direction', event.target.value) }
         />
@@ -122,7 +120,6 @@ class EquipmentProperties extends FeatureProperties {
         />
 
         <Select
-          className={ this.props.classes.hostility }
           label={'Hostility'}
           value={ this.state.hostility }
           onChange={ event => this.updateField('hostility', event.target.value) }
@@ -216,11 +213,9 @@ const styles = theme => ({
   },
   name: { gridColumn: '1 / span 2' },
   uniqueDesignation: {},
-  direction: {},
   type: { gridColumn: '1 / span 2' },
   staffComments: { gridColumn: '1 / span 2' },
   additionalInformation: { gridColumn: '1 / span 2' },
-  hostility: {},
 
   statusLabel: { gridColumn: '1 / span 2' },
   present: { gridColumn: 1 },
