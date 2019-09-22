@@ -8,6 +8,7 @@ import EquipmentProperties from './EquipmentProperties'
 import BoundaryLineProperties from './BoundaryLineProperties'
 import PointProperties from './PointProperties'
 import StabilityOperationsProperties from './StabilityOperationsProperties'
+import EEIProperties from './EEIProperties'
 
 const featureClasses = {
   U: {
@@ -41,7 +42,7 @@ const featureClasses = {
   EEI: {
     description: 'EMS Equipment and Incidents',
     patterns: [/^E.I.*$/],
-    pane: (layerId, featureId, feature) => <PointProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
+    pane: (layerId, featureId, feature) => <EEIProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
   },
   EI: { description: 'EMS Installations', patterns: [/^E.O.......H.*$/, /^E.F.......H.*$/] },
 
