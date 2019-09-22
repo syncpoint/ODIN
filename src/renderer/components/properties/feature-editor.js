@@ -38,7 +38,11 @@ const featureClasses = {
   },
 
   EU: { description: 'EMS Units' },
-  EEI: { description: 'EMS Equipment and Incidents', patterns: [/^E.I.*$/] },
+  EEI: {
+    description: 'EMS Equipment and Incidents',
+    patterns: [/^E.I.*$/],
+    pane: (layerId, featureId, feature) => <PointProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
+  },
   EI: { description: 'EMS Installations', patterns: [/^E.O.......H.*$/, /^E.F.......H.*$/] },
 
   P: {
