@@ -80,7 +80,6 @@ class MainPanel extends React.Component {
     const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 15)
     const featureDescriptor = findSpecificItem(genericSIDC)
     const type = geometryType(featureDescriptor, sidc)
-    console.log('descriptor', featureDescriptor, type)
 
     const geometryHint = () => evented.emit('OSD_MESSAGE', {
       message: `Sorry, the feature's geometry is not supported, yet.`,
