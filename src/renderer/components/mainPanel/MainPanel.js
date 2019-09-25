@@ -19,7 +19,8 @@ const geometryType = (descriptor, sidc) => {
   const includes = type => descriptor.geometries.includes(type)
   const validSymbol = () => new ms.Symbol(sidc, {}).isValid()
 
-  if (!descriptor.geometries) return 'point'
+  // Usually a point, but not always:
+  if (!descriptor.geometries) return validSymbol() ? 'point' : null
   if (descriptor.geometries.length === 1) return descriptor.geometries[0]
 
   // Guess-work...
@@ -79,6 +80,7 @@ class MainPanel extends React.Component {
     const genericSIDC = sidc[0] + '*' + sidc[2] + '*' + sidc.substring(4, 15)
     const featureDescriptor = findSpecificItem(genericSIDC)
     const type = geometryType(featureDescriptor, sidc)
+    console.log('descriptor', featureDescriptor, type)
 
     const geometryHint = () => evented.emit('OSD_MESSAGE', {
       message: `Sorry, the feature's geometry is not supported, yet.`,
