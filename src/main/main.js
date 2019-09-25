@@ -21,9 +21,9 @@ const createWindow = name => {
     show: false,
     webPreferences: {
       nodeIntegration: true
-    }
+    },
+    icon: path.join(__dirname, 'img/icon.png')
   }
-
   mainWindow = K(new BrowserWindow(options))(window => {
     // hot deployment in development mode
     const hotDeployment = () =>
