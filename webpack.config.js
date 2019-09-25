@@ -91,7 +91,7 @@ const devServer = env => {
 const devtool = env => {
   if (env.production) return ({}) // no source maps for production
   return ({
-    devtool: 'cheap-source-map'
+    devtool: 'eval-source-map'
   })
 }
 
