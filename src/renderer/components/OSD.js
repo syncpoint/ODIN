@@ -1,6 +1,8 @@
+/* eslint-disable */
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
+import * as R from 'ramda'
 import { currentDateTime } from '../../shared/datetime'
 import evented from '../evented'
 import settings from '../model/settings'
@@ -20,26 +22,27 @@ class OSD extends React.Component {
     }
   }
 
-  handleOSDMessage ({ message, duration, slot }) {
-    slot = slot || 'B1'
-
-    const updateSlot = message => {
-      const state = { ...this.state }
-      state[slot] = message
-      this.setState(state)
-    }
-
-    updateSlot(message)
-    if (duration) setTimeout(() => updateSlot(''), duration)
-  }
-
   componentDidMount () {
-    console.log('OSD mounted.')
+    // Start timer for Date/Time display:
     setInterval(() => {
-      this.handleOSDMessage({ 'message': currentDateTime(), slot: 'C1' })
+      evented.emit('OSD_MESSAGE', { 'message': currentDateTime(), slot: 'C1' })
     }, 1000)
 
-    evented.on('OSD_MESSAGE', this.handleOSDMessage.bind(this))
+    this.handleOSDMessage = ({ message, duration, slot = 'B1' }) => {
+      if (!this.state.osdVisible) return
+      if (this.state[slot] === message) return
+
+      const updateSlot = message => {
+        const state = {}
+        state[slot] = message
+        this.setState(state)
+      }
+
+      updateSlot(message)
+      if (duration) setTimeout(() => updateSlot(''), duration)
+    }
+
+    evented.on('OSD_MESSAGE', this.handleOSDMessage)
     evented.emit('OSD_MOUNTED')
 
     ipcRenderer.on('COMMAND_TOGGLE_OSD_OPTIONS', (_, slot) => {
@@ -48,12 +51,16 @@ class OSD extends React.Component {
         : this.state.osdOptions.filter(x => x !== slot)
 
       settings.osd.setOptions(osdOptions)
-      this.setState({ ...this.state, osdOptions })
+      this.setState({ osdOptions })
     })
 
     ipcRenderer.on('COMMAND_TOGGLE_OSD', () => {
-      this.setState({ ...this.state, osdVisible: !this.state.osdVisible })
+      this.setState({ osdVisible: !this.state.osdVisible })
     })
+  }
+
+  shouldComponentUpdate (_, state) {
+    return !R.equals(this.state, state)
   }
 
   componentWillUnmount () {
