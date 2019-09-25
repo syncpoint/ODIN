@@ -13,6 +13,7 @@ const on = emitter => ([event, handler]) => emitter.on(event, handler)
 
 let mainWindow
 
+
 const createWindow = name => {
   const bounds = settings.get(`windowState.${name}`) || { width: 800, height: 600 }
 
@@ -22,8 +23,12 @@ const createWindow = name => {
     webPreferences: {
       nodeIntegration: true
     },
-    icon: path.join(__dirname, 'img/icon.png')
+    icon: path.join(__dirname, 'img/icon.png'),
+    
   }
+
+  console.log("TATAAA")
+  
   mainWindow = K(new BrowserWindow(options))(window => {
     // hot deployment in development mode
     const hotDeployment = () =>
