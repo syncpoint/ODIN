@@ -98,7 +98,6 @@ const handler = {
       .find(([_, { patterns }]) => patterns.some(pattern => sidc.match(pattern)))
 
     if (clazz && clazz[1].pane) return () => clazz[1].pane(layerId, featureId, feature)
-    else return () => {} /* undefined */
   }
 }
 
