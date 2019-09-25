@@ -119,6 +119,7 @@ class App extends React.Component {
 
   render () {
     const { panels } = this.state
+
     return (
       <div>
         <Map
@@ -132,9 +133,7 @@ class App extends React.Component {
           onClick={ () => this.closePanel('right') }
         />
         <div className={ this.props.classes.overlay }>
-          <OSD
-            osd={ this.state.osd }
-          />
+          <OSD/>
           <div className={ this.props.classes.contentPanel }>
             { panels.right() }
           </div>

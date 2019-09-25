@@ -34,6 +34,7 @@ class OSD extends React.Component {
   }
 
   componentDidMount () {
+    console.log('OSD mounted.')
     setInterval(() => {
       this.handleOSDMessage({ 'message': currentDateTime(), slot: 'C1' })
     }, 1000)
