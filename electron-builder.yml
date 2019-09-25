@@ -10,7 +10,12 @@ win:
       arch:
         - x64
         - ia32
+  icon: 'build/icon.ico'
+mac: 
+   target: dmg
+   icon: 'build/icon.icns'
 files:
   - 'dist'
   - 'feature-sets.xlsx'
+  - 'build/icon.*'
 electronVersion: 3.1.9
