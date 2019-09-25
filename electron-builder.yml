@@ -14,6 +14,10 @@ win:
 mac: 
    target: dmg
    icon: 'build/icon.icns'
+linux:
+  target: 
+    - target: snap 
+  icon: 'build/icon.üng'
 files:
   - 'dist'
   - 'feature-sets.xlsx'
