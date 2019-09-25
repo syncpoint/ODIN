@@ -1,4 +1,4 @@
-![ODIN](assets/logo_font.png)
+![ODIN](assets/logo_font_300.png)
 
 # ODIN - C2IS (Open Source)
 
