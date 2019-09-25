@@ -44,7 +44,7 @@ class App extends React.Component {
 
   openSpotlight (options) {
     selection.deselect() // closes any properties panel
-    this.openPanel('right', () => <Spotlight options={ options } />)
+    this.openPanel('right', () => <Spotlight options={options} />)
   }
 
   closeSpotlight () {
@@ -52,28 +52,33 @@ class App extends React.Component {
   }
 
   openPanel (which, fn) {
-    const panels = { ...this.state.panels }
-    panels[which] = fn
-    this.setState({ ...this.state, panels })
+    this.setState((currentState) => {
+      const panels = { ...currentState.panels }
+      panels[which] = fn
+      return { panels: panels }
+    })
   }
 
   closePanel (which) {
-    const panels = { ...this.state.panels }
-    panels[which] = R.always(null)
-    this.setState({ ...this.state, panels })
-    document.getElementById('map').focus()
+    this.setState((currentState) => {
+      const panels = { ...currentState.panels }
+      panels[which] = R.always(null)
+      return { panels: panels }
+    }, () => {
+      document.getElementById('map').focus()
+    })
   }
 
   setCenter (latlng) {
-    this.setState({ ...this.state, center: latlng })
+    this.setState({ center: latlng })
   }
 
   setZoom (zoom) {
-    this.setState({ ...this.state, zoom })
+    this.setState({ zoom: zoom })
   }
 
   setViewPort (center, zoom) {
-    this.setState({ ...this.state, center, zoom })
+    this.setState({ center: center, zoom: zoom })
   }
 
   componentDidMount () {
@@ -97,7 +102,7 @@ class App extends React.Component {
 
     ipcRenderer.on('COMMAND_TOGGLE_PALETTE', (_, visible) => {
       if (visible) {
-        this.openPanel('left', () => <MainPanel/>)
+        this.openPanel('left', () => <MainPanel />)
         settings.palette.show()
       } else {
         this.closePanel('left')
@@ -114,7 +119,7 @@ class App extends React.Component {
       this.closePanel('right')
     })
 
-    if (settings.palette.visible()) this.openPanel('left', () => <MainPanel/>)
+    if (settings.palette.visible()) this.openPanel('left', () => <MainPanel />)
   }
 
   render () {
@@ -125,20 +130,20 @@ class App extends React.Component {
         <Map
           id='map'
           className='map'
-          options={ mapOptions }
-          center={ this.state.center }
-          zoom={ this.state.zoom }
-          onMoveend={ (latlng) => this.setCenter(latlng) }
-          onZoomend={ zoom => this.setZoom(zoom) }
-          onClick={ () => this.closePanel('right') }
+          options={mapOptions}
+          center={this.state.center}
+          zoom={this.state.zoom}
+          onMoveend={(latlng) => this.setCenter(latlng)}
+          onZoomend={zoom => this.setZoom(zoom)}
+          onClick={() => this.closePanel('right')}
         />
-        <div className={ this.props.classes.overlay }>
-          <OSD/>
-          <div className={ this.props.classes.contentPanel }>
-            { panels.right() }
+        <div className={this.props.classes.overlay}>
+          <OSD />
+          <div className={this.props.classes.contentPanel}>
+            {panels.right()}
           </div>
-          <div className={ this.props.classes.contentPanel }>
-            { panels.left() }
+          <div className={this.props.classes.contentPanel}>
+            {panels.left()}
           </div>
         </div>
       </div>
