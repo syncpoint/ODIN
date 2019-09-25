@@ -3,6 +3,7 @@ import L from 'leaflet'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { ipcRenderer } from 'electron'
+import throttle from 'lodash.throttle'
 import evented from '../../evented'
 import { K } from '../../../shared/combinators'
 import { zoomLevels } from './zoom-levels'
@@ -67,7 +68,8 @@ class Map extends React.Component {
       map.on('moveend', event => onMoveend(event.target.getCenter()))
       map.on('zoom', updateScaleDisplay(map))
       map.on('zoomend', event => onZoomend(event.target.getZoom()))
-      map.on('mousemove', updateCoordinateDisplay)
+
+      map.on('mousemove', throttle(updateCoordinateDisplay, 75))
       map.on('click', event => {
         if (event.originalEvent.target !== map._container) return
         onClick()

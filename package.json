@@ -57,6 +57,7 @@
     "geodesy": "^2.2.0",
     "leaflet": "1.5.1",
     "level": "^5.0.1",
+    "lodash.throttle": "^4.1.1",
     "lunr": "^2.3.6",
     "mathjs": "^6.2.1",
     "milsymbol": "^2.0.0",
