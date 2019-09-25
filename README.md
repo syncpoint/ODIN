@@ -1,3 +1,5 @@
+![ODIN](assets/logo_font.png)
+
 # ODIN - C2IS (Open Source)
 
 [![Build Status: Linux](https://travis-ci.org/syncpoint/ODIN.svg?branch=develop)](https://travis-ci.org/syncpoint/ODIN.svg?branch=develop)
