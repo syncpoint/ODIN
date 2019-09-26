@@ -5,6 +5,7 @@ import settings from 'electron-settings'
 import { K, noop } from '../shared/combinators'
 import { buildFromTemplate } from '../main/menu/menu'
 import './REST'
+import AppIcon from './img/icon.png'
 
 // Disable for production:
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
@@ -23,11 +24,9 @@ const createWindow = name => {
     webPreferences: {
       nodeIntegration: true
     },
-    icon: path.join(__dirname, 'img/icon.png'),
+    icon: AppIcon,
     
   }
-
-  console.log("TATAAA")
   
   mainWindow = K(new BrowserWindow(options))(window => {
     // hot deployment in development mode
