@@ -18,9 +18,11 @@ linux:
   target: 
     - target: deb 
     - target: snap 
-  icon: 'build/icon.png'
+    - target: tar.gz
+  icon: 'icons'
+  category: 'Office'
 files:
   - 'dist'
   - 'feature-sets.xlsx'
-  - 'build/icon.*'
+  
 electronVersion: 3.1.9
