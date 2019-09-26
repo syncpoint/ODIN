@@ -16,8 +16,9 @@ mac:
    icon: 'build/icon.icns'
 linux:
   target: 
+    - target: deb 
     - target: snap 
-  icon: 'build/icon.üng'
+  icon: 'build/icon.png'
 files:
   - 'dist'
   - 'feature-sets.xlsx'
