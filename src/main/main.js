@@ -21,11 +21,10 @@ const createWindow = name => {
   const options = {
     ...bounds,
     show: false,
+    icon: AppIcon,
     webPreferences: {
       nodeIntegration: true
-    },
-    icon: AppIcon,
-    
+    }
   }
   
   mainWindow = K(new BrowserWindow(options))(window => {
