@@ -23,7 +23,10 @@
   "keywords": [
     "c2is"
   ],
-  "author": "Syncpoint GmbH",
+  "author": { 
+      "name": "Syncpoint GmbH",
+      "email": "office@syncpoint.io"
+  },
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.4.4",
