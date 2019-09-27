@@ -70,7 +70,7 @@ const elementCache = () => {
   return { put, element, dispose }
 }
 
-const noop = () => {}
+const noop = () => { }
 
 const clippingStrategy = clipping => cache => {
   switch (clipping) {
@@ -143,6 +143,7 @@ const renderLabels = (cache, clipping, labels, points) => {
 
 const renderPath = (cache, points, smoothing) => {
   const d = L.SVG.pointsToPath(points, true, !!smoothing)
+  cache.element('margin').setAttribute('d', d)
   cache.element('outline').setAttribute('d', d)
   cache.element('path').setAttribute('d', d)
 }
@@ -161,14 +162,18 @@ export default (renderer, points, options) => {
   const clipping = clippingStrategy(options.styles.clipping)(cache)
 
   // Transparent path to increase clickable area:
-  cache.put('outline', L.SVG.path({ 'stroke-width': 10, stroke: 'red', fill: 'none', 'opacity': 0.0 }))(noop)
+  cache.put('margin', L.SVG.path({ 'stroke-width': 12, stroke: 'yellow', fill: 'none', 'opacity': 0.0, 'stroke-linejoin': 'round' }))(noop)
+  // make lines have a small black outline in order to increase contrast:
+  cache.put('outline', L.SVG.path({ 'stroke-width': 6, stroke: 'black', fill: 'none', 'opacity': 1.0 }))(noop)
   cache.put('path', L.SVG.path({}))(noop)
 
   if (options.interactive) {
+    L.DomUtil.addClass(cache.element('margin'), 'leaflet-interactive')
     L.DomUtil.addClass(cache.element('outline'), 'leaflet-interactive')
     L.DomUtil.addClass(cache.element('path'), 'leaflet-interactive')
   }
 
+  cache.element('group').appendChild(cache.element('margin'))
   cache.element('group').appendChild(cache.element('outline'))
   cache.element('group').appendChild(cache.element('path'))
   cache.element('root').appendChild(cache.element('group'))
@@ -200,7 +205,14 @@ export default (renderer, points, options) => {
         'stroke-linejoin': 'round'
       })
 
+      /* TODO: check if the other style params are required too */
+      L.SVG.setAttributes(cache.element('outline'))({
+        'stroke-dasharray': styles.strokeDashArray,
+        'stroke-linejoin': 'round'
+      })
+
       clipping.withPath(cache.element('path'))
+      clipping.withPath(cache.element('outline'))
 
       if (styles.fill === 'diagonal') {
         const patternId = `pattern-${uuid()}`
