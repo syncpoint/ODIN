@@ -33,7 +33,9 @@ const modifiers = feature => Object.entries(feature.properties)
 const symbolOptions = feature => ({
   standard: {
     size: 34,
-    colorMode: 'Light', // default: light
+    colorMode: 'Light', // default: light,
+    outlineColor: 'white',
+    outlineWidth: 4, // this makes the text more readable on dark mode maps,
     ...modifiers(feature)
   },
   highlighted: {
