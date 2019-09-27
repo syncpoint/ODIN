@@ -76,7 +76,7 @@ const createWindow = name => {
   const activate = mainWindow === null ? () => createWindow('main') : noop
 
   Object.entries({
-    'ready': createWindow,
+    'ready': () => createWindow('main'),
     'window-all-closed': quit,
     'activate': activate
   }).forEach(on(app))
