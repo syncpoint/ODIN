@@ -277,7 +277,7 @@ L.Feature['G*G*GAY---'] = (feature, options) => {
   return new L.Feature.PolygonArea(feature, renderOptions, options)
 }
 
-const missleEnganementZone = name => (feature, options) => {
+const missleEngagementZone = name => (feature, options) => {
   const renderOptions = {
     styles: feature => ({ ...styles(feature), clipping: 'mask' }),
     labels: feature => centerLabelLeft([
@@ -294,9 +294,9 @@ const missleEnganementZone = name => (feature, options) => {
 }
 
 
-L.Feature['G*G*AAM---'] = missleEnganementZone('MEZ')
-L.Feature['G*G*AAML--'] = missleEnganementZone('LOMEZ')
-L.Feature['G*G*AAMH--'] = missleEnganementZone('HIMEZ')
+L.Feature['G*G*AAM---'] = missleEngagementZone('MEZ')
+L.Feature['G*G*AAML--'] = missleEngagementZone('LOMEZ')
+L.Feature['G*G*AAMH--'] = missleEngagementZone('HIMEZ')
 
 // Weapons Free Zone
 L.Feature['G*G*AAW---'] = (feature, options) => {
