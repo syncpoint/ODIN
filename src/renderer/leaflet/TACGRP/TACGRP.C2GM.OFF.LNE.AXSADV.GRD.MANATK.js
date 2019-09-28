@@ -42,15 +42,87 @@ const corridor = (latlngs, width) => {
   }
 }
 
-/* eslint-disable */
 
-L.Feature['G*G*OLAGM-'] = (feature, options) => {
-  const latlngs = GeoJSON.latlng(feature.geometry)
-  const width = feature.geometry.width
-  const layers = envelope => L.layerGroup([
-    L.geoJSON(feature),
-    L.polyline(envelope[0]), L.polyline(envelope[1])
-  ])
+const MainAttack = L.Layer.extend({
 
-  return layers(unzip(2)(corridor(latlngs, width).envelope()))
-}
+  initialize (feature, options) {
+    L.setOptions(this, options)
+
+    const latlngs = GeoJSON.latlng(feature.geometry)
+    const width = feature.geometry.width
+    this._corridor = corridor(latlngs, width)
+  },
+
+  beforeAdd (map) {
+    this._map = map
+    this._renderer = map.getRenderer(this)
+  },
+
+  onAdd (/* map */) {
+    this._renderer._initGroup(this)
+
+    // TODO: encapulate
+    this._path = L.SVG.path({
+      stroke: 'red',
+      'stroke-width': 2,
+      'stroke-dasharray': '20 10',
+      fill: 'none'
+    })
+
+    this._group.appendChild(this._path)
+
+    this._reset()
+    this._renderer._addGroup(this)
+
+    // TODO: group is live: update relevant elements
+  },
+
+
+  /**
+   *
+   */
+  onRemove (/* map */) {
+    this._renderer._removeGroup(this)
+  },
+
+
+  /**
+   *
+   */
+  _reset () {
+    this._project()
+    this._update() // TODO: probably not necessary; remove
+  },
+
+
+  /**
+   * Project WGS84 geometry to pixel/layer coordinates.
+   */
+  _project () {
+    console.log('[MainAttack]', '_project()', new Error())
+    const layerPoint = this._map.latLngToLayerPoint.bind(this._map)
+    const envelope = unzip(2)(this._corridor.envelope().map(pair => pair.map(layerPoint)))
+    // TODO: update SVG group's pixel coordinates
+    const points = [[
+      ...envelope[0], ...envelope[1].reverse()
+    ]]
+
+    const closed = true
+    this._path.setAttribute('d', L.SVG.pointsToPath(points, closed))
+  },
+
+
+  /**
+   * TODO: remove
+   */
+  _update () {
+    if (!this._map) return
+    console.log('[MainAttack]', '_update()')
+
+    // TODO: option to clip points; see L.Polyline._clipPoints
+    // TODO: option to simplify points: L.Polyline._simplifyPoints
+    // TODO: option to update SVG group in renderer
+  }
+})
+
+L.Feature['G*G*OLAGM-'] = MainAttack
