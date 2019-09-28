@@ -2,6 +2,7 @@ import L from 'leaflet'
 import '../PolygonArea'
 import './TACGRP.C2GM.GNL.ARS.SRHARA'
 import './TACGRP.C2GM.GNL.LNE.BNDS'
+import './TACGRP.C2GM.OFF.LNE.AXSADV.GRD.MANATK'
 
 const ColorSchemes = {
   dark: {
