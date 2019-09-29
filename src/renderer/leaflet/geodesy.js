@@ -163,6 +163,8 @@ L.LatLng.line = ([a, b]) => {
   }
 }
 
+export const intersect = lines => lines[0].intersection(lines[1])
+
 L.Point.area = points => {
   const len = points.length
   if (!len) return null
