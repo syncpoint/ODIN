@@ -20,13 +20,17 @@ L.Feature['G*G*GLB---'] = L.Feature.Polyline.extend({
   createShape (options) {
     const id = uuid()
     const group = L.SVG.create('g')
-    const outlinePath = L.SVG.path({ 'stroke-width': 10, stroke: 'black', fill: 'none', 'opacity': 0.0 })
+    // clickable margin around the line
+    const marginPath = L.SVG.path({ 'stroke-width': 10, stroke: 'yellow', fill: 'none', 'opacity': 0.0 })
+    const outlinePath = L.SVG.path({ 'stroke-width': 5, stroke: 'white', fill: 'none', 'opacity': 1.0, mask: `url(#mask-${id})` })
     const linePath = L.SVG.path({ 'stroke-width': 3, stroke: 'black', fill: 'none', mask: `url(#mask-${id})` })
 
     // TODO: check flag options.interactive
+    L.DomUtil.addClass(marginPath, 'leaflet-interactive')
     L.DomUtil.addClass(outlinePath, 'leaflet-interactive')
     L.DomUtil.addClass(linePath, 'leaflet-interactive')
 
+    group.appendChild(marginPath)
     group.appendChild(outlinePath)
     group.appendChild(linePath)
 
@@ -68,6 +72,9 @@ L.Feature['G*G*GLB---'] = L.Feature.Polyline.extend({
           group.appendChild(label)
 
           // Create black mask for clipping:
+          /*
+          The color of the masking shape defines the opacity of the shape that uses the mask. The closer the color of the masking shape is to #ffffff (white), the more opaque the shape using the mask will be. The closer the color of the masking shape is to #000000 (black), the more transparent the shape using the mask will be
+          */
           const bbox = L.SVG.inflate(label.getBBox(), 8)
           const blackMask = L.SVG.rect({
             fill: 'black',
@@ -90,6 +97,7 @@ L.Feature['G*G*GLB---'] = L.Feature.Polyline.extend({
         this.options.lineSmoothing
       )
 
+      marginPath.setAttribute('d', d)
       outlinePath.setAttribute('d', d)
       linePath.setAttribute('d', d)
 
