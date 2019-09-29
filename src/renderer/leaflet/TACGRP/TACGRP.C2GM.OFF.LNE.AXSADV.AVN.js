@@ -1,11 +1,11 @@
 import L from 'leaflet'
 import './Corridor'
-import { corridorShape } from './shapes/K-----'
+import { corridorShape } from './shapes/OLAV--'
 
 /**
  *
  */
-L.Feature['G*G*K-----'] = L.TACGRP.Corridor.extend({
+L.Feature['G*G*OLAV--'] = L.TACGRP.Corridor.extend({
   _shape (group) {
     return corridorShape(group)
   }
