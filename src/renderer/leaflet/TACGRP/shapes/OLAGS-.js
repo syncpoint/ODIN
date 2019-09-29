@@ -12,7 +12,6 @@ export const corridorShape = group => {
 
   const path = L.SVG.path({
     stroke: 'RGB(0, 168, 220)',
-    // stroke: 'RGB(128, 224, 255)',
     'stroke-width': 3,
     fill: 'none',
     'stroke-linejoin': 'round'
