@@ -2,7 +2,8 @@ import L from 'leaflet'
 import { projectedPoint, line } from './geo-helper'
 
 // TODO: can we parameterize this with different arrows?
-export const corridorShape = group => {
+export const corridorShape = (group, options) => {
+
   const outline = L.SVG.path({
     stroke: 'black',
     'stroke-width': 7,
@@ -17,6 +18,11 @@ export const corridorShape = group => {
     fill: 'none',
     'stroke-linejoin': 'round'
   })
+
+  if (options.interactive) {
+    L.DomUtil.addClass(outline, 'leaflet-interactive')
+    L.DomUtil.addClass(path, 'leaflet-interactive')
+  }
 
   group.appendChild(outline)
   group.appendChild(path)

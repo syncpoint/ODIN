@@ -3,44 +3,33 @@ import L from 'leaflet'
 const { stamp } = L.Util
 const DomUtil = L.DomUtil
 
-/* eslint-disable */
-
 L.SVG.addInitHook(function () {
 
   /**
    *
    */
   this._initGroup = function (layer) {
-    var group = layer._group = L.SVG.create('g')
 
-    // TODO: propagate `className` if necessary
-    // if (layer.options.className) {
-    // 	DomUtil.addClass(group, layer.options.className);
-    // }
+    // Not pretty, but that's the Leaflet way:
+    layer._group = L.SVG.create('g')
 
-    // TODO: propagate `interactive` to group/relevant group children
-    // if (layer.options.interactive) {
-    // 	DomUtil.addClass(group, 'leaflet-interactive');
-    // }
+    // For now, no need to propagate `className`.
 
-    // TODO: do we need this somehow?
-    // this._updateStyle(layer)
+    // Settings CSS class 'leaflet-interactive' is handled in layer/shape.
+    // NOTE: This class affects only paths and similar, not groups.
 
     this._layers[stamp(layer)] = layer
   }
 
 
   /**
-   *
+   * Spit image of L.SVG._addPath().
    */
   this._addGroup = function (layer) {
     if (!this._rootGroup) this._initContainer()
     this._rootGroup.appendChild(layer._group)
-
-    // TODO: register group children as interactive targets
-    // TODO: get interactive target(s) from layer
-    // layer.addInteractiveTarget(layer._group)
-  },
+    layer.addInteractiveTarget(layer._group)
+  }
 
 
   /**
@@ -48,9 +37,7 @@ L.SVG.addInitHook(function () {
    */
   this._removeGroup = function (layer) {
     DomUtil.remove(layer._group)
-
-    // TODO: de-register
-    // layer.removeInteractiveTarget(layer._path);
+    layer.removeInteractiveTarget(layer._group)
     delete this._layers[stamp(layer)]
   }
 })
