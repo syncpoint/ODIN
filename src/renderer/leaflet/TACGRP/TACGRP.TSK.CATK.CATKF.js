@@ -5,7 +5,7 @@ import { corridorShape } from './shapes/KF----'
 /**
  *
  */
-L.Feature['G*G*KF----'] = L.TACGRP.Corridor.extend({
+L.Feature['G*T*KF----'] = L.TACGRP.Corridor.extend({
   _shape (group) {
     return corridorShape(group)
   }
