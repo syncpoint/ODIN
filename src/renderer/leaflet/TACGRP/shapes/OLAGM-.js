@@ -1,28 +1,11 @@
 import L from 'leaflet'
-import { calcStruts, line } from './geo-helper'
+import { calcStruts, line, svgFactory } from './geo-helper'
 
 // TODO: can we parameterize this with different arrows?
 export const corridorShape = (group, options) => {
-
-  const outline = L.SVG.path({
-    stroke: 'black',
-    'stroke-width': 7,
-    fill: 'none',
-    'stroke-linejoin': 'round'
-  })
-
-  const path = L.SVG.path({
-    stroke: 'RGB(0, 168, 220)',
-    'stroke-width': 3,
-    fill: 'none',
-    'stroke-linejoin': 'round'
-  })
-
-  if (options.interactive) {
-    L.DomUtil.addClass(outline, 'leaflet-interactive')
-    L.DomUtil.addClass(path, 'leaflet-interactive')
-  }
-
+  const f = svgFactory(options)
+  const outline = f.outline()
+  const path = f.path()
   group.appendChild(outline)
   group.appendChild(path)
 

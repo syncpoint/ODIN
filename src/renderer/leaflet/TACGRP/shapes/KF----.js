@@ -1,32 +1,14 @@
 import L from 'leaflet'
-import { calcStruts, line } from './geo-helper'
+import { calcStruts, line, svgFactory } from './geo-helper'
 
 // TODO: can we parameterize this with different arrows?
 // TODO: provide adequate styling information
 // TODO: 'CATK' label in first segment
-export const corridorShape = group => {
-  const outline = L.SVG.path({
-    stroke: 'black',
-    'stroke-width': 5,
-    'stroke-dasharray': '16 8', // 24
-    fill: 'none',
-    'stroke-linejoin': 'round'
-  })
-
-  const path = L.SVG.path({
-    stroke: 'RGB(0, 168, 220)',
-    'stroke-width': 3,
-    'stroke-dasharray': '0 2 12 10', // 24
-    fill: 'none',
-    'stroke-linejoin': 'round'
-  })
-
-  const arrow = L.SVG.path({
-    stroke: 'black',
-    'stroke-width': 1,
-    fill: 'black'
-  })
-
+export const corridorShape = (group, options) => {
+  const f = svgFactory({ ...options, dashed: true })
+  const outline = f.outline()
+  const path = f.path()
+  const arrow = f.p({ stroke: 'black', 'stroke-width': 1, fill: 'black' })
   group.appendChild(outline)
   group.appendChild(path)
   group.appendChild(arrow)
