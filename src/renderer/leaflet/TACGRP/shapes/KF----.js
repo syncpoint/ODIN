@@ -1,5 +1,5 @@
 import L from 'leaflet'
-import { projectedPoint, line } from './geo-helper'
+import { calcStruts, line } from './geo-helper'
 
 // TODO: can we parameterize this with different arrows?
 // TODO: provide adequate styling information
@@ -39,13 +39,7 @@ export const corridorShape = group => {
     // CATKF has a pretty complicated set of arrows.
     // First we define a set of struts s(0) - s(n), starting from the tip.
     // Then we calculate named points on these struts.
-    const s = [ 0.1, 0.28, 0.53, 0.69, 0.92 ].map(f => {
-      const C = s0.point(f * (dw / s0.d))
-      return line([
-        projectedPoint(envelope[0][0], envelope[1][0], C),
-        projectedPoint(envelope[0][1], envelope[1][1], C)
-      ])
-    })
+    const s = calcStruts(center, envelope)([ 0.1, 0.28, 0.53, 0.69, 0.92 ])
 
     // Interpolate points for corridor width (half of arrow width)
     // TODO: remove/simplify shape when minimum width is below a certain limit
@@ -78,13 +72,7 @@ export const corridorShape = group => {
     ], true))
   }
 
-  const attached = () => {
-    // shape group is now attached to parent element
-  }
-
   return {
-    group,
-    updateFrame,
-    attached
+    updateFrame
   }
 }

@@ -27,3 +27,13 @@ export const line = points => {
     point
   }
 }
+
+export const calcStruts = (center, envelope) => fs => fs.map(f => {
+  const dw = line(envelope[0]).d
+  const s0 = line(center.slice(0, 2))
+  const C = s0.point(f * (dw / s0.d))
+  return line([
+    projectedPoint(envelope[0][0], envelope[1][0], C),
+    projectedPoint(envelope[0][1], envelope[1][1], C)
+  ])
+})
