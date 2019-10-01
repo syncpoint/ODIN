@@ -1,6 +1,6 @@
 import L from 'leaflet'
 
-const latlng = geometry => {
+export const toLatLngs = geometry => {
   const { type, coordinates } = geometry
 
   switch (type) {
@@ -11,6 +11,12 @@ const latlng = geometry => {
   }
 }
 
-export default {
-  latlng
+export const toGeometry = (type, latlngs) => {
+  const lineString = () => latlngs.map(({ lat, lng }) => [lng, lat])
+  const polygon = () => [[...lineString(), lineString()[0]]]
+
+  switch (type) {
+    case 'Polygon': return { type: 'Polygon', coordinates: polygon() }
+    case 'LineString': return { type: 'LineString', coordinates: lineString() }
+  }
 }
