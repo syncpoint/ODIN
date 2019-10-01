@@ -83,26 +83,29 @@ L.TACGRP.Corridor = L.Layer.extend({
    *
    */
   _edit () {
-
     if (selection.isSelected(this.urn)) return
     selection.select(this.urn)
 
     const callback = ({ channel, latlngs, type }) => {
+      const width = this._corridor.width
       switch (channel) {
         case 'drag': {
-          const width = this._feature.geometry.width
           this._corridor = corridorGeometry(latlngs, width)
           return this._project()
         }
         case 'dragend': {
           const geometry = toGeometry(type, latlngs)
-          geometry.width = this._feature.geometry.width
+          geometry.width = width
           return this.options.update({ geometry })
         }
       }
     }
 
-    this._markerGroup = new L.Feature.MarkerGroup(this._feature.geometry, callback).addTo(this._map)
+    // FIXME: init marker group with (type, latlngs)-tuple instead of geometry
+    const geometry = toGeometry('LineString', this._corridor.latlngs)
+    this._markerGroup =
+      new L.Feature.MarkerGroup(geometry, callback)
+        .addTo(this._map)
 
     const editor = {
       dispose: () => {
@@ -116,15 +119,16 @@ L.TACGRP.Corridor = L.Layer.extend({
   },
 
   _setFeature (feature) {
-    this._feature = feature
-    const width = this._feature.geometry.width
-    const latlngs = toLatLngs(this._feature.geometry)
-    this._corridor = corridorGeometry(latlngs, width)
+    const latlngs = toLatLngs(feature.geometry)
+    this._corridor = corridorGeometry(latlngs, feature.geometry.width)
   },
 
   updateData (feature) {
     this._setFeature(feature)
     this._project()
-    if (this.markerGroup) this.markerGroup.updateGeometry(this._feature.geometry)
+
+    // FIXME: workaround because we don't want to store this._feature
+    const geometry = toGeometry('LineString', this._corridor.latlngs)
+    if (this.markerGroup) this.markerGroup.updateGeometry(geometry)
   }
 })
