@@ -32,15 +32,21 @@ const drawTool = map => options => {
     map.tools.dispose()
   }
 
-  const append = latlng => {
-    // Prevent adding duplicates, because of dblclick.
-    const latlngs = polyline.getLatLngs()
-    if (latlngs.length > 0 && latlngs[latlngs.length - 1].equals(latlng)) return
+  let px = 0
+  let py = 0
+  const append = event => {
+    const latlng = event.latlng
+    // Prevent adding duplicates or point close to last point.
+    const sq = x => x * x
+    const d = Math.sqrt(sq(px - event.layerPoint.x) + sq(py - event.layerPoint.y))
+    if (d < 20) return
+    px = event.layerPoint.x
+    py = event.layerPoint.y
     polyline.addLatLng(latlng)
   }
 
   const tracker = new L.Marker(map.getCenter(), { icon }).addTo(layerGroup)
-  tracker.on('click', event => append(event.latlng))
+  tracker.on('click', append)
   tracker.on('dblclick', done)
 
   const updateTracker = latlng => {
