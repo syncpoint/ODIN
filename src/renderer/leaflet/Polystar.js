@@ -2,6 +2,7 @@ import L from 'leaflet'
 import selection from '../components/App.selection'
 import './Feature'
 import './MarkerGroup'
+import { toGeometry } from './GeoJSON'
 
 const initialize = function (feature, options) {
   this.feature = feature
@@ -49,10 +50,10 @@ const edit = function () {
   if (selection.isSelected(this.urn)) return
   selection.select(this.urn)
 
-  const callback = event => {
-    switch (event.type) {
-      case 'latlngs': return this.update(event.latlngs)
-      case 'geometry': return this.options.update({ geometry: event.geometry })
+  const callback = ({ channel, type, latlngs }) => {
+    switch (channel) {
+      case 'drag': return this.update(latlngs)
+      case 'dragend': return this.options.update({ geometry: toGeometry(type, latlngs) })
     }
   }
 

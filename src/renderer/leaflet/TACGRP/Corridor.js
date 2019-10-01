@@ -1,5 +1,5 @@
 import L from 'leaflet'
-import GeoJSON from '../GeoJSON'
+import { toLatLngs, toGeometry } from '../GeoJSON'
 import { corridorGeometry } from './corridor-geometry'
 import selection from '../../components/App.selection'
 
@@ -87,14 +87,18 @@ L.TACGRP.Corridor = L.Layer.extend({
     if (selection.isSelected(this.urn)) return
     selection.select(this.urn)
 
-    const callback = event => {
-      switch (event.type) {
-        case 'latlngs': {
+    const callback = ({ channel, latlngs, type }) => {
+      switch (channel) {
+        case 'drag': {
           const width = this._feature.geometry.width
-          this._corridor = corridorGeometry(event.latlngs, width)
+          this._corridor = corridorGeometry(latlngs, width)
           return this._project()
         }
-        case 'geometry': return this.options.update({ geometry: event.geometry })
+        case 'dragend': {
+          const geometry = toGeometry(type, latlngs)
+          geometry.width = this._feature.geometry.width
+          return this.options.update({ geometry })
+        }
       }
     }
 
@@ -114,7 +118,7 @@ L.TACGRP.Corridor = L.Layer.extend({
   _setFeature (feature) {
     this._feature = feature
     const width = this._feature.geometry.width
-    const latlngs = GeoJSON.latlng(this._feature.geometry)
+    const latlngs = toLatLngs(this._feature.geometry)
     this._corridor = corridorGeometry(latlngs, width)
   },
 

@@ -65,24 +65,17 @@ const appendMarker = function (latlng, options, other) {
   this.list.append(this.createMarker(latlng, options), other)
 }
 
-const toGeometry = function () {
-  const latlngs = this.markers().map(marker => marker.getLatLng())
-  const lineString = () => latlngs.map(({ lat, lng }) => [lng, lat])
-  const polygon = () => [[...lineString(), lineString()[0]]]
+const emitEvent = function (channel) {
 
-  switch (this.geometry.type) {
-    case 'Polygon': return { type: 'Polygon', coordinates: polygon() }
-    case 'LineString': return { type: 'LineString', coordinates: lineString() }
+  return () => {
+    const latlngs = this.markers().map(marker => marker.getLatLng())
+    const type = this.geometry.type
+    this.callback({ channel, type, latlngs })
   }
 }
 
-const emitGeometry = function () {
-  this.callback({ type: 'geometry', geometry: this.toGeometry() })
-}
-
 const updatePoint = function () {
-  const latlngs = this.markers().map(marker => marker.getLatLng())
-  this.callback({ type: 'latlngs', latlngs })
+  this.emitEvent('drag')()
 
   // Update mid-point marker positions:
   this.markers().forEach(marker => {
@@ -103,7 +96,7 @@ const removePoint = function (event) {
   const remove = () => {
     this.removeMarker(marker)
     this.updatePoint()
-    this.emitGeometry()
+    this.emitEvent('dragend')
   }
 
   const clearTimer = () => {
@@ -128,7 +121,7 @@ const addPoint = function ({ target: marker }) {
   L.DomUtil.removeClass(marker._icon, 'marker-icon-middle')
   marker.off('drag', this.addPoint, this)
   marker.on('drag', this.updatePoint, this)
-  marker.on('dragend', this.emitGeometry, this)
+  marker.on('dragend', this.emitEvent('dragend'), this)
   marker.on('mousedown', this.removePoint, this)
 
   // Insert two mid-point markers before and after target marker:
@@ -145,7 +138,7 @@ const setup = function () {
     const options = {
       type: MARKER_UPDATE,
       drag: this.updatePoint,
-      dragend: this.emitGeometry,
+      dragend: this.emitEvent('dragend'),
       mousedown: this.removePoint
     }
     this.appendMarker(latlng, options)
@@ -183,9 +176,8 @@ L.Feature.MarkerGroup = L.LayerGroup.extend({
   createMarker,
   removeMarker,
   appendMarker,
-  toGeometry,
 
-  emitGeometry,
+  emitEvent,
   updatePoint,
   removePoint,
   addPoint,

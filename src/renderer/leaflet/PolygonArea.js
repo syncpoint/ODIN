@@ -2,7 +2,7 @@ import L from 'leaflet'
 import selection from '../components/App.selection'
 import { fromNow } from '../../shared/datetime'
 import polygonShape from './polygon-shape'
-import GeoJSON from './GeoJSON'
+import { toLatLngs, toGeometry } from './GeoJSON'
 import evented from '../evented'
 import { findSpecificItem } from '../stores/feature-store'
 
@@ -58,7 +58,7 @@ const onAdd = function (map) {
       interactive: this.options.interactive
     }
 
-    const rings = GeoJSON.latlng(this.feature.geometry)
+    const rings = toLatLngs(this.feature.geometry)
     const points = rings.map(ring => ring.map(latlng => map.latLngToLayerPoint(latlng)))
     const shape = polygonShape(map.getRenderer(this), points, shapeOptions)
     if (this.options.interactive) this.addInteractiveTarget(shape.element)
@@ -90,16 +90,16 @@ const edit = function () {
   if (selection.isSelected(this.urn)) return
   selection.select(this.urn)
 
-  const callback = event => {
+  const callback = ({ channel, type, latlngs }) => {
     const onLatLngs = latlngs => {
       latlngs = [...latlngs, latlngs[0]]
       const layerPoints = latlngs.map(latlng => this._map.latLngToLayerPoint(latlng))
       this.shape = this.shape.updatePoints([layerPoints], this.options.lineSmoothing)
     }
 
-    switch (event.type) {
-      case 'latlngs': return onLatLngs(event.latlngs)
-      case 'geometry': return this.options.update({ geometry: event.geometry })
+    switch (channel) {
+      case 'drag': return onLatLngs(latlngs)
+      case 'dragend': return this.options.update({ geometry: toGeometry(type, latlngs) })
     }
   }
 
@@ -124,7 +124,7 @@ const edit = function () {
  * Update shape's geometry/points.
  */
 const updateShape = function () {
-  const rings = GeoJSON.latlng(this.feature.geometry)
+  const rings = toLatLngs(this.feature.geometry)
   const layerPoints = rings.map(ring => ring.map(latlng => this._map.latLngToLayerPoint(latlng)))
   this.shape = this.shape.updatePoints(layerPoints, this.options.lineSmoothing)
 }
