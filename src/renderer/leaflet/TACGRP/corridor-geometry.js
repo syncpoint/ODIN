@@ -37,7 +37,7 @@ export const corridorGeometry = (latlngs, width) => {
 
   return {
     latlngs,
-    width, // TODO: redundant -> remove
+    width,
     envelope
   }
 }

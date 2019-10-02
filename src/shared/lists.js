@@ -61,7 +61,8 @@ export const doublyLinkedList = () => {
     remove,
     empty: () => !head,
     forEach: f => forEach(head)(f),
-    filter: p => filter(head)(p)
+    filter: p => filter(head)(p),
+    head: () => head
   }
 }
 
