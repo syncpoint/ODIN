@@ -1,0 +1,28 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            14.29458762704842,
+            46.68438368425787
+          ],
+          [
+            14.319648742675783,
+            46.69608017108989
+          ]
+        ]
+      },
+      "properties": {
+        "sidc": "GFT*B-----****X",
+        "n": "",
+        "t": "",
+        "geometry_width": "800"
+      },
+      "title": ""
+    }
+  ]
+}
