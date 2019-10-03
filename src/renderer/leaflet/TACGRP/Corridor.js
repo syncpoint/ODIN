@@ -98,8 +98,7 @@ L.TACGRP.Corridor = L.Layer.extend({
         }
         case 'dragend': {
           const geometry = toGeometry('LineString', corridor.latlngs)
-          geometry.width = corridor.width
-          return this.options.update({ geometry })
+          return this.options.update({ geometry, properties: { geometry_width: corridor.width } })
         }
       }
     }
@@ -135,7 +134,8 @@ L.TACGRP.Corridor = L.Layer.extend({
 
   _setFeature (feature) {
     const latlngs = toLatLngs(feature.geometry)
-    this._corridor = corridorGeometry(latlngs, feature.geometry.width)
+    const width = feature.properties.geometry_width
+    this._corridor = corridorGeometry(latlngs, width)
   },
 
   updateData (feature) {
