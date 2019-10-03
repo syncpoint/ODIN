@@ -125,8 +125,8 @@ class MainPanel extends React.Component {
           selection.preselect(ResourceNames.featureId('0', featureId))
           layerStore.addFeature(0)(featureId, {
             type: 'Feature',
-            geometry: geometry(type, latlngs.reverse(), { width: 600 }),
-            properties: { sidc }
+            geometry: geometry(type, latlngs.reverse()),
+            properties: { sidc, geometry_width: 600 }
           })
         }
       })
