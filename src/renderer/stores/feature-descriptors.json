@@ -1570,7 +1570,6 @@
       "ENEMY PRISONER OF WAR (EPW) HOLDING AREA"
     ],
     "geometries": [
-      "point",
       "polygon"
     ]
   },
@@ -4803,7 +4802,6 @@
       "REFUGEE HOLDING AREA"
     ],
     "geometries": [
-      "point",
       "polygon"
     ]
   },
@@ -9345,7 +9343,6 @@
       "SHORT-RANGE AIR DEFENSE ENGAGEMENT ZONE (SHORADEZ)"
     ],
     "geometries": [
-      "polyarc",
       "polygon"
     ]
   },

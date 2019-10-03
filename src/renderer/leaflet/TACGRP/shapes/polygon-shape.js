@@ -159,6 +159,8 @@ const renderPath = (cache, rings, lineSmoothing) => {
 
 export const polygonShape = (group, options) => {
 
+  const isAttached = () => group.parentNode
+
   // Mutable state:
   const current = { options }
   const rings = () => current.rings
@@ -168,7 +170,6 @@ export const polygonShape = (group, options) => {
   const interactive = () => current.options.interactive
 
   const cache = elementCache()
-  const clipping = clippingStrategy(styles().clipping)(cache)
 
   cache.put('group', group)(noop)
   cache.put('defs', L.SVG.create('defs'))(noop)
@@ -184,6 +185,7 @@ export const polygonShape = (group, options) => {
     'stroke-linejoin': 'round',
     fill: 'none'
   }))(noop)
+
   cache.put('path', L.SVG.path({}))(noop)
 
   if (interactive()) {
@@ -194,7 +196,10 @@ export const polygonShape = (group, options) => {
   cache.element('group').appendChild(cache.element('outline'))
   cache.element('group').appendChild(cache.element('path'))
 
+  const clipping = clippingStrategy(styles().clipping)(cache)
+
   const updateOptions = options => {
+    clipping.reset()
     current.options = options
 
     L.SVG.setAttributes(cache.element('path'))({
@@ -205,6 +210,7 @@ export const polygonShape = (group, options) => {
       'fill-opacity': styles().fillOpacity
     })
 
+    clipping.withPath(cache.element('outline'))
     clipping.withPath(cache.element('path'))
 
     if (styles().fill === 'diagonal') {
@@ -223,8 +229,11 @@ export const polygonShape = (group, options) => {
     if (rings()) renderLabels(cache, clipping, labels(), rings())
   }
 
+
   const updateFrame = frame => {
     current.rings = frame.rings
+    // Just buffer rings until we are attached to DOM.
+    if (!isAttached()) return
 
     clipping.reset()
     renderLabels(cache, clipping, labels(), rings())
@@ -232,97 +241,15 @@ export const polygonShape = (group, options) => {
     clipping.finish()
   }
 
-  updateOptions(options)
+  const attached = () => {
+    // Now, group is registered with DOM.
+    updateOptions(options)
+    updateFrame({ rings: rings()})
+  }
 
   return {
     updateFrame,
-    updateOptions
+    updateOptions,
+    attached
   }
 }
-
-
-/**
- *
- */
-// export default (renderer, points, options) => {
-//   const cache = elementCache()
-
-//   cache.put('root', renderer._rootGroup)(noop)
-//   cache.put('group', L.SVG.create('g'))(element => cache.element('root').removeChild(element))
-//   cache.put('defs', L.SVG.create('defs'))(noop)
-//   cache.put('labels', L.SVG.create('g'))(element => cache.element('group').removeChild(element))
-
-//   cache.element('group').appendChild(cache.element('defs'))
-//   cache.element('group').appendChild(cache.element('labels'))
-
-//   const clipping = clippingStrategy(options.styles.clipping)(cache)
-
-//   // Transparent path to increase clickable area:
-//   cache.put('outline', L.SVG.path({ 'stroke-width': 10, stroke: 'red', fill: 'none', 'opacity': 0.0 }))(noop)
-//   cache.put('path', L.SVG.path({}))(noop)
-
-//   if (options.interactive) {
-//     L.DomUtil.addClass(cache.element('outline'), 'leaflet-interactive')
-//     L.DomUtil.addClass(cache.element('path'), 'leaflet-interactive')
-//   }
-
-//   cache.element('group').appendChild(cache.element('outline'))
-//   cache.element('group').appendChild(cache.element('path'))
-//   cache.element('root').appendChild(cache.element('group'))
-
-//   const dispose = () => cache.dispose()
-
-//   // Closure over styles, labels and points.
-//   const create = ({ styles, labels, points }) => {
-
-//     const updatePoints = (points, smoothing) => {
-//       clipping.reset()
-//       renderLabels(cache, clipping, labels, points)
-//       renderPath(cache, points, smoothing)
-//       clipping.finish()
-//       return create({ styles, labels, points })
-//     }
-
-//     const updateLabels = labels => {
-//       renderLabels(cache, clipping, labels, points)
-//       return create({ styles, labels, points })
-//     }
-
-//     const updateStyles = styles => {
-//       L.SVG.setAttributes(cache.element('path'))({
-//         'stroke-width': styles.strokeWidth,
-//         'stroke-dasharray': styles.strokeDashArray,
-//         stroke: styles.stroke,
-//         'fill-opacity': styles.fillOpacity,
-//         'stroke-linejoin': 'round'
-//       })
-
-//       clipping.withPath(cache.element('path'))
-
-//       if (styles.fill === 'diagonal') {
-//         const patternId = `pattern-${uuid()}`
-//         cache.put('pattern', L.SVG.diagonalPattern(patternId, styles))(element => {
-//           cache.element('defs').removeChild(element)
-//         })
-
-//         cache.element('defs').appendChild(cache.element('pattern'))
-//         cache.element('path').setAttribute('fill', `url(#${patternId})`)
-//       } else {
-//         cache.element('path').setAttribute('fill', styles.fill)
-//       }
-
-//       return create({ styles, labels, points })
-//     }
-
-//     return {
-//       dispose,
-//       updatePoints,
-//       updateStyles,
-//       updateLabels,
-//       // We must expose group element to handle interactive targets on layer.
-//       element: cache.element('group')
-//     }
-//   }
-
-//   return create({ styles: options.styles, labels: options.labels, points })
-// }
