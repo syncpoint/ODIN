@@ -13,7 +13,7 @@ export const toLatLngs = geometry => {
 
 export const toGeometry = (type, latlngs) => {
   const lineString = () => latlngs.map(({ lat, lng }) => [lng, lat])
-  const polygon = () => [[...lineString(), lineString()[0]]]
+  const polygon = () => latlngs.map(ring => ring.map(({ lat, lng }) => [lng, lat]))
 
   switch (type) {
     case 'Polygon': return { type: 'Polygon', coordinates: polygon() }
