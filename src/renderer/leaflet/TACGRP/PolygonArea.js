@@ -38,6 +38,7 @@ L.TACGRP.PolygonArea = L.Layer.extend({
     this._shape = this._shape(this._group)
     this._project()
     this._renderer._addGroup(this)
+    this._shape.attached() // we are live!
 
     this.on('click', this._edit, this)
   },

@@ -22,7 +22,7 @@ const genericShape = (feature, options) => {
       if (!validSymbol(sidc)) return null // no point features other than symbols
       return new L.Feature.Symbol(feature, options)
     }
-    case 'Polygon': return new L.Feature.PolygonAreaTitled(feature, options)
+    case 'Polygon': return new L.TACGRP.PolygonAreaTitled(feature, options)
     case 'LineString': return new L.Feature.Polyline(feature, options)
     default: return null
   }
