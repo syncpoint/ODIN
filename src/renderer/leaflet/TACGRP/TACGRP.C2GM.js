@@ -1,5 +1,6 @@
 import L from 'leaflet'
 import '../PolygonArea'
+import './PolygonArea'
 import './TACGRP.C2GM.GNL.ARS.SRHARA'
 import './TACGRP.C2GM.GNL.LNE.BNDS'
 import './TACGRP.C2GM.OFF.LNE.AXSADV.ABN'
@@ -35,7 +36,7 @@ const ColorSchemes = {
 // * fill: none | diagonal
 
 const styles = feature => {
-  const colorSchemes = ColorSchemes['dark']
+  const colorSchemes = ColorSchemes['medium']
 
   const { sidc, n } = feature.properties
   const stroke = () => {
@@ -125,7 +126,13 @@ L.Feature['G*G*GAX---'] = namedArea('EZ')
 L.Feature['G*G*GAP---'] = namedArea('PZ')
 L.Feature['G*G*GAL---'] = namedArea('LZ')
 L.Feature['G*G*OAK---'] = namedArea('ATK')
-L.Feature['G*G*OAO---'] = namedArea('OBJ')
+
+L.Feature['G*G*OAO---'] = (feature, options) => {
+  options.styles = styles
+  options.labels = feature => centerLabel([`<bold>OBJ</bold>`, feature.properties.t])
+  return new L.TACGRP.PolygonArea(feature, options)
+}
+
 L.Feature['G*G*SAO---'] = namedArea('AO')
 L.Feature['G*G*SAN---'] = namedArea('NAI')
 L.Feature['G*G*SAT---'] = namedArea('TAI')
