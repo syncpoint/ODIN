@@ -1,6 +1,8 @@
 import L from 'leaflet'
 import uuid from 'uuid-random'
 
+// FIXME: deprecated -> remove
+
 export const backdropClipping = cache => {
   const withLabel = (element, tx, ty) => {
     const box = L.SVG.inflate(element.getBBox(), 4)

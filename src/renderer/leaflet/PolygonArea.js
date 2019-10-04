@@ -6,6 +6,7 @@ import { toLatLngs, toGeometry } from './GeoJSON'
 import evented from '../evented'
 import { findSpecificItem } from '../stores/feature-store'
 
+// FIXME: deprecated -> remove
 
 /**
  *
