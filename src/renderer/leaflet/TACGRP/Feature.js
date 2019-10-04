@@ -1,0 +1,73 @@
+import L from 'leaflet'
+
+// TODO: defaultOptions (styles)
+
+/**
+ * Abstract feature.
+ * Define the follow to subclass:
+ * - _project()
+ * - _edit()
+ * - _setFeature()
+ */
+L.TACGRP = L.TACGRP || {}
+L.TACGRP.Feature = L.Layer.extend({
+
+
+  /**
+   *
+   */
+  initialize (feature, options) {
+    L.setOptions(this, options)
+    this._setFeature(feature)
+  },
+
+
+  /**
+   *
+   */
+  beforeAdd (map) {
+    this._map = map
+    this._renderer = map.getRenderer(this)
+  },
+
+
+  /**
+   *
+   */
+  onAdd (/* map */) {
+    this._renderer._initGroup(this)
+    this._shape = this._shape(this._group)
+    this._project()
+    this._renderer._addGroup(this)
+    this._shape.attached && this._shape.attached()
+    this.on('click', this._edit, this)
+  },
+
+
+  /**
+   *
+   */
+  onRemove (/* map */) {
+    this.off('click', this._edit, this)
+    this._renderer._removeGroup(this)
+    this._map.tools.dispose() // dispose editor/selection tool
+  },
+
+
+  /**
+   * Required by L.Renderer, but NOOP since we handle shape state in layer.
+   * NOTE: Called twice after map was panned, so implementation should be fast.
+   */
+  _update () {
+  },
+
+
+  /**
+   *
+   */
+  updateData (feature) {
+    this._setFeature(feature)
+    this._project()
+    this._shape.updateOptions && this._shape.updateOptions(this._shapeOptions)
+  }
+})

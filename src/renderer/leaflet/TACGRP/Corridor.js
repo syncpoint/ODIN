@@ -1,67 +1,20 @@
 import L from 'leaflet'
 import { toLatLngs, toGeometry } from '../GeoJSON'
+import './Feature'
 import { corridorGeometry } from './corridor-geometry'
 import selection from '../../components/App.selection'
 import { doublyLinkedList } from '../../../shared/lists'
 import './Handles'
 import { polyEditor } from './poly-editor'
 import { widthEditor } from './width-editor'
+import { styles } from './styles'
 
 /**
- *
+ * Abstract corridor.
+ * Define the follow to subclass:
+ * - _shape()
  */
-L.TACGRP = L.TACGRP || {}
-L.TACGRP.Corridor = L.Layer.extend({
-
-
-  /**
-   *
-   */
-  initialize (feature, options) {
-    L.setOptions(this, options)
-    this._setFeature(feature)
-  },
-
-
-  /**
-   *
-   */
-  beforeAdd (map) {
-    this._map = map
-    this._renderer = map.getRenderer(this)
-  },
-
-
-  /**
-   *
-   */
-  onAdd (/* map */) {
-
-    // TODO: should layer mediate between renderer and shape,
-    // TODO: or should renderer directly deal with shape.
-
-    const shapeOptions = {
-      interactive: this.options.interactive
-    }
-
-    this._renderer._initGroup(this)
-    this._shape = this._shape(this._group, shapeOptions)
-    this._project()
-    this._renderer._addGroup(this)
-
-    this.on('click', this._edit, this)
-  },
-
-
-  /**
-   *
-   */
-  onRemove (/* map */) {
-    this.off('click', this._edit, this)
-    this._renderer._removeGroup(this)
-    this._map.tools.dispose() // dispose editor/selection tool
-  },
-
+L.TACGRP.Corridor = L.TACGRP.Feature.extend({
 
   /**
    * Project WGS84 geometry to pixel/layer coordinates.
@@ -72,14 +25,6 @@ L.TACGRP.Corridor = L.Layer.extend({
       center: this._corridor.latlngs.map(layerPoint),
       envelope: this._corridor.envelope().map(pair => pair.map(layerPoint))
     })
-  },
-
-
-  /**
-   * Required by L.Renderer, but NOOP since we handle shape state in layer.
-   * NOTE: Called twice after map was panned, so implementation should be fast.
-   */
-  _update () {
   },
 
 
@@ -132,18 +77,18 @@ L.TACGRP.Corridor = L.Layer.extend({
     this._map.tools.edit(editor)
   },
 
+
+  /**
+   *
+   */
   _setFeature (feature) {
     const latlngs = toLatLngs(feature.geometry)
     const width = feature.properties.geometry_width
     this._corridor = corridorGeometry(latlngs, width)
-  },
 
-  updateData (feature) {
-    this._setFeature(feature)
-    this._project()
-
-    // TODO: update editor's geometry if necessary
-    // const geometry = toGeometry('LineString', this._corridor.latlngs)
-    // ...
+    this._shapeOptions = {
+      interactive: this.options.interactive,
+      styles: styles(feature)
+    }
   }
 })

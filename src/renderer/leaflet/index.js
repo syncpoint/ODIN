@@ -6,8 +6,7 @@ import './Feature'
 import './Polyline'
 
 import './Symbol'
-import './TACGRP/TACGRP.C2GM'
-import './TACGRP/TACGRP.TSK'
+import './TACGRP/'
 
 import './Shape'
 import './Corridor2Point'
