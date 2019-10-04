@@ -1,12 +1,8 @@
-/* eslint-disable */
-
 import L from 'leaflet'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import './Feature'
 import { polylineShape } from './shapes/polyline-shape'
-import selection from '../../components/App.selection'
 import { doublyLinkedList } from '../../../shared/lists'
-import './Handles'
 import { polyEditor } from './poly-editor'
 import { styles } from './styles'
 
@@ -26,9 +22,9 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
   /**
    *
    */
-  _edit () {
-    if (selection.isSelected(this.urn)) return
-    selection.select(this.urn)
+  _editor () {
+    const layer = new L.Feature.Handles().addTo(this._map)
+    let current = this._latlngs
 
     const callback = (channel, latlngs) => {
       switch (channel) {
@@ -43,26 +39,15 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
       }
     }
 
-    const polylineEditor = (latlngs, callback) => {
-      let current = latlngs
-      const layer = new L.Feature.Handles().addTo(this._map)
+    // Upstream editor: polyline only
+    polyEditor(current, layer, doublyLinkedList(), (channel, latlngs) => {
+      current = latlngs
+      callback(channel, current)
+    })
 
-      // Upstream editor: polyline only
-      polyEditor(current, layer, doublyLinkedList(), (channel, latlngs) => {
-        current = latlngs
-        callback(channel, current)
-      })
-
-      return {
-        dispose: () => {
-          this._map.removeLayer(layer)
-          selection.isSelected(this.urn) && selection.deselect()
-        }
-      }
+    return {
+      dispose: () => this._map.removeLayer(layer)
     }
-
-    const editor = polylineEditor(this._latlngs, callback)
-    this._map.tools.edit(editor)
   },
 
 

@@ -1,4 +1,5 @@
 import L from 'leaflet'
+import selection from '../../components/App.selection'
 
 // TODO: defaultOptions (styles)
 
@@ -6,7 +7,7 @@ import L from 'leaflet'
  * Abstract feature.
  * Define the follow to subclass:
  * - _project()
- * - _edit()
+ * - _editor()
  * - _setFeature()
  */
 L.TACGRP = L.TACGRP || {}
@@ -51,6 +52,23 @@ L.TACGRP.Feature = L.Layer.extend({
     this.off('click', this._edit, this)
     this._renderer._removeGroup(this)
     this._map.tools.dispose() // dispose editor/selection tool
+  },
+
+
+  /**
+   *
+   */
+  _edit () {
+    if (selection.isSelected(this.urn)) return
+    selection.select(this.urn)
+
+    const editor = this._editor()
+    this._map.tools.edit({
+      dispose: () => {
+        editor.dispose()
+        selection.isSelected(this.urn) && selection.deselect()
+      }
+    })
   },
 
 
