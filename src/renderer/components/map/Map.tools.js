@@ -34,6 +34,7 @@ const drawTool = map => options => {
 
   let px = 0
   let py = 0
+
   const append = event => {
     const latlng = event.latlng
     // Prevent adding duplicates or point close to last point.
@@ -43,6 +44,11 @@ const drawTool = map => options => {
     px = event.layerPoint.x
     py = event.layerPoint.y
     polyline.addLatLng(latlng)
+
+    const pointCount = polyline.getLatLngs().length
+    switch (options.geometryType) {
+      case 'line-2pt': (pointCount === 2 ? done : () => {})()
+    }
   }
 
   const tracker = new L.Marker(map.getCenter(), { icon }).addTo(layerGroup)

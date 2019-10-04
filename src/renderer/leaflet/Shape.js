@@ -5,6 +5,8 @@ import uuid from 'uuid-random'
 import * as R from 'ramda'
 import { editors } from './editors/'
 
+// FIXME: deprecated -> remove
+
 const initialize = function (feature, options) {
   this.feature = feature
   // Shape-specific geometry (incompatible with GeoJSON geometry)

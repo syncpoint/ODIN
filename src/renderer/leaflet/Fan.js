@@ -1,6 +1,8 @@
 import L from 'leaflet'
 import './Shape'
 
+// FIXME: deprecated -> remove
+
 /**
  * Fan with center point and two beams with different angles and lengths.
  */

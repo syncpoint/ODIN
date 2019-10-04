@@ -4,6 +4,7 @@ import './Feature'
 import { polygonShape } from './shapes/polygon-shape'
 import { circularDoublyLinkedList } from '../../../shared/lists'
 import { polyEditor } from './poly-editor'
+import { stylesX } from './styles'
 
 L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
 
@@ -59,6 +60,7 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
       interactive: this.options.interactive,
       lineSmoothing: this.options.lineSmoothing,
       styles: this.options.styles(feature),
+      stylesX: stylesX(feature),
       labels: this.options.labels(feature)
     }
   },

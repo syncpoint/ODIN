@@ -1,6 +1,8 @@
 import L from 'leaflet'
 import './Shape'
 
+// FIXME: deprecated -> remove
+
 const createGeometry = function (feature) {
 
   const create = (latlngs, width) => {
