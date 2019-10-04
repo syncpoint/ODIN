@@ -5,7 +5,7 @@ import { corridorGeometry } from './corridor-geometry'
 import { doublyLinkedList } from '../../../shared/lists'
 import { polyEditor } from './poly-editor'
 import { widthEditor } from './width-editor'
-import { styles } from './styles'
+import { styles, stylesX } from './styles'
 
 /**
  * Abstract corridor.
@@ -36,7 +36,8 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
           return this._project()
         }
         case 'dragend': {
-          const geometry = toGeometry('LineString', corridor.latlngs)
+          // NOTE: We change direction again on save:
+          const geometry = toGeometry('LineString', corridor.latlngs.slice().reverse())
           return this.options.update({ geometry, properties: { geometry_width: corridor.width } })
         }
       }
@@ -48,6 +49,7 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
       callback(channel, current)
     })
 
+    // TODO: Provide options for 2-pt lines
     // Upstream editor: polyline only
     polyEditor(current.latlngs, layer, doublyLinkedList(), (channel, latlngs) => {
       current = corridorGeometry(latlngs, current.width)
@@ -65,13 +67,16 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
    *
    */
   _setFeature (feature) {
-    const latlngs = toLatLngs(feature.geometry)
+    // Change direction internally:
+    const latlngs = toLatLngs(feature.geometry).slice().reverse()
+
     const width = feature.properties.geometry_width
     this._corridor = corridorGeometry(latlngs, width)
 
     this._shapeOptions = {
       interactive: this.options.interactive,
-      styles: styles(feature)
+      styles: styles(feature),
+      stylesX: stylesX(feature)
     }
   }
 })

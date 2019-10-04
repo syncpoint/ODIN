@@ -1,6 +1,8 @@
 import L from 'leaflet'
 import './Shape'
 
+// FIXME: deprecated -> remove
+
 /**
  * Circle segment (arc) with fixed size angle and mnmRange = 0.
  */

@@ -11,11 +11,8 @@ export const corridorGeometry = (latlngs, width) => {
   const s1 = segments[0]
   const sn = segments[segments.length - 1]
 
-  // MIL-STD-2525C: P0 is at arrow's tip.
-  // MIL-STD-2525C: Width is defined through arrow (not corridor) width
-
   const envelope = (factor = 1) => {
-    const w = width * factor
+    const w = (width * factor) / 2
     const [right, left] = segments.reduce((acc, line) => {
       acc[0].push(line.translate(w, 90))
       acc[1].push(line.translate(w, -90))

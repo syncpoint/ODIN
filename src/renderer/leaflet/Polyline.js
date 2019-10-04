@@ -1,6 +1,8 @@
 import L from 'leaflet'
 import './Polystar'
 
+// FIXME: deprecated -> remove
+
 L.Feature.Polyline = L.Feature.Polystar.extend({
 
   createShape (options) {

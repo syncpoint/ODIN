@@ -56,3 +56,44 @@ export const styles = feature => {
     fill: 'none'
   }
 }
+
+export const stylesX = feature => {
+  const colorSchemes = ColorSchemes['medium']
+
+  const { sidc, n } = feature.properties
+  const stroke = () => {
+    if (n === 'ENY') return colorSchemes.red
+
+    const identity = sidc ? sidc[1] : 'U' // identity or U - UNKNOWN
+    switch (identity) {
+      case 'F': return colorSchemes.blue
+      case 'H': return colorSchemes.red
+      case 'N': return colorSchemes.green
+      case 'U': return colorSchemes.yellow
+      default: return 'black'
+    }
+  }
+
+  const strokeDashArray = () => {
+    const status = sidc ? sidc[3] : 'P' // status or P - PRESENT
+    if (status === 'A') return '15 5'
+  }
+
+  return {
+    clipping: 'none',
+    outline: {
+      'stroke': 'black',
+      'stroke-width': 7,
+      'stroke-linejoin': 'round',
+      // TODO: derive 'stroke-dasharray'
+      'fill': 'none'
+    },
+    path: {
+      'stroke': stroke(),
+      'stroke-width': 3,
+      'stroke-linejoin': 'round',
+      'stroke-dasharray': strokeDashArray(),
+      'fill': 'none'
+    }
+  }
+}

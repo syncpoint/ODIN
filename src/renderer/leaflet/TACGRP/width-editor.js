@@ -3,10 +3,14 @@ import { corridorGeometry } from './corridor-geometry'
 
 export const widthEditor = (corridor, layer, events) => {
 
-  const width = handle => handle.getLatLng().distanceTo(corridor.latlngs[0])
+  const width = handle => {
+    const distance = handle.getLatLng().distanceTo(corridor.latlngs[0])
+    return distance * 2
+  }
 
   const update = (latlngs = corridor.latlngs, width = corridor.width) => {
     corridor = corridorGeometry(latlngs, width)
+
     const tip = corridor.envelope()[0]
     A1.setLatLng(tip[0])
     A2.setLatLng(tip[1])
