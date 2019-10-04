@@ -4,6 +4,8 @@ import './Feature'
 import './MarkerGroup'
 import { toGeometry } from './GeoJSON'
 
+// FIXME: deprecated -> remove
+
 const initialize = function (feature, options) {
   this.feature = feature
   L.setOptions(this, options)

@@ -3,6 +3,8 @@ import * as R from 'ramda'
 import './handles.css'
 import { doublyLinkedList, circularDoublyLinkedList } from '../../shared/lists'
 
+// FIXME: deprecated -> remove
+
 // Marker types:
 const MARKER_UPDATE = 'update-point'
 const MARKER_ADD = 'add-point'

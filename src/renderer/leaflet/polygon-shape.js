@@ -4,6 +4,8 @@ import * as math from 'mathjs'
 import * as R from 'ramda'
 import { maskClipping, backdropClipping, noClipping } from './polygon-clipping'
 
+// FIXME: deprecated -> remove
+
 const DEFAULT_FONT_SIZE = 14
 
 const axisIntersect = (points, y, z) => R.aperture(2, points).reduce((acc, segment) => {
