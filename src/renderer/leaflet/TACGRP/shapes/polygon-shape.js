@@ -1,10 +1,8 @@
-/* eslint-disable */
-
 import L from 'leaflet'
 import uuid from 'uuid-random'
 import * as math from 'mathjs'
 import * as R from 'ramda'
-import { maskClipping, backdropClipping, noClipping } from './polygon-clipping'
+import { elementCache, noop, clippingStrategy } from './common'
 
 const DEFAULT_FONT_SIZE = 14
 
@@ -57,31 +55,6 @@ const labelPositions = ring => {
 
   return placement
 }
-
-const elementCache = () => {
-  const cache = {}
-
-  const put = (id, element) => dispose => {
-    cache[id] && cache[id].dispose(cache[id].element)
-    cache[id] = { element, dispose }
-    return element
-  }
-
-  const element = id => cache[id].element
-  const dispose = () => Object.values(cache).forEach(({ element, dispose }) => dispose(element))
-  return { put, element, dispose }
-}
-
-const noop = () => {}
-
-const clippingStrategy = clipping => cache => {
-  switch (clipping) {
-    case 'mask': return maskClipping(cache)
-    case 'backdrop': return backdropClipping(cache)
-    default: return noClipping(cache)
-  }
-}
-
 
 /**
  *
@@ -244,7 +217,7 @@ export const polygonShape = (group, options) => {
   const attached = () => {
     // Now, group is registered with DOM.
     updateOptions(options)
-    updateFrame({ rings: rings()})
+    updateFrame({ rings: rings() })
   }
 
   return {
