@@ -2,9 +2,7 @@ import L from 'leaflet'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import './Feature'
 import { corridorGeometry } from './corridor-geometry'
-import selection from '../../components/App.selection'
 import { doublyLinkedList } from '../../../shared/lists'
-import './Handles'
 import { polyEditor } from './poly-editor'
 import { widthEditor } from './width-editor'
 import { styles } from './styles'
@@ -27,13 +25,9 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
     })
   },
 
-
-  /**
-   *
-   */
-  _edit () {
-    if (selection.isSelected(this.urn)) return
-    selection.select(this.urn)
+  _editor () {
+    const layer = new L.Feature.Handles().addTo(this._map)
+    let current = this._corridor
 
     const callback = (channel, corridor) => {
       switch (channel) {
@@ -48,33 +42,22 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
       }
     }
 
-    const corridorEditor = (corridor, callback) => {
-      let current = corridor
-      const layer = new L.Feature.Handles().addTo(this._map)
+    // Downstream editor: polyline + width
+    const width = widthEditor(current, layer, (channel, corridor) => {
+      current = corridor
+      callback(channel, current)
+    })
 
-      // Downstream editor: polyline + width
-      const width = widthEditor(current, layer, (channel, corridor) => {
-        current = corridor
-        callback(channel, current)
-      })
+    // Upstream editor: polyline only
+    polyEditor(current.latlngs, layer, doublyLinkedList(), (channel, latlngs) => {
+      current = corridorGeometry(latlngs, current.width)
+      width(latlngs)
+      callback(channel, current)
+    })
 
-      // Upstream editor: polyline only
-      polyEditor(current.latlngs, layer, doublyLinkedList(), (channel, latlngs) => {
-        current = corridorGeometry(latlngs, current.width)
-        width(latlngs)
-        callback(channel, current)
-      })
-
-      return {
-        dispose: () => {
-          this._map.removeLayer(layer)
-          selection.isSelected(this.urn) && selection.deselect()
-        }
-      }
+    return {
+      dispose: () => this._map.removeLayer(layer)
     }
-
-    const editor = corridorEditor(this._corridor, callback)
-    this._map.tools.edit(editor)
   },
 
 
