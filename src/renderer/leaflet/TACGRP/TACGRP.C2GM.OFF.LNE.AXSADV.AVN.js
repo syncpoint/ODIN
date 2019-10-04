@@ -6,7 +6,7 @@ import { corridorShape } from './shapes/OLAV--'
  *
  */
 L.Feature['G*G*OLAV--'] = L.TACGRP.Corridor.extend({
-  _shape (group, options) {
-    return corridorShape(group, options)
+  _shape (group) {
+    return corridorShape(group, this._shapeOptions)
   }
 })
