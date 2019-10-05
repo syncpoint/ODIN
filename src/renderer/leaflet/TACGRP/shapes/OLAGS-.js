@@ -1,7 +1,6 @@
 import L from 'leaflet'
 import { calcStruts, line, svgFactory } from './geo-helper'
 
-// TODO: can we parameterize this with different arrows?
 export const corridorShape = (group, options) => {
   const f = svgFactory(options)
   const outline = f.outline()
