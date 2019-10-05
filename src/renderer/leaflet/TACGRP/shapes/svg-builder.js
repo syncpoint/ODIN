@@ -175,19 +175,22 @@ export const svgBuilder = (options, callbacks) => {
   })
 
   const clipping = clippingStrategy(options.styles.clipping)(cache)
-  const paths = []
+  const paths = (callbacks.paths && callbacks.paths()) || [ 'outline', 'path' ]
 
   const interactive = options.interactive
     ? element => K(element)(element => L.DomUtil.addClass(element, 'leaflet-interactive'))
     : element => element
 
   const renderLabels = () => {
+
+    // No placements, no labels:
+    const placements = callbacks.placements && callbacks.placements(state.frame)
+    if (!placements) return
+
     cache.put('labels', L.SVG.create('g'))(removeChild('group'))
     cache.element('group').appendChild(cache.element('labels'))
-
     clipping.reset()
 
-    const placements = callbacks.placements(state.frame)
     callbacks.labels(state.frame).forEach(descriptor => {
       const fontSize = descriptor['font-size'] || DEFAULT_FONT_SIZE
       const label = text(descriptor)
@@ -233,8 +236,6 @@ export const svgBuilder = (options, callbacks) => {
     clipping.finish()
   }
 
-  const path = name => paths.push(name)
-
   const attach = group => {
     cache.put('group', group)(noop)
 
@@ -255,9 +256,8 @@ export const svgBuilder = (options, callbacks) => {
   const updateFrame = frame => {
     state.frame = frame
     if (!state.attached) return
-
-    const { points, closed } = callbacks.points(frame)
-    const d = L.SVG.pointsToPath(points, closed)
+    const closed = callbacks.closed && callbacks.closed()
+    const d = L.SVG.pointsToPath(callbacks.points(frame), closed)
     paths.forEach(name => cache.element(name).setAttribute('d', d))
     renderLabels()
   }
@@ -271,7 +271,6 @@ export const svgBuilder = (options, callbacks) => {
   }
 
   return {
-    path,
     attach,
     updateFrame,
     refresh
