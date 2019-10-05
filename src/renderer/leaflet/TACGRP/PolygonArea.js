@@ -3,10 +3,9 @@ import * as math from 'mathjs'
 import * as R from 'ramda'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import './Feature'
-import { svgBuilder } from './shapes/svg-builder'
+import { shape } from './shapes/shape'
 import { circularDoublyLinkedList } from '../../../shared/lists'
 import { polyEditor } from './poly-editor'
-import { stylesX } from './styles'
 
 
 /**
@@ -116,7 +115,6 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
       interactive: this.options.interactive,
       lineSmoothing: this.options.lineSmoothing,
       styles: this.options.styles(feature),
-      stylesX: stylesX(feature),
       labels: this.options.labels(feature)
     }
   },
@@ -126,7 +124,7 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
    *
    */
   _shape (group, options) {
-    return svgBuilder(group, options, {
+    return shape(group, options, {
       placements,
       points: ({ rings }) => rings,
       closed: () => true

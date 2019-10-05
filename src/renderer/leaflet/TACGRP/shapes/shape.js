@@ -5,7 +5,6 @@ import { noop, elementCache } from './cache'
 
 const DEFAULT_FONT_SIZE = 14
 
-
 const textAnchor = alignment => {
   switch (alignment) {
     case 'left': return 'start'
@@ -31,11 +30,11 @@ const tspan = descriptor => L.SVG.tspan({
 /**
  *
  */
-export const svgBuilder = (group, options, callbacks) => {
+export const shape = (group, options, callbacks) => {
   const state = { attached: false, options }
   const cache = elementCache()
   const removeChild = parent => element => cache.element(parent).removeChild(element)
-  const style = name => state.options.stylesX[name]
+  const style = name => state.options.styles[name]
   const labels = () => state.options.labels
 
   cache.put('group', group)(noop)

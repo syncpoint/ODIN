@@ -1,10 +1,9 @@
 import L from 'leaflet'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import './Feature'
-import { svgBuilder } from './shapes/svg-builder'
+import { shape } from './shapes/shape'
 import { doublyLinkedList } from '../../../shared/lists'
 import { polyEditor } from './poly-editor'
-import { styles } from './styles'
 
 L.TACGRP.Polyline = L.TACGRP.Feature.extend({
 
@@ -59,8 +58,7 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
     this._shapeOptions = {
       interactive: this.options.interactive,
       lineSmoothing: this.options.lineSmoothing,
-      styles: styles(feature),
-      stylesX: this._stylesX(feature),
+      styles: this._styles(feature),
       labels: []
     }
   },
@@ -70,7 +68,7 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
    *
    */
   _shape (group, options) {
-    return svgBuilder(group, options, {
+    return shape(group, options, {
       points: ({ points }) => [points]
     })
   }
