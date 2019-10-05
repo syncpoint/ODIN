@@ -5,7 +5,7 @@ import { corridorGeometry } from './corridor-geometry'
 import { doublyLinkedList } from '../../../shared/lists'
 import { polyEditor } from './poly-editor'
 import { widthEditor } from './width-editor'
-import { styles, stylesX } from './styles'
+import { styles } from './styles'
 
 /**
  * Abstract corridor.
@@ -75,8 +75,9 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
 
     this._shapeOptions = {
       interactive: this.options.interactive,
+      labels: this._labels(),
       styles: styles(feature),
-      stylesX: stylesX(feature)
+      stylesX: this._stylesX(feature)
     }
   }
 })

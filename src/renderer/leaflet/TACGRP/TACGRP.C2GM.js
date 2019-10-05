@@ -1,5 +1,4 @@
 import L from 'leaflet'
-import '../PolygonArea'
 import './PolygonArea'
 import './Polyline'
 import { styles } from './styles'
