@@ -1,7 +1,6 @@
 import L from 'leaflet'
 import { line } from './shapes/geo-helper'
-import { svgBuilder } from './shapes/svg-builder'
-import '../Corridor2Point'
+import { shape } from './shapes/shape'
 import './Corridor'
 
 
@@ -11,7 +10,7 @@ L.Feature['G*T*B-----'] = L.TACGRP.Corridor.extend({
     const options = { ...this._shapeOptions }
     options.styles.clipping = 'mask'
 
-    return svgBuilder(group, options, {
+    return shape(group, options, {
       points: ({ center, envelope }) => [center, envelope[0]]
     })
   },

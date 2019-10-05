@@ -1,7 +1,7 @@
 import L from 'leaflet'
 import './Corridor'
 import { calcStruts, line } from './shapes/geo-helper'
-import { svgBuilder } from './shapes/svg-builder'
+import { shape } from './shapes/shape'
 
 /**
  *
@@ -27,6 +27,6 @@ L.Feature['G*G*OLAGM-'] = L.TACGRP.Corridor.extend({
       ]]
     }
 
-    return svgBuilder(group, options, { points })
+    return shape(group, options, { points })
   }
 })

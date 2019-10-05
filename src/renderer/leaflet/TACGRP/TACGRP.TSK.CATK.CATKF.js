@@ -1,8 +1,8 @@
 import L from 'leaflet'
 import './Corridor'
 import { calcStruts, line } from './shapes/geo-helper'
-import { svgBuilder } from './shapes/svg-builder'
-import { stylesX } from './styles'
+import { shape } from './shapes/shape'
+import { styles, strokeDashArray } from './styles'
 
 
 /**
@@ -42,14 +42,14 @@ L.Feature['G*T*KF----'] = L.TACGRP.Corridor.extend({
       ]
     }
 
-    return svgBuilder(group, options, { points })
+    return shape(group, options, { points })
   },
 
 
-  _stylesX (feature) {
-    const styles = stylesX(feature)
-    styles.outline['stroke-dasharray'] = '20 15'
-    styles.path['stroke-dasharray'] = '20 15'
-    return styles
+  _styles (feature) {
+    const _styles = styles(feature)
+    _styles.outline['stroke-dasharray'] = strokeDashArray()
+    _styles.path['stroke-dasharray'] = strokeDashArray()
+    return _styles
   }
 })
