@@ -9740,6 +9740,9 @@
       "DEFENSE",
       "AREAS",
       "ENGAGEMENT AREA"
+    ],
+    "geometries": [
+      "polygon"
     ]
   },
   {
