@@ -13,20 +13,24 @@ export const projectedPoint = (v1, v2, p) => {
 
 export const line = points => {
   const sq = x => x * x
-  const d = Math.sqrt(
-    sq(points[0].x - points[1].x) +
-    sq(points[0].y - points[1].y)
-  )
+  const dx = points[0].x - points[1].x
+  const dy = points[0].y - points[1].y
+  const d = Math.sqrt(sq(dx) + sq(dy))
 
   const point = f => L.point(
     points[0].x + f * (points[1].x - points[0].x),
     points[0].y + f * (points[1].y - points[0].y)
   )
 
-  return {
-    d,
-    point
+  // EAST: 0°, SOUTH: 90°, WEST: 180°, NORTH: 270°
+  const angle = () => {
+    var theta = Math.atan2(dy, dx) // range (-PI, PI]
+    theta *= 180 / Math.PI // rads to degs, range (-180, 180]
+    if (theta < 0) theta = 360 + theta // range [0, 360)
+    return theta
   }
+
+  return { d, point, angle }
 }
 
 export const calcStruts = (center, envelope) => fs => fs.map(f => {
