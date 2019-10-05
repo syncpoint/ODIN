@@ -1,6 +1,5 @@
 import L from 'leaflet'
 import * as math from 'mathjs'
-import { K } from '../../../../shared/combinators'
 
 // Line: [v1, v2]
 export const projectedPoint = (v1, v2, p) => {
@@ -43,27 +42,3 @@ export const calcStruts = (center, envelope) => fs => fs.map(f => {
   ])
 })
 
-export const svgFactory = options => {
-
-  const p = attrs => K(L.SVG.path(attrs))(p => {
-    if (options.interactive) L.DomUtil.addClass(p, 'leaflet-interactive')
-  })
-
-  const outline = () => p({
-    stroke: 'black',
-    'stroke-width': 7,
-    fill: 'none',
-    'stroke-linejoin': 'round',
-    'stroke-dasharray': options.dashed ? '16 8' : null
-  })
-
-  const path = () => p({
-    stroke: 'RGB(0, 168, 220)',
-    'stroke-width': 3,
-    fill: 'none',
-    'stroke-linejoin': 'round',
-    'stroke-dasharray': options.dashed ? '0 2 12 10' : null
-  })
-
-  return { p, outline, path }
-}

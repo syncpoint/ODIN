@@ -1,5 +1,6 @@
 import L from 'leaflet'
 import selection from '../../components/App.selection'
+import { stylesX } from './styles'
 
 // TODO: defaultOptions (styles)
 
@@ -37,7 +38,7 @@ L.TACGRP.Feature = L.Layer.extend({
    */
   onAdd (/* map */) {
     this._renderer._initGroup(this)
-    this._shape = this._shape(this._group)
+    this._shape = this._shape(this._group, this._shapeOptions)
     this._project()
     this._renderer._addGroup(this)
     this._shape.attached && this._shape.attached()
@@ -70,6 +71,9 @@ L.TACGRP.Feature = L.Layer.extend({
       }
     })
   },
+
+  _labels () { return [] },
+  _stylesX (feature) { return stylesX(feature) },
 
 
   /**

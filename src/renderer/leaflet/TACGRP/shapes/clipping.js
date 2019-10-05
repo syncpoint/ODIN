@@ -1,12 +1,17 @@
 import L from 'leaflet'
 import uuid from 'uuid-random'
 
-export const backdropClipping = cache => {
-  const withLabel = (element, tx, ty) => {
+/**
+ *
+ */
+const backdropClipping = cache => {
+  const withLabel = element => {
     const box = L.SVG.inflate(element.getBBox(), 4)
     const backdrop = L.SVG.rect({
-      x: box.x + tx,
-      y: box.y + ty,
+      x: box.x,
+      y: box.y,
+      // Apply same label transformation:
+      transform: element.getAttribute('transform'),
       width: box.width,
       height: box.height,
       stroke: 'black',
@@ -14,39 +19,44 @@ export const backdropClipping = cache => {
       fill: 'white'
     })
 
-    // backdrops.push(backdrop)
     cache.element('labels').insertBefore(backdrop, element)
   }
 
   return {
     reset: () => {},
     withLabel,
-    withPath: () => {},
+    withPath: element => element,
     finish: () => {}
   }
 }
 
-export const maskClipping = cache => {
+
+/**
+ *
+ */
+const maskClipping = cache => {
   const id = uuid()
   const clip = L.SVG.mask({ id: `mask-${id}` })
   const whiteMask = L.SVG.rect({ fill: 'white' })
   const blackMasks = []
 
-  cache.element('defs').appendChild(clip)
-  clip.appendChild(whiteMask)
-
   const reset = () => {
+    cache.element('defs').appendChild(clip)
+    clip.appendChild(whiteMask)
+
     // Clear-out masks and labels:
     blackMasks.forEach(mask => clip.removeChild(mask))
     blackMasks.length = 0
   }
 
-  const withLabel = (element, tx, ty) => {
+  const withLabel = element => {
     // Determin label region which should be clipped from path (black mask):
     const maskBox = L.SVG.inflate(element.getBBox(), 8)
     const blackMask = L.SVG.rect({
-      x: maskBox.x + tx,
-      y: maskBox.y + ty,
+      x: maskBox.x,
+      y: maskBox.y,
+      // Apply same label transformation:
+      transform: element.getAttribute('transform'),
       width: maskBox.width,
       height: maskBox.height
     })
@@ -57,6 +67,7 @@ export const maskClipping = cache => {
 
   const withPath = element => {
     element.setAttribute('mask', `url(#mask-${id})`)
+    return element
   }
 
   const finish = () => {
@@ -73,11 +84,27 @@ export const maskClipping = cache => {
   }
 }
 
-export const noClipping = cache => {
+
+/**
+ *
+ */
+const noClipping = cache => {
   return {
     reset: () => {},
     withLabel: () => {},
-    withPath: () => {},
+    withPath: element => element,
     finish: () => {}
+  }
+}
+
+
+/**
+ *
+ */
+export const clippingStrategy = clipping => cache => {
+  switch (clipping) {
+    case 'mask': return maskClipping(cache)
+    case 'backdrop': return backdropClipping(cache)
+    default: return noClipping(cache)
   }
 }

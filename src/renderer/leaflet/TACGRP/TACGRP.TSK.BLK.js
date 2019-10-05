@@ -11,22 +11,18 @@ L.Feature['G*T*B-----'] = L.TACGRP.Corridor.extend({
     const options = { ...this._shapeOptions }
     options.styles.clipping = 'mask'
 
-    const builder = svgBuilder(options, {
-      points: ({ center, envelope }) => [center, envelope[0]],
-      style: name => options.stylesX[name],
-      placements: ({ center }) => ({ center: line(center).point(0.5) }),
-      labels: ({ center }) => [{
-        placement: 'center',
-        alignment: 'center', // default
-        lines: ['B'],
-        'font-size': 18,
-        angle: line(center).angle()
-      }]
+    return svgBuilder(group, options, {
+      points: ({ center, envelope }) => [center, envelope[0]]
     })
+  },
 
-    return {
-      attached: () => builder.attach(group),
-      updateFrame: builder.updateFrame
-    }
+  _labels () {
+    return [{
+      placement: ({ center }) => line(center).point(0.5),
+      alignment: 'center', // default
+      lines: ['B'],
+      'font-size': 18,
+      angle: ({ center }) => line(center).angle()
+    }]
   }
 })

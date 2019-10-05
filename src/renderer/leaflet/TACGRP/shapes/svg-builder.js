@@ -1,128 +1,10 @@
 import L from 'leaflet'
-import uuid from 'uuid-random'
 import { K } from '../../../../shared/combinators'
+import { clippingStrategy } from './clipping'
+import { noop, elementCache } from './cache'
 
 const DEFAULT_FONT_SIZE = 14
 
-export const noop = () => {}
-
-export const elementCache = () => {
-  const cache = {}
-
-  const put = (id, element) => dispose => {
-    cache[id] && cache[id].dispose(cache[id].element)
-    cache[id] = { element, dispose }
-    return element
-  }
-
-  const lazy = (id, fn) => {
-    cache[id] && cache[id].dispose(cache[id].element)
-    cache[id] = { fn, dispose: noop }
-  }
-
-  const element = id => {
-    if (!cache[id]) throw Error(`element not cached: ${id}`)
-    if (cache[id].fn) cache[id] = { element: cache[id].fn(), dispose: noop }
-    return cache[id].element
-  }
-
-  const dispose = () => Object.values(cache).forEach(({ element, dispose }) => dispose(element))
-
-  return { put, lazy, element, dispose }
-}
-
-const backdropClipping = cache => {
-  const withLabel = element => {
-    const box = L.SVG.inflate(element.getBBox(), 4)
-    const backdrop = L.SVG.rect({
-      x: box.x,
-      y: box.y,
-      // Apply same label transformation:
-      transform: element.getAttribute('transform'),
-      width: box.width,
-      height: box.height,
-      stroke: 'black',
-      'stroke-width': 1,
-      fill: 'white'
-    })
-
-    cache.element('labels').insertBefore(backdrop, element)
-  }
-
-  return {
-    reset: () => {},
-    withLabel,
-    withPath: element => element,
-    finish: () => {}
-  }
-}
-
-const maskClipping = cache => {
-  const id = uuid()
-  const clip = L.SVG.mask({ id: `mask-${id}` })
-  const whiteMask = L.SVG.rect({ fill: 'white' })
-  const blackMasks = []
-
-  const reset = () => {
-    cache.element('defs').appendChild(clip)
-    clip.appendChild(whiteMask)
-
-    // Clear-out masks and labels:
-    blackMasks.forEach(mask => clip.removeChild(mask))
-    blackMasks.length = 0
-  }
-
-  const withLabel = element => {
-    // Determin label region which should be clipped from path (black mask):
-    const maskBox = L.SVG.inflate(element.getBBox(), 8)
-    const blackMask = L.SVG.rect({
-      x: maskBox.x,
-      y: maskBox.y,
-      // Apply same label transformation:
-      transform: element.getAttribute('transform'),
-      width: maskBox.width,
-      height: maskBox.height
-    })
-
-    blackMasks.push(blackMask)
-    clip.appendChild(blackMask)
-  }
-
-  const withPath = element => {
-    element.setAttribute('mask', `url(#mask-${id})`)
-    return element
-  }
-
-  const finish = () => {
-    // Update white mask (necessary for proper clipping):
-    const box = cache.element('group').getBBox()
-    L.SVG.setAttributes(whiteMask)({ ...L.SVG.inflate(box, 20) })
-  }
-
-  return {
-    reset,
-    withLabel,
-    withPath,
-    finish
-  }
-}
-
-const noClipping = cache => {
-  return {
-    reset: () => {},
-    withLabel: () => {},
-    withPath: element => element,
-    finish: () => {}
-  }
-}
-
-const clippingStrategy = clipping => cache => {
-  switch (clipping) {
-    case 'mask': return maskClipping(cache)
-    case 'backdrop': return backdropClipping(cache)
-    default: return noClipping(cache)
-  }
-}
 
 const textAnchor = alignment => {
   switch (alignment) {
@@ -147,32 +29,18 @@ const tspan = descriptor => L.SVG.tspan({
 
 
 /**
- * OPTIONS:
- * - interactive (static for now)
- * - clipping (static)
- * - line smoothing (dynamic)
- * -
- * - paths are identitfied by name
- * - functions provide style for path
- * - clipping strategy is static and connot be changed
- * -
  *
- * COMMANDS:
- * - updateStyles()
- * - updateLabels()
- * - updateGeometry()
  */
-export const svgBuilder = (options, callbacks) => {
-  const state = { attached: false }
+export const svgBuilder = (group, options, callbacks) => {
+  const state = { attached: false, options }
   const cache = elementCache()
   const removeChild = parent => element => cache.element(parent).removeChild(element)
+  const style = name => state.options.stylesX[name]
+  const labels = () => state.options.labels
 
-  // TODO: add 'defs' to 'group'
-  cache.lazy('defs', () => {
-    const element = L.SVG.create('defs')
-    cache.element('group').appendChild(element)
-    return element
-  })
+  cache.put('group', group)(noop)
+  cache.put('defs', L.SVG.create('defs'))(noop)
+  cache.element('group').appendChild(cache.element('defs'))
 
   const clipping = clippingStrategy(options.styles.clipping)(cache)
   const paths = (callbacks.paths && callbacks.paths()) || [ 'outline', 'path' ]
@@ -182,19 +50,26 @@ export const svgBuilder = (options, callbacks) => {
     : element => element
 
   const renderLabels = () => {
-
-    // No placements, no labels:
-    const placements = callbacks.placements && callbacks.placements(state.frame)
-    if (!placements) return
-
+    clipping.reset()
     cache.put('labels', L.SVG.create('g'))(removeChild('group'))
     cache.element('group').appendChild(cache.element('labels'))
-    clipping.reset()
 
-    callbacks.labels(state.frame).forEach(descriptor => {
+    const placements = callbacks.placements && callbacks.placements(state.frame)
+    ;(labels() || []).forEach(descriptor => {
+
+      // placement: either literal or function:
+      const center = typeof descriptor.placement === 'function'
+        ? descriptor.placement(state.frame)
+        : placements[descriptor.placement]
+
+      // angle: either literal or function:
+      const angle = typeof descriptor.angle === 'function'
+        ? descriptor.angle(state.frame)
+        : descriptor.angle || 0
+
       const fontSize = descriptor['font-size'] || DEFAULT_FONT_SIZE
       const label = text(descriptor)
-      label.setAttribute('y', placements[descriptor.placement].y)
+      label.setAttribute('y', center.y)
 
       const textElement = index => index
         ? label.appendChild(tspan(descriptor))
@@ -205,11 +80,13 @@ export const svgBuilder = (options, callbacks) => {
         const match = line.match(/<bold>(.*)<\/bold>/)
         const bold = (match && !!match[1]) || false
         element.textContent = bold ? match[1] : line
-        element.setAttribute('x', placements[descriptor.placement].x)
+        element.setAttribute('x', center.x)
         element.setAttribute('font-weight', bold ? 'bold' : 'normal')
       })
 
       cache.element('labels').appendChild(label)
+
+      // Move label into place (with optional rotation).
 
       const box = label.getBBox()
       const ty = fontSize / 2 - box.height / 2
@@ -219,8 +96,7 @@ export const svgBuilder = (options, callbacks) => {
           ? box.width / 2
           : 0
 
-      const angle = descriptor.angle || 0
-      const center = placements[descriptor.placement]
+      // NOTE: Same transformation is used for backdrop/clip mask.
       const flip = (angle > 90 && angle < 270) ? -1 : 1
       const transform = `
         translate(${center.x + tx} ${center.y + ty})
@@ -236,11 +112,13 @@ export const svgBuilder = (options, callbacks) => {
     clipping.finish()
   }
 
-  const attach = group => {
-    cache.put('group', group)(noop)
 
+  /**
+   *
+   */
+  const attached = () => {
     paths
-      .map(name => cache.put(name, L.SVG.path(callbacks.style(name)))(noop))
+      .map(name => cache.put(name, L.SVG.path(style(name)))(noop))
       .map(path => interactive(path))
       .map(path => clipping.withPath(path))
       .forEach(path => group.appendChild(path))
@@ -262,17 +140,19 @@ export const svgBuilder = (options, callbacks) => {
     renderLabels()
   }
 
-  const refresh = () => {
-    paths.forEach(name => {
-      L.SVG.setAttributes(cache.element(name))(callbacks.style(name))
-    })
 
+  /**
+   *
+   */
+  const updateOptions = options => {
+    state.options = options
+    paths.forEach(name => L.SVG.setAttributes(cache.element(name))(style(name)))
     renderLabels()
   }
 
   return {
-    attach,
+    attached,
     updateFrame,
-    refresh
+    updateOptions
   }
 }

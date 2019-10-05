@@ -88,7 +88,7 @@ export const stylesX = feature => {
     clipping: 'none',
     outline: {
       'stroke': outlineStroke(),
-      'stroke-width': 7,
+      'stroke-width': 5,
       'stroke-linejoin': 'round',
       'stroke-dasharray': strokeDashArray(),
       'fill': 'none'
