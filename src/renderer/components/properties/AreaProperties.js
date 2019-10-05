@@ -35,7 +35,7 @@ class AreaProperties extends FeatureProperties {
       this.state.hostility +
       this.props.feature.properties.sidc.substring(2, 3) +
       this.state.status +
-      this.props.feature.properties.sidc.substring(4, 12) +
+      this.props.feature.properties.sidc.substring(4, 11) +
       this.state.echelon +
       this.props.feature.properties.sidc.substring(12)
 
@@ -199,17 +199,11 @@ const styles = theme => ({
   name: { gridColumn: '1 / span 2' },
   uniqueDesignation: { gridColumn: '1 / span 2' },
   additionalInformation: { gridColumn: '1 / span 2' },
-  hostility: {},
-  echelon: {},
-
   statusLabel: { gridColumn: '1 / span 2' },
   present: { gridColumn: 1 },
-  operationalStatus: { gridColumn: 2, height: 'min-content' },
   anticipated: { gridColumn: 1 },
   effectiveFrom: { gridColumn: '1 / span 2' },
-  effectiveTo: { gridColumn: '1 / span 2' },
-  altitudeFrom: {},
-  altitudeTo: {}
+  effectiveTo: { gridColumn: '1 / span 2' }
 })
 
 AreaProperties.propTypes = {
