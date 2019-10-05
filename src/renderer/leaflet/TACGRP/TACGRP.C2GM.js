@@ -85,6 +85,13 @@ L.Feature['G*G*DABP--'] = (feature, options) => {
   return new L.TACGRP.PolygonArea(feature, options)
 }
 
+// ENGAGEMENT AREA (DEFENSE)
+L.Feature['G*G*DAE---'] = (feature, options) => {
+  options.styles = feature => ({ ...styles(feature), clipping: 'mask' })
+  options.labels = feature => centerLabel([ feature.properties.t ? `EA ${feature.properties.t}` : 'EA' ])
+  return new L.TACGRP.PolygonArea(feature, options)
+}
+
 // TACGRP.FSUPP.ARS.ARATGT.SMK - SMOKE
 L.Feature['G*F*ATS---'] = (feature, options) => {
   options.styles = styles

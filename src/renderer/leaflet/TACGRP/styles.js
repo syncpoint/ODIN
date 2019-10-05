@@ -74,18 +74,23 @@ export const stylesX = feature => {
     }
   }
 
+  const outlineStroke = () => {
+    const identity = sidc ? sidc[1] : 'U' // identity or U - UNKNOWN
+    return identity === '*' ? 'white' : 'black'
+  }
+
   const strokeDashArray = () => {
     const status = sidc ? sidc[3] : 'P' // status or P - PRESENT
-    if (status === 'A') return '15 5'
+    if (status === 'A') return '20 15'
   }
 
   return {
     clipping: 'none',
     outline: {
-      'stroke': 'black',
+      'stroke': outlineStroke(),
       'stroke-width': 7,
       'stroke-linejoin': 'round',
-      // TODO: derive 'stroke-dasharray'
+      'stroke-dasharray': strokeDashArray(),
       'fill': 'none'
     },
     path: {
@@ -94,6 +99,9 @@ export const stylesX = feature => {
       'stroke-linejoin': 'round',
       'stroke-dasharray': strokeDashArray(),
       'fill': 'none'
+    },
+    font: {
+
     }
   }
 }
