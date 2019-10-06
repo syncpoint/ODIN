@@ -29,13 +29,22 @@ export const line = points => {
     return theta
   }
 
-  return { d, point, angle }
+  return { d, point, angle, points }
 }
 
 export const calcStruts = (center, envelope) => fs => fs.map(f => {
   const dw = line(envelope[0]).d
   const s0 = line(center.slice(0, 2))
   const C = s0.point(f * (dw / s0.d))
+  return line([
+    projectedPoint(envelope[0][0], envelope[1][0], C),
+    projectedPoint(envelope[0][1], envelope[1][1], C)
+  ])
+})
+
+export const calcStruts2 = (center, envelope) => fs => fs.map(f => {
+  const s0 = line(center.slice(0, 2))
+  const C = s0.point(f)
   return line([
     projectedPoint(envelope[0][0], envelope[1][0], C),
     projectedPoint(envelope[0][1], envelope[1][1], C)
