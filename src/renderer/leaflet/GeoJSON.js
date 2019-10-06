@@ -16,6 +16,7 @@ export const toGeometry = (type, latlngs) => {
   const polygon = () => latlngs.map(ring => ring.map(({ lat, lng }) => [lng, lat]))
 
   switch (type) {
+    // TODO: Point
     case 'Polygon': return { type: 'Polygon', coordinates: polygon() }
     case 'LineString': return { type: 'LineString', coordinates: lineString() }
   }

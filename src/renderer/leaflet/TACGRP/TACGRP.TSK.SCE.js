@@ -1,27 +1,32 @@
 import L from 'leaflet'
-import '../Arc'
-import { wrap360 } from '../geodesy'
+import * as R from 'ramda'
+import { arc } from './shapes/geo-helper'
+import { shape } from './shapes/shape'
+import './Arc'
 
-L.Feature['G*T*S-----'] = L.Arc.extend({
+L.Feature['G*T*S-----'] = L.TACGRP.Arc.extend({
 
-  sizeAngle: 338,
+  _shape (group, options) {
+    options.styles.clipping = 'mask'
 
-  path ({ C, orientAngle, radius }) {
-    const arc = []
-    for (let angle = orientAngle; angle <= orientAngle + this.sizeAngle; angle += (180 / 16)) {
-      arc.push(C.destinationPoint(radius, angle))
-    }
-
-    const anchor = arc[arc.length - 1]
-    const bearing = arc[arc.length - 2].finalBearingTo(arc[arc.length - 1])
-    const arrow = L.Shape.arrow(anchor, radius / 6, bearing)
-
-    return [arc, arrow]
+    return shape(group, options, {
+      points: ({ C, radius, radians }) => {
+        const steps = 32
+        const delta = radians.delta / steps
+        const xs = R.range(0, steps).map(x => radians.start + x * delta)
+        const inner = arc(C, radius)(xs)
+        return [inner]
+      }
+    })
   },
 
-  label ({ C, orientAngle, radius }) {
-    const latlng = C.destinationPoint(radius, orientAngle + this.sizeAngle / 2)
-    const bearing = wrap360(orientAngle + this.sizeAngle / 2)
-    return { text: 'S', latlng, bearing }
+  _labels () {
+    const alpha = radians => radians.start + radians.delta / 2
+    return [{
+      placement: ({ C, radius, radians }) => arc(C, radius)([alpha(radians)])[0],
+      lines: ['S'],
+      'font-size': 18,
+      angle: ({ radians }) => alpha(radians) / Math.PI * 180
+    }]
   }
 })

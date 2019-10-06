@@ -1,36 +1,44 @@
 import L from 'leaflet'
-import '../Arc'
-import { wrap360 } from '../geodesy'
+import * as R from 'ramda'
+import { arc } from './shapes/geo-helper'
+import { shape } from './shapes/shape'
+import './Arc'
 
-L.Feature['G*T*E-----'] = L.Arc.extend({
+L.Feature['G*T*E-----'] = L.TACGRP.Arc.extend({
 
-  sizeAngle: 330,
+  _shape (group, options) {
+    options.styles.clipping = 'mask'
 
-  path ({ C, orientAngle, radius }) {
-    const outerArc = []
-    const innerArc = []
-    for (let angle = orientAngle; angle <= orientAngle + this.sizeAngle; angle += (180 / 32)) {
-      outerArc.push(C.destinationPoint(radius, angle))
-      innerArc.push(C.destinationPoint(radius * 0.8, angle))
-    }
+    return shape(group, options, {
+      points: ({ C, radius, radians }) => {
+        const steps = 64
+        const delta = radians.delta / steps
+        const xs = R.range(0, steps).map(x => radians.start + x * delta)
 
-    const teeth = []
-    for (let i = 1; i < outerArc.length - 1; i++) {
-      if (i % 5 === 0) {
-        teeth.push([outerArc[i - 1], innerArc[i], outerArc[i + 1]])
+        const outer = arc(C, radius)(xs)
+        const inner = arc(C, radius * 0.8)(xs)
+
+        const teeth = []
+        for (let i = 1; i < outer.length - 1; i++) {
+          if (i % 5 === 0) {
+            teeth.push([outer[i - 1], inner[i], outer[i + 1]])
+          }
+        }
+
+        return [
+          outer, ...teeth
+        ]
       }
-    }
-
-    const anchor = outerArc[outerArc.length - 1]
-    const bearing = outerArc[outerArc.length - 2].finalBearingTo(outerArc[outerArc.length - 1])
-    const arrow = L.Shape.arrow(anchor, radius / 6, bearing)
-
-    return [outerArc, ...teeth, arrow]
+    })
   },
 
-  label ({ C, orientAngle, radius }) {
-    const latlng = C.destinationPoint(radius, orientAngle + this.sizeAngle / 2)
-    const bearing = wrap360(orientAngle + this.sizeAngle / 2)
-    return { text: 'I', latlng, bearing }
+  _labels () {
+    const alpha = radians => radians.start + radians.delta / 2
+    return [{
+      placement: ({ C, radius, radians }) => arc(C, radius)([alpha(radians)])[0],
+      lines: ['I'],
+      'font-size': 18,
+      angle: ({ C, radians }) => alpha(radians) / Math.PI * 180
+    }]
   }
 })

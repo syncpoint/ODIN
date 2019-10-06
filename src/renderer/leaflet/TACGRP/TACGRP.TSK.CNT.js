@@ -1,30 +1,26 @@
 import L from 'leaflet'
 import * as R from 'ramda'
-import { line, calcStruts2 } from './shapes/geo-helper'
+import { line, calcStruts2, arc } from './shapes/geo-helper'
 import { shape } from './shapes/shape'
 import './Corridor'
 
-const arc = (c, r) => xs => xs.map(x => L.point(r * Math.cos(x) + c.x, r * Math.sin(x) + c.y))
-
 L.Feature['G*T*J-----'] = L.TACGRP.Corridor.extend({
 
-  _shape (group) {
-    const options = { ...this._shapeOptions }
+  _shape (group, options) {
     options.styles.clipping = 'mask'
 
-    /* eslint-disable */
     return shape(group, options, {
       points: ({ center, envelope }) => {
         const angle = (line(center).angle() - 90) / 180 * Math.PI
         const s = calcStruts2(center, envelope)([0.1])
         const xs = R.range(0, 33).map(x => angle + (x / 32) * Math.PI)
-        const oa = arc(center[0], s[0].d / 2)(xs)
-        const ia = arc(center[0], s[0].d / 3)(xs)
-        const spikes = R.zip(oa, ia).filter((_, i) => i % 4 === 0)
+        const outer = arc(center[0], s[0].d / 2)(xs)
+        const inner = arc(center[0], s[0].d / 3)(xs)
+        const spikes = R.zip(outer, inner).filter((_, i) => i % 4 === 0)
 
         return [
           center,
-          oa, ...spikes,
+          outer, ...spikes,
           [s[0].point(0.4), center[0], s[0].point(0.6)]
         ]
       }

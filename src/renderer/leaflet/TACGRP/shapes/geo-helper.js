@@ -51,3 +51,4 @@ export const calcStruts2 = (center, envelope) => fs => fs.map(f => {
   ])
 })
 
+export const arc = (c, r) => xs => xs.map(x => L.point(r * Math.cos(x) + c.x, r * Math.sin(x) + c.y))
