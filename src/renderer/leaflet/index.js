@@ -1,4 +1,5 @@
 import 'leaflet/dist/leaflet.css'
+import './handles.css'
 import './leaflet-icons'
 import './SVG'
 import './geodesy'
