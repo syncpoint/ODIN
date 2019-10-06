@@ -35,7 +35,9 @@ export const shape = (group, options, callbacks) => {
   const cache = elementCache()
   const removeChild = parent => element => cache.element(parent).removeChild(element)
   const style = name => state.options.styles[name]
-  const labels = () => state.options.labels
+  const labels = () => callbacks.labels
+    ? callbacks.labels(state.frame)
+    : state.options.labels
 
   cache.put('group', group)(noop)
   cache.put('defs', L.SVG.create('defs'))(noop)
@@ -48,6 +50,76 @@ export const shape = (group, options, callbacks) => {
     ? element => K(element)(element => L.DomUtil.addClass(element, 'leaflet-interactive'))
     : element => element
 
+
+  /**
+   *
+   */
+  const textLabel = (center, angle, descriptor) => {
+    const fontSize = descriptor['font-size'] || DEFAULT_FONT_SIZE
+    const label = text(descriptor)
+    label.setAttribute('y', center.y)
+
+    const textElement = index => index
+      ? label.appendChild(tspan(descriptor))
+      : label
+
+    descriptor.lines.filter(line => line).forEach((line, index) => {
+      const element = textElement(index)
+      const match = line.match(/<bold>(.*)<\/bold>/)
+      const bold = (match && !!match[1]) || false
+      element.textContent = bold ? match[1] : line
+      element.setAttribute('x', center.x)
+      element.setAttribute('font-weight', bold ? 'bold' : 'normal')
+    })
+
+    cache.element('labels').appendChild(label)
+
+    // Move label into place (with optional rotation).
+
+    const box = label.getBBox()
+    const ty = fontSize / 2 - box.height / 2
+    const tx = descriptor.alignment === 'left'
+      ? -box.width / 2
+      : descriptor.alignment === 'right'
+        ? box.width / 2
+        : 0
+
+    // NOTE: Same transformation is used for backdrop/clip mask.
+    const flip = (angle > 90 && angle < 270) ? -1 : 1
+    const transform = `
+      translate(${center.x + tx} ${center.y + ty})
+      rotate(${angle})
+      scale(${flip} ${flip})
+      translate(${-center.x} ${-center.y})
+    `
+
+    label.setAttribute('transform', transform)
+    return label
+  }
+
+
+  /**
+   *
+   */
+  const glyphLabel = (center, angle, descriptor) => {
+    const label = descriptor.glyph
+    cache.element('labels').appendChild(label)
+
+    const transform = `
+      translate(${center.x} ${center.y})
+      rotate(${angle})
+      scale(${descriptor.scale})
+      translate(${descriptor.offset.x} ${descriptor.offset.y})
+    `
+
+    label.setAttribute('transform', transform)
+    return label
+  }
+
+
+  /**
+   *
+   */
   const renderLabels = () => {
     clipping.reset()
     cache.put('labels', L.SVG.create('g'))(removeChild('group'))
@@ -56,55 +128,23 @@ export const shape = (group, options, callbacks) => {
     const placements = callbacks.placements && callbacks.placements(state.frame)
     ;(labels() || []).forEach(descriptor => {
 
-      // placement: either literal or function:
-      const center = typeof descriptor.placement === 'function'
-        ? descriptor.placement(state.frame)
-        : placements[descriptor.placement]
-
       // angle: either literal or function:
       const angle = typeof descriptor.angle === 'function'
         ? descriptor.angle(state.frame)
         : descriptor.angle || 0
 
-      const fontSize = descriptor['font-size'] || DEFAULT_FONT_SIZE
-      const label = text(descriptor)
-      label.setAttribute('y', center.y)
+      // placement: either literal, function or L.Point:
+      const center = {
+        'function': p => p(state.frame),
+        'string': p => placements[p],
+        'object': p => p
+      }[typeof descriptor.placement](descriptor.placement)
 
-      const textElement = index => index
-        ? label.appendChild(tspan(descriptor))
-        : label
+      // Label is either text lines or a glyph:
+      const label = descriptor.lines
+        ? textLabel(center, angle, descriptor)
+        : glyphLabel(center, angle, descriptor)
 
-      descriptor.lines.filter(line => line).forEach((line, index) => {
-        const element = textElement(index)
-        const match = line.match(/<bold>(.*)<\/bold>/)
-        const bold = (match && !!match[1]) || false
-        element.textContent = bold ? match[1] : line
-        element.setAttribute('x', center.x)
-        element.setAttribute('font-weight', bold ? 'bold' : 'normal')
-      })
-
-      cache.element('labels').appendChild(label)
-
-      // Move label into place (with optional rotation).
-
-      const box = label.getBBox()
-      const ty = fontSize / 2 - box.height / 2
-      const tx = descriptor.alignment === 'left'
-        ? -box.width / 2
-        : descriptor.alignment === 'right'
-          ? box.width / 2
-          : 0
-
-      // NOTE: Same transformation is used for backdrop/clip mask.
-      const flip = (angle > 90 && angle < 270) ? -1 : 1
-      const transform = `
-        translate(${center.x + tx} ${center.y + ty})
-        rotate(${angle})
-        scale(${flip} ${flip})
-        translate(${-center.x} ${-center.y})
-      `
-
-      label.setAttribute('transform', transform)
       clipping.withLabel(label)
     })
 

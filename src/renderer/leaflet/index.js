@@ -3,13 +3,8 @@ import './leaflet-icons'
 import './SVG'
 import './geodesy'
 import './Feature'
-import './Polyline'
-
 import './Symbol'
 import './TACGRP/'
-
-import './Shape'
-import './Corridor2Point'
 
 import { K } from '../../shared/combinators'
 

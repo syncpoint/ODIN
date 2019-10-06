@@ -59,7 +59,7 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
       interactive: this.options.interactive,
       lineSmoothing: this.options.lineSmoothing,
       styles: this._styles(feature),
-      labels: []
+      labels: this._labels(feature)
     }
   },
 

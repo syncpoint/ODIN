@@ -72,7 +72,7 @@ L.TACGRP.Feature = L.Layer.extend({
     })
   },
 
-  _labels () { return [] },
+  _labels (feature) { return [] },
   _styles (feature) { return styles(feature) },
 
 
