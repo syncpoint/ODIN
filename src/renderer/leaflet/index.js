@@ -3,7 +3,6 @@ import './handles.css'
 import './leaflet-icons'
 import './SVG'
 import './geodesy'
-import './Feature'
 import './Symbol'
 import './TACGRP/'
 

@@ -1,8 +1,8 @@
 import L from 'leaflet'
 import * as R from 'ramda'
-import { line } from './shapes/geo-helper'
-import { shape } from './shapes/shape'
-import './Polyline'
+import { line } from '../features/geo-helper'
+import { shape } from '../features/shape'
+import '../features/Polyline'
 
 L.Feature['G*T*F-----'] = L.TACGRP.Polyline.extend({
 

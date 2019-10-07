@@ -1,6 +1,6 @@
 import L from 'leaflet'
 import { toLatLngs, toGeometry } from '../GeoJSON'
-import { line } from './shapes/geo-helper'
+import { line } from './geo-helper'
 import { FULCRUM } from './handle-types'
 import { wrap360 } from '../geodesy'
 
@@ -62,7 +62,7 @@ L.TACGRP.Arc = L.TACGRP.Feature.extend({
    *
    */
   _editor () {
-    const layer = new L.Feature.Handles().addTo(this._map)
+    const layer = new L.Handles().addTo(this._map)
     let current = this._arc
 
     const handlers = {

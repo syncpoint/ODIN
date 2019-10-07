@@ -1,8 +1,8 @@
 import L from 'leaflet'
 import * as R from 'ramda'
-import { shape } from './shapes/shape'
-import './OrbitArea'
-import { line, arc } from './shapes/geo-helper'
+import { shape } from '../features/shape'
+import '../features/OrbitArea'
+import { line, arc } from '../features/geo-helper'
 
 L.Feature['G*T*L-----'] = L.TACGRP.OrbitArea.extend({
   labelText: 'D',

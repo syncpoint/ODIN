@@ -5,6 +5,7 @@ import { K } from '../../shared/combinators'
 import selection from '../components/App.selection'
 import evented from '../evented'
 import { findSpecificItem } from '../stores/feature-store'
+import './features/Feature'
 
 const MODIFIER_MAP = {
   c: 'quantity',

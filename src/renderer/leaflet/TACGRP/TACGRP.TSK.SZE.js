@@ -1,11 +1,11 @@
 import L from 'leaflet'
 import * as R from 'ramda'
 import { toLatLngs, toGeometry } from '../GeoJSON'
-import { line, arc } from './shapes/geo-helper'
-import { FULCRUM } from './handle-types'
-import './Feature'
+import { line, arc } from '../features/geo-helper'
+import { FULCRUM } from '../features/handle-types'
+import '../features/Feature'
 import { wrap360 } from '../geodesy'
-import { shape } from './shapes/shape'
+import { shape } from '../features/shape'
 
 
 /**
@@ -63,7 +63,7 @@ L.Feature['G*T*Z-----'] = L.TACGRP.Feature.extend({
    *
    */
   _editor () {
-    const layer = new L.Feature.Handles().addTo(this._map)
+    const layer = new L.Handles().addTo(this._map)
     let current = this._seize
 
     const handlers = {
