@@ -1,6 +1,6 @@
 import L from 'leaflet'
-import '../Fan'
+import './FanArea'
 
-L.Feature['G*T*UC----'] = L.Fan.extend({
+L.Feature['G*T*UC----'] = L.TACGRP.FanArea.extend({
   labelText: 'C'
 })
