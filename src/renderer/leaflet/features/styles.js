@@ -58,14 +58,14 @@ export const styles = feature => {
     clipping: 'none',
     outline: {
       'stroke': _outlineStroke(),
-      'stroke-width': 5,
+      'stroke-width': 3,
       'stroke-linejoin': 'round',
       'stroke-dasharray': _strokeDashArray(),
       'fill': 'none'
     },
     path: {
       'stroke': _stroke(),
-      'stroke-width': 3,
+      'stroke-width': 2,
       'stroke-linejoin': 'round',
       'stroke-dasharray': _strokeDashArray(),
       'fill': 'none'

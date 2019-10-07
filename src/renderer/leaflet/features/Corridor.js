@@ -59,7 +59,7 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
   },
 
   _editor () {
-    const layer = new L.Feature.Handles().addTo(this._map)
+    const layer = new L.Handles().addTo(this._map)
     let current = this._corridor
 
     const callback = (channel, corridor) => {

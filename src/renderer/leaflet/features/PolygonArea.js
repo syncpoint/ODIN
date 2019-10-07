@@ -2,10 +2,10 @@ import L from 'leaflet'
 import * as math from 'mathjs'
 import * as R from 'ramda'
 import { toLatLngs, toGeometry } from '../GeoJSON'
-import './Feature'
-import { shape } from './shapes/shape'
+import '../features/Feature'
+import { shape } from './shape'
 import { circularDoublyLinkedList } from '../../../shared/lists'
-import { polyEditor } from './poly-editor'
+import { polyEditor } from '../features/poly-editor'
 
 
 /**
@@ -79,7 +79,7 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
    *
    */
   _editor () {
-    const layer = new L.Feature.Handles().addTo(this._map)
+    const layer = new L.Handles().addTo(this._map)
     let current = this._rings[0]
 
     const callback = (channel, rings) => {

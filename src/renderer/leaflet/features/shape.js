@@ -1,5 +1,5 @@
 import L from 'leaflet'
-import { K } from '../../../../shared/combinators'
+import { K } from '../../../shared/combinators'
 import { clippingStrategy } from './clipping'
 import { noop, elementCache } from './cache'
 

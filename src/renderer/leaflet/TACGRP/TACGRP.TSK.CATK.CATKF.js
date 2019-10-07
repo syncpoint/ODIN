@@ -1,8 +1,8 @@
 import L from 'leaflet'
-import './Corridor'
-import { calcStruts, line } from './shapes/geo-helper'
-import { shape } from './shapes/shape'
-import { styles, strokeDashArray } from './styles'
+import '../features/Corridor'
+import { calcStruts, line } from '../features/geo-helper'
+import { shape } from '../features/shape'
+import { styles, strokeDashArray } from '../features/styles'
 
 
 /**

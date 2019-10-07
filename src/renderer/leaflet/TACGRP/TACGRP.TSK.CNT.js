@@ -1,8 +1,8 @@
 import L from 'leaflet'
 import * as R from 'ramda'
-import { line, calcStruts2, arc } from './shapes/geo-helper'
-import { shape } from './shapes/shape'
-import './Corridor'
+import { line, calcStruts2, arc } from '../features/geo-helper'
+import { shape } from '../features/shape'
+import '../features/Corridor'
 
 L.Feature['G*T*J-----'] = L.TACGRP.Corridor.extend({
 

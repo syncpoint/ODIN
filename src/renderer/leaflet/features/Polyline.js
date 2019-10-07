@@ -1,7 +1,7 @@
 import L from 'leaflet'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import './Feature'
-import { shape } from './shapes/shape'
+import { shape } from './shape'
 import { doublyLinkedList } from '../../../shared/lists'
 import { polyEditor } from './poly-editor'
 
@@ -22,7 +22,7 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
    *
    */
   _editor () {
-    const layer = new L.Feature.Handles().addTo(this._map)
+    const layer = new L.Handles().addTo(this._map)
     let current = this._latlngs
 
     const callback = (channel, latlngs) => {

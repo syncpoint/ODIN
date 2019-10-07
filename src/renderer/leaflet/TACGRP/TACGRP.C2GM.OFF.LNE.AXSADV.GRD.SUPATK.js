@@ -1,7 +1,7 @@
 import L from 'leaflet'
-import './Corridor'
-import { calcStruts, line } from './shapes/geo-helper'
-import { shape } from './shapes/shape'
+import '../features/Corridor'
+import { calcStruts, line } from '../features/geo-helper'
+import { shape } from '../features/shape'
 
 /**
  *

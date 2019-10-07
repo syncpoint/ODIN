@@ -1,7 +1,7 @@
 import L from 'leaflet'
 import './Feature'
 import { toLatLngs, toGeometry } from '../GeoJSON'
-import { line } from './shapes/geo-helper'
+import { line } from './geo-helper'
 import { FULCRUM } from './handle-types'
 
 /* eslint-disable object-property-newline */
@@ -59,7 +59,7 @@ L.TACGRP.OrbitArea = L.TACGRP.Feature.extend({
   },
 
   _editor () {
-    const layer = new L.Feature.Handles().addTo(this._map)
+    const layer = new L.Handles().addTo(this._map)
     let current = this._orbit
 
     const handlers = {

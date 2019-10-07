@@ -1,8 +1,12 @@
 import L from 'leaflet'
 import selection from '../../components/App.selection'
 import { styles } from './styles'
+import './Handles'
 
 // TODO: defaultOptions (styles)
+
+// Namespace for all symbol and graphics features.
+L.Feature = {}
 
 /**
  * Abstract feature.

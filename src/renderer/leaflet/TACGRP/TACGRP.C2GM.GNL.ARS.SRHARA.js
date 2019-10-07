@@ -1,5 +1,5 @@
 import L from 'leaflet'
-import './FanArea'
+import '../features/FanArea'
 
 L.Feature['G*G*GAS---'] = L.TACGRP.FanArea.extend({
   _labels () {

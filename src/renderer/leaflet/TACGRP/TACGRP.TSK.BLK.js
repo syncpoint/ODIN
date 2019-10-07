@@ -1,7 +1,7 @@
 import L from 'leaflet'
-import { line } from './shapes/geo-helper'
-import { shape } from './shapes/shape'
-import './Corridor'
+import { line } from '../features/geo-helper'
+import { shape } from '../features/shape'
+import '../features/Corridor'
 
 
 L.Feature['G*T*B-----'] = L.TACGRP.Corridor.extend({

@@ -1,8 +1,8 @@
 import L from 'leaflet'
 import * as R from 'ramda'
-import { arc } from './shapes/geo-helper'
-import { shape } from './shapes/shape'
-import './Arc'
+import { arc } from '../features/geo-helper'
+import { shape } from '../features/shape'
+import '../features/Arc'
 
 L.Feature['G*T*Q-----'] = L.TACGRP.Arc.extend({
 

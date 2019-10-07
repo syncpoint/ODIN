@@ -1,7 +1,7 @@
 import L from 'leaflet'
 import { FULCRUM } from './handle-types'
 
-L.Feature.Handles = L.LayerGroup.extend({
+L.Handles = L.LayerGroup.extend({
 
   /**
    *
