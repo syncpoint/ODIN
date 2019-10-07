@@ -1,52 +1,35 @@
 import L from 'leaflet'
-import * as R from 'ramda'
-import '../geodesy'
-import '../CorridorNPoint'
+import '../features/Corridor'
+import { calcStruts, line } from '../features/geo-helper'
+import { shape } from '../features/shape'
+import { styles, strokeDashArray } from '../features/styles'
 
-const last = xs => xs[xs.length - 1]
-const intersection = lines => lines[0].intersection(lines[1])
+/**
+ *
+ */
+L.Feature['G*T*K-----'] = L.TACGRP.Corridor.extend({
+  _shape (group, options) {
+    const points = ({ center, envelope }) => {
+      const s = calcStruts(center, envelope)([ 0.38, 0.19 ])
 
-L.Feature['G*T*K-----'] = L.CorridorNPoint.extend({
-  style: {
-    'stroke-dasharray': '10 5'
+      // Interpolate points for corridor width (half of arrow width)
+      const struts = envelope.map(line).slice(1)
+      return [[
+        ...struts.map(s => s.point(0.75)).reverse(),
+        s[0].point(0.75), s[0].point(1),
+        center[0],
+        s[0].point(0), s[0].point(0.25),
+        ...struts.map(s => s.point(0.25))
+      ]]
+    }
+
+    return shape(group, options, { points })
   },
 
-  path (geometry) {
-    const { latlngs, width } = geometry
-    const points = [...latlngs]
-    const lastPoint = last(points)
-    const bearing = points[points.length - 2].finalBearingTo(last(points))
-    points[points.length - 1] = last(points).destinationPoint(-width * 1, bearing)
-
-    const centerLine = R.aperture(2, points).map(L.LatLng.line)
-    const halfWidth = width / 2
-    const frame = centerLine.map(line => ([
-      line.translate(halfWidth, 90),
-      line.translate(halfWidth, -90)
-    ]))
-
-    // single connected line string:
-    const lineString = [
-      // first part of frame up to arrow:
-      frame[0][0].points[0],
-      ...R.aperture(2, frame.map(border => border[0])).map(intersection),
-      last(frame)[0].points[1],
-
-      // arrow:
-      last(frame)[0].points[1].destinationPoint(
-        0.7 * width, last(centerLine).finalBearing + 90
-      ),
-      lastPoint,
-      last(frame)[1].points[1].destinationPoint(
-        0.7 * width, last(centerLine).finalBearing - 90
-      ),
-
-      // second part of frame from arrow to beginning:
-      last(frame)[1].points[1],
-      ...R.aperture(2, frame.map(border => border[1])).map(intersection).reverse(),
-      frame[0][1].points[0]
-    ]
-
-    return [lineString]
+  _styles (feature) {
+    const _styles = styles(feature)
+    _styles.outline['stroke-dasharray'] = strokeDashArray()
+    _styles.path['stroke-dasharray'] = strokeDashArray()
+    return _styles
   }
 })

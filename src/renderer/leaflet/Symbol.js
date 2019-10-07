@@ -5,6 +5,7 @@ import { K } from '../../shared/combinators'
 import selection from '../components/App.selection'
 import evented from '../evented'
 import { findSpecificItem } from '../stores/feature-store'
+import './features/Feature'
 
 const MODIFIER_MAP = {
   c: 'quantity',
@@ -34,6 +35,8 @@ const symbolOptions = feature => ({
   standard: {
     size: 34,
     colorMode: 'Light', // default: light
+    outlineWidth: 3,
+    outlineColor: 'white',
     ...modifiers(feature)
   },
   highlighted: {

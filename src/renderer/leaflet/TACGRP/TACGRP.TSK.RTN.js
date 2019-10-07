@@ -1,34 +1,42 @@
 import L from 'leaflet'
-import '../Arc'
-import { wrap360 } from '../geodesy'
+import * as R from 'ramda'
+import { arc } from '../features/geo-helper'
+import { shape } from '../features/shape'
+import '../features/Arc'
 
-L.Feature['G*T*Q-----'] = L.Arc.extend({
+L.Feature['G*T*Q-----'] = L.TACGRP.Arc.extend({
 
-  sizeAngle: 338,
+  _shape (group, options) {
+    options.styles.clipping = 'mask'
 
-  path ({ C, orientAngle, radius }) {
-    const innerArc = []
-    const outerArc = []
-    for (let angle = orientAngle; angle <= orientAngle + this.sizeAngle; angle += (180 / 16)) {
-      innerArc.push(C.destinationPoint(radius, angle))
-      outerArc.push(C.destinationPoint(radius * 1.2, angle))
-    }
+    return shape(group, options, {
+      points: ({ C, radius, radians }) => {
+        const steps = 32
+        const delta = radians.delta / steps
+        const xs = R.range(0, steps + 1).map(x => radians.start + x * delta)
 
-    const spikes = []
-    for (let i = 1; i < innerArc.length - 1; i++) {
-      spikes.push([innerArc[i], outerArc[i]])
-    }
+        const outer = arc(C, radius * 1.2)(xs)
+        const inner = arc(C, radius)(xs)
 
-    const anchor = innerArc[innerArc.length - 1]
-    const bearing = innerArc[innerArc.length - 2].finalBearingTo(innerArc[innerArc.length - 1])
-    const arrow = L.Shape.arrow(anchor, radius / 6, bearing)
+        const spikes = []
+        for (let i = 1; i < inner.length - 1; i++) {
+          spikes.push([inner[i], outer[i]])
+        }
 
-    return [innerArc, ...spikes, arrow]
+        return [
+          inner, ...spikes
+        ]
+      }
+    })
   },
 
-  label ({ C, O, orientAngle, radius }) {
-    const latlng = C.destinationPoint(radius, orientAngle + this.sizeAngle / 2)
-    const bearing = wrap360(orientAngle + this.sizeAngle / 2)
-    return { text: 'R', latlng, bearing }
+  _labels () {
+    const alpha = radians => radians.start + radians.delta / 2
+    return [{
+      placement: ({ C, radius, radians }) => arc(C, radius)([alpha(radians)])[0],
+      lines: ['R'],
+      'font-size': 18,
+      angle: ({ radians }) => alpha(radians) / Math.PI * 180
+    }]
   }
 })

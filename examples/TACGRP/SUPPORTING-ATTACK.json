@@ -1,0 +1,29 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            14.358901981031526,
+            46.68509025864486
+          ],
+          [
+            14.392461780225862,
+            46.67931966005672
+          ],
+          [
+            14.410314563428983,
+            46.6668931158153
+          ]
+        ],
+        "width": 750
+      },
+      "properties": {
+        "sidc": "GFG-OLAGS-****X"
+      }
+    }
+  ]
+}

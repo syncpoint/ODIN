@@ -41,20 +41,6 @@ L.SVG.inflate = (rect, delta) => ({
   height: rect.height + 2 * delta
 })
 
-L.SVG.transformLabel = (center, angle) => {
-  const flip = (angle > 180) ? -1 : 1
-  return `
-    translate(${center.x} ${center.y})
-    rotate(${angle - 90})
-    scale(${flip} ${flip})`
-}
-
-L.SVG.transformBackdrop = (center, bbox, angle) => `
-  translate(${center.x} ${center.y})
-  rotate(${angle - 90})
-  scale(1.4 1.2)
-  translate(${bbox.x} ${bbox.y})`
-
 const pointsToPath = L.SVG.pointsToPath
 L.SVG.pointsToPath = (rings, closed, smooth) => {
   if (!smooth) return pointsToPath(rings, closed)

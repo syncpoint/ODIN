@@ -1,28 +1,37 @@
 import L from 'leaflet'
-import * as R from 'ramda'
-import '../Corridor2Point'
+import { line, calcStruts2 } from '../features/geo-helper'
+import { shape } from '../features/shape'
+import '../features/Corridor'
 
-L.Feature['G*T*X-----'] = L.Corridor2Point.extend({
-  path ({ A, B, width, initialBearing, finalBearing }) {
-    const distance = A.distanceTo(B)
+L.Feature['G*T*X-----'] = L.TACGRP.Corridor.extend({
 
-    const path = [
-      [ A.destinationPoint(width / 2.7, initialBearing + 90), B.destinationPoint(width / 2.7, finalBearing + 90) ],
-      [ A, B ],
-      [ A.destinationPoint(width / 2.7, initialBearing - 90), B.destinationPoint(width / 2.7, finalBearing - 90) ],
-      [ B.destinationPoint(width / 2, finalBearing - 90), B.destinationPoint(width / 2, finalBearing + 90) ]
-    ]
+  _shape (group) {
+    const options = { ...this._shapeOptions }
+    options.styles.clipping = 'mask'
 
-    // Arrows.
-    const length = Math.min(distance / 10, width / 5)
-    R.range(0, 3).forEach(i => path.push(L.Shape.arrow(path[i][1], length, finalBearing)))
-
-    return path
+    return shape(group, options, {
+      points: ({ center, envelope }) => {
+        const s = calcStruts2(center, envelope)([0.1, 0, 1])
+        return [
+          s[1].points,
+          [s[1].point(0.1), s[2].point(0.1)],
+          [s[0].point(0), s[1].point(0.1), s[0].point(0.2)],
+          center,
+          [s[0].point(0.4), center[0], s[0].point(0.6)],
+          [s[1].point(0.9), s[2].point(0.9)],
+          [s[0].point(1), s[1].point(0.9), s[0].point(0.8)]
+        ]
+      }
+    })
   },
 
-  label ({ A, B, initialBearing }) {
-    const distance = A.distanceTo(B)
-    const latlng = A.destinationPoint(distance / 2, initialBearing)
-    return { text: 'C', latlng, bearing: initialBearing }
+  _labels () {
+    return [{
+      placement: ({ center }) => line(center).point(0.5),
+      alignment: 'center', // default
+      lines: ['C'],
+      'font-size': 18,
+      angle: ({ center }) => line(center).angle()
+    }]
   }
 })

@@ -1,46 +1,48 @@
 import L from 'leaflet'
-import '../Corridor2Point'
+import * as R from 'ramda'
+import { line, calcStruts2, arc } from '../features/geo-helper'
+import { shape } from '../features/shape'
+import '../features/Corridor'
 
-// TACTICAL GRAPHICS / TASKS / CONTAIN
-L.Feature['G*T*J-----'] = L.Corridor2Point.extend({
+L.Feature['G*T*J-----'] = L.TACGRP.Corridor.extend({
 
-  path ({ A, B, width, finalBearing }) {
-    const halfWidth = width / 2
-    const tenthWidth = width / 10
+  _shape (group, options) {
+    options.styles.clipping = 'mask'
 
-    const outerArc = []
-    const innerArc = []
-    const orientAngle = finalBearing - 90
-    const sizeAngle = 180
+    return shape(group, options, {
+      points: ({ center, envelope }) => {
+        const angle = (line(center).angle() - 90) / 180 * Math.PI
+        const s = calcStruts2(center, envelope)([0.1])
+        const xs = R.range(0, 33).map(x => angle + (x / 32) * Math.PI)
+        const outer = arc(center[0], s[0].d / 2)(xs)
+        const inner = arc(center[0], s[0].d / 3)(xs)
+        const spikes = R.zip(outer, inner).filter((_, i) => i % 4 === 0)
 
-    for (let angle = orientAngle; angle <= orientAngle + sizeAngle; angle += (180 / 32)) {
-      outerArc.push(B.destinationPoint(halfWidth, angle))
-      innerArc.push(B.destinationPoint(halfWidth * 0.8, angle))
-    }
-
-    const spikes = []
-    for (let i = 0; i < innerArc.length; i++) {
-      if (i % 4 === 0) spikes.push([outerArc[i], innerArc[i]])
-    }
-
-    const arrow = L.Shape.arrow(B, tenthWidth, finalBearing)
-    return [outerArc].concat(spikes, [[A, B], arrow])
+        return [
+          center,
+          outer, ...spikes,
+          [s[0].point(0.4), center[0], s[0].point(0.6)]
+        ]
+      }
+    })
   },
 
-  labelCount: 2,
-
-  label ({ A, A1, A2, B, initialBearing, finalBearing }) {
-    return [
-      {
-        text: 'ENY',
-        latlng: A.destinationPoint(A.distanceTo(B) / 2, initialBearing),
-        bearing: A.initialBearingTo(B)
+  _labels () {
+    return [{
+      placement: ({ center }) => line(center).point(0.5),
+      lines: ['ENY'],
+      'font-size': 18,
+      angle: ({ center }) => line(center).angle()
+    },
+    {
+      placement: ({ center, envelope }) => {
+        const centerLine = line(center)
+        const width = line(envelope[0]).d
+        return centerLine.point(-0.5 * width / centerLine.d)
       },
-      {
-        text: 'C',
-        latlng: B.destinationPoint(A1.distanceTo(A2) / 2, finalBearing),
-        bearing: finalBearing
-      }
-    ]
+      lines: ['C'],
+      'font-size': 18,
+      angle: ({ center }) => line(center).angle()
+    }]
   }
 })

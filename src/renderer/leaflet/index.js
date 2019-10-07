@@ -1,16 +1,10 @@
 import 'leaflet/dist/leaflet.css'
+import './handles.css'
 import './leaflet-icons'
 import './SVG'
 import './geodesy'
-import './Feature'
-import './Polyline'
-
 import './Symbol'
-import './TACGRP/TACGRP.C2GM'
-import './TACGRP/TACGRP.TSK'
-
-import './Shape'
-import './Corridor2Point'
+import './TACGRP/'
 
 import { K } from '../../shared/combinators'
 

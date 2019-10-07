@@ -14,6 +14,7 @@ import coord from '../../coord-format'
 import settings from '../../model/settings'
 import './Map.layers'
 import './Map.tools'
+import './svg-renderer'
 
 const updateScaleDisplay = map => () => {
   const level = zoomLevels[map.getZoom()]
