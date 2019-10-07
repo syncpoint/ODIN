@@ -1,35 +1,52 @@
 import L from 'leaflet'
-import '../Line2Point'
+import * as R from 'ramda'
+import { line } from './shapes/geo-helper'
+import { shape } from './shapes/shape'
+import './Polyline'
 
-L.Feature['G*T*F-----'] = L.Line2Point.extend({
-  path ({ A, B, initialBearing, finalBearing }) {
+L.Feature['G*T*F-----'] = L.TACGRP.Polyline.extend({
 
-    // Split line in 3 segments: 25%, 50% and 25%.
-    const length = A.distance(B)
-    const C = A.destinationPoint(length * 0.25, initialBearing)
-    const D = B.destinationPoint(length * -0.25, finalBearing)
+  _shape (group) {
+    const options = { ...this._shapeOptions }
+    options.styles.clipping = 'mask'
 
-    const width = length / 5
-    const path = [ A, C ]
-    for (let i = 0; i < 8; i++) {
-      const angle = i % 2 ? 90 : -90
-      const distance = (length / 2) / 8 * (i + 1) - (length / 32)
-      const point = C
-        .destinationPoint(distance, initialBearing)
-        .destinationPoint(width / 2, initialBearing + angle)
-      path.push(point)
-    }
+    return shape(group, options, {
+      points: ({ points }) => {
+        const centerLine = line(points)
+        const width = 0.1 * centerLine.d
+        const L1 = centerLine.translate(width)
+        const L2 = centerLine.translate(-width)
 
-    path.push(D, B)
+        const steps = 8
+        const zigzag = R.range(0, steps).reduce((acc, i) => {
+          const line = i % 2 === 0 ? L1 : L2
+          acc.push(L.point(line.point(0.28125 + 0.5 / steps * i)))
+          return acc
+        }, [])
 
-    const arrow = L.Shape.arrow(B, width / 2, finalBearing)
+        const arrow = (tip, line) => [
+          line.translate(width / 1.5).point(0.9),
+          tip,
+          line.translate(-width / 1.5).point(0.9)
+        ]
 
-    return [path, [...arrow]]
+        return [[
+          points[0],
+          centerLine.point(0.25),
+          ...zigzag,
+          centerLine.point(0.75),
+          points[1]
+        ], arrow(points[1], centerLine)]
+      }
+    })
   },
 
-  label ({ A, B, initialBearing }) {
-    const length = A.distanceTo(B)
-    const latlng = A.destinationPoint(length * 0.125, initialBearing)
-    return { text: 'F', latlng, bearing: initialBearing }
+  _labels () {
+    return [{
+      placement: ({ points }) => line(points).point(0.125),
+      lines: ['F'],
+      'font-size': 18,
+      angle: ({ points }) => line(points).angle()
+    }]
   }
 })
