@@ -4,7 +4,41 @@ import './Feature'
 import { corridorGeometry } from './corridor-geometry'
 import { doublyLinkedList } from '../../../shared/lists'
 import { polyEditor } from './poly-editor'
-import { widthEditor } from './width-editor'
+import { FULCRUM } from './handle-types'
+
+/**
+ *
+ */
+export const widthEditor = (corridor, layer, events) => {
+
+  let current = corridor
+
+  const width = handle => {
+    const distance = handle.getLatLng().distanceTo(current.latlngs[0])
+    return distance * 2
+  }
+
+  const update = (latlngs, width = current.width) => {
+    current = corridorGeometry(latlngs, width)
+    const tip = current.envelope()[0]
+    A1.setLatLng(tip[0])
+    A2.setLatLng(tip[1])
+    return current
+  }
+
+  const handleOptions = {
+    type: FULCRUM,
+    drag: ({ target }) => events('drag', update(current.latlngs, width(target))),
+    dragend: ({ target }) => events('dragend', update(current.latlngs, width(target)))
+  }
+
+  const tip = current.envelope()[0]
+  const A1 = layer.addHandle(tip[0], handleOptions)
+  const A2 = layer.addHandle(tip[1], handleOptions)
+
+  return update
+}
+
 
 /**
  * Abstract corridor.
@@ -34,7 +68,7 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
           this._corridor = corridor
           return this._project()
         }
-        case 'dragend': {
+        case 'drage nd': {
           // NOTE: We change direction again on save:
           const geometry = toGeometry('LineString', corridor.latlngs.slice().reverse())
           return this.options.update({ geometry, properties: { geometry_width: corridor.width } })
