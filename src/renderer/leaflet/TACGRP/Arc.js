@@ -4,30 +4,39 @@ import { line } from './shapes/geo-helper'
 import { FULCRUM } from './handle-types'
 import { wrap360 } from '../geodesy'
 
+
+/**
+ *
+ */
 export const arcGeometry = (latlng, orientation, size, radius) => {
-  const C = latlng
-  const O = latlng.destinationPoint(radius, orientation)
-  const S = latlng.destinationPoint(radius, orientation + size)
 
-  orientation = wrap360(orientation)
+  const create = current => {
+    const { latlng, orientation, size, radius } = current
+    const normalizedOrientation = wrap360(orientation)
 
-  // TODO: provide nice copy ctor
-
-  return {
-    C,
-    O,
-    S,
-    orientation,
-    size,
-    radius,
-    radians: {
-      start: (orientation - 90) / 180 * Math.PI,
-      end: (orientation - 90 + size) / 180 * Math.PI,
-      delta: size / 180 * Math.PI
+    return {
+      copy: properties => create({ ...current, ...properties }),
+      C: latlng,
+      O: latlng.destinationPoint(radius, normalizedOrientation),
+      S: latlng.destinationPoint(radius, normalizedOrientation + size),
+      orientation: normalizedOrientation,
+      size,
+      radius,
+      radians: {
+        start: (normalizedOrientation - 90) / 180 * Math.PI,
+        end: (normalizedOrientation - 90 + size) / 180 * Math.PI,
+        delta: size / 180 * Math.PI
+      }
     }
   }
+
+  return create(({ latlng, orientation, size, radius }))
 }
 
+
+/**
+ *
+ */
 L.TACGRP.Arc = L.TACGRP.Feature.extend({
 
   /**
@@ -59,21 +68,14 @@ L.TACGRP.Arc = L.TACGRP.Feature.extend({
     const handlers = {
       C: {
         latlng: arc => arc.C,
-        arc: latlng => arcGeometry(
-          latlng,
-          current.orientation,
-          current.size,
-          current.radius
-        )
+        arc: latlng => current.copy({ latlng })
       },
       O: {
         latlng: arc => arc.O,
-        arc: latlng => arcGeometry(
-          current.C,
-          current.C.finalBearingTo(latlng),
-          current.size,
-          current.C.distance(latlng)
-        )
+        arc: latlng => current.copy({
+          orientation: current.C.finalBearingTo(latlng),
+          radius: current.C.distance(latlng)
+        })
       },
       S: {
         latlng: arc => arc.S,

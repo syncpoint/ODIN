@@ -13,7 +13,7 @@ L.Feature['G*T*S-----'] = L.TACGRP.Arc.extend({
       points: ({ C, radius, radians }) => {
         const steps = 32
         const delta = radians.delta / steps
-        const xs = R.range(0, steps).map(x => radians.start + x * delta)
+        const xs = R.range(0, steps + 1).map(x => radians.start + x * delta)
         const inner = arc(C, radius)(xs)
         return [inner]
       }
