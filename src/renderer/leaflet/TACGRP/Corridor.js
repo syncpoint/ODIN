@@ -102,7 +102,6 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
   _setFeature (feature) {
     // Change direction internally:
     const latlngs = toLatLngs(feature.geometry).slice().reverse()
-
     const width = feature.properties.geometry_width
     this._corridor = corridorGeometry(latlngs, width)
 

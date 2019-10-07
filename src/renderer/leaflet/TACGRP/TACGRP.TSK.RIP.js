@@ -1,36 +1,46 @@
 import L from 'leaflet'
-import '../Orbit'
+import * as R from 'ramda'
+import { shape } from './shapes/shape'
+import './OrbitArea'
+import { line, arc } from './shapes/geo-helper'
 
-L.Feature['G*T*R-----'] = L.Orbit.extend({
+L.Feature['G*T*R-----'] = L.TACGRP.OrbitArea.extend({
 
-  path ({ A, A1, B, B1, width, offset, initialBearing, finalBearing }) {
-    const center = B.destinationPoint(width / 2, initialBearing + offset)
-    const orientAngle = initialBearing - 90
-    const arc = []
-    const sizeAngle = 180
+  _shape (group, options) {
+    options.styles.clipping = 'mask'
 
-    for (let angle = orientAngle; angle <= orientAngle + sizeAngle; angle += (180 / 32)) {
-      arc.push(center.destinationPoint(width / 2, angle))
-    }
+    return shape(group, options, {
+      points: ({ envelope, width }) => {
+        const { A, B, A1, B1 } = envelope
+        const centerLine = line([A, B])
+        const center = line([B, B1]).point(0.5)
+        const angle = centerLine.angle() / 180 * Math.PI + Math.PI / 2
 
-    const length = A.distance(B)
-    const arrows = [
-      L.Shape.arrow(B, length / 6, finalBearing),
-      L.Shape.arrow(A1, -length / 6, initialBearing)
-    ]
+        const steps = 32
+        const delta = Math.PI / steps
+        const xs = R.range(0, steps + 1).map(x => angle + x * delta)
 
-    return [[...arc], [A, B], [B1, A1], ...arrows]
+        const arrow = (tip, line) => [
+          line.translate(0.1 * width).point(0.85),
+          tip,
+          line.translate(-0.1 * width).point(0.85)
+        ]
+
+        return [
+          [A1, B1, ...arc(center, width / 2)(xs), B, A],
+          arrow(B, centerLine),
+          arrow(A1, line([B1, A1]))
+        ]
+      }
+    })
   },
 
-  labelCount: 1,
-
-  label ({ A, B, initialBearing, finalBearing }) {
-    const length = A.distance(B)
-
+  _labels () {
     return [{
-      text: 'RIP',
-      latlng: A.destinationPoint(length / 2, initialBearing),
-      bearing: finalBearing
+      placement: ({ envelope }) => line([envelope.A, envelope.B]).point(0.5),
+      lines: ['RIP'],
+      'font-size': 18,
+      angle: ({ envelope }) => line([envelope.A, envelope.B]).angle()
     }]
   }
 })
