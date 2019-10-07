@@ -5,6 +5,10 @@ import './Feature'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import { line } from './shapes/geo-helper'
 
+
+/**
+ *
+ */
 const orbitGeometry = (latlngs, width, alignment) => {
   const [A, B] = latlngs
 
@@ -21,6 +25,7 @@ const orbitGeometry = (latlngs, width, alignment) => {
     alignment
   }
 }
+
 
 /**
  *
@@ -47,6 +52,7 @@ L.TACGRP.OrbitArea = L.TACGRP.Feature.extend({
 
   _editor () {
     const layer = new L.Feature.Handles().addTo(this._map)
+
     return {
       dispose: () => this._map.removeLayer(layer)
     }
@@ -57,9 +63,7 @@ L.TACGRP.OrbitArea = L.TACGRP.Feature.extend({
    *
    */
   _setFeature (feature) {
-    console.log(feature.geometry)
     const latlngs = toLatLngs(feature.geometry)
-    console.log('latlngs', latlngs)
     const width = feature.properties.geometry_width
     const alignment = feature.properties.geometry_alignment
     this._orbit = orbitGeometry(latlngs, width, alignment)
