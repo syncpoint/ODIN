@@ -79,12 +79,10 @@ L.TACGRP.Arc = L.TACGRP.Feature.extend({
       },
       S: {
         latlng: arc => arc.S,
-        arc: latlng => arcGeometry(
-          current.C,
-          current.C.finalBearingTo(latlng) - current.size,
-          current.size,
-          current.C.distance(latlng)
-        )
+        arc: latlng => current.copy({
+          orientation: current.C.finalBearingTo(latlng) - current.size,
+          radius: current.C.distance(latlng)
+        })
       }
     }
 
