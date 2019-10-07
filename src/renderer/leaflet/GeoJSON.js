@@ -17,7 +17,7 @@ export const toGeometry = (type, latlngs) => {
 
   switch (type) {
     case 'Point': return { type: 'Point', coordinates: [latlngs.lng, latlngs.lat] }
-    // TODO: MultiPoint
+    case 'MultiPoint': return { type: 'MultiPoint', coordinates: lineString() }
     case 'Polygon': return { type: 'Polygon', coordinates: polygon() }
     case 'LineString': return { type: 'LineString', coordinates: lineString() }
   }

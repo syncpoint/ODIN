@@ -86,7 +86,7 @@ L.TACGRP.Arc = L.TACGRP.Feature.extend({
       }
     }
 
-    const xyz = (channel, arc) => {
+    const update = (channel, arc) => {
       this._arc = current = arc
       this._project()
       Object.keys(handlers).forEach(id => handles[id].setLatLng(arc[id]))
@@ -105,8 +105,8 @@ L.TACGRP.Arc = L.TACGRP.Feature.extend({
     const handles = Object.entries(handlers).reduce((acc, [id, handler]) => {
       const handleOptions = {
         type: FULCRUM,
-        drag: ({ target }) => xyz('drag', handler.arc(target.getLatLng())),
-        dragend: ({ target }) => xyz('dragend', handler.arc(target.getLatLng()))
+        drag: ({ target }) => update('drag', handler.arc(target.getLatLng())),
+        dragend: ({ target }) => update('dragend', handler.arc(target.getLatLng()))
       }
 
       const latlng = handler.latlng(current)

@@ -11,8 +11,7 @@ L.Feature['G*T*L-----'] = L.TACGRP.OrbitArea.extend({
     options.styles.clipping = 'mask'
 
     return shape(group, options, {
-      points: ({ envelope, width }) => {
-        const { A, B, A1 } = envelope
+      points: ({ A, B, A1, width }) => {
         const centerLine = line([A, B])
         const center = line([A, A1]).point(0.5)
         const angle = centerLine.angle() / 180 * Math.PI - Math.PI / 2
@@ -38,10 +37,10 @@ L.Feature['G*T*L-----'] = L.TACGRP.OrbitArea.extend({
 
   _labels () {
     return [{
-      placement: ({ envelope }) => line([envelope.A, envelope.B]).point(0.5),
+      placement: ({ A, B }) => line([A, B]).point(0.5),
       lines: [this.labelText],
       'font-size': 18,
-      angle: ({ envelope }) => line([envelope.A, envelope.B]).angle()
+      angle: ({ A, B }) => line([A, B]).angle()
     }]
   }
 })
