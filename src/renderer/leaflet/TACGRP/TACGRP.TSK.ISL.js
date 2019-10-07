@@ -38,7 +38,7 @@ L.Feature['G*T*E-----'] = L.TACGRP.Arc.extend({
       placement: ({ C, radius, radians }) => arc(C, radius)([alpha(radians)])[0],
       lines: ['I'],
       'font-size': 18,
-      angle: ({ C, radians }) => alpha(radians) / Math.PI * 180
+      angle: ({ radians }) => alpha(radians) / Math.PI * 180
     }]
   }
 })
