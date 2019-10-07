@@ -29,7 +29,13 @@ export const line = points => {
     return theta
   }
 
-  return { d, point, angle, points }
+  const translate = f => {
+    const np = L.point(-(points[1].y - points[0].y), points[1].x - points[0].x)
+    const n = np.multiplyBy(f / Math.sqrt(sq(np.x) + sq(np.y)))
+    return line(points.map(p => p.add(n)))
+  }
+
+  return { d, point, angle, points, translate }
 }
 
 export const calcStruts = (center, envelope) => fs => fs.map(f => {

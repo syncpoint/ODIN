@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import L from 'leaflet'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import { line } from './shapes/geo-helper'
@@ -97,7 +95,7 @@ L.TACGRP.Arc = L.TACGRP.Feature.extend({
         const geometry = toGeometry('Point', arc.C)
         const properties = {
           geometry_max_range: arc.radius,
-          geometry_orient_angle: arc.orientation,
+          geometry_orient_angle: arc.orientation
         }
 
         return this.options.update({ geometry, properties })
