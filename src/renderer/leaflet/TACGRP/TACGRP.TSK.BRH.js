@@ -1,32 +1,33 @@
 import L from 'leaflet'
-import '../Corridor2Point'
+import { line, calcStruts } from '../features/geo-helper'
+import { shape } from '../features/shape'
+import '../features/Corridor'
 
-L.Feature['G*T*H-----'] = L.Corridor2Point.extend({
-  path ({ A, B, width, initialBearing, finalBearing }) {
-    const halfWidth = width / 2
-    const tenthWidth = width / 10
+L.Feature['G*T*H-----'] = L.TACGRP.Corridor.extend({
 
-    const path = [[
-      B.destinationPoint(halfWidth, finalBearing + 90),
-      A.destinationPoint(halfWidth, initialBearing + 90),
-      A.destinationPoint(halfWidth, initialBearing - 90),
-      B.destinationPoint(halfWidth, finalBearing - 90)
-    ]]
+  _shape (group) {
+    const options = { ...this._shapeOptions }
+    options.styles.clipping = 'mask'
 
-    path.push([
-      path[0][3].destinationPoint(tenthWidth, finalBearing - 110),
-      path[0][3].destinationPoint(tenthWidth, finalBearing + 70)
-    ])
-
-    path.push([
-      path[0][0].destinationPoint(tenthWidth, finalBearing - 70),
-      path[0][0].destinationPoint(tenthWidth, finalBearing + 110)
-    ])
-
-    return path
+    return shape(group, options, {
+      points: ({ center, envelope }) => {
+        const s = calcStruts(center, envelope)([-0.1, 0.1])
+        return [
+          [envelope[0][0], envelope[1][0], envelope[1][1], envelope[0][1]],
+          [s[0].point(0.9), s[1].point(1.1)],
+          [s[0].point(0.1), s[1].point(-0.1)]
+        ]
+      }
+    })
   },
 
-  label ({ A, initialBearing }) {
-    return { text: 'B', latlng: A, bearing: initialBearing }
+  _labels () {
+    return [{
+      placement: ({ envelope }) => line(envelope[1]).point(0.5),
+      alignment: 'center', // default
+      lines: ['B'],
+      'font-size': 18,
+      angle: ({ envelope }) => line(envelope[1]).angle() + 90
+    }]
   }
 })

@@ -1570,7 +1570,6 @@
       "ENEMY PRISONER OF WAR (EPW) HOLDING AREA"
     ],
     "geometries": [
-      "point",
       "polygon"
     ]
   },
@@ -4803,7 +4802,6 @@
       "REFUGEE HOLDING AREA"
     ],
     "geometries": [
-      "point",
       "polygon"
     ]
   },
@@ -7814,7 +7812,7 @@
       "SUPPORTING ATTACK"
     ],
     "geometries": [
-      "corridor-2pt"
+      "corridor"
     ]
   },
   {
@@ -9345,7 +9343,6 @@
       "SHORT-RANGE AIR DEFENSE ENGAGEMENT ZONE (SHORADEZ)"
     ],
     "geometries": [
-      "polyarc",
       "polygon"
     ]
   },
@@ -9743,6 +9740,9 @@
       "DEFENSE",
       "AREAS",
       "ENGAGEMENT AREA"
+    ],
+    "geometries": [
+      "polygon"
     ]
   },
   {
@@ -10461,7 +10461,7 @@
       "MAIN ATTACK"
     ],
     "geometries": [
-      "corridor-2pt"
+      "corridor"
     ]
   },
   {

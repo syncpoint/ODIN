@@ -1,13 +1,27 @@
 import L from 'leaflet'
-import '../Corridor2Point'
+import { line } from '../features/geo-helper'
+import { shape } from '../features/shape'
+import '../features/Corridor'
 
-L.Feature['G*T*B-----'] = L.Corridor2Point.extend({
-  path ({ A, B, B1, B2 }) {
-    return [[A, B], [B1, B2]]
+
+L.Feature['G*T*B-----'] = L.TACGRP.Corridor.extend({
+
+  _shape (group) {
+    const options = { ...this._shapeOptions }
+    options.styles.clipping = 'mask'
+
+    return shape(group, options, {
+      points: ({ center, envelope }) => [center, envelope[0]]
+    })
   },
-  label ({ A, B, initialBearing }) {
-    const distance = A.distanceTo(B)
-    const latlng = A.destinationPoint(distance / 2, initialBearing)
-    return { text: 'B', latlng, bearing: initialBearing }
+
+  _labels () {
+    return [{
+      placement: ({ center }) => line(center).point(0.5),
+      alignment: 'center', // default
+      lines: ['B'],
+      'font-size': 18,
+      angle: ({ center }) => line(center).angle()
+    }]
   }
 })
