@@ -46,7 +46,7 @@ L.TACGRP.Feature = L.Layer.extend({
     this._project()
     this._renderer._addGroup(this)
     this._shape.attached && this._shape.attached()
-    this.on('click', this._edit, this)
+    this.on('click', () => this._edit())
   },
 
 
@@ -54,24 +54,34 @@ L.TACGRP.Feature = L.Layer.extend({
    *
    */
   onRemove (/* map */) {
-    this.off('click', this._edit, this)
+    this.off('click')
     this._renderer._removeGroup(this)
     this._map.tools.dispose() // dispose editor/selection tool
   },
 
 
   /**
-   *
+   * TODO: Reverse dependency: Selection should trigger edit (if editable).
    */
-  _edit () {
-    if (selection.isSelected(this.urn)) return
-    selection.select(this.urn)
+  _edit (reset) {
 
-    const editor = this._geometryEditor()
+    if (!reset) {
+      // suspend click not to re-enter edit:
+      this.off('click')
+      selection.select(this.urn)
+    }
+
+    if (this._editor) this._editor.dispose()
+    this._editor = this._geometryEditor()
+
+    if (reset) return
+
+    // On reset: Leave editor tool intact, only create new editor.
     this._map.tools.edit({
       dispose: () => {
-        editor.dispose()
-        selection.isSelected(this.urn) && selection.deselect()
+        // resume click:
+        this.on('click', () => this._edit())
+        this._editor.dispose()
       }
     })
   },
@@ -103,5 +113,6 @@ L.TACGRP.Feature = L.Layer.extend({
     this._setFeature(feature)
     this._project()
     this._shape.updateOptions && this._shape.updateOptions(this._shapeOptions)
+    this._edit(true)
   }
 })

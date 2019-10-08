@@ -32,7 +32,8 @@ const geometryType = (descriptor, sidc) => {
 const geometry = (geometryType, latlngs, properties) => {
   if (geometryType === 'point') return { type: 'Point', coordinates: [latlngs.lng, latlngs.lat] }
   const lineString = () => latlngs.map(({ lat, lng }) => [lng, lat])
-  const polygon = () => [[...lineString(), lineString()[0]]]
+  const polygon = () => [lineString()]
+
   switch (geometryType) {
     case 'polygon': return { type: 'Polygon', coordinates: polygon() }
     case 'line': return { type: 'LineString', coordinates: lineString() }
