@@ -45,22 +45,22 @@ L.TACGRP.OrbitArea = L.TACGRP.Feature.extend({
   _project () {
     const layerPoint = this._map.latLngToLayerPoint.bind(this._map)
 
-    const A = layerPoint(this._orbit.A)
-    const B = layerPoint(this._orbit.B)
-    const A1 = layerPoint(this._orbit.A1)
-    const B1 = layerPoint(this._orbit.B1)
+    const A = layerPoint(this._geometry.A)
+    const B = layerPoint(this._geometry.B)
+    const A1 = layerPoint(this._geometry.A1)
+    const B1 = layerPoint(this._geometry.B1)
 
 
     this._shape.updateFrame({
       A, B, A1, B1,
       width: line([A, A1]).d,
-      alignment: this._orbit.alignment
+      alignment: this._geometry.alignment
     })
   },
 
-  _editor () {
+  _geometryEditor () {
     const layer = new L.Handles().addTo(this._map)
-    let current = this._orbit
+    let current = this._geometry
 
     const handlers = {
       A: {
@@ -82,7 +82,7 @@ L.TACGRP.OrbitArea = L.TACGRP.Feature.extend({
     }
 
     const update = (channel, orbit) => {
-      this._orbit = current = orbit
+      this._geometry = current = orbit
       this._project()
       Object.keys(handlers).forEach(id => handles[id].setLatLng(orbit[id]))
 
@@ -122,7 +122,7 @@ L.TACGRP.OrbitArea = L.TACGRP.Feature.extend({
     const latlngs = toLatLngs(feature.geometry)
     const width = feature.properties.geometry_width
     const alignment = feature.properties.geometry_alignment
-    this._orbit = orbitGeometry(latlngs, width, alignment)
+    this._geometry = orbitGeometry(latlngs, width, alignment)
 
     this._shapeOptions = {
       interactive: this.options.interactive,
