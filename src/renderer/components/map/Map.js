@@ -13,7 +13,7 @@ import ipcHandlers from '../ipc/ipc'
 import coord from '../../coord-format'
 import settings from '../../model/settings'
 import './Map.layers'
-import './Map.tools'
+import './map-tools'
 import './svg-renderer'
 
 const updateScaleDisplay = map => () => {

@@ -80,24 +80,15 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
    */
   _geometryEditor () {
     const layer = new L.Handles().addTo(this._map)
-    let current = this._geometry[0]
 
-    const callback = (channel, rings) => {
-      switch (channel) {
-        case 'drag': {
-          this._geometry = rings
-          return this._project()
-        }
-        case 'dragend': {
-          const geometry = toGeometry('Polygon', rings)
-          return this.options.update({ geometry })
-        }
+    const editor = polyEditor(this._geometry[0], layer, circularDoublyLinkedList(), (channel, latlngs) => {
+      this._geometry = [latlngs]
+      this._project()
+
+      if (channel === 'dragend') {
+        const geometry = toGeometry('Polygon', this._geometry)
+        this.options.update({ geometry })
       }
-    }
-
-    const editor = polyEditor(current, layer, circularDoublyLinkedList(), (channel, latlngs) => {
-      current = latlngs
-      callback(channel, [current])
     })
 
     return {

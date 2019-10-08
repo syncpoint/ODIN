@@ -25,22 +25,20 @@ export const polyEditor = (latlngs, layer, list, callback) => {
     .map(([mainHandle, middleHandle]) => [middleHandle, midpoint(mainHandle, middleHandle.succ)])
     .forEach(([middleHandle, latlng]) => middleHandle.setLatLng(latlng))
 
-  const removeFulcrum = (handle, originalEvent) => {
-    const pointCount = fulcrums().length
-    if (pointCount === 2) return
-    if (!originalEvent.ctrlKey) return
-
-    ;[handle.succ ? handle.succ : handle.pred, handle].forEach(handle => {
-      layer.removeHandle(handle)
-      list.remove(handle)
-    })
-  }
-
   handleOptions[FULCRUM] = {
     type: FULCRUM,
     mousedown: ({ target: handle, originalEvent }) => {
-      removeFulcrum(handle, originalEvent)
-      alignMidways(); emit('dragend')
+      if (!originalEvent.ctrlKey) return
+      if (fulcrums().length === 2) return
+
+      // Remove fulcrum and preceding or following midway handle.
+      ;[handle.succ ? handle.succ : handle.pred, handle].forEach(handle => {
+        layer.removeHandle(handle)
+        list.remove(handle)
+      })
+
+      alignMidways()
+      emit('dragend')
     },
     drag: () => { alignMidways(); emit('drag') },
     dragend: () => emit('dragend')
