@@ -91,6 +91,14 @@ L.TACGRP.Feature = L.Layer.extend({
   /**
    *
    */
+  _reset () {
+    this._project()
+  },
+
+
+  /**
+   *
+   */
   updateData (feature) {
     this._setFeature(feature)
     this._project()
