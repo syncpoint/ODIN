@@ -4,6 +4,7 @@ import { editors } from './editors'
 import layerStore from '../../stores/layer-store'
 import UnitProperties from './UnitProperties'
 import AreaProperties from './AreaProperties'
+import LineProperties from './LineProperties'
 import EquipmentProperties from './EquipmentProperties'
 import BoundaryLineProperties from './BoundaryLineProperties'
 import PointProperties from './PointProperties'
@@ -59,7 +60,14 @@ const featureClasses = {
     pane: (layerId, featureId, feature) => <PointProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
   },
 
-  L: { description: 'Lines' },
+  L: {
+    description: 'Lines',
+    patterns: [
+      /^G.T.*$/,
+      /^G.G.GL[^B].*$/ // excluding boundaries line
+    ],
+    pane: (layerId, featureId, feature) => <LineProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
+  },
 
   A: {
     description: 'Areas',
