@@ -44,16 +44,16 @@ L.TACGRP.Arc = L.TACGRP.Feature.extend({
    */
   _project () {
     const layerPoint = this._map.latLngToLayerPoint.bind(this._map)
-    const C = layerPoint(this._arc.C)
-    const O = layerPoint(this._arc.O)
-    const S = layerPoint(this._arc.S)
+    const C = layerPoint(this._geometry.C)
+    const O = layerPoint(this._geometry.O)
+    const S = layerPoint(this._geometry.S)
 
     this._shape.updateFrame({
       C,
       O,
       S,
       radius: line([C, O]).d,
-      radians: this._arc.radians
+      radians: this._geometry.radians
     })
   },
 
@@ -61,9 +61,9 @@ L.TACGRP.Arc = L.TACGRP.Feature.extend({
   /**
    *
    */
-  _editor () {
+  _geometryEditor () {
     const layer = new L.Handles().addTo(this._map)
-    let current = this._arc
+    let current = this._geometry
 
     const handlers = {
       C: {
@@ -87,7 +87,7 @@ L.TACGRP.Arc = L.TACGRP.Feature.extend({
     }
 
     const update = (channel, arc) => {
-      this._arc = current = arc
+      this._geometry = current = arc
       this._project()
       Object.keys(handlers).forEach(id => handles[id].setLatLng(arc[id]))
 
@@ -127,7 +127,7 @@ L.TACGRP.Arc = L.TACGRP.Feature.extend({
     /* eslint-disable camelcase */
     const { geometry_max_range, geometry_orient_angle, geometry_size_angle } = feature.properties
 
-    this._arc = arcGeometry(
+    this._geometry = arcGeometry(
       toLatLngs(feature.geometry),
       geometry_orient_angle,
       geometry_size_angle,

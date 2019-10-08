@@ -53,19 +53,19 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
   _project () {
     const layerPoint = this._map.latLngToLayerPoint.bind(this._map)
     this._shape.updateFrame({
-      center: this._corridor.latlngs.map(layerPoint),
-      envelope: this._corridor.envelope().map(pair => pair.map(layerPoint))
+      center: this._geometry.latlngs.map(layerPoint),
+      envelope: this._geometry.envelope().map(pair => pair.map(layerPoint))
     })
   },
 
-  _editor () {
+  _geometryEditor () {
     const layer = new L.Handles().addTo(this._map)
-    let current = this._corridor
+    let current = this._geometry
 
     const callback = (channel, corridor) => {
       switch (channel) {
         case 'drag': {
-          this._corridor = corridor
+          this._geometry = corridor
           return this._project()
         }
         case 'drage nd': {
@@ -103,7 +103,7 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
     // Change direction internally:
     const latlngs = toLatLngs(feature.geometry).slice().reverse()
     const width = feature.properties.geometry_width
-    this._corridor = corridorGeometry(latlngs, width)
+    this._geometry = corridorGeometry(latlngs, width)
 
     this._shapeOptions = {
       interactive: this.options.interactive,

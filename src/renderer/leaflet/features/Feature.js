@@ -67,7 +67,7 @@ L.TACGRP.Feature = L.Layer.extend({
     if (selection.isSelected(this.urn)) return
     selection.select(this.urn)
 
-    const editor = this._editor()
+    const editor = this._geometryEditor()
     this._map.tools.edit({
       dispose: () => {
         editor.dispose()

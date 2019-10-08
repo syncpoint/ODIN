@@ -62,7 +62,7 @@ L.Feature['G*T*Z-----'] = L.TACGRP.Feature.extend({
   /**
    *
    */
-  _editor () {
+  _geometryEditor () {
     const layer = new L.Handles().addTo(this._map)
     let current = this._seize
 

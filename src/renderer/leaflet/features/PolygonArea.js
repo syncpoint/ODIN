@@ -70,7 +70,7 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
   _project () {
     const layerPoint = this._map.latLngToLayerPoint.bind(this._map)
     this._shape.updateFrame({
-      rings: this._rings.map(ring => ring.map(layerPoint))
+      rings: this._geometry.map(ring => ring.map(layerPoint))
     })
   },
 
@@ -78,14 +78,14 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
   /**
    *
    */
-  _editor () {
+  _geometryEditor () {
     const layer = new L.Handles().addTo(this._map)
-    let current = this._rings[0]
+    let current = this._geometry[0]
 
     const callback = (channel, rings) => {
       switch (channel) {
         case 'drag': {
-          this._rings = rings
+          this._geometry = rings
           return this._project()
         }
         case 'dragend': {
@@ -95,13 +95,14 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
       }
     }
 
-    polyEditor(current, layer, circularDoublyLinkedList(), (channel, latlngs) => {
+    const editor = polyEditor(current, layer, circularDoublyLinkedList(), (channel, latlngs) => {
       current = latlngs
       callback(channel, [current])
     })
 
     return {
-      dispose: () => this._map.removeLayer(layer)
+      dispose: () => this._map.removeLayer(layer),
+      updateGeometry: () => editor.updateGeometry(this._geometry)
     }
   },
 
@@ -110,7 +111,7 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
    *
    */
   _setFeature (feature) {
-    this._rings = toLatLngs(feature.geometry)
+    this._geometry = toLatLngs(feature.geometry)
     this._shapeOptions = {
       interactive: this.options.interactive,
       lineSmoothing: this.options.lineSmoothing,
