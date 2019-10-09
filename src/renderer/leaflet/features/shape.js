@@ -5,24 +5,15 @@ import { noop, elementCache } from './cache'
 
 const DEFAULT_FONT_SIZE = 14
 
-const textAnchor = alignment => {
-  switch (alignment) {
-    case 'left': return 'start'
-    case 'right': return 'end'
-    case 'center': return 'middle'
-    default: return 'middle'
-  }
-}
-
 const text = descriptor => L.SVG.text({
   'font-size': descriptor['font-size'],
-  'text-anchor': textAnchor(descriptor.alignment),
+  'text-anchor': descriptor.anchor || 'middle',
   'alignment-baseline': 'central'
 })
 
 const tspan = descriptor => L.SVG.tspan({
   dy: '1.2em',
-  'text-anchor': textAnchor(descriptor.alignment),
+  'text-anchor': descriptor.anchor || 'middle',
   'alignment-baseline': 'central'
 })
 
@@ -78,9 +69,9 @@ export const shape = (group, options, callbacks) => {
 
     const box = label.getBBox()
     const ty = fontSize / 2 - box.height / 2
-    const tx = descriptor.alignment === 'left'
+    const tx = descriptor.anchor === 'left'
       ? -box.width / 2
-      : descriptor.alignment === 'right'
+      : descriptor.anchor === 'right'
         ? box.width / 2
         : 0
 
