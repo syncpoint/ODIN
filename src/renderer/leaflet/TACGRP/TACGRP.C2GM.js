@@ -16,8 +16,8 @@ const effectiveLine = properties => {
   if (properties.w1) return `${properties.w1}`
 }
 
-const centerLabel = lines => [{ placement: 'center', alignment: 'center', lines }]
-const centerLabelLeft = lines => [{ placement: 'center', alignment: 'left', lines }]
+const centerLabel = lines => [{ placement: 'center', lines }]
+const centerLabelLeft = lines => [{ placement: 'center', anchor: 'start', lines }]
 
 const axisLabelsNSEW = line => ['north', 'south', 'east', 'west'].map(placement => ({
   placement,

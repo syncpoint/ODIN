@@ -24,7 +24,6 @@ L.Feature['G*T*P-----'] = L.TACGRP.Corridor.extend({
   _labels () {
     return [{
       placement: ({ center }) => line(center).point(0.5),
-      alignment: 'center', // default
       lines: ['P'],
       'font-size': 18,
       angle: ({ center }) => line(center).angle()
