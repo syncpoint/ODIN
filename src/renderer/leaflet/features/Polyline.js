@@ -54,7 +54,7 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
     this._geometry = toLatLngs(feature.geometry)
     this._shapeOptions = {
       interactive: this.options.interactive,
-      lineSmoothing: this.lineSmoothing !== null ? this.lineSmoothing : this.options.lineSmoothing,
+      lineSmoothing: ('lineSmoothing' in this) ? this.lineSmoothing : this.options.lineSmoothing,
       styles: this._styles(feature),
       labels: this._labels(feature)
     }
