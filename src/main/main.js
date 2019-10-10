@@ -5,6 +5,7 @@ import settings from 'electron-settings'
 import { K, noop } from '../shared/combinators'
 import { buildFromTemplate } from '../main/menu/menu'
 import './REST'
+import AppIcon from './img/icon.png'
 
 // Disable for production:
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
@@ -13,17 +14,19 @@ const on = emitter => ([event, handler]) => emitter.on(event, handler)
 
 let mainWindow
 
+
 const createWindow = name => {
   const bounds = settings.get(`windowState.${name}`) || { width: 800, height: 600 }
 
   const options = {
     ...bounds,
     show: false,
+    icon: AppIcon,
     webPreferences: {
       nodeIntegration: true
     }
   }
-
+  
   mainWindow = K(new BrowserWindow(options))(window => {
     // hot deployment in development mode
     const hotDeployment = () =>
