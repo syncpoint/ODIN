@@ -47,6 +47,8 @@ L.TACGRP.Feature = L.Layer.extend({
     this._renderer._addGroup(this)
     this._svg.attached && this._svg.attached()
     this.on('click', () => this._edit())
+
+    if (selection.isPreselected(this.urn)) setImmediate(() => this._edit())
   },
 
 
@@ -111,7 +113,7 @@ L.TACGRP.Feature = L.Layer.extend({
   updateData (feature) {
     this._setFeature(feature)
     this._project()
-    this._svg.updateOptions && this._shape.updateOptions(this._shapeOptions)
+    this._svg.updateOptions && this._svg.updateOptions(this._shapeOptions)
     this._edit(true)
   }
 })
