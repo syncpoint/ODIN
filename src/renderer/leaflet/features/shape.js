@@ -3,31 +3,48 @@ import { K } from '../../../shared/combinators'
 import { clippingStrategy } from './clipping'
 import { noop, elementCache } from './cache'
 
+/* eslint-disable */
+
 const DEFAULT_FONT_SIZE = 14
 
-const text = descriptor => L.SVG.text({
-  'font-size': descriptor['font-size'],
-  'text-anchor': descriptor.anchor || 'middle',
-  'alignment-baseline': 'central'
-})
+const textAnchor = (descriptor, angle) => {
+  if (angle < 90 || angle > 270) return descriptor.anchor
+  switch (descriptor.anchor) {
+    case 'start': return 'end'
+    case 'end' : return 'start'
+    default: return descriptor.anchor
+  }
+}
 
-const tspan = descriptor => L.SVG.tspan({
+const text = (descriptor, angle) => {
+
+
+  return L.SVG.text({
+    'font-size': descriptor['font-size'],
+    'text-anchor': textAnchor(descriptor, angle) || 'middle',
+    'alignment-baseline': 'central'
+  })
+}
+
+const tspan = () => L.SVG.tspan({
   dy: '1.2em',
-  'text-anchor': descriptor.anchor || 'middle',
   'alignment-baseline': 'central'
 })
 
 
 /**
- *
+ * TODO: move callbacks to options
  */
 export const shape = (group, options, callbacks) => {
   const state = { attached: false, options }
   const cache = elementCache()
   const removeChild = parent => element => cache.element(parent).removeChild(element)
   const style = name => state.options.styles[name]
+
   const labels = () => callbacks.labels
     ? callbacks.labels(state.frame)
+    : (typeof state.options.labels) === 'function'
+    ? state.options.labels(state.frame)
     : state.options.labels
 
   cache.put('group', group)(noop)
@@ -47,11 +64,12 @@ export const shape = (group, options, callbacks) => {
    */
   const textLabel = (center, angle, descriptor) => {
     const fontSize = descriptor['font-size'] || DEFAULT_FONT_SIZE
-    const label = text(descriptor)
+
+    const label = text(descriptor, angle)
     label.setAttribute('y', center.y)
 
     const textElement = index => index
-      ? label.appendChild(tspan(descriptor))
+      ? label.appendChild(tspan())
       : label
 
     descriptor.lines.filter(line => line).forEach((line, index) => {

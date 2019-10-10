@@ -6874,6 +6874,9 @@
       "OFFENSE",
       "LINES",
       "LINE OF DEPARTURE / LINE OF CONTACT (LD / LC)"
+    ],
+    "geometries": [
+      "line"
     ]
   },
   {
@@ -6982,6 +6985,9 @@
       "OFFENSE",
       "LINES",
       "PROBABLE LINE OF DEPLOYMENT (PLD)"
+    ],
+    "geometries": [
+      "line"
     ]
   },
   {

@@ -5,6 +5,11 @@ import { shape } from './shape'
 import { doublyLinkedList } from '../../../shared/lists'
 import { polyEditor } from './poly-editor'
 
+const placements = ({ points }) => ({
+  'start': points[0],
+  'end': points[points.length - 1]
+})
+
 L.TACGRP.Polyline = L.TACGRP.Feature.extend({
 
   /**
@@ -61,7 +66,9 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
    *
    */
   _shape (group, options) {
+    options.styles.clipping = 'mask'
     return shape(group, options, {
+      placements,
       points: ({ points }) => [points]
     })
   }
