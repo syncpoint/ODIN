@@ -51,7 +51,7 @@ L.TACGRP.OrbitArea = L.TACGRP.Feature.extend({
     const B1 = layerPoint(this._geometry.B1)
 
 
-    this._shape.updateFrame({
+    this._svg.updateFrame({
       A, B, A1, B1,
       width: line([A, A1]).d,
       alignment: this._geometry.alignment

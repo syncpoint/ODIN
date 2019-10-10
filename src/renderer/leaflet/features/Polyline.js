@@ -17,7 +17,7 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
    */
   _project () {
     const layerPoint = this._map.latLngToLayerPoint.bind(this._map)
-    this._shape.updateFrame({
+    this._svg.updateFrame({
       points: this._geometry.map(layerPoint)
     })
   },
