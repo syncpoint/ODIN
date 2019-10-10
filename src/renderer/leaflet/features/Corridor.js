@@ -52,7 +52,7 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
    */
   _project () {
     const layerPoint = this._map.latLngToLayerPoint.bind(this._map)
-    this._shape.updateFrame({
+    this._svg.updateFrame({
       center: this._geometry.latlngs.map(layerPoint),
       envelope: this._geometry.envelope().map(pair => pair.map(layerPoint))
     })

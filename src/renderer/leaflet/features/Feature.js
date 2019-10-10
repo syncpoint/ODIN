@@ -42,10 +42,10 @@ L.TACGRP.Feature = L.Layer.extend({
    */
   onAdd (/* map */) {
     this._renderer._initGroup(this)
-    this._shape = this._shape(this._group, this._shapeOptions)
+    this._svg = this._shape(this._group, this._shapeOptions)
     this._project()
     this._renderer._addGroup(this)
-    this._shape.attached && this._shape.attached()
+    this._svg.attached && this._svg.attached()
     this.on('click', () => this._edit())
   },
 
@@ -64,7 +64,6 @@ L.TACGRP.Feature = L.Layer.extend({
    * TODO: Reverse dependency: Selection should trigger edit (if editable).
    */
   _edit (reset) {
-
     if (!reset) {
       // suspend click not to re-enter edit:
       this.off('click')
@@ -112,7 +111,7 @@ L.TACGRP.Feature = L.Layer.extend({
   updateData (feature) {
     this._setFeature(feature)
     this._project()
-    this._shape.updateOptions && this._shape.updateOptions(this._shapeOptions)
+    this._svg.updateOptions && this._shape.updateOptions(this._shapeOptions)
     this._edit(true)
   }
 })

@@ -69,7 +69,7 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
    */
   _project () {
     const layerPoint = this._map.latLngToLayerPoint.bind(this._map)
-    this._shape.updateFrame({
+    this._svg.updateFrame({
       rings: this._geometry.map(ring => ring.map(layerPoint))
     })
   },

@@ -48,7 +48,7 @@ L.TACGRP.Arc = L.TACGRP.Feature.extend({
     const O = layerPoint(this._geometry.O)
     const S = layerPoint(this._geometry.S)
 
-    this._shape.updateFrame({
+    this._svg.updateFrame({
       C,
       O,
       S,

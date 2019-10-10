@@ -48,7 +48,7 @@ L.Feature['G*T*Z-----'] = L.TACGRP.Feature.extend({
     const O = layerPoint(this._seize.O)
     const S = layerPoint(this._seize.S)
 
-    this._shape.updateFrame({
+    this._svg.updateFrame({
       C,
       O,
       S,
