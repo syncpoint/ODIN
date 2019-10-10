@@ -10,14 +10,16 @@ L.Feature['G*T*R-----'] = L.TACGRP.OrbitArea.extend({
     options.styles.clipping = 'mask'
 
     return shape(group, options, {
-      points: ({ A, B, A1, B1, width }) => {
+      points: ({ A, B, A1, B1, alignment, width }) => {
         const centerLine = line([A, B])
         const center = line([B, B1]).point(0.5)
         const angle = centerLine.angle() / 180 * Math.PI + Math.PI / 2
 
         const steps = 32
         const delta = Math.PI / steps
+
         const xs = R.range(0, steps + 1).map(x => angle + x * delta)
+        if (alignment === 'RIGHT') xs.reverse()
 
         const arrow = (tip, line) => [
           line.translate(0.1 * width).point(0.85),

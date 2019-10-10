@@ -15,7 +15,7 @@ L.Feature['G*T*O-----'] = L.TACGRP.Arc.extend({
         const delta = radians.delta / steps
         const xs = R.range(0, steps + 1).map(x => radians.start + x * delta)
         const inner = arc(C, radius)(xs)
-        return [inner]
+        return [inner, ...this._cross(inner[inner.length - 1], radians.end, radius / 5)]
       }
     })
   },

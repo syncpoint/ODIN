@@ -24,7 +24,8 @@ L.Feature['G*T*Q-----'] = L.TACGRP.Arc.extend({
         }
 
         return [
-          inner, ...spikes
+          inner, ...spikes,
+          this._arrow(inner[inner.length - 1], radians.end, radius / 5)
         ]
       }
     })

@@ -139,5 +139,48 @@ L.TACGRP.Arc = L.TACGRP.Feature.extend({
       labels: this._labels(),
       styles: this._styles(feature)
     }
+  },
+
+  // ==> Shape helpers.
+
+  _arrow (p, delta, r) {
+    return [
+      L.point(
+        p.x + Math.sin(-delta + 0.8 * Math.PI) * r,
+        p.y + Math.cos(-delta + 0.8 * Math.PI) * r
+      ),
+      p,
+      L.point(
+        p.x + Math.sin(-delta - 0.8 * Math.PI) * r,
+        p.y + Math.cos(-delta - 0.8 * Math.PI) * r
+      )]
+  },
+
+
+  _cross (p, delta, r) {
+    return [
+      [
+        L.point(
+          p.x + Math.sin(delta + 0 * Math.PI) * r,
+          p.y + Math.cos(delta + 0 * Math.PI) * r
+        ),
+        L.point(
+          p.x + Math.sin(delta + 1 * Math.PI) * r,
+          p.y + Math.cos(delta + 1 * Math.PI) * r
+        )
+      ],
+      [
+        L.point(
+          p.x + Math.sin(delta + 0.5 * Math.PI) * r,
+          p.y + Math.cos(delta + 0.5 * Math.PI) * r
+        ),
+        L.point(
+          p.x + Math.sin(delta - 0.5 * Math.PI) * r,
+          p.y + Math.cos(delta - 0.5 * Math.PI) * r
+        )
+      ]
+    ]
   }
+
+  // <== Shape helpers.
 })
