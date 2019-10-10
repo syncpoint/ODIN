@@ -56,19 +56,31 @@ export const styles = feature => {
 
   return {
     clipping: 'none',
-    outline: {
+
+    // Colored path outline to increase contrast.
+    contrast: {
       'stroke': _outlineStroke(),
       'stroke-width': 3,
       'stroke-linejoin': 'round',
       'stroke-dasharray': _strokeDashArray(),
       'fill': 'none'
     },
+
+    // Principal path style.
     path: {
       'stroke': _stroke(),
       'stroke-width': 2,
       'stroke-linejoin': 'round',
       'stroke-dasharray': _strokeDashArray(),
       'fill': 'none'
+    },
+
+    // Transparent path to ease selection.
+    outline: {
+      'stroke': 'yellow',
+      'stroke-width': 12,
+      'fill': 'none',
+      'opacity': 0.0
     }
   }
 }
