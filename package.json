@@ -12,6 +12,7 @@
     "builder:dir": "electron-builder --dir",
     "builder:mac": "electron-builder --mac",
     "builder:win": "electron-builder --win",
+    "builder:linux": "electron-builder --linux",
     "eslint": "eslint src/",
     "test": "mocha --require esm"
   },
@@ -22,7 +23,10 @@
   "keywords": [
     "c2is"
   ],
-  "author": "Syncpoint GmbH",
+  "author": { 
+      "name": "Syncpoint GmbH",
+      "email": "office@syncpoint.io"
+  },
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.6.2",

@@ -10,7 +10,19 @@ win:
       arch:
         - x64
         - ia32
+  icon: 'build/icon.ico'
+mac: 
+   target: dmg
+   icon: 'build/icon.icns'
+linux:
+  target: 
+    - target: deb 
+    - target: snap 
+    - target: tar.gz
+  icon: 'icons'
+  category: 'Office'
 files:
   - 'dist'
   - 'feature-sets.xlsx'
+  
 electronVersion: 3.1.9
