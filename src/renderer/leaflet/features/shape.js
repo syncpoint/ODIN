@@ -52,7 +52,7 @@ export const shape = (group, options, callbacks) => {
   cache.element('group').appendChild(cache.element('defs'))
 
   const clipping = clippingStrategy(options.styles.clipping)(cache)
-  const paths = (callbacks.paths && callbacks.paths()) || [ 'outline', 'path' ]
+  const paths = (callbacks.paths && callbacks.paths()) || [ 'outline', 'contrast', 'path' ]
 
   const interactive = options.interactive
     ? element => K(element)(element => L.DomUtil.addClass(element, 'leaflet-interactive'))

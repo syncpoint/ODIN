@@ -48,7 +48,7 @@ L.Feature['G*T*KF----'] = L.TACGRP.Corridor.extend({
 
   _styles (feature) {
     const _styles = styles(feature)
-    _styles.outline['stroke-dasharray'] = strokeDashArray()
+    _styles.contrast['stroke-dasharray'] = strokeDashArray()
     _styles.path['stroke-dasharray'] = strokeDashArray()
     return _styles
   }

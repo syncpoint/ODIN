@@ -52,7 +52,7 @@ L.Feature['G*G*OLP---'] = labeledLine(feature =>
   (['PLD', feature.properties.t ? `(PL ${feature.properties.t})` : ''])).extend({
   _styles (feature) {
     const _styles = styles(feature)
-    _styles.outline['stroke-dasharray'] = strokeDashArray()
+    _styles.contrast['stroke-dasharray'] = strokeDashArray()
     _styles.path['stroke-dasharray'] = strokeDashArray()
     return _styles
   }
