@@ -81,8 +81,8 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
     const layer = new L.Handles().addTo(this._map)
 
     const options = {
-      closed: false,
-      midways: ('midways' in this) ? this.midways : true
+      closed: true,
+      midways: true
     }
 
     polyEditor(this._geometry[0], layer, options)((channel, latlngs) => {

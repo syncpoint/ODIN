@@ -37,6 +37,7 @@ export const polyEditor = (latlngs, layer, options) => callback => {
     type: FULCRUM,
     mousedown: ({ target: handle, originalEvent }) => {
       if (!originalEvent.ctrlKey) return
+      if (options.closed && fulcrums().length === 3) return
       if (fulcrums().length === 2) return
 
       // Remove fulcrum and preceding or following midway handle.
@@ -64,8 +65,8 @@ export const polyEditor = (latlngs, layer, options) => callback => {
 
   // Create markers:
 
-  ;(options.closed ? latlngs.slice(0, latlngs.length - 1) : latlngs)
-    .map(latlng => layer.addHandle(latlng, handleOptions[FULCRUM]))
+  const xs = options.closed ? latlngs.slice(0, latlngs.length - 1) : latlngs
+  xs.map(latlng => layer.addHandle(latlng, handleOptions[FULCRUM]))
     .reduce((acc, handle) => K(acc)(acc => acc.append(handle)), list)
 
   if (options.midways) {

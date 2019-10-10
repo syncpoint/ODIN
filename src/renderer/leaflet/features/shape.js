@@ -3,8 +3,6 @@ import { K } from '../../../shared/combinators'
 import { clippingStrategy } from './clipping'
 import { noop, elementCache } from './cache'
 
-/* eslint-disable */
-
 const DEFAULT_FONT_SIZE = 14
 
 const textAnchor = (descriptor, angle) => {
@@ -44,8 +42,8 @@ export const shape = (group, options, callbacks) => {
   const labels = () => callbacks.labels
     ? callbacks.labels(state.frame)
     : (typeof state.options.labels) === 'function'
-    ? state.options.labels(state.frame)
-    : state.options.labels
+      ? state.options.labels(state.frame)
+      : state.options.labels
 
   cache.put('group', group)(noop)
   cache.put('defs', L.SVG.create('defs'))(noop)
