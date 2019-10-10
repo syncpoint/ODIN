@@ -2,7 +2,6 @@ import L from 'leaflet'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import './Feature'
 import { shape } from './shape'
-import { doublyLinkedList } from '../../../shared/lists'
 import { polyEditor } from './poly-editor'
 
 const placements = ({ points }) => ({
@@ -31,7 +30,7 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
     let current = this._geometry
 
     // Upstream editor: polyline only
-    polyEditor(current, layer, doublyLinkedList(), (channel, latlngs) => {
+    polyEditor(current, false, layer, (channel, latlngs) => {
       current = latlngs
       this._geometry = latlngs
       this._project()
@@ -55,7 +54,7 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
     this._geometry = toLatLngs(feature.geometry)
     this._shapeOptions = {
       interactive: this.options.interactive,
-      lineSmoothing: this.options.lineSmoothing,
+      lineSmoothing: this.lineSmoothing !== null ? this.lineSmoothing : this.options.lineSmoothing,
       styles: this._styles(feature),
       labels: this._labels(feature)
     }

@@ -4,7 +4,6 @@ import * as R from 'ramda'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import '../features/Feature'
 import { shape } from './shape'
-import { circularDoublyLinkedList } from '../../../shared/lists'
 import { polyEditor } from '../features/poly-editor'
 
 
@@ -81,7 +80,7 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
   _geometryEditor () {
     const layer = new L.Handles().addTo(this._map)
 
-    const editor = polyEditor(this._geometry[0], layer, circularDoublyLinkedList(), (channel, latlngs) => {
+    const editor = polyEditor(this._geometry[0], true, layer, (channel, latlngs) => {
       this._geometry = [latlngs]
       this._project()
 
@@ -103,6 +102,7 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
    */
   _setFeature (feature) {
     this._geometry = toLatLngs(feature.geometry)
+
     this._shapeOptions = {
       interactive: this.options.interactive,
       lineSmoothing: this.options.lineSmoothing,
