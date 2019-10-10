@@ -1,14 +1,18 @@
 import L from 'leaflet'
 import { K } from '../../../shared/combinators'
 import { FULCRUM, MIDWAY } from './handle-types'
+import { circularDoublyLinkedList, doublyLinkedList } from '../../../shared/lists'
 
-export const polyEditor = (latlngs, layer, list, callback) => {
+export const polyEditor = (latlngs, closed, layer, callback) => {
   const handleOptions = {}
 
+  const list = closed ? circularDoublyLinkedList() : doublyLinkedList()
   const midpoint = (a, b) => L.LatLng.midpoint([a.getLatLng(), b.getLatLng()])
   const fulcrums = () => list.filter(handle => handle.type === FULCRUM)
+
   const emit = channel => {
     const latlngs = fulcrums().map(handle => handle.getLatLng())
+    if (closed) latlngs.push(latlngs[0])
     callback(channel, latlngs)
   }
 
@@ -56,7 +60,7 @@ export const polyEditor = (latlngs, layer, list, callback) => {
 
   // Create markers:
 
-  latlngs
+  ;(closed ? latlngs.slice(0, latlngs.length - 1) : latlngs)
     .map(latlng => layer.addHandle(latlng, handleOptions[FULCRUM]))
     .reduce((acc, handle) => K(acc)(acc => acc.append(handle)), list)
 

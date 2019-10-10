@@ -6,6 +6,10 @@ import '../features/Polyline'
 
 L.Feature['G*T*F-----'] = L.TACGRP.Polyline.extend({
 
+
+  lineSmoothing: false,
+
+
   _shape (group) {
     const options = { ...this._shapeOptions }
     options.styles.clipping = 'mask'

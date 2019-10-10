@@ -183,7 +183,7 @@ export const shape = (group, options, callbacks) => {
     state.frame = frame
     if (!state.attached) return
     const closed = callbacks.closed && callbacks.closed()
-    const d = L.SVG.pointsToPath(callbacks.points(frame), closed)
+    const d = L.SVG.pointsToPath(callbacks.points(frame), closed, state.options.lineSmoothing)
     paths.forEach(name => cache.element(name).setAttribute('d', d))
     renderLabels()
   }

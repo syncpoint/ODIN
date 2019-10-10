@@ -2,7 +2,6 @@ import L from 'leaflet'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import './Feature'
 import { corridorGeometry } from './corridor-geometry'
-import { doublyLinkedList } from '../../../shared/lists'
 import { polyEditor } from './poly-editor'
 import { FULCRUM } from './handle-types'
 
@@ -47,6 +46,8 @@ export const widthEditor = (corridor, layer, events) => {
  */
 L.TACGRP.Corridor = L.TACGRP.Feature.extend({
 
+  lineSmoothing: false,
+
   /**
    * Project WGS84 geometry to pixel/layer coordinates.
    */
@@ -68,7 +69,7 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
           this._geometry = corridor
           return this._project()
         }
-        case 'drage nd': {
+        case 'dragend': {
           // NOTE: We change direction again on save:
           const geometry = toGeometry('LineString', corridor.latlngs.slice().reverse())
           return this.options.update({ geometry, properties: { geometry_width: corridor.width } })
@@ -84,7 +85,7 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
 
     // TODO: Provide options for 2-pt lines
     // Upstream editor: polyline only
-    polyEditor(current.latlngs, layer, doublyLinkedList(), (channel, latlngs) => {
+    polyEditor(current.latlngs, false, layer, (channel, latlngs) => {
       current = corridorGeometry(latlngs, current.width)
       width(latlngs)
       callback(channel, current)
