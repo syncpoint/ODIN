@@ -5,6 +5,7 @@ import layerStore from '../../stores/layer-store'
 import { findSpecificItem } from '../../stores/feature-store'
 import { ResourceNames } from '../../model/resource-names'
 import selection from '../App.selection'
+import { toGeometry } from '../../leaflet/GeoJSON'
 
 const geometryType = (descriptor, sidc) => {
   const includes = type => descriptor.geometries.includes(type)
@@ -20,19 +21,6 @@ const geometryType = (descriptor, sidc) => {
   return null
 }
 
-const geometry = (geometryType, latlngs, properties) => {
-  if (geometryType === 'point') return { type: 'Point', coordinates: [latlngs.lng, latlngs.lat] }
-  const lineString = () => latlngs.map(({ lat, lng }) => [lng, lat])
-  const polygon = () => [lineString()]
-
-  switch (geometryType) {
-    case 'polygon': return { type: 'Polygon', coordinates: polygon() }
-    case 'line': return { type: 'LineString', coordinates: lineString() }
-    case 'corridor': return { type: 'LineString', coordinates: lineString(), ...properties }
-    case 'corridor-2pt': return { type: 'LineString', coordinates: lineString(), ...properties }
-  }
-}
-
 
 const point = (type, sidc) => evented.emit('tools.pick-point', {
   prompt: 'Pick a location...',
@@ -41,7 +29,7 @@ const point = (type, sidc) => evented.emit('tools.pick-point', {
     selection.preselect(ResourceNames.featureId('0', featureId))
     layerStore.addFeature(0)(featureId, {
       type: 'Feature',
-      geometry: geometry(type, latlng),
+      geometry: toGeometry('Point', latlng),
       properties: { sidc }
     })
   }
@@ -56,12 +44,25 @@ const line = (type, sidc) => evented.emit('tools.draw', {
     selection.preselect(ResourceNames.featureId('0', featureId))
     layerStore.addFeature(0)(featureId, {
       type: 'Feature',
-      geometry: geometry(type, latlngs),
+      geometry: toGeometry('LineString', latlngs),
       properties: { sidc }
     })
   }
 })
 
+const line2Point = (type, sidc) => evented.emit('tools.draw', {
+  geometryType: 'line-2pt',
+  prompt: `Draw a line (2 points)...`,
+  done: latlngs => {
+    const featureId = uuid()
+    selection.preselect(ResourceNames.featureId('0', featureId))
+    layerStore.addFeature(0)(featureId, {
+      type: 'Feature',
+      geometry: toGeometry('LineString', latlngs),
+      properties: { sidc }
+    })
+  }
+})
 
 const corridor = (type, sidc) => evented.emit('tools.draw', {
   geometryType: type,
@@ -71,7 +72,7 @@ const corridor = (type, sidc) => evented.emit('tools.draw', {
     selection.preselect(ResourceNames.featureId('0', featureId))
     layerStore.addFeature(0)(featureId, {
       type: 'Feature',
-      geometry: geometry(type, latlngs),
+      geometry: toGeometry('LineString', latlngs),
       properties: { sidc, geometry_width: 1000 }
     })
   }
@@ -86,19 +87,95 @@ const corridor2Point = (type, sidc) => evented.emit('tools.draw', {
     selection.preselect(ResourceNames.featureId('0', featureId))
     layerStore.addFeature(0)(featureId, {
       type: 'Feature',
-      geometry: geometry(type, latlngs),
+      geometry: toGeometry('LineString', latlngs),
       properties: { sidc, geometry_width: 1000 }
     })
   }
 })
 
+const arc = size => (type, sidc) => evented.emit('tools.pick-point', {
+  prompt: 'Pick a location...',
+  picked: latlng => {
+    const featureId = uuid()
+    selection.preselect(ResourceNames.featureId('0', featureId))
+    layerStore.addFeature(0)(featureId, {
+      type: 'Feature',
+      geometry: toGeometry('Point', latlng),
+      properties: {
+        sidc,
+        'geometry_max_range': 500,
+        'geometry_mnm_range': 0,
+        'geometry_size_angle': size,
+        'geometry_orient_angle': 90
+      }
+    })
+  }
+})
+
+const fan = (type, sidc) => evented.emit('tools.pick-point', {
+  prompt: 'Pick a location...',
+  picked: latlng => {
+    const featureId = uuid()
+    selection.preselect(ResourceNames.featureId('0', featureId))
+    layerStore.addFeature(0)(featureId, {
+      type: 'Feature',
+      geometry: toGeometry('Point', latlng),
+      properties: {
+        sidc,
+        'geometry_mnm_range': 500,
+        'geometry_max_range': 750,
+        'geometry_size_angle': 45,
+        'geometry_orient_angle': 90
+      }
+    })
+  }
+})
+
+const seize = (type, sidc) => evented.emit('tools.pick-point', {
+  prompt: 'Pick a location...',
+  picked: latlng => {
+    const featureId = uuid()
+    selection.preselect(ResourceNames.featureId('0', featureId))
+    layerStore.addFeature(0)(featureId, {
+      type: 'Feature',
+      geometry: toGeometry('Point', latlng),
+      properties: {
+        sidc,
+        'geometry_mnm_range': 500,
+        'geometry_max_range': 750,
+        'geometry_size_angle': 90,
+        'geometry_orient_angle': 0
+      }
+    })
+  }
+})
+
+const orbit = (type, sidc) => evented.emit('tools.draw', {
+  geometryType: 'line-2pt',
+  prompt: `Draw a line (2 points)...`,
+  done: latlngs => {
+    const featureId = uuid()
+    selection.preselect(ResourceNames.featureId('0', featureId))
+    layerStore.addFeature(0)(featureId, {
+      type: 'Feature',
+      geometry: toGeometry('MultiPoint', latlngs),
+      properties: { sidc, geometry_width: 500, geometry_aligbment: 'RIGHT' }
+    })
+  }
+})
 
 const handlers = {
   point,
+  'line-2pt': line2Point,
   line,
   polygon: line,
   corridor,
-  'corridor-2pt': corridor2Point
+  'corridor-2pt': corridor2Point,
+  'fan-90': seize,
+  'fan-338': arc(338),
+  'fan-330': arc(330),
+  fan,
+  orbit
 }
 
 
@@ -115,5 +192,5 @@ export default sidc => {
   })
 
   if (!type) return geometryHint()
-  handlers[type](type, sidc)
+  ;(handlers[type] || (() => console.log('unsupported', type)))(type, sidc)
 }
