@@ -66,16 +66,16 @@ const mainConfig = (env, argv) => ({
   mode: mode(env),
   stats: 'errors-only',
   entry: {
-    main: './main.js',
+    main: './main.js'
   },
   module: {
     rules: [
       {
         test: /\.(png|svg|jpg|gif)$/,
         use: [
-          'file-loader',
-        ],
-      },
+          'file-loader'
+        ]
+      }
     ]
   }
 
@@ -86,7 +86,7 @@ const devServer = env => {
   return ({
     devServer: {
       contentBase: path.resolve(__dirname, 'dist'),
-      before() {
+      before () {
         spawn(
           'electron',
           ['.'],
