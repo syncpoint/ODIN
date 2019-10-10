@@ -29,8 +29,12 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
     const layer = new L.Handles().addTo(this._map)
     let current = this._geometry
 
-    // Upstream editor: polyline only
-    polyEditor(current, false, layer, (channel, latlngs) => {
+    const options = {
+      closed: false,
+      midways: ('midways' in this) ? this.midways : true
+    }
+
+    polyEditor(current, layer, options)((channel, latlngs) => {
       current = latlngs
       this._geometry = latlngs
       this._project()

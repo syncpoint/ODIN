@@ -3,16 +3,16 @@ import { K } from '../../../shared/combinators'
 import { FULCRUM, MIDWAY } from './handle-types'
 import { circularDoublyLinkedList, doublyLinkedList } from '../../../shared/lists'
 
-export const polyEditor = (latlngs, closed, layer, callback) => {
+export const polyEditor = (latlngs, layer, options) => callback => {
   const handleOptions = {}
 
-  const list = closed ? circularDoublyLinkedList() : doublyLinkedList()
+  const list = options.closed ? circularDoublyLinkedList() : doublyLinkedList()
   const midpoint = (a, b) => L.LatLng.midpoint([a.getLatLng(), b.getLatLng()])
   const fulcrums = () => list.filter(handle => handle.type === FULCRUM)
 
   const emit = channel => {
     const latlngs = fulcrums().map(handle => handle.getLatLng())
-    if (closed) latlngs.push(latlngs[0])
+    if (options.closed) latlngs.push(latlngs[0])
     callback(channel, latlngs)
   }
 
@@ -23,11 +23,15 @@ export const polyEditor = (latlngs, closed, layer, callback) => {
     list.prepend(pred, handle)
   }
 
-  const alignMidways = () => fulcrums()
-    .map(mainHandle => [mainHandle, mainHandle.succ])
-    .filter(([_, middleHandle]) => middleHandle)
-    .map(([mainHandle, middleHandle]) => [middleHandle, midpoint(mainHandle, middleHandle.succ)])
-    .forEach(([middleHandle, latlng]) => middleHandle.setLatLng(latlng))
+  const alignMidways = () => {
+    if (!options.midways) return
+
+    fulcrums()
+      .map(mainHandle => [mainHandle, mainHandle.succ])
+      .filter(([_, middleHandle]) => middleHandle)
+      .map(([mainHandle, middleHandle]) => [middleHandle, midpoint(mainHandle, middleHandle.succ)])
+      .forEach(([middleHandle, latlng]) => middleHandle.setLatLng(latlng))
+  }
 
   handleOptions[FULCRUM] = {
     type: FULCRUM,
@@ -60,13 +64,15 @@ export const polyEditor = (latlngs, closed, layer, callback) => {
 
   // Create markers:
 
-  ;(closed ? latlngs.slice(0, latlngs.length - 1) : latlngs)
+  ;(options.closed ? latlngs.slice(0, latlngs.length - 1) : latlngs)
     .map(latlng => layer.addHandle(latlng, handleOptions[FULCRUM]))
     .reduce((acc, handle) => K(acc)(acc => acc.append(handle)), list)
 
-  fulcrums()
-    .filter(marker => marker.succ)
-    .map(fulcrum => [fulcrum, midpoint(fulcrum, fulcrum.succ)])
-    .map(([fulcrum, latlng]) => [fulcrum, layer.addHandle(latlng, handleOptions[MIDWAY])])
-    .reduce((acc, [fulcrum, midway]) => K(acc)(acc => acc.append(midway, fulcrum)), list)
+  if (options.midways) {
+    fulcrums()
+      .filter(marker => marker.succ)
+      .map(fulcrum => [fulcrum, midpoint(fulcrum, fulcrum.succ)])
+      .map(([fulcrum, latlng]) => [fulcrum, layer.addHandle(latlng, handleOptions[MIDWAY])])
+      .reduce((acc, [fulcrum, midway]) => K(acc)(acc => acc.append(midway, fulcrum)), list)
+  }
 }

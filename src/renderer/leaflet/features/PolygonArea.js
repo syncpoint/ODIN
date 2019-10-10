@@ -80,7 +80,12 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
   _geometryEditor () {
     const layer = new L.Handles().addTo(this._map)
 
-    const editor = polyEditor(this._geometry[0], true, layer, (channel, latlngs) => {
+    const options = {
+      closed: false,
+      midways: ('midways' in this) ? this.midways : true
+    }
+
+    polyEditor(this._geometry[0], layer, options)((channel, latlngs) => {
       this._geometry = [latlngs]
       this._project()
 
@@ -91,8 +96,7 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
     })
 
     return {
-      dispose: () => this._map.removeLayer(layer),
-      updateGeometry: () => editor.updateGeometry(this._geometry)
+      dispose: () => this._map.removeLayer(layer)
     }
   },
 
