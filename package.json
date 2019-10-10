@@ -23,9 +23,9 @@
   "keywords": [
     "c2is"
   ],
-  "author": { 
-      "name": "Syncpoint GmbH",
-      "email": "office@syncpoint.io"
+  "author": {
+    "name": "Syncpoint GmbH",
+    "email": "office@syncpoint.io"
   },
   "license": "MIT",
   "devDependencies": {
@@ -35,7 +35,7 @@
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
     "css-loader": "^2.1.1",
-    "electron": "3.1.9",
+    "electron": "6.0.12",
     "electron-builder": "^20.44.4",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
