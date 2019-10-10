@@ -26,7 +26,8 @@ L.Feature['G*T*E-----'] = L.TACGRP.Arc.extend({
         }
 
         return [
-          outer, ...teeth
+          outer, ...teeth,
+          this._arrow(outer[outer.length - 1], radians.end, radius / 5)
         ]
       }
     })
