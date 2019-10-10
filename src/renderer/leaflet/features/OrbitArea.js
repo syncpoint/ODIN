@@ -3,6 +3,7 @@ import './Feature'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import { line } from './geo-helper'
 import { FULCRUM } from './handle-types'
+import { wrap360 } from '../geodesy'
 
 /* eslint-disable object-property-newline */
 
@@ -32,7 +33,6 @@ const orbitGeometry = (latlngs, width, alignment) => {
 
   return create({ latlngs, width, alignment })
 }
-
 
 /**
  *
@@ -73,11 +73,21 @@ L.TACGRP.OrbitArea = L.TACGRP.Feature.extend({
       },
       A1: {
         latlng: orbit => orbit.A1,
-        orbit: latlng => current.copy({ width: current.A.distance(latlng) })
+        orbit: latlng => {
+          const a1 = current.A.initialBearingTo(current.B)
+          const a2 = current.A.initialBearingTo(latlng)
+          const alignment = wrap360(a2 - a1) < 180 ? 'RIGHT' : 'LEFT'
+          return current.copy({ width: current.A.distance(latlng), alignment })
+        }
       },
       B1: {
         latlng: orbit => orbit.B1,
-        orbit: latlng => current.copy({ width: current.B.distance(latlng) })
+        orbit: latlng => {
+          const a1 = current.A.finalBearingTo(current.B)
+          const a2 = current.B.initialBearingTo(latlng)
+          const alignment = wrap360(a2 - a1) < 180 ? 'RIGHT' : 'LEFT'
+          return current.copy({ width: current.B.distance(latlng), alignment })
+        }
       }
     }
 
