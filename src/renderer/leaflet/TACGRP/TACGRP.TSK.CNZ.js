@@ -1,9 +1,9 @@
 import L from 'leaflet'
 import { line, calcStruts } from '../features/geo-helper'
 import { shape } from '../features/shape'
-import '../features/Corridor'
+import '../features/Corridor2Point'
 
-L.Feature['G*T*C-----'] = L.TACGRP.Corridor.extend({
+L.Feature['G*T*C-----'] = L.TACGRP.Corridor2Point.extend({
 
   _shape (group) {
     const options = { ...this._shapeOptions }

@@ -64,16 +64,12 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
     let current = this._geometry
 
     const callback = (channel, corridor) => {
-      switch (channel) {
-        case 'drag': {
-          this._geometry = corridor
-          return this._project()
-        }
-        case 'dragend': {
-          // NOTE: We change direction again on save:
-          const geometry = toGeometry('LineString', corridor.latlngs.slice().reverse())
-          return this.options.update({ geometry, properties: { geometry_width: corridor.width } })
-        }
+      this._geometry = corridor
+      this._project()
+
+      if (channel === 'dragend') {
+        const geometry = toGeometry('LineString', corridor.latlngs.slice().reverse())
+        this.options.update({ geometry, properties: { geometry_width: corridor.width } })
       }
     }
 
@@ -83,9 +79,13 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
       callback(channel, current)
     })
 
-    // TODO: Provide options for 2-pt lines
+    const options = {
+      closed: false,
+      midways: ('midways' in this) ? this.midways : true
+    }
+
     // Upstream editor: polyline only
-    polyEditor(current.latlngs, false, layer, (channel, latlngs) => {
+    polyEditor(current.latlngs, layer, options)((channel, latlngs) => {
       current = corridorGeometry(latlngs, current.width)
       width(latlngs)
       callback(channel, current)
