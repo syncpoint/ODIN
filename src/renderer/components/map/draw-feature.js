@@ -64,6 +64,20 @@ const line2Point = (type, sidc) => evented.emit('tools.draw', {
   }
 })
 
+const polygon = (type, sidc) => evented.emit('tools.draw', {
+  geometryType: type,
+  prompt: `Draw a ${type}...`,
+  done: latlngs => {
+    const featureId = uuid()
+    selection.preselect(ResourceNames.featureId('0', featureId))
+    layerStore.addFeature(0)(featureId, {
+      type: 'Feature',
+      geometry: toGeometry('Polygon', [latlngs]),
+      properties: { sidc }
+    })
+  }
+})
+
 const corridor = (type, sidc) => evented.emit('tools.draw', {
   geometryType: type,
   prompt: `Draw a ${type}...`,
@@ -168,7 +182,7 @@ const handlers = {
   point,
   'line-2pt': line2Point,
   line,
-  polygon: line,
+  polygon,
   corridor,
   'corridor-2pt': corridor2Point,
   'fan-90': seize,
