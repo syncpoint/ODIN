@@ -65,7 +65,10 @@ const featureClasses = {
     patterns: [
       /^G.T.*$/, // tasks
       /^G.G.GL[^B].*$/, // general lines (excluding boundaries line)
-      /^G.G.DL.*$/ // defense lines
+      /^G.G.DL.*$/, // defense lines
+      /^G.G.OL.*$/, // offense lines
+      /^G.G.SL.*$/, // special lines
+      /^G.F.L.*$/ // fire support lines
     ],
     pane: (layerId, featureId, feature) => <LineProperties layerId={ layerId } featureId={ featureId } feature={ feature } />
   },
