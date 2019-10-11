@@ -12200,6 +12200,9 @@
       "LINES",
       "AXIS OF ADVANCE",
       "AIRBORNE"
+    ],
+    "geometries": [
+      "corridor"
     ]
   },
   {
