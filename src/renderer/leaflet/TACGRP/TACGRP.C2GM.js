@@ -18,7 +18,7 @@ const effectiveLine = properties => {
 }
 
 const centerLabel = lines => [{ placement: 'center', lines }]
-const centerLabelLeft = lines => [{ placement: 'center', anchor: 'start', lines }]
+const centerLabelLeft = lines => [{ placement: 'center', anchor: 'middle', lines }]
 
 const axisLabelsNSEW = line => ['north', 'south', 'east', 'west'].map(placement => ({
   placement,
