@@ -23,9 +23,9 @@
   "keywords": [
     "c2is"
   ],
-  "author": { 
-      "name": "Syncpoint GmbH",
-      "email": "office@syncpoint.io"
+  "author": {
+    "name": "Syncpoint GmbH",
+    "email": "office@syncpoint.io"
   },
   "license": "MIT",
   "devDependencies": {
