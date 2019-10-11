@@ -105,6 +105,9 @@ const handler = {
     const feature = R.clone(layerStore.feature(layerId, featureId))
     const sidc = feature.properties.sidc
 
+    // No, SIDC, no properties editor:
+    if (!sidc) return
+
     const clazz = Object.entries(featureClasses)
       .filter(([_, { patterns }]) => patterns)
       .find(([_, { patterns }]) => patterns.some(pattern => sidc.match(pattern)))
