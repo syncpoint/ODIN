@@ -41,6 +41,8 @@ L.TACGRP.Feature = L.Layer.extend({
    *
    */
   onAdd (/* map */) {
+    if (this._invalid) return
+
     this._renderer._initGroup(this)
     this._svg = this._shape(this._group, this._shapeOptions)
     this._project()
@@ -56,6 +58,8 @@ L.TACGRP.Feature = L.Layer.extend({
    *
    */
   onRemove (/* map */) {
+    if (this._invalid) return
+
     this.off('click')
     this._renderer._removeGroup(this)
     this._map.tools.dispose() // dispose editor/selection tool
