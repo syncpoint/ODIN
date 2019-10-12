@@ -110,17 +110,7 @@ evented.on('MAP_CREATED', map => {
   }, layers)
 
   const render = {
-    'replay-ready': () => {
-      refreshView()
-      const filter = Object.entries(settings.map.getDisplayFilters({}))
-        .map(([name, { value, unit }]) => `${name}(${value}${unit})`)
-        .join(' ')
-
-      const include = name => ['tilePane', 'markerPane', 'overlayPane'].includes(name)
-      Object.entries(map.getPanes())
-        .filter(([name, _]) => include(name))
-        .forEach(([_, pane]) => (pane.style.filter = filter))
-    },
+    'replay-ready': () => refreshView(),
     'layer-added': ({ layerId, show }) => {
       const urn = layerUrn(layerId)
       layers[urn] = new L.LayerGroup([])
