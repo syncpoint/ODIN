@@ -30,6 +30,11 @@ const axisLabelsEW = line => ['east', 'west'].map(placement => ({
   lines: [line]
 }))
 
+const axisLabelsS = line => ['south'].map(placement => ({
+  placement,
+  lines: [line]
+}))
+
 const namedArea = name => (feature, options) => {
   options.styles = styles
   options.labels = feature => centerLabel([`<bold>${name}</bold>`, feature.properties.t])
@@ -289,3 +294,12 @@ L.Feature['G*S*AH----'] = (feature, options) => {
 
   return new L.TACGRP.PolygonArea(feature, options)
 }
+
+// POSITION AREA FOR ARTILLERY (PAA) - RECTANGULAR
+L.Feature['G*F*ACPR--'] = (feature, options) => {
+  options.styles = feature => ({ ...styles(feature), clipping: 'mask' })
+  options.labels = feature => axisLabelsS('PAA')
+
+  return new L.TACGRP.PolygonArea(feature, options)
+}
+
