@@ -569,8 +569,7 @@
       "SEARCH AREA / RECONNAISSANCE AREA"
     ],
     "geometries": [
-      "fan",
-      "polygon"
+      "fan"
     ]
   },
   {
