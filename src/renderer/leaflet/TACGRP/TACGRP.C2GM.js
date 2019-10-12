@@ -30,6 +30,11 @@ const axisLabelsEW = line => ['east', 'west'].map(placement => ({
   lines: [line]
 }))
 
+const axisLabelsS = line => ['south'].map(placement => ({
+  placement,
+  lines: [line]
+}))
+
 const namedArea = name => (feature, options) => {
   options.styles = styles
   options.labels = feature => centerLabel([`<bold>${name}</bold>`, feature.properties.t])
@@ -68,6 +73,9 @@ L.Feature['G*G*OAO---'] = namedArea('OBJ')
 L.Feature['G*G*SAO---'] = namedArea('AO')
 L.Feature['G*G*SAN---'] = namedArea('NAI')
 L.Feature['G*G*SAT---'] = namedArea('TAI')
+L.Feature['G*S*ASB---'] = namedArea('BSA')
+L.Feature['G*S*ASD---'] = namedArea('DSA')
+L.Feature['G*S*ASR---'] = namedArea('RSA')
 
 // TODO: needs echelon
 L.Feature['G*G*DAB---'] = titledArea
@@ -174,6 +182,17 @@ L.Feature['G*S*AD----'] = (feature, options) => {
     '<bold>DETAINEE</bold>',
     '<bold>HOLDING</bold>',
     '<bold>AREA</bold>',
+    feature.properties.t
+  ])
+
+  return new L.TACGRP.PolygonArea(feature, options)
+}
+
+L.Feature['G*G*OAA---'] = (feature, options) => {
+  options.styles = feature => ({ ...styles(feature), clipping: 'mask' })
+  options.labels = feature => centerLabel([
+    '<bold>ASLT</bold>',
+    '<bold>PSN</bold>',
     feature.properties.t
   ])
 
@@ -287,5 +306,24 @@ L.Feature['G*S*AH----'] = (feature, options) => {
     feature.properties.t
   ])
 
+  return new L.TACGRP.PolygonArea(feature, options)
+}
+
+// POSITION AREA FOR ARTILLERY (PAA) - RECTANGULAR
+L.Feature['G*F*ACPR--'] = (feature, options) => {
+  options.styles = feature => ({ ...styles(feature), clipping: 'mask' })
+  options.labels = feature => axisLabelsS('PAA')
+
+  return new L.TACGRP.PolygonArea(feature, options)
+}
+
+// AREA TARGET
+L.Feature['G*F*AT----'] = (feature, options) => {
+  options.styles = styles
+  options.labels = feature => centerLabel([
+    feature.properties.t
+      ? `<bold>${feature.properties.t}</bold>`
+      : ''
+  ])
   return new L.TACGRP.PolygonArea(feature, options)
 }

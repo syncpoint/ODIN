@@ -569,8 +569,7 @@
       "SEARCH AREA / RECONNAISSANCE AREA"
     ],
     "geometries": [
-      "fan",
-      "polygon"
+      "fan"
     ]
   },
   {
@@ -1097,6 +1096,9 @@
       "COMBAT SERVICE SUPPORT",
       "SUPPORT AREAS",
       "DIVISION (DSA)"
+    ],
+    "geometries": [
+      "polygon"
     ]
   },
   {
@@ -3900,6 +3902,9 @@
       "COMBAT SERVICE SUPPORT",
       "SUPPORT AREAS",
       "BRIGADE (BSA)"
+    ],
+    "geometries": [
+      "polygon"
     ]
   },
   {
@@ -6128,6 +6133,9 @@
       "COMBAT SERVICE SUPPORT",
       "SUPPORT AREAS",
       "REGIMENTAL (RSA)"
+    ],
+    "geometries": [
+      "polygon"
     ]
   },
   {
@@ -7780,6 +7788,9 @@
       "FIRE SUPPORT",
       "AREAS",
       "AREA TARGET"
+    ],
+    "geometries": [
+      "polygon"
     ]
   },
   {
