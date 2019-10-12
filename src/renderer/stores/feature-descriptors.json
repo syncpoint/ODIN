@@ -7779,6 +7779,9 @@
       "FIRE SUPPORT",
       "AREAS",
       "AREA TARGET"
+    ],
+    "geometries": [
+      "polygon"
     ]
   },
   {
