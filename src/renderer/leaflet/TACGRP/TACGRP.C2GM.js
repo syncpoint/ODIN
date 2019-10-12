@@ -188,6 +188,17 @@ L.Feature['G*S*AD----'] = (feature, options) => {
   return new L.TACGRP.PolygonArea(feature, options)
 }
 
+L.Feature['G*G*OAA---'] = (feature, options) => {
+  options.styles = feature => ({ ...styles(feature), clipping: 'mask' })
+  options.labels = feature => centerLabel([
+    '<bold>ASLT</bold>',
+    '<bold>PSN</bold>',
+    feature.properties.t
+  ])
+
+  return new L.TACGRP.PolygonArea(feature, options)
+}
+
 // AIRSPACE COORDINATION AREA, IRREGULAR
 L.Feature['G*F*ACAI--'] = (feature, options) => {
   options.styles = feature => ({ ...styles(feature), clipping: 'backdrop' })
