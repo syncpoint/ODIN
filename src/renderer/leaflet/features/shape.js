@@ -1,4 +1,5 @@
 import L from 'leaflet'
+import uuid from 'uuid-random'
 import { K } from '../../../shared/combinators'
 import { clippingStrategy } from './clipping'
 import { noop, elementCache } from './cache'
@@ -32,12 +33,29 @@ const tspan = () => L.SVG.tspan({
 
 /**
  * TODO: move callbacks to options
+ * TODO: consider using <use/> for path
+ * TODO: setup and use 'global' fill patterns
  */
 export const shape = (group, options, callbacks) => {
   const state = { attached: false, options }
   const cache = elementCache()
   const removeChild = parent => element => cache.element(parent).removeChild(element)
-  const style = name => state.options.styles[name]
+
+  const style = name => {
+    const pathStyles = state.options.styles[name]
+
+    // Create fill pattern if necessary.
+    // NOTE: Only 'path' can use fill pattern at the moment.
+    if (name === 'path' && options.styles.fill === 'diagonal') {
+      const patternId = `pattern-${uuid()}`
+      const pattern = L.SVG.diagonalPattern(patternId, pathStyles)
+      cache.put('pattern', pattern)(removeChild('defs'))
+      cache.element('defs').appendChild(pattern)
+      pathStyles.fill = `url(#${patternId})`
+    }
+
+    return pathStyles
+  }
 
   const labels = () => callbacks.labels
     ? callbacks.labels(state.frame)
