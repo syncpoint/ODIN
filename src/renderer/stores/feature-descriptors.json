@@ -1096,6 +1096,9 @@
       "COMBAT SERVICE SUPPORT",
       "SUPPORT AREAS",
       "DIVISION (DSA)"
+    ],
+    "geometries": [
+      "polygon"
     ]
   },
   {
@@ -3899,6 +3902,9 @@
       "COMBAT SERVICE SUPPORT",
       "SUPPORT AREAS",
       "BRIGADE (BSA)"
+    ],
+    "geometries": [
+      "polygon"
     ]
   },
   {
@@ -6127,6 +6133,9 @@
       "COMBAT SERVICE SUPPORT",
       "SUPPORT AREAS",
       "REGIMENTAL (RSA)"
+    ],
+    "geometries": [
+      "polygon"
     ]
   },
   {
