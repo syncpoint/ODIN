@@ -7,7 +7,6 @@ import throttle from 'lodash.throttle'
 import evented from '../../evented'
 import { K } from '../../../shared/combinators'
 import { zoomLevels } from './zoom-levels'
-import { defaultValues } from '../ipc/display-filters'
 import { tileProvider } from '../ipc/tile-provider'
 import ipcHandlers from '../ipc/ipc'
 import coord from '../../coord-format'
@@ -25,17 +24,6 @@ const saveViewPort = ({ target }) => {
   const { lat, lng } = target.getCenter().wrap()
   const zoom = target.getZoom()
   settings.map.setViewPort({ lat, lng, zoom })
-}
-
-const updateDisplayFilter = map => values => {
-  const filter = Object.entries(values)
-    .map(([name, { value, unit }]) => `${name}(${value}${unit})`)
-    .join(' ')
-
-  const include = name => ['tilePane', 'markerPane', 'overlayPane'].includes(name)
-  Object.entries(map.getPanes())
-    .filter(([name, _]) => include(name))
-    .forEach(([_, pane]) => (pane.style.filter = filter))
 }
 
 const updateCoordinateDisplay = ({ latlng }) => {
@@ -79,11 +67,9 @@ class Map extends React.Component {
     })
 
     evented.on('OSD_MOUNTED', updateScaleDisplay(this.map))
-    evented.on('MAP:DISPLAY_FILTER_CHANGED', updateDisplayFilter(this.map))
     evented.on('map.center', latlng => this.map.panTo(latlng))
     evented.on('map.viewport', (center, zoom) => this.map.flyTo(center, zoom))
     evented.on('map.marker', marker => marker.addTo(this.map))
-    evented.emit('MAP:DISPLAY_FILTER_CHANGED', settings.map.getDisplayFilters(defaultValues()))
 
     // Bind command handlers after map was initialized:
     const context = { map: this.map }
