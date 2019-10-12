@@ -303,3 +303,14 @@ L.Feature['G*F*ACPR--'] = (feature, options) => {
   return new L.TACGRP.PolygonArea(feature, options)
 }
 
+// AREA TARGET
+L.Feature['G*F*AT----'] = (feature, options) => {
+  options.styles = styles
+  options.labels = feature => centerLabel([
+    feature.properties.t
+      ? `<bold>${feature.properties.t}</bold>`
+      : ''
+  ])
+  return new L.TACGRP.PolygonArea(feature, options)
+}
+
