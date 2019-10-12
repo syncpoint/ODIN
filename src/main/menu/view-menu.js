@@ -11,29 +11,6 @@ const menu = settings => {
   const osdOptions = settings.get('osdOptions') ||
       ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
 
-  const mapFilters = [
-    { label: 'Brightness', command: 'brightness' },
-    { label: 'Contrast', command: 'contrast' },
-    { label: 'Grayscale', command: 'grayscale' },
-    { label: 'Hue', command: 'hue-rotate' },
-    { label: 'Invert', command: 'invert' },
-    { label: 'Sepia', command: 'sepia' }
-  ].map(({ label, command }, index) => ({
-    label,
-    click: sendMessage('COMMAND_ADJUST', command),
-    accelerator: process.platform === 'darwin'
-      ? `Alt+Cmd+${index + 1}`
-      : `Ctrl+Shift+${index + 1}`
-  }))
-
-  mapFilters.push({
-    label: 'Reset',
-    click: sendMessage('COMMAND_RESET_FILTERS'),
-    accelerator: process.platform === 'darwin'
-      ? 'Alt+Cmd+9'
-      : 'Ctrl+Shift+9'
-  })
-
   // Get last provider (if any) to check corresponding menu item:
   const lastProviderId = settings.get('tileProvider')
   const hiDPISupport = settings.get('hiDPISupport') || false
@@ -63,17 +40,8 @@ const menu = settings => {
     label: 'View',
     submenu: [
       {
-        label: 'Map',
-        submenu: [
-          {
-            label: 'Filter',
-            submenu: mapFilters
-          },
-          {
-            label: 'Tile Providers',
-            submenu: tileProvidersMenu
-          }
-        ]
+        label: 'Tile Providers',
+        submenu: tileProvidersMenu
       },
       {
         label: 'HiDPI Support',
