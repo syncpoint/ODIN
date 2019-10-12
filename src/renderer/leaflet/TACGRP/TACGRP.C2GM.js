@@ -73,6 +73,9 @@ L.Feature['G*G*OAO---'] = namedArea('OBJ')
 L.Feature['G*G*SAO---'] = namedArea('AO')
 L.Feature['G*G*SAN---'] = namedArea('NAI')
 L.Feature['G*G*SAT---'] = namedArea('TAI')
+L.Feature['G*S*ASB---'] = namedArea('BSA')
+L.Feature['G*S*ASD---'] = namedArea('DSA')
+L.Feature['G*S*ASR---'] = namedArea('RSA')
 
 // TODO: needs echelon
 L.Feature['G*G*DAB---'] = titledArea
@@ -313,4 +316,3 @@ L.Feature['G*F*AT----'] = (feature, options) => {
   ])
   return new L.TACGRP.PolygonArea(feature, options)
 }
-
