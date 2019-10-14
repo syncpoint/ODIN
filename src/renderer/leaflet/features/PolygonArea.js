@@ -5,6 +5,7 @@ import { toLatLngs, toGeometry } from '../GeoJSON'
 import '../features/Feature'
 import { shape } from './shape'
 import { polyEditor } from '../features/poly-editor'
+import bbox from '@turf/bbox'
 
 
 /**
@@ -113,9 +114,16 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
 
     this._geometry = toLatLngs(feature.geometry)
 
+    const box = bbox(feature)
+    this._bounds = L.latLngBounds(
+      L.latLng(box[1], box[0]),
+      L.latLng(box[3], box[2])
+    )
+
     this._shapeOptions = {
       interactive: this.options.interactive,
       lineSmoothing: this.options.lineSmoothing,
+      hideLabels: this.options.hideLabels,
       styles: this.options.styles(feature),
       labels: this.options.labels(feature)
     }
