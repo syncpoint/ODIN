@@ -46,7 +46,7 @@ L.TACGRP.FanArea = L.TACGRP.Feature.extend({
     const O = layerPoint(this._geometry.O)
     const S = layerPoint(this._geometry.S)
 
-    this._svg.updateFrame({
+    this._frame = {
       C,
       O,
       S,
@@ -54,7 +54,7 @@ L.TACGRP.FanArea = L.TACGRP.Feature.extend({
       size: this._geometry.size,
       rangeO: line([C, O]).d,
       rangeS: line([C, S]).d
-    })
+    }
   },
 
 
@@ -63,32 +63,31 @@ L.TACGRP.FanArea = L.TACGRP.Feature.extend({
    */
   _geometryEditor () {
     const layer = new L.Handles().addTo(this._map)
-    let current = this._geometry
 
     const handlers = {
       C: {
         latlng: arc => arc.C,
-        arc: latlng => current.copy({ latlng })
+        arc: latlng => this._geometry.copy({ latlng })
       },
       O: {
         latlng: arc => arc.O,
-        arc: latlng => current.copy({
-          orientation: current.C.finalBearingTo(latlng),
-          rangeO: current.C.distance(latlng)
+        arc: latlng => this._geometry.copy({
+          orientation: this._geometry.C.finalBearingTo(latlng),
+          rangeO: this._geometry.C.distance(latlng)
         })
       },
       S: {
         latlng: arc => arc.S,
-        arc: latlng => current.copy({
-          size: current.C.finalBearingTo(latlng) - current.orientation,
-          rangeS: current.C.distance(latlng)
+        arc: latlng => this._geometry.copy({
+          size: this._geometry.C.finalBearingTo(latlng) - this._geometry.orientation,
+          rangeS: this._geometry.C.distance(latlng)
         })
       }
     }
 
     const update = (channel, arc) => {
-      this._geometry = current = arc
-      this._project()
+      this._geometry = arc
+      this._reset()
       Object.keys(handlers).forEach(id => handles[id].setLatLng(arc[id]))
 
       if (channel === 'dragend') {
@@ -111,7 +110,7 @@ L.TACGRP.FanArea = L.TACGRP.Feature.extend({
         dragend: ({ target }) => update('dragend', handler.arc(target.getLatLng()))
       }
 
-      const latlng = handler.latlng(current)
+      const latlng = handler.latlng(this._geometry)
       acc[id] = layer.addHandle(latlng, handleOptions)
       return acc
     }, {})

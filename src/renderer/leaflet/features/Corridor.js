@@ -53,19 +53,18 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
    */
   _project () {
     const layerPoint = this._map.latLngToLayerPoint.bind(this._map)
-    this._svg.updateFrame({
+    this._frame = {
       center: this._geometry.latlngs.map(layerPoint),
       envelope: this._geometry.envelope().map(pair => pair.map(layerPoint))
-    })
+    }
   },
 
   _geometryEditor () {
     const layer = new L.Handles().addTo(this._map)
-    let current = this._geometry
 
     const callback = (channel, corridor) => {
       this._geometry = corridor
-      this._project()
+      this._reset()
 
       if (channel === 'dragend') {
         const geometry = toGeometry('LineString', corridor.latlngs.slice().reverse())
@@ -74,9 +73,9 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
     }
 
     // Downstream editor: polyline + width
-    const width = widthEditor(current, layer, (channel, corridor) => {
-      current = corridor
-      callback(channel, current)
+    const width = widthEditor(this._geometry, layer, (channel, corridor) => {
+      this._geometry = corridor
+      callback(channel, this._geometry)
     })
 
     const options = {
@@ -85,10 +84,10 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
     }
 
     // Upstream editor: polyline only
-    polyEditor(current.latlngs, layer, options)((channel, latlngs) => {
-      current = corridorGeometry(latlngs, current.width)
+    polyEditor(this._geometry.latlngs, layer, options)((channel, latlngs) => {
+      this._geometry = corridorGeometry(latlngs, this._geometry.width)
       width(latlngs)
-      callback(channel, current)
+      callback(channel, this._geometry)
     })
 
     return {

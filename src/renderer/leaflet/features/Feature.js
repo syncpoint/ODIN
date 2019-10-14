@@ -45,7 +45,7 @@ L.TACGRP.Feature = L.Layer.extend({
 
     this._renderer._initGroup(this)
     this._svg = this._shape(this._group, this._shapeOptions)
-    this._project()
+    this._reset()
     this._renderer._addGroup(this)
     this._svg.attached && this._svg.attached()
     this.on('click', () => this._edit())
@@ -100,6 +100,8 @@ L.TACGRP.Feature = L.Layer.extend({
    * NOTE: Called twice after map was panned, so implementation should be fast.
    */
   _update () {
+    if (!this._frame) console.log('missing frame')
+    if (this._frame) this._svg.updateFrame(this._frame)
   },
 
 
@@ -108,6 +110,7 @@ L.TACGRP.Feature = L.Layer.extend({
    */
   _reset () {
     this._project()
+    this._update()
   },
 
 

@@ -50,50 +50,48 @@ L.TACGRP.OrbitArea = L.TACGRP.Feature.extend({
     const A1 = layerPoint(this._geometry.A1)
     const B1 = layerPoint(this._geometry.B1)
 
-
-    this._svg.updateFrame({
+    this._frame = {
       A, B, A1, B1,
       width: line([A, A1]).d,
       alignment: this._geometry.alignment
-    })
+    }
   },
 
   _geometryEditor () {
     const layer = new L.Handles().addTo(this._map)
-    let current = this._geometry
 
     const handlers = {
       A: {
         latlng: orbit => orbit.A,
-        orbit: latlng => current.copy({ latlngs: [latlng, current.B] })
+        orbit: latlng => this._geometry.copy({ latlngs: [latlng, this._geometry.B] })
       },
       B: {
         latlng: orbit => orbit.B,
-        orbit: latlng => current.copy({ latlngs: [current.A, latlng] })
+        orbit: latlng => this._geometry.copy({ latlngs: [this._geometry.A, latlng] })
       },
       A1: {
         latlng: orbit => orbit.A1,
         orbit: latlng => {
-          const a1 = current.A.initialBearingTo(current.B)
-          const a2 = current.A.initialBearingTo(latlng)
+          const a1 = this._geometry.A.initialBearingTo(this._geometry.B)
+          const a2 = this._geometry.A.initialBearingTo(latlng)
           const alignment = wrap360(a2 - a1) < 180 ? 'RIGHT' : 'LEFT'
-          return current.copy({ width: current.A.distance(latlng), alignment })
+          return this._geometry.copy({ width: this._geometry.A.distance(latlng), alignment })
         }
       },
       B1: {
         latlng: orbit => orbit.B1,
         orbit: latlng => {
-          const a1 = current.A.finalBearingTo(current.B)
-          const a2 = current.B.initialBearingTo(latlng)
+          const a1 = this._geometry.A.finalBearingTo(this._geometry.B)
+          const a2 = this._geometry.B.initialBearingTo(latlng)
           const alignment = wrap360(a2 - a1) < 180 ? 'RIGHT' : 'LEFT'
-          return current.copy({ width: current.B.distance(latlng), alignment })
+          return this._geometry.copy({ width: this._geometry.B.distance(latlng), alignment })
         }
       }
     }
 
     const update = (channel, orbit) => {
-      this._geometry = current = orbit
-      this._project()
+      this._geometry = orbit
+      this._reset()
       Object.keys(handlers).forEach(id => handles[id].setLatLng(orbit[id]))
 
       if (channel === 'dragend') {
@@ -114,7 +112,7 @@ L.TACGRP.OrbitArea = L.TACGRP.Feature.extend({
         dragend: ({ target }) => update('dragend', handler.orbit(target.getLatLng()))
       }
 
-      const latlng = handler.latlng(current)
+      const latlng = handler.latlng(this._geometry)
       acc[id] = layer.addHandle(latlng, handleOptions)
       return acc
     }, {})

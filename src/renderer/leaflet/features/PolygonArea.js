@@ -68,9 +68,9 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
    */
   _project () {
     const layerPoint = this._map.latLngToLayerPoint.bind(this._map)
-    this._svg.updateFrame({
+    this._frame = {
       rings: this._geometry.map(ring => ring.map(layerPoint))
-    })
+    }
   },
 
 
@@ -87,7 +87,7 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
 
     polyEditor(this._geometry[0], layer, options)((channel, latlngs) => {
       this._geometry = [latlngs]
-      this._project()
+      this._reset()
 
       if (channel === 'dragend') {
         const geometry = toGeometry('Polygon', this._geometry)
