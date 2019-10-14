@@ -100,7 +100,6 @@ L.TACGRP.Feature = L.Layer.extend({
    * NOTE: Called twice after map was panned, so implementation should be fast.
    */
   _update () {
-    if (!this._frame) console.log('missing frame')
     if (this._frame) this._svg.updateFrame(this._frame)
   },
 
