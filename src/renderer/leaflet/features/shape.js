@@ -147,7 +147,8 @@ export const shape = (group, options, callbacks) => {
    */
   const renderLabels = () => {
     clipping.reset()
-    if (state.options.hideLabels) return
+
+    if (state.options.hideLabels) return clipping.finish()
     cache.put('labels', L.SVG.create('g'))(removeChild('group'))
     cache.element('group').appendChild(cache.element('labels'))
 

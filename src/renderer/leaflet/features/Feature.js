@@ -23,6 +23,7 @@ L.TACGRP.Feature = L.Layer.extend({
    *
    */
   initialize (feature, options) {
+    this.xyz = feature
     L.setOptions(this, options)
     this._setFeature(feature)
   },
@@ -42,15 +43,10 @@ L.TACGRP.Feature = L.Layer.extend({
    */
   onAdd (/* map */) {
     if (this._invalid) return
-
-    this._renderer._initGroup(this)
-    this._svg = this._shape(this._group, this._shapeOptions)
-    this._reset()
-    this._renderer._addGroup(this)
-    this._svg.attached && this._svg.attached()
+    if (this._visible()) this._attach()
     this.on('click', () => this._edit())
-
-    if (selection.isPreselected(this.urn)) setImmediate(() => this._edit())
+    this._map.on('zoomend', this._viewportChanged, this)
+    this._map.on('moveend', this._viewportChanged, this)
   },
 
 
@@ -58,13 +54,30 @@ L.TACGRP.Feature = L.Layer.extend({
    *
    */
   onRemove (/* map */) {
-    if (this._invalid) return
-
     this.off('click')
-    this._renderer._removeGroup(this)
+    this._map.on('zoomend', this._viewportChanged, this)
+    this._map.on('moveend', this._viewportChanged, this)
     this._map.tools.dispose() // dispose editor/selection tool
+
+    if (this._invalid) return
+    if (!this._svg) return
+    this._detach()
   },
 
+
+  _attach () {
+    this._renderer._initGroup(this)
+    this._svg = this._shape(this._group, this._shapeOptions)
+    this._reset()
+    this._renderer._addGroup(this)
+    this._svg.attached && this._svg.attached()
+    if (selection.isPreselected(this.urn)) setImmediate(() => this._edit())
+  },
+
+  _detach () {
+    this._renderer._removeGroup(this)
+    this._svg = null
+  },
 
   /**
    * TODO: Reverse dependency: Selection should trigger edit (if editable).
@@ -95,12 +108,26 @@ L.TACGRP.Feature = L.Layer.extend({
   _styles (feature) { return styles(feature) },
 
 
+  _viewportChanged () {
+    if (!this._map) return
+
+    const visible = this._visible()
+    if (visible && !this._svg) this._attach()
+    if (!visible && this._svg) this._detach()
+  },
+
+
+  _visible () {
+    if (!this._bounds) return true
+    return this._map.getBounds().intersects(this._bounds)
+  },
+
   /**
    * Required by L.Renderer, but NOOP since we handle shape state in layer.
    * NOTE: Called twice after map was panned, so implementation should be fast.
    */
   _update () {
-    if (this._frame) this._svg.updateFrame(this._frame)
+    if (this._visible() && this._frame) this._svg.updateFrame(this._frame)
   },
 
 
@@ -108,8 +135,10 @@ L.TACGRP.Feature = L.Layer.extend({
    *
    */
   _reset () {
-    this._project()
-    this._update()
+    if (this._visible()) {
+      this._project()
+      this._update()
+    }
   },
 
 

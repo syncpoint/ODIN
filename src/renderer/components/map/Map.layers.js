@@ -142,6 +142,8 @@ evented.on('MAP_CREATED', map => {
     'feature-deleted': ({ layerId, featureId }) => deleteLayer(featureUrn(layerId, featureId)),
     'options-updated': () => {
       // Tear down every visible layer and build from scratch.
+      // FIXME: This is a pretty stupid idea!
+      // TODO: Pass new options downstream instead of refreshing everything
       Object.values(layers).forEach(layer => layer.remove())
       refreshView()
     }
