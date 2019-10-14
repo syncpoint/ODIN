@@ -2,13 +2,9 @@ import L from 'leaflet'
 import * as R from 'ramda'
 import { line } from '../features/geo-helper'
 import { shape } from '../features/shape'
-import '../features/Polyline'
+import '../features/Line2Point'
 
-L.Feature['G*T*F-----'] = L.TACGRP.Polyline.extend({
-
-
-  lineSmoothing: false,
-
+L.Feature['G*T*F-----'] = L.TACGRP.Line2Point.extend({
 
   _shape (group) {
     const options = { ...this._shapeOptions }
