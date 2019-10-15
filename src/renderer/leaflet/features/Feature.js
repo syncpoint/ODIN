@@ -1,4 +1,5 @@
 import L from 'leaflet'
+import * as R from 'ramda'
 import selection from '../../components/App.selection'
 import { styles } from './styles'
 import './Handles'
@@ -128,6 +129,15 @@ L.TACGRP.Feature = L.Layer.extend({
    * NOTE: Called twice after map was panned, so implementation should be fast.
    */
   _update () {
+    const state = {
+      center: this._map.getCenter(),
+      zoom: this._map.getZoom(),
+      geometry: this._geometry
+    }
+
+    // Guard against updating too often:
+    if (R.equals(this._state, state)) return
+    this._state = state
     if (this._visible() && this._frame) this._svg.updateFrame(this._frame)
   },
 
