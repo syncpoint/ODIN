@@ -73,18 +73,23 @@ class Map extends React.Component {
     })
   }
 
-  componentDidUpdate (prevProps) {
-    const map = this.map
-    const { center, zoom } = this.props
-    const centerChanged = center && !prevProps.center.equals(center)
-    const zoomChanged = zoom && prevProps.zoom !== zoom
+  // FIXME: why did we need this?
+  // componentDidUpdate (prevProps) {
+  //   const map = this.map
+  //   const { center, zoom } = this.props
 
-    if (centerChanged && zoomChanged) map.flyTo(center, zoom)
-    else {
-      if (centerChanged) map.panTo(center)
-      if (zoomChanged) map.setZoom(zoom)
-    }
-  }
+  //   const centerChanged = center && !map.getCenter().equals(center)
+  //   const zoomChanged = zoom && map.getZoom() !== zoom
+
+  //   console.log('center', center, map.getCenter(), centerChanged)
+  //   console.log('zoom', zoom, map.getZoom(), zoomChanged)
+
+  //   // if (centerChanged && zoomChanged) map.flyTo(center, zoom)
+  //   // else {
+  //   //   if (centerChanged) map.panTo(center)
+  //   //   if (zoomChanged) map.setZoom(zoom)
+  //   // }
+  // }
 
   render () {
     const { classes, id } = this.props
