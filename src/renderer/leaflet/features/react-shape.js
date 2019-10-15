@@ -13,6 +13,17 @@ const translate = style => ({
   opacity: style['opacity']
 })
 
+const lineProps = line => {
+  if (!line) return { content: '', fontWeight: null }
+  const match = line.match(/<bold>(.*)<\/bold>/)
+  const bold = (match && !!match[1]) || false
+  return {
+    content: bold ? match[1] : line,
+    fontWeight: bold ? 'bold' : null
+  }
+}
+
+
 const Shape = props => {
   const { id, options, d } = props
   const { placements } = props
@@ -20,10 +31,22 @@ const Shape = props => {
 
   const labels = (options.labels || []).map((label, index) => {
     const {x, y} = placements[label.placement]
+
+    const tspans = () => label.lines
+      .filter(line => line)
+      .slice(1).map(lineProps).map((props, index) => {
+        return (
+          <tspan key={index} x={x} dy={'1.2em'} fontWeight={props.fontWeight}>
+            {props.content}
+          </tspan>
+        )
+      })
+
+    const props = lineProps(label.lines[0])
     return (
-      // TODO: line 0 => text, line 1, 2, ... => tspan
-      <text key={index} fontSize={16} x={x} y={y} textAnchor='middle'>
-        {label.lines[0]}
+      <text key={index} fontSize={16} x={x} y={y} textAnchor='middle' fontWeight={props.fontWeight}>
+        {props.content}
+        {tspans()}
       </text>
     )
   })
