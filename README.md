@@ -33,6 +33,26 @@ Create main and renderer bundles first, then start development server (for rende
 1. `npm run webpack`
 2. `npm run hot`
 
+
+## The missing manual
+We had no time to come up with a user's manual so far. But eventually we will get there...
+In the meantime, here is some information which might come in handy at some point.
+
+### Resetting application state
+You might want to/or are forced to reset stored application data, or example in the case of an unrecoverable error which is based on invalid application data.
+
+Data stored in user-specific application directory include
+* Booksmarks
+* Layers and features incl. their geometry and other information
+* Current map center and zoom level
+* Visibility of different things like labels, tile layer and so on
+* And other options like line smoothing, HiDPI support and more
+
+To delete application data simply delete the entire `odin-c2is` application data directory __after closing the application__. The locations are for
+* Windows: `%APPDATA%\odin-c2is` (e.g. `C:\Users\{your-user}\AppData\Roaming\odin-c2is`)
+* macOS: `~/Library/Application\ Support/odin-c2is`
+
+
 ## License
 
 Copyright (c) Syncpoint GmbH. All rights reserved.
