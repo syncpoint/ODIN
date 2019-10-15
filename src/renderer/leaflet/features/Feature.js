@@ -45,6 +45,7 @@ L.TACGRP.Feature = L.Layer.extend({
     if (this._invalid) return
     if (this._visible()) this._attach()
     this.on('click', () => this._edit())
+    // FIXME: does not scale well, each feature (possibly hundreds) register listeners
     this._map.on('zoomend', this._viewportChanged, this)
     this._map.on('moveend', this._viewportChanged, this)
   },
@@ -55,8 +56,8 @@ L.TACGRP.Feature = L.Layer.extend({
    */
   onRemove (/* map */) {
     this.off('click')
-    this._map.on('zoomend', this._viewportChanged, this)
-    this._map.on('moveend', this._viewportChanged, this)
+    this._map.off('zoomend', this._viewportChanged, this)
+    this._map.off('moveend', this._viewportChanged, this)
     this._map.tools.dispose() // dispose editor/selection tool
 
     if (this._invalid) return
