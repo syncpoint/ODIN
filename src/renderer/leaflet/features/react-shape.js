@@ -70,6 +70,8 @@ const Label = props => {
       scale(${flip} ${flip})
       translate(${-x} ${-y})
     `)
+
+    props.callback(box, transform)
   })
 
   const tspans = () => lines
@@ -96,28 +98,71 @@ const Label = props => {
   )
 }
 
+
+const BlackMask = props => {
+  console.log('props', props)
+  if (!props.box || !props.transform) return null
+  const box = L.SVG.inflate(props.box, 8)
+  const ps = { x: box.x, y: box.y, width: box.width, height: box.height, transform: props.transform }
+  return <rect fill={'black'} {...ps}/>
+}
+
 const MLabel = React.memo(Label, R.equals)
+const MBlackMask = React.memo(BlackMask, R.equals)
 
 const Shape = props => {
   const { id, options, d } = props
   const { placements } = props
   const className = options.interactive ? 'leaflet-interactive' : ''
 
-  const labels = props.labels.map((label, index) => {
-    const {x, y} = placements[label.placement]
-    return <MLabel key={index} x={x} y={y} lines={label.lines} anchor={label.anchor}/>
+  const groupRef = React.createRef()
+  const whiteMaskRef = React.createRef()
+
+  useEffect(() => {
+    const box = groupRef.current.getBBox()
+    L.SVG.setAttributes(whiteMaskRef.current)({ ...L.SVG.inflate(box, 20) })
   })
 
-  return (<>
-    <defs>
-      <path className={className} id={`path-${id}`} d={d}/>
-    </defs>
-    {/* re-use path definition with different styles. */}
-    <use xlinkHref={`#path-${id}`} {...translate(options.styles['outline'])}/>
-    <use xlinkHref={`#path-${id}`} {...translate(options.styles['contrast'])}/>
-    <use xlinkHref={`#path-${id}`} {...translate(options.styles['path'])}/>
-    { labels }
-  </>)
+  const [blackBoxes, setBlackBoxes] = useState(new Array(props.labels.length))
+  const [transforms, setTransforms] = useState(new Array(props.labels.length))
+
+  const callback = index => (box, transform) => {
+    transforms[index] = transform
+    setTransforms(transforms)
+    blackBoxes[index] = box
+    setBlackBoxes(blackBoxes)
+  }
+
+  const blackMasks = props.labels.map((label, index) => {
+    return <MBlackMask key={index} box={blackBoxes[index]} transform={transforms[index]}/>
+  })
+
+  const labels = props.labels.map((label, index) => {
+    const {x, y} = placements[label.placement]
+    return (
+      <MLabel key={index} x={x} y={y}
+              lines={label.lines} anchor={label.anchor}
+              callback={callback(index)}
+      />
+    )
+  })
+
+  return (
+    <g ref={groupRef}>
+      <defs>
+        <mask id={`mask-${id}`}>
+          <rect ref={whiteMaskRef} fill={'white'}/>
+          { blackMasks }
+        </mask>
+        <path className={className} id={`path-${id}`} d={d}/>
+      </defs>
+      {/* re-use path definition with different styles. */}
+      <use xlinkHref={`#path-${id}`} {...translate(options.styles['outline'])}/>
+      <use xlinkHref={`#path-${id}`} mask={`url(#mask-${id})`} {...translate(options.styles['contrast'])}/>
+      <use xlinkHref={`#path-${id}`} mask={`url(#mask-${id})`} {...translate(options.styles['path'])}/>
+      { labels }
+    </g>
+  )
 }
 
 export const shape = (group, options, callbacks) => {
