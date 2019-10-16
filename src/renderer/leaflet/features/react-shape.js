@@ -2,9 +2,15 @@
 
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
+import L from 'leaflet'
 import * as R from 'ramda'
 import uuid from 'uuid-random'
+import { K } from '../../../shared/combinators'
 
+
+/**
+ *
+ */
 const translate = style => ({
   stroke: style['stroke'],
   strokeWidth: style['stroke-width'],
@@ -14,6 +20,10 @@ const translate = style => ({
   opacity: style['opacity']
 })
 
+
+/**
+ *
+ */
 const lineProperties = line => {
   if (!line) return { content: '', fontWeight: null }
   const match = line.match(/<bold>(.*)<\/bold>/)
@@ -24,12 +34,10 @@ const lineProperties = line => {
   }
 }
 
-const Equals = {
-  SVGRect: (a, b) =>
-    a.x === b.x && a.y === b.y &&
-    a.width === b.width && a.height === b.height
-}
 
+/**
+ *
+ */
 const adjustTextAnchor = (anchor, angle) => {
   if (angle < 90 || angle > 270) return anchor
   switch (anchor) {
@@ -39,137 +47,138 @@ const adjustTextAnchor = (anchor, angle) => {
   }
 }
 
-const Label = props => {
+
+/**
+ *
+ */
+const Label = React.forwardRef((props, ref) => {
   const { x, y, lines } = props
   const fontSize = props.fontSize || 14
-  const angle = 0
   const textAnchor = adjustTextAnchor(props.textAnchor) || 'middle'
 
-  const ref = React.createRef()
-  const [bbox, setBBox] = useState(null)
-  const [transform, setTransform] = useState(null)
-
-  useEffect(() => {
-    const box = ref.current.getBBox()
-    if (bbox && Equals.SVGRect(box, bbox)) return
-    setBBox(box)
-
-    // TODO: propagate matrix to parent (callback)
-
-    const ty = fontSize / 2 - box.height / 2
-    const tx = textAnchor === 'left'
-      ? -box.width / 2
-      : textAnchor === 'right'
-        ? box.width / 2
-        : 0
-
-    const flip = (angle > 90 && angle < 270) ? -1 : 1
-    setTransform(`
-      translate(${x + tx} ${y + ty})
-      rotate(${angle})
-      scale(${flip} ${flip})
-      translate(${-x} ${-y})
-    `)
-
-    props.callback(box, transform)
-  })
+  const tspan = ({ content, fontWeight }, index) =>
+    <tspan
+      key={index}
+      x={x} dy={'1.2em'}
+      fontWeight={fontWeight}
+      alignmentBaseline={'central'}
+    >
+      {content}
+    </tspan>
 
   const tspans = () => lines
     .slice(1)
     .filter(line => line)
     .map(lineProperties)
-    .map(({ content, fontWeight }, index) => {
-      return (
-        <tspan key={index} x={x} dy={'1.2em'} fontWeight={fontWeight} alignmentBaseline={'central'}>
-          {content}
-        </tspan>
-      )
-    })
+    .map(tspan)
 
   const { content, fontWeight } = lineProperties(lines[0])
+
   return (
-    <text ref={ref} fontSize={16} x={x} y={y}
+    <text ref={ref}
+          fontSize={16} x={x} y={y}
           textAnchor={textAnchor} fontWeight={fontWeight} fontSize={fontSize}
           alignmentBaseline={'central'}
-          transform={transform}>
+    >
       {content}
       {tspans()}
     </text>
   )
-}
+})
 
 
-const BlackMask = props => {
-  console.log('props', props)
-  if (!props.box || !props.transform) return null
-  const box = L.SVG.inflate(props.box, 8)
-  const ps = { x: box.x, y: box.y, width: box.width, height: box.height, transform: props.transform }
-  return <rect fill={'black'} {...ps}/>
-}
-
-const MLabel = React.memo(Label, R.equals)
-const MBlackMask = React.memo(BlackMask, R.equals)
-
+/**
+ *
+ */
 const Shape = props => {
   const { id, options, d } = props
   const { placements } = props
   const className = options.interactive ? 'leaflet-interactive' : ''
 
-  const groupRef = React.createRef()
-  const whiteMaskRef = React.createRef()
-
-  useEffect(() => {
-    const box = groupRef.current.getBBox()
-    L.SVG.setAttributes(whiteMaskRef.current)({ ...L.SVG.inflate(box, 20) })
-  })
-
-  const [blackBoxes, setBlackBoxes] = useState(new Array(props.labels.length))
-  const [transforms, setTransforms] = useState(new Array(props.labels.length))
-
-  const callback = index => (box, transform) => {
-    transforms[index] = transform
-    setTransforms(transforms)
-    blackBoxes[index] = box
-    setBlackBoxes(blackBoxes)
+  const refs = {
+    labels: [],
+    blackMasks: [],
   }
 
-  const blackMasks = props.labels.map((label, index) => {
-    return <MBlackMask key={index} box={blackBoxes[index]} transform={transforms[index]}/>
+  const current = ref => ref.current
+
+  useEffect(() => {
+    R.zip(refs.labels.map(current), refs.blackMasks.map(current))
+      .forEach(([text, mask], index) => {
+        const label = props.labels[index]
+        const {x, y} = placements[label.placement]
+        const fontSize = label.fontSize || 14
+        const angle = 0
+        const textAnchor = adjustTextAnchor(props.textAnchor) || 'middle'
+
+        const textBox = text.getBBox()
+        const flip = (angle > 90 && angle < 270) ? -1 : 1
+        const ty = fontSize / 2 - textBox.height / 2
+        const tx = textAnchor === 'left'
+          ? -textBox.width / 2
+          : textAnchor === 'right'
+            ? textBox.width / 2
+            : 0
+
+        const transform = `
+          translate(${x + tx} ${y + ty})
+          rotate(${angle})
+          scale(${flip} ${flip})
+          translate(${-x} ${-y})
+        `
+
+        text.setAttribute('transform', transform)
+
+        // White mask:
+        const maskBox = L.SVG.inflate(textBox, 8)
+        const attrs = { x: maskBox.x, y: maskBox.y, width: maskBox.width, height: maskBox.height, transform }
+        L.SVG.setAttributes(mask)(attrs)
+      })
+
+    const box = refs.defs.current.parentNode.getBBox()
+    L.SVG.setAttributes(refs.whiteMask.current)({ ...L.SVG.inflate(box, 20) })
   })
 
   const labels = props.labels.map((label, index) => {
     const {x, y} = placements[label.placement]
     return (
-      <MLabel key={index} x={x} y={y}
-              lines={label.lines} anchor={label.anchor}
-              callback={callback(index)}
+      <Label key={index} x={x} y={y}
+             ref={K(React.createRef())(ref => refs.labels.push(ref))}
+             lines={label.lines} anchor={label.anchor}
       />
     )
   })
 
-  return (
-    <g ref={groupRef}>
-      <defs>
-        <mask id={`mask-${id}`}>
-          <rect ref={whiteMaskRef} fill={'white'}/>
-          { blackMasks }
-        </mask>
-        <path className={className} id={`path-${id}`} d={d}/>
-      </defs>
-      {/* re-use path definition with different styles. */}
-      <use xlinkHref={`#path-${id}`} {...translate(options.styles['outline'])}/>
-      <use xlinkHref={`#path-${id}`} mask={`url(#mask-${id})`} {...translate(options.styles['contrast'])}/>
-      <use xlinkHref={`#path-${id}`} mask={`url(#mask-${id})`} {...translate(options.styles['path'])}/>
-      { labels }
-    </g>
-  )
+  const blackMasks = props.labels.map((_, index) => <rect
+    key={index}
+    ref={K(React.createRef())(ref => refs.blackMasks.push(ref))}
+    fill={'black'}
+  />)
+
+  return (<>
+    <defs ref={K(React.createRef())(ref => refs.defs = ref)}>
+      <mask id={`mask-${id}`}>
+        <rect ref={K(React.createRef())(ref => refs.whiteMask = ref)} fill={'white'}/>
+        {blackMasks}
+      </mask>
+      <path className={className} id={`path-${id}`} d={d} mask={`url(#mask-${id})`}/>
+    </defs>
+    {/* re-use path definition with different styles. */}
+    <use xlinkHref={`#path-${id}`} {...translate(options.styles['outline'])}/>
+    <use xlinkHref={`#path-${id}`} {...translate(options.styles['contrast'])}/>
+    <use xlinkHref={`#path-${id}`} {...translate(options.styles['path'])}/>
+    { labels }
+  </>)
 }
 
+
+/**
+ *
+ */
 export const shape = (group, options, callbacks) => {
   const id = uuid()
   const state = { id, options, callbacks, labels: [] }
   const render = () => ReactDOM.render(<Shape {...state}/>, group)
-
   if ('object' === typeof options.labels) state.labels = options.labels
 
   return {
