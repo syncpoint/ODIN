@@ -124,6 +124,8 @@ const Shape = props => {
 
   const current = ref => ref.current
 
+  props.labels.forEach(p => console.log('props', p))
+
   if (props.labels.length) {
     useEffect(() => {
       R.zip(refs.labels.map(current), refs.blackMasks.map(current))
@@ -146,7 +148,7 @@ const Shape = props => {
   const labels = props.labels.map((label, index) =>
     <Label key={index} x={label.center.x} y={label.center.y}
            ref={K(React.createRef())(ref => refs.labels.push(ref))}
-           lines={label.lines} anchor={label.anchor}
+           lines={label.lines} textAnchor={label.textAnchor}
     />
   )
 
@@ -227,6 +229,8 @@ export const shape = (group, options, callbacks) => {
     const labels = (typeof options.labels) === 'function'
       ? options.labels(state.frame)
       : options.labels
+
+    labels.forEach(label => console.log(label))
 
     return labels.map(labelProperties).filter(props => props.center)
   }
