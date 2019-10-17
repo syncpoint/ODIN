@@ -114,7 +114,8 @@ const Shape = props => {
   const { id, interactive, styles, d } = props
   const className = interactive ? 'leaflet-interactive' : ''
 
-  console.log('d', d)
+  // Don't render at all when path is not valid:
+  if (d.indexOf('NaN') !== -1) return null
 
   const refs = {
     labels: [],
