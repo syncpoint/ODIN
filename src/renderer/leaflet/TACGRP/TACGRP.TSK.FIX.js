@@ -1,7 +1,7 @@
 import L from 'leaflet'
 import * as R from 'ramda'
 import { line } from '../features/geo-helper'
-import { shape } from '../features/shape'
+import { shape } from '../features/react-shape'
 import '../features/Line2Point'
 
 L.Feature['G*T*F-----'] = L.TACGRP.Line2Point.extend({

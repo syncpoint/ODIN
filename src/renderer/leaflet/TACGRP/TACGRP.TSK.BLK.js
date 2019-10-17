@@ -1,6 +1,6 @@
 import L from 'leaflet'
 import { line } from '../features/geo-helper'
-import { shape } from '../features/shape'
+import { shape } from '../features/react-shape'
 import '../features/Corridor2Point'
 
 

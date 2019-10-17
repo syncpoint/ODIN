@@ -1,6 +1,6 @@
 import L from 'leaflet'
 import { line, calcStruts2 } from '../features/geo-helper'
-import { shape } from '../features/shape'
+import { shape } from '../features/react-shape'
 import '../features/Corridor2Point'
 
 L.Feature['G*T*P-----'] = L.TACGRP.Corridor2Point.extend({

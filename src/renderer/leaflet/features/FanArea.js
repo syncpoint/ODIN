@@ -3,7 +3,7 @@ import { toLatLngs, toGeometry } from '../GeoJSON'
 import { line } from './geo-helper'
 import { FULCRUM } from './handle-types'
 import { wrap360 } from '../geodesy'
-import { shape } from './shape'
+import { shape } from './react-shape'
 
 
 /**
