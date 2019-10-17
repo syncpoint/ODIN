@@ -24,7 +24,6 @@ L.TACGRP.Feature = L.Layer.extend({
    *
    */
   initialize (feature, options) {
-    this.xyz = feature
     L.setOptions(this, options)
     this._setFeature(feature)
   },
@@ -63,6 +62,7 @@ L.TACGRP.Feature = L.Layer.extend({
 
     if (this._invalid) return
     if (!this._svg) return
+    delete this._state
     this._detach()
   },
 
@@ -79,6 +79,7 @@ L.TACGRP.Feature = L.Layer.extend({
   _detach () {
     this._renderer._removeGroup(this)
     this._svg = null
+    this._state = { ...this._state, attached: false }
   },
 
   /**
