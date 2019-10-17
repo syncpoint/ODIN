@@ -2,7 +2,7 @@ import L from 'leaflet'
 import * as R from 'ramda'
 import '../features/Polyline'
 import echelons from '../features/echelons'
-import { shape } from '../features/shape'
+import { shape } from '../features/react-shape'
 import { line } from '../features/geo-helper'
 import { styles } from '../features/styles'
 
@@ -52,17 +52,20 @@ L.Feature['G*G*GLB---'] = L.TACGRP.Polyline.extend({
    */
   _shape (group, options) {
     return shape(group, options, {
-      points: ({ points }) => [points],
-      labels: ({ points }) => R.aperture(2, points)
-        .map(line)
-        .map(line => ({ placement: line.point(0.5), angle: line.angle() }))
-        .map(({ placement, angle }) => ({
-          placement,
-          angle,
-          scale: 0.5,
-          offset: L.point(-100, -178),
-          glyph: this._glyph()
-        }))
+      points: ({ points }) => [points]
     })
+  },
+
+  _labels () {
+    return ({ points }) => R.aperture(2, points)
+      .map(line)
+      .map(line => ({ placement: line.point(0.5), angle: line.angle() }))
+      .map(({ placement, angle }) => ({
+        placement,
+        angle,
+        scale: 0.5,
+        offset: L.point(-100, -178),
+        glyph: this._glyph()
+      }))
   }
 })
