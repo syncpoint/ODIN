@@ -67,6 +67,8 @@ const labelTransform = (label, box) => {
   return `translate(${center.x + tx} ${center.y + ty}) ${rotate} ${scale} translate(${-center.x} ${-center.y})`
 }
 
+// Lift value from ref:
+const current = ref => ref.current
 
 /**
  *
@@ -110,40 +112,40 @@ const Label = React.forwardRef((props, ref) => {
 /**
  *
  */
+const effect = (labels, refs) => {
+  if (!labels || !labels.length) return () => {}
+
+  return () => {
+    R.zip(refs.labels.map(current), refs.blackMasks.map(current))
+      .forEach(([text, mask], index) => {
+        const box = text.getBBox()
+        const transform = labelTransform(labels[index], box)
+        text.setAttribute('transform', transform)
+
+        // White mask:
+        const maskBox = L.SVG.inflate(box, 8)
+        const attrs = { x: maskBox.x, y: maskBox.y, width: maskBox.width, height: maskBox.height, transform }
+        L.SVG.setAttributes(mask)(attrs)
+      })
+
+    const box = refs.defs.current.parentNode.getBBox()
+    L.SVG.setAttributes(refs.whiteMask.current)({ ...L.SVG.inflate(box, 20) })
+  }
+}
+
+/**
+ *
+ */
 const Shape = props => {
   const { id, interactive, styles, d } = props
-  const className = interactive ? 'leaflet-interactive' : ''
 
   // Don't render at all when path is not valid:
   if (d.indexOf('NaN') !== -1) return null
 
-  const refs = {
-    labels: [],
-    blackMasks: [],
-  }
+  const className = interactive ? 'leaflet-interactive' : ''
+  const refs = { labels: [], blackMasks: [] }
 
-  const current = ref => ref.current
-
-  props.labels.forEach(p => console.log('props', p))
-
-  if (props.labels.length) {
-    useEffect(() => {
-      R.zip(refs.labels.map(current), refs.blackMasks.map(current))
-        .forEach(([text, mask], index) => {
-          const box = text.getBBox()
-          const transform = labelTransform(props.labels[index], box)
-          text.setAttribute('transform', transform)
-
-          // White mask:
-          const maskBox = L.SVG.inflate(box, 8)
-          const attrs = { x: maskBox.x, y: maskBox.y, width: maskBox.width, height: maskBox.height, transform }
-          L.SVG.setAttributes(mask)(attrs)
-        })
-
-      const box = refs.defs.current.parentNode.getBBox()
-      L.SVG.setAttributes(refs.whiteMask.current)({ ...L.SVG.inflate(box, 20) })
-    })
-  }
+  useEffect(effect(props.labels, refs))
 
   const labels = props.labels.map((label, index) =>
     <Label key={index} x={label.center.x} y={label.center.y}
@@ -229,8 +231,6 @@ export const shape = (group, options, callbacks) => {
     const labels = (typeof options.labels) === 'function'
       ? options.labels(state.frame)
       : options.labels
-
-    labels.forEach(label => console.log(label))
 
     return labels.map(labelProperties).filter(props => props.center)
   }
