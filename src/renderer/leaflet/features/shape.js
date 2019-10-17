@@ -204,7 +204,13 @@ export const shape = (group, options, callbacks) => {
     state.frame = frame
     if (!state.attached) return
     const closed = callbacks.closed && callbacks.closed()
-    const d = L.SVG.pointsToPath(callbacks.points(frame), closed, state.options.lineSmoothing)
+
+    // When features are too small to provide valid path information
+    // we use the 'empty path'.
+    // This is more a hack than a sustainable solution to the problem.
+    // TODO: On a higher level, decide whether a feature is visible.
+    const raw = L.SVG.pointsToPath(callbacks.points(frame), closed, state.options.lineSmoothing)
+    const d = raw.indexOf('NaN') !== -1 ? L.SVG.pointsToPath([]) : raw
     paths.forEach(name => cache.element(name).setAttribute('d', d))
     renderLabels()
   }
