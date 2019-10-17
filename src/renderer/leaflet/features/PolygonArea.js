@@ -106,12 +106,6 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
    *
    */
   _setFeature (feature) {
-    if (feature.geometry.type !== 'Polygon') {
-      this._invalid = true
-      console.log('unexpected geometry', feature)
-      return
-    }
-
     this._geometry = toLatLngs(feature.geometry)
 
     const box = bbox(feature)
