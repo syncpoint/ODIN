@@ -1,7 +1,7 @@
 import L from 'leaflet'
 import * as R from 'ramda'
 import { line, calcStruts2, arc } from '../features/geo-helper'
-import { shape } from '../features/shape'
+import { shape } from '../features/react-shape'
 import '../features/Corridor2Point'
 
 L.Feature['G*T*J-----'] = L.TACGRP.Corridor2Point.extend({

@@ -1,6 +1,6 @@
 import L from 'leaflet'
 import * as R from 'ramda'
-import { shape } from '../features/shape'
+import { shape } from '../features/react-shape'
 import '../features/OrbitArea'
 import { line, arc } from '../features/geo-helper'
 

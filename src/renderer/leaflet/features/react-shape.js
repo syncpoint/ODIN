@@ -51,6 +51,26 @@ const adjustTextAnchor = (anchor, angle) => {
 /**
  *
  */
+const labelTransform = (label, box) => {
+  const { center, fontSize, angle } = label
+  const textAnchor = adjustTextAnchor(label.textAnchor) || 'middle'
+  const flip = (angle > 90 && angle < 270) ? -1 : 1
+  const ty = fontSize / 2 - box.height / 2
+  const tx = textAnchor === 'left'
+    ? -box.width / 2
+    : textAnchor === 'right'
+      ? box.width / 2
+      : 0
+
+  const rotate = angle ? `rotate(${angle})` : ''
+  const scale = flip === -1 ? `scale(${flip} ${flip})` : ''
+  return `translate(${center.x + tx} ${center.y + ty}) ${rotate} ${scale} translate(${-center.x} ${-center.y})`
+}
+
+
+/**
+ *
+ */
 const Label = React.forwardRef((props, ref) => {
   const { x, y, lines } = props
   const fontSize = props.fontSize || 14
@@ -91,9 +111,8 @@ const Label = React.forwardRef((props, ref) => {
  *
  */
 const Shape = props => {
-  const { id, options, d } = props
-  const { placements } = props
-  const className = options.interactive ? 'leaflet-interactive' : ''
+  const { id, interactive, styles, d } = props
+  const className = interactive ? 'leaflet-interactive' : ''
 
   const refs = {
     labels: [],
@@ -102,71 +121,62 @@ const Shape = props => {
 
   const current = ref => ref.current
 
-  useEffect(() => {
-    R.zip(refs.labels.map(current), refs.blackMasks.map(current))
-      .forEach(([text, mask], index) => {
-        const label = props.labels[index]
-        const {x, y} = placements[label.placement]
-        const fontSize = label.fontSize || 14
-        const angle = 0
-        const textAnchor = adjustTextAnchor(props.textAnchor) || 'middle'
+  if (props.labels.length) {
+    useEffect(() => {
+      R.zip(refs.labels.map(current), refs.blackMasks.map(current))
+        .forEach(([text, mask], index) => {
+          const box = text.getBBox()
+          const transform = labelTransform(props.labels[index], box)
+          text.setAttribute('transform', transform)
 
-        const textBox = text.getBBox()
-        const flip = (angle > 90 && angle < 270) ? -1 : 1
-        const ty = fontSize / 2 - textBox.height / 2
-        const tx = textAnchor === 'left'
-          ? -textBox.width / 2
-          : textAnchor === 'right'
-            ? textBox.width / 2
-            : 0
+          // White mask:
+          const maskBox = L.SVG.inflate(box, 8)
+          const attrs = { x: maskBox.x, y: maskBox.y, width: maskBox.width, height: maskBox.height, transform }
+          L.SVG.setAttributes(mask)(attrs)
+        })
 
-        const transform = `
-          translate(${x + tx} ${y + ty})
-          rotate(${angle})
-          scale(${flip} ${flip})
-          translate(${-x} ${-y})
-        `
+      const box = refs.defs.current.parentNode.getBBox()
+      L.SVG.setAttributes(refs.whiteMask.current)({ ...L.SVG.inflate(box, 20) })
+    })
+  }
 
-        text.setAttribute('transform', transform)
+  const labels = props.labels.map((label, index) =>
+    <Label key={index} x={label.center.x} y={label.center.y}
+           ref={K(React.createRef())(ref => refs.labels.push(ref))}
+           lines={label.lines} anchor={label.anchor}
+    />
+  )
 
-        // White mask:
-        const maskBox = L.SVG.inflate(textBox, 8)
-        const attrs = { x: maskBox.x, y: maskBox.y, width: maskBox.width, height: maskBox.height, transform }
-        L.SVG.setAttributes(mask)(attrs)
-      })
+  const blackMasks = props.labels.map((_, index) =>
+    <rect key={index} fill={'black'}
+          ref={K(React.createRef())(ref => refs.blackMasks.push(ref))}
+    />)
 
-    const box = refs.defs.current.parentNode.getBBox()
-    L.SVG.setAttributes(refs.whiteMask.current)({ ...L.SVG.inflate(box, 20) })
-  })
+  const pathProperties = {
+    id: `path-${id}`,
+    shapeRendering: 'optimizeSpeed',
+    className: className,
+    d
+  }
 
-  const labels = props.labels.map((label, index) => {
-    const {x, y} = placements[label.placement]
-    return (
-      <Label key={index} x={x} y={y}
-             ref={K(React.createRef())(ref => refs.labels.push(ref))}
-             lines={label.lines} anchor={label.anchor}
-      />
-    )
-  })
+  if (props.labels.length) pathProperties.mask = `url(#mask-${id})`
 
-  const blackMasks = props.labels.map((_, index) => <rect
-    key={index}
-    ref={K(React.createRef())(ref => refs.blackMasks.push(ref))}
-    fill={'black'}
-  />)
-
-  return (<>
-    <defs ref={K(React.createRef())(ref => refs.defs = ref)}>
-      <mask id={`mask-${id}`}>
+  const mask = () => props.labels.length
+    ? <mask id={`mask-${id}`}>
         <rect ref={K(React.createRef())(ref => refs.whiteMask = ref)} fill={'white'}/>
         {blackMasks}
       </mask>
-      <path className={className} id={`path-${id}`} d={d} mask={`url(#mask-${id})`}/>
+    : null
+
+  return (<>
+    <defs ref={K(React.createRef())(ref => refs.defs = ref)}>
+      { mask() }
+      <path {...pathProperties}/>
     </defs>
     {/* re-use path definition with different styles. */}
-    <use xlinkHref={`#path-${id}`} {...translate(options.styles['outline'])}/>
-    <use xlinkHref={`#path-${id}`} {...translate(options.styles['contrast'])}/>
-    <use xlinkHref={`#path-${id}`} {...translate(options.styles['path'])}/>
+    <use xlinkHref={`#path-${id}`} {...translate(styles['outline'])}/>
+    <use xlinkHref={`#path-${id}`} {...translate(styles['contrast'])}/>
+    <use xlinkHref={`#path-${id}`} {...translate(styles['path'])}/>
     { labels }
   </>)
 }
@@ -176,22 +186,57 @@ const Shape = props => {
  *
  */
 export const shape = (group, options, callbacks) => {
-  const id = uuid()
-  const state = { id, options, callbacks, labels: [] }
-  const render = () => ReactDOM.render(<Shape {...state}/>, group)
-  if ('object' === typeof options.labels) state.labels = options.labels
+  const { interactive, hideLabels, lineSmoothing } = options
+
+  const state = {
+    lineSmoothing: options.lineSmoothing,
+    points: callbacks.points
+  }
+
+  const props = {
+    id: uuid(),
+    labels: [],
+    styles: options.styles,
+    interactive, lineSmoothing, // as-is
+  }
+
+  const center = placement => (
+    {
+      'function': p => p(state.frame),
+      'string': p => state.placements[p],
+      'object': p => p
+    }[typeof placement](placement)
+  )
+
+  const render = () => ReactDOM.render(<Shape {...props}/>, group)
+
+  const updateLabels = options => {
+    if (hideLabels) return []
+
+    const labels = (typeof options.labels) === 'function'
+      ? options.labels(state.frame)
+      : options.labels
+
+    return labels.map(label => ({
+      textAnchor: label.anchor || 'middle',
+      fontSize: label['font-size'] || 14,
+      angle: ('function' === typeof label.angle) ? label.angle(state.frame) : label.angle || 0,
+      lines: label.lines,
+      center: center(label.placement)
+    }))
+  }
 
   return {
     updateFrame: frame => {
-      if ('function' === typeof options.labels) state.labels = options.labels(frame)
-      const { closed, lineSmoothing } = state.options
-      state.placements = (callbacks.placements && callbacks.placements(frame)) || {}
-      state.d = L.SVG.pointsToPath(callbacks.points(frame), closed, lineSmoothing)
+      state.frame = frame
+      state.placements = callbacks.placements ? callbacks.placements(state.frame) : {}
+      props.d = L.SVG.pointsToPath(state.points(state.frame), closed, state.lineSmoothing)
+      props.labels = updateLabels(options)
       render()
     },
     updateOptions: options => {
-      if ('object' === typeof options.labels) state.labels = options.labels
-      state.options = options
+      props.styles = options.styles
+      props.labels = updateLabels(options)
       render()
     }
   }

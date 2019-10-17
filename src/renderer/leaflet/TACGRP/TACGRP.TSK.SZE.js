@@ -5,7 +5,7 @@ import { line, arc } from '../features/geo-helper'
 import { FULCRUM } from '../features/handle-types'
 import '../features/Feature'
 import { wrap360 } from '../geodesy'
-import { shape } from '../features/shape'
+import { shape } from '../features/react-shape'
 
 
 /**

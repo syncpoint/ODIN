@@ -1,7 +1,6 @@
 import L from 'leaflet'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import './Feature'
-// import { shape } from './shape'
 import { shape } from './react-shape'
 import { polyEditor } from './poly-editor'
 import bbox from '@turf/bbox'
