@@ -70,6 +70,7 @@ const labelTransform = (label, box) => {
 // Lift value from ref:
 const current = ref => ref.current
 
+
 /**
  *
  */
@@ -110,7 +111,7 @@ const Label = React.forwardRef((props, ref) => {
 
 
 /**
- *
+ * After render() effect: Transform labels and set clippings masks.
  */
 const effect = (labels, refs) => {
   if (!labels || !labels.length) return () => {}
@@ -131,6 +132,29 @@ const effect = (labels, refs) => {
     const box = refs.defs.current.parentNode.getBBox()
     L.SVG.setAttributes(refs.whiteMask.current)({ ...L.SVG.inflate(box, 20) })
   }
+}
+
+
+/**
+ *
+ */
+const patternFill = (id, styles) => {
+  if (styles.fill !== 'diagonal') return { pattern: null, fill: null }
+
+  const patternId = `pattern-${id}`
+  const style = styles.path
+  const stroke = style.patternStroke || style.stroke
+
+  const pattern = <pattern
+    id={patternId}
+    patternUnits={'userSpaceOnUse'}
+    width={4} height={8}
+    patternTransform={'rotate(-45)'}
+  >
+    <path stroke={stroke} strokeWidth={2} d={'M -1,2 l 6,0'}/>
+  </pattern>
+
+  return { fill: `url(#${patternId})`, pattern }
 }
 
 /**
@@ -175,15 +199,21 @@ const Shape = props => {
       </mask>
     : null
 
+  // Path 'path' might get pattern fill:
+  const pathStyle = translate(styles['path'])
+  const { pattern, fill } = patternFill(id, styles)
+  if (fill) pathStyle.fill = fill
+
   return (<>
     <defs ref={K(React.createRef())(ref => refs.defs = ref)}>
+      { pattern }
       { mask() }
       <path {...pathProperties}/>
     </defs>
     {/* re-use path definition with different styles. */}
     <use xlinkHref={`#path-${id}`} {...translate(styles['outline'])}/>
     <use xlinkHref={`#path-${id}`} {...translate(styles['contrast'])}/>
-    <use xlinkHref={`#path-${id}`} {...translate(styles['path'])}/>
+    <use xlinkHref={`#path-${id}`} {...pathStyle}/>
     { labels }
   </>)
 }

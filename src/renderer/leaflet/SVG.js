@@ -5,6 +5,8 @@ import { svgPath, bezierCommand } from './smooth'
 const setAttribute = (o, [k, v]) => K(o)(o => o.setAttribute(k, v))
 L.SVG.setAttributes = o => attrs => Object.entries(attrs).reduce(setAttribute, o)
 
+// TODO: mostly deprecated; remove
+
 L.SVG.mask = attrs => L.SVG.setAttributes(L.SVG.create('mask'))(attrs)
 L.SVG.rect = attrs => L.SVG.setAttributes(L.SVG.create('rect'))(attrs)
 L.SVG.circle = attrs => L.SVG.setAttributes(L.SVG.create('circle'))(attrs)
@@ -14,6 +16,7 @@ L.SVG.tspan = attrs => L.SVG.setAttributes(L.SVG.create('tspan'))(attrs)
 L.SVG.g = attrs => L.SVG.setAttributes(L.SVG.create('g'))(attrs)
 L.SVG.pattern = attrs => L.SVG.setAttributes(L.SVG.create('pattern'))(attrs)
 
+// TODO: deprecated; remove
 L.SVG.diagonalPattern = (id, styles) => {
   const pattern = L.SVG.pattern({
     id,
