@@ -51,7 +51,7 @@ const adjustTextAnchor = (anchor, angle) => {
 /**
  *
  */
-const labelTransform = (label, box) => {
+const textTransform = (label, box) => {
   const { center, fontSize, angle } = label
   const textAnchor = adjustTextAnchor(label.textAnchor) || 'middle'
   const flip = (angle > 90 && angle < 270) ? -1 : 1
@@ -66,6 +66,31 @@ const labelTransform = (label, box) => {
   const scale = flip === -1 ? `scale(${flip} ${flip})` : ''
   return `translate(${center.x + tx} ${center.y + ty}) ${rotate} ${scale} translate(${-center.x} ${-center.y})`
 }
+
+
+/**
+ *
+ */
+const glyphTransform = label => {
+  const { center, angle, scale, offset } = label
+  return `
+    translate(${center.x} ${center.y})
+    rotate(${angle})
+    scale(${scale})
+    translate(${offset.x} ${offset.y})
+  `
+}
+
+
+/**
+ *
+ */
+const labelTransform = (label, box) => {
+  return label.lines
+    ? textTransform(label, box)
+    : glyphTransform(label, box)
+}
+
 
 // Lift value from ref:
 const current = ref => ref.current
@@ -107,6 +132,21 @@ const Label = React.forwardRef((props, ref) => {
       {tspans()}
     </text>
   )
+})
+
+
+/**
+ * TODO: upgrade echelon to react
+ * TODO: <use/> globally defined paths
+ */
+const Glyph = React.forwardRef(({ glyph }, ref) => {
+  useEffect(() => {
+    const parent = ref.current
+    while (parent.firstChild) parent.removeChild(parent.firstChild)
+    parent.appendChild(glyph)
+  })
+
+  return <g ref={ref}/>
 })
 
 
@@ -172,10 +212,16 @@ const Shape = props => {
   useEffect(effect(props.labels, refs))
 
   const labels = props.labels.map((label, index) =>
-    <Label key={index} x={label.center.x} y={label.center.y}
-           ref={K(React.createRef())(ref => refs.labels.push(ref))}
-           lines={label.lines} textAnchor={label.textAnchor}
-    />
+    label.lines
+      ? <Label key={index}
+          x={label.center.x} y={label.center.y}
+          ref={K(React.createRef())(ref => refs.labels.push(ref))}
+          lines={label.lines} textAnchor={label.textAnchor}
+        />
+      : <Glyph key={index}
+          glyph={label.glyph}
+          ref={K(React.createRef())(ref => refs.labels.push(ref))}
+        />
   )
 
   const blackMasks = props.labels.map((_, index) =>
@@ -250,6 +296,9 @@ export const shape = (group, options, callbacks) => {
     fontSize: label['font-size'] || 14,
     angle: ('function' === typeof label.angle) ? label.angle(state.frame) : label.angle || 0,
     lines: label.lines,
+    glyph: label.glyph,
+    offset: label.offset,
+    scale: label.scale,
     center: center(label.placement)
   })
 
