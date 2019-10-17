@@ -23,7 +23,6 @@ L.TACGRP.Feature = L.Layer.extend({
    *
    */
   initialize (feature, options) {
-    this.xyz = feature
     L.setOptions(this, options)
     this._setFeature(feature)
   },
