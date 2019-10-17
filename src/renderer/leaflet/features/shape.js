@@ -167,6 +167,9 @@ export const shape = (group, options, callbacks) => {
         'object': p => p
       }[typeof descriptor.placement](descriptor.placement)
 
+      // Precede only when position is defined.
+      if (!center) return
+
       // Label is either text lines or a glyph:
       const label = descriptor.lines
         ? textLabel(center, angle, descriptor)
