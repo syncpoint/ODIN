@@ -208,6 +208,14 @@ export const shape = (group, options, callbacks) => {
     }[typeof placement](placement)
   )
 
+  const mapLabel = label => ({
+    textAnchor: label.anchor || 'middle',
+    fontSize: label['font-size'] || 14,
+    angle: ('function' === typeof label.angle) ? label.angle(state.frame) : label.angle || 0,
+    lines: label.lines,
+    center: center(label.placement)
+  })
+
   const render = () => ReactDOM.render(<Shape {...props}/>, group)
 
   const updateLabels = options => {
@@ -217,13 +225,7 @@ export const shape = (group, options, callbacks) => {
       ? options.labels(state.frame)
       : options.labels
 
-    return labels.map(label => ({
-      textAnchor: label.anchor || 'middle',
-      fontSize: label['font-size'] || 14,
-      angle: ('function' === typeof label.angle) ? label.angle(state.frame) : label.angle || 0,
-      lines: label.lines,
-      center: center(label.placement)
-    }))
+    return labels.map(mapLabel).filter(label => label.center)
   }
 
   return {
