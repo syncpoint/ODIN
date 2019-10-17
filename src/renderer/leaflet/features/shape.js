@@ -167,8 +167,9 @@ export const shape = (group, options, callbacks) => {
         'object': p => p
       }[typeof descriptor.placement](descriptor.placement)
 
-      // Precede only when position is defined.
+      // Precede only when position is defined and valid.
       if (!center) return
+      if (isNaN(center.x) || isNaN(center.y)) return
 
       // Label is either text lines or a glyph:
       const label = descriptor.lines
