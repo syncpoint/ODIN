@@ -114,6 +114,8 @@ const Shape = props => {
   const { id, interactive, styles, d } = props
   const className = interactive ? 'leaflet-interactive' : ''
 
+  console.log('d', d)
+
   const refs = {
     labels: [],
     blackMasks: [],
@@ -208,7 +210,7 @@ export const shape = (group, options, callbacks) => {
     }[typeof placement](placement)
   )
 
-  const mapLabel = label => ({
+  const labelProperties = label => ({
     textAnchor: label.anchor || 'middle',
     fontSize: label['font-size'] || 14,
     angle: ('function' === typeof label.angle) ? label.angle(state.frame) : label.angle || 0,
@@ -225,7 +227,7 @@ export const shape = (group, options, callbacks) => {
       ? options.labels(state.frame)
       : options.labels
 
-    return labels.map(mapLabel).filter(label => label.center)
+    return labels.map(labelProperties).filter(props => props.center)
   }
 
   return {
