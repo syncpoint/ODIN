@@ -3,7 +3,6 @@ import { toLatLngs, toGeometry } from '../GeoJSON'
 import './Feature'
 import { shape } from './react-shape'
 import { polyEditor } from './poly-editor'
-import bbox from '@turf/bbox'
 
 const placements = ({ points }) => ({
   'start': points[0],
@@ -55,12 +54,6 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
    */
   _setFeature (feature) {
     this._geometry = toLatLngs(feature.geometry)
-
-    const box = bbox(feature)
-    this._bounds = L.latLngBounds(
-      L.latLng(box[1], box[0]),
-      L.latLng(box[3], box[2])
-    )
 
     this._shapeOptions = {
       interactive: this.options.interactive,
