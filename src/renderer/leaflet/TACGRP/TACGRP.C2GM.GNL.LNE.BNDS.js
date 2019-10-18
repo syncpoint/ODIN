@@ -32,7 +32,7 @@ L.Feature['G*G*GLB---'] = L.TACGRP.Polyline.extend({
         L.SVG.setAttributes(element)(description)
         acc.appendChild(element)
         return acc
-      }, L.SVG.g({}))
+      }, L.SVG.create('g'))
 
       L.SVG.setAttributes(glyph)({
         'stroke-width': 4,
