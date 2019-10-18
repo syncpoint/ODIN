@@ -5,7 +5,6 @@ import { styles } from './styles'
 import './Handles'
 
 // TODO: defaultOptions (styles)
-// TODO: implement _bounds for each feature type
 
 // Namespace for all symbol and graphics features.
 L.Feature = {}

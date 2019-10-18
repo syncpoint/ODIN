@@ -57,7 +57,6 @@
   "dependencies": {
     "@material-ui/core": "^4.5.0",
     "@material-ui/icons": "^4.4.3",
-    "@turf/bbox": "^6.0.1",
     "electron-settings": "^3.2.0",
     "geodesy": "^2.2.0",
     "leaflet": "1.5.1",
