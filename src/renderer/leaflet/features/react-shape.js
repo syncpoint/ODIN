@@ -1,6 +1,6 @@
-/* eslint-disable */
+/* eslint-disable react/prop-types */
 
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import L from 'leaflet'
 import * as R from 'ramda'
@@ -53,7 +53,7 @@ const adjustTextAnchor = (anchor, angle) => {
  */
 const textTransform = (label, box) => {
   const { center, fontSize, angle } = label
-  const textAnchor = adjustTextAnchor(label.textAnchor) || 'middle'
+  const textAnchor = adjustTextAnchor(label.textAnchor) || 'middle'
   const flip = (angle > 90 && angle < 270) ? -1 : 1
   const ty = fontSize / 2 - box.height / 2
   const tx = textAnchor === 'left'
@@ -102,7 +102,7 @@ const current = ref => ref.current
 const Label = React.forwardRef((props, ref) => {
   const { x, y, lines } = props
   const fontSize = props.fontSize || 14
-  const textAnchor = adjustTextAnchor(props.textAnchor) || 'middle'
+  const textAnchor = adjustTextAnchor(props.textAnchor) || 'middle'
 
   const tspan = ({ content, fontWeight }, index) =>
     <tspan
@@ -125,7 +125,7 @@ const Label = React.forwardRef((props, ref) => {
   return (
     <g ref={ref}>
       <text
-        fontSize={16} x={x} y={y}
+        x={x} y={y}
         textAnchor={textAnchor} fontWeight={fontWeight} fontSize={fontSize}
         alignmentBaseline={'central'}
         strokeWidth={2} stroke={'white'} fill={'none'}
@@ -135,7 +135,7 @@ const Label = React.forwardRef((props, ref) => {
         {tspans()}
       </text>
       <text
-        fontSize={16} x={x} y={y}
+        x={x} y={y}
         textAnchor={textAnchor} fontWeight={fontWeight} fontSize={fontSize}
         alignmentBaseline={'central'}
         stroke={'none'} fill={'blank'}
@@ -227,19 +227,20 @@ const Shape = props => {
   const labels = props.labels.map((label, index) =>
     label.lines
       ? <Label key={index}
-          x={label.center.x} y={label.center.y}
-          ref={K(React.createRef())(ref => refs.labels.push(ref))}
-          lines={label.lines} textAnchor={label.textAnchor}
-        />
+        x={label.center.x} y={label.center.y}
+        ref={K(React.createRef())(ref => refs.labels.push(ref))}
+        lines={label.lines} textAnchor={label.textAnchor}
+      />
       : <Glyph key={index}
-          glyph={label.glyph}
-          ref={K(React.createRef())(ref => refs.labels.push(ref))}
-        />
+        glyph={label.glyph}
+        ref={K(React.createRef())(ref => refs.labels.push(ref))}
+      />
   )
 
   const blackMasks = props.labels.map((_, index) =>
-    <rect key={index} fill={'black'}
-          ref={K(React.createRef())(ref => refs.blackMasks.push(ref))}
+    <rect
+      key={index} fill={'black'}
+      ref={K(React.createRef())(ref => refs.blackMasks.push(ref))}
     />)
 
   const pathProperties = {
@@ -253,9 +254,9 @@ const Shape = props => {
 
   const mask = () => props.labels.length
     ? <mask id={`mask-${id}`}>
-        <rect ref={K(React.createRef())(ref => refs.whiteMask = ref)} fill={'white'}/>
-        {blackMasks}
-      </mask>
+      <rect ref={K(React.createRef())(ref => (refs.whiteMask = ref))} fill={'white'}/>
+      {blackMasks}
+    </mask>
     : null
 
   // Path 'path' might get pattern fill:
@@ -264,7 +265,7 @@ const Shape = props => {
   if (fill) pathStyle.fill = fill
 
   return (<>
-    <defs ref={K(React.createRef())(ref => refs.defs = ref)}>
+    <defs ref={K(React.createRef())(ref => (refs.defs = ref))}>
       { pattern }
       { mask() }
       <path {...pathProperties}/>
@@ -293,7 +294,8 @@ export const shape = (group, options, callbacks) => {
     id: uuid(),
     labels: [],
     styles: options.styles,
-    interactive, lineSmoothing, // as-is
+    interactive,
+    lineSmoothing
   }
 
   const center = placement => (
@@ -305,9 +307,9 @@ export const shape = (group, options, callbacks) => {
   )
 
   const labelProperties = label => ({
-    textAnchor: label.anchor || 'middle',
+    textAnchor: label.anchor || 'middle',
     fontSize: label['font-size'] || 14,
-    angle: ('function' === typeof label.angle) ? label.angle(state.frame) : label.angle || 0,
+    angle: (typeof label.angle === 'function') ? label.angle(state.frame) : label.angle || 0,
     lines: label.lines,
     glyph: label.glyph,
     offset: label.offset,
@@ -315,7 +317,9 @@ export const shape = (group, options, callbacks) => {
     center: center(label.placement)
   })
 
-  const render = () => ReactDOM.render(<Shape {...props}/>, group)
+  const render = () => {
+    ReactDOM.render(<Shape {...props}/>, group)
+  }
 
   const updateLabels = options => {
     if (hideLabels) return []
