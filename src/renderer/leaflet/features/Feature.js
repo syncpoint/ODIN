@@ -43,11 +43,8 @@ L.TACGRP.Feature = L.Layer.extend({
    *
    */
   onAdd (/* map */) {
-    if (this._visible()) this._attach()
+    this._attach()
     this.on('click', () => this._edit())
-    // FIXME: does not scale well, each feature (possibly hundreds) register listeners
-    this._map.on('zoomend', this._viewportChanged, this)
-    this._map.on('moveend', this._viewportChanged, this)
   },
 
 
@@ -56,8 +53,6 @@ L.TACGRP.Feature = L.Layer.extend({
    */
   onRemove (/* map */) {
     this.off('click')
-    this._map.off('zoomend', this._viewportChanged, this)
-    this._map.off('moveend', this._viewportChanged, this)
     this._map.tools.dispose() // dispose editor/selection tool
 
     if (!this._svg) return
@@ -109,28 +104,11 @@ L.TACGRP.Feature = L.Layer.extend({
   _labels (feature) { return [] },
   _styles (feature) { return styles(feature) },
 
-
-  _viewportChanged () {
-    if (!this._map) return
-
-    const visible = this._visible()
-    if (visible && !this._svg) this._attach()
-    if (!visible && this._svg) this._detach()
-  },
-
-
-  _visible () {
-    if (!this._bounds) return true
-    return this._map.getBounds().intersects(this._bounds)
-  },
-
   /**
    * Required by L.Renderer, but NOOP since we handle shape state in layer.
    * NOTE: Called twice after map was panned, so implementation should be fast.
    */
   _update () {
-    if (!this._visible() || !this._frame) return
-
     const state = {
       center: this._map.getCenter(),
       zoom: this._map.getZoom(),
@@ -140,7 +118,7 @@ L.TACGRP.Feature = L.Layer.extend({
     // Guard against updating too often:
     if (R.equals(this._state, state)) return
     this._state = state
-    this._svg.updateFrame(this._frame)
+    this._frame && this._svg.updateFrame(this._frame)
   },
 
 
@@ -148,10 +126,8 @@ L.TACGRP.Feature = L.Layer.extend({
    *
    */
   _reset () {
-    if (this._visible()) {
-      this._project()
-      this._update()
-    }
+    this._project()
+    this._update()
   },
 
 
