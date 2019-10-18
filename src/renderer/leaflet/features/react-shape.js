@@ -125,20 +125,20 @@ const Label = React.forwardRef((props, ref) => {
   return (
     <g ref={ref}>
       <text
-            fontSize={16} x={x} y={y}
-            textAnchor={textAnchor} fontWeight={fontWeight} fontSize={fontSize}
-            alignmentBaseline={'central'}
-            strokeWidth={2} stroke={'white'} fill={'none'}
-            strokeLinecap={'round'} strokeLinejoin={'round'}
+        fontSize={16} x={x} y={y}
+        textAnchor={textAnchor} fontWeight={fontWeight} fontSize={fontSize}
+        alignmentBaseline={'central'}
+        strokeWidth={2} stroke={'white'} fill={'none'}
+        strokeLinecap={'round'} strokeLinejoin={'round'}
       >
         {content}
         {tspans()}
       </text>
       <text
-            fontSize={16} x={x} y={y}
-            textAnchor={textAnchor} fontWeight={fontWeight} fontSize={fontSize}
-            alignmentBaseline={'central'}
-            stroke={'none'} fill={'blank'}
+        fontSize={16} x={x} y={y}
+        textAnchor={textAnchor} fontWeight={fontWeight} fontSize={fontSize}
+        alignmentBaseline={'central'}
+        stroke={'none'} fill={'blank'}
       >
         {content}
         {tspans()}
