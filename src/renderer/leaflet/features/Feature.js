@@ -147,7 +147,7 @@ L.TACGRP.Feature = L.Layer.extend({
    */
   updateData (feature) {
     this._setFeature(feature)
-    this._project()
+    this._reset()
     this._svg.updateOptions && this._svg.updateOptions(this._shapeOptions)
     this._edit(true)
   }
