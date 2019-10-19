@@ -32,7 +32,9 @@ class MainPanel extends React.Component {
 
   elementSetSelected (selectedSetIndex) {
     const { featureSet } = this.state
-    featureSet[selectedSetIndex].open = !featureSet[selectedSetIndex].open
+    featureSet.forEach((set, index) => {
+      index === selectedSetIndex ? set.open = !set.open : set.open = false
+    })
     this.setState({ ...this.state, featureSet, selectedSetIndex, selectedFeatureIndex: -1 })
   }
 
