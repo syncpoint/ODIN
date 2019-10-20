@@ -8,6 +8,7 @@ import featureSet from '../../model/mapPalette-featureSet'
 import Features from './Features'
 import { featureList } from '../../model/mapPalette-feature'
 import drawShape from '../map/draw-feature'
+import updateRecently from '../../stores/update-recently'
 
 class MainPanel extends React.Component {
 
@@ -45,12 +46,11 @@ class MainPanel extends React.Component {
       return set.features[selectedFeatureIndex]
     }
 
-    this.setState({ ...this.state, featureSet, selectedSetIndex: -1, selectedFeatureIndex, indexCache: setId })
-
     const feature = this.type === 'features'
       ? features[selectedFeatureIndex]
       : getFeatureFromSet(selectedFeatureIndex, setId)
-
+    updateRecently(feature.sidc, featureSet.find(set => set.key === 'Recently Used'))
+    this.setState({ ...this.state, featureSet, selectedSetIndex: -1, selectedFeatureIndex, indexCache: setId })
     drawShape(feature.sidc)
   }
 
