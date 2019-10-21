@@ -140,7 +140,7 @@ class MainPanel extends React.Component {
   }
 
   updateResultList (resultList) {
-    const showComponents = resultList.length === 0 ? () => this.showFeatureSets() : () => this.showSearchResults()
+    const showComponents = resultList ? () => this.showSearchResults() : () => this.showFeatureSets()
     const features = featureList(resultList)
     this.shouldUpdate = true
     this.setState({ ...this.state, showComponents, features, selectedFeatureIndex: -1 })
