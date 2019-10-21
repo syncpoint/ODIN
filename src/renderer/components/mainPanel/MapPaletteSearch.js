@@ -48,7 +48,9 @@ class MapPaletteSearch extends React.Component {
     value = value === '' ? value : this.prepareSearchTerm(value)
     const update = this.props.update
     clearTimeout(this.timer)
-    this.timer = setTimeout(() => update(search(value)), 0)
+    this.timer = setTimeout(
+      value === '' ? () => update(null) : () => update(search(value))
+      , 0)
   }
 
   render () {
