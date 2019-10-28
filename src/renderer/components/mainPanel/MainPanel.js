@@ -9,6 +9,7 @@ import Features from './Features'
 import { featureList } from '../../model/mapPalette-feature'
 import drawShape from '../map/draw-feature'
 import updateRecently from '../../stores/update-recently'
+import settings from '../../model/settings'
 
 class MainPanel extends React.Component {
 
@@ -35,6 +36,7 @@ class MainPanel extends React.Component {
     const { featureSet } = this.state
     featureSet.forEach((set, index) => {
       index === selectedSetIndex ? set.open = !set.open : set.open = false
+      if (set.open) settings.palette.setOpenSet(index)
     })
     this.setState({ ...this.state, featureSet, selectedSetIndex, selectedFeatureIndex: -1 })
   }
