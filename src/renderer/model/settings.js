@@ -18,6 +18,8 @@ const COORDINATE_FORMAT = 'coordinateFormat'
 const OSD_VISIBLE = 'osdVisible'
 const OSD_OPTIONS = 'osdOptions'
 const BOOKMARKS = 'bookmarks'
+const OPENED_SET_INDEX = 'openSetIndex'
+const USED_RECENTLY = 'usedRecently'
 
 export default {
   map: {
@@ -34,7 +36,11 @@ export default {
   palette: {
     visible: () => settings.has(PALETTE_VISIBLE) ? settings.get(PALETTE_VISIBLE) : true,
     show: () => settings.set(PALETTE_VISIBLE, true),
-    hide: () => settings.set(PALETTE_VISIBLE, false)
+    hide: () => settings.set(PALETTE_VISIBLE, false),
+    getOpenedSetIndex: () => settings.has(OPENED_SET_INDEX) ? settings.get(OPENED_SET_INDEX) : -1,
+    setOpenSet: index => settings.set(OPENED_SET_INDEX, index),
+    getRecentlyUsed: () => settings.get(USED_RECENTLY),
+    setRecentlyUsed: arr => settings.set(USED_RECENTLY, arr)
   },
   tileProvider: {
     get: defaultProvider => settings.get(TILE_PROVIDER) || defaultProvider,
