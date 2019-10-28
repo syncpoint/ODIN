@@ -17,9 +17,5 @@ export default (sidc, recentlyUsed) => {
     ? arr.unshift(featureFromSidc(sidc))
     : reorder(arr, index, 0)
   if (arr.length > 6) arr.length = 6
-  let stored = settings.palette.getRecentlyUsed()
-  stored
-    ? stored.unshift(sidc)
-    : stored = [sidc]
-  settings.palette.setRecentlyUsed(stored)
+  settings.palette.setRecentlyUsed(arr.map(obj => obj.sidc))
 }
