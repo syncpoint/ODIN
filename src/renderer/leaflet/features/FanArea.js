@@ -13,8 +13,8 @@ export const fanGeometry = (latlng, orientation, size, rangeO, rangeS) => {
 
   const create = current => {
     const { latlng, orientation, size, rangeO, rangeS } = current
-    const normalizedOrientation = wrap360(orientation)
-    const normalizedSize = wrap360(size)
+    const normalizedOrientation = wrap360(Number.parseFloat(orientation))
+    const normalizedSize = wrap360(Number.parseFloat(size))
 
     return {
       copy: properties => create({ ...current, ...properties }),

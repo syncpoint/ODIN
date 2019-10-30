@@ -8,6 +8,7 @@ import featureSet from '../../model/mapPalette-featureSet'
 import Features from './Features'
 import { featureList } from '../../model/mapPalette-feature'
 import drawShape from '../map/draw-feature'
+import updateRecently from '../../stores/update-recently'
 
 class MainPanel extends React.Component {
 
@@ -32,7 +33,9 @@ class MainPanel extends React.Component {
 
   elementSetSelected (selectedSetIndex) {
     const { featureSet } = this.state
-    featureSet[selectedSetIndex].open = !featureSet[selectedSetIndex].open
+    featureSet.forEach((set, index) => {
+      index === selectedSetIndex ? set.open = !set.open : set.open = false
+    })
     this.setState({ ...this.state, featureSet, selectedSetIndex, selectedFeatureIndex: -1 })
   }
 
@@ -45,12 +48,11 @@ class MainPanel extends React.Component {
       return set.features[selectedFeatureIndex]
     }
 
-    this.setState({ ...this.state, featureSet, selectedSetIndex: -1, selectedFeatureIndex, indexCache: setId })
-
     const feature = this.type === 'features'
       ? features[selectedFeatureIndex]
       : getFeatureFromSet(selectedFeatureIndex, setId)
-
+    updateRecently(feature.sidc, featureSet.find(set => set.key === 'Recently Used'))
+    this.setState({ ...this.state, featureSet, selectedSetIndex: -1, selectedFeatureIndex, indexCache: setId })
     drawShape(feature.sidc)
   }
 
@@ -138,7 +140,7 @@ class MainPanel extends React.Component {
   }
 
   updateResultList (resultList) {
-    const showComponents = resultList.length === 0 ? () => this.showFeatureSets() : () => this.showSearchResults()
+    const showComponents = resultList ? () => this.showSearchResults() : () => this.showFeatureSets()
     const features = featureList(resultList)
     this.shouldUpdate = true
     this.setState({ ...this.state, showComponents, features, selectedFeatureIndex: -1 })
