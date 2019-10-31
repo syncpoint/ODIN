@@ -1,6 +1,7 @@
+/* eslint-disable */
 /* eslint-disable react/prop-types */
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom'
 import L from 'leaflet'
 import * as R from 'ramda'
@@ -101,7 +102,7 @@ const current = ref => ref.current
  */
 const Label = React.forwardRef((props, ref) => {
   const { x, y, lines } = props
-  const fontSize = props.fontSize || 14
+  const fontSize = props.fontSize || 20
   const textAnchor = adjustTextAnchor(props.textAnchor) || 'middle'
 
   const tspan = ({ content, fontWeight }, index) =>
@@ -163,37 +164,12 @@ const Glyph = React.forwardRef(({ glyph }, ref) => {
 })
 
 
-/**
- * After render() effect: Transform labels and set clippings masks.
- */
-const effect = (labels, refs) => {
-  if (!labels || !labels.length) return () => {}
-
-  return () => {
-    R.zip(refs.labels.map(current), refs.blackMasks.map(current))
-      .forEach(([text, mask], index) => {
-        const box = text.getBBox()
-        const transform = labelTransform(labels[index], box)
-        text.setAttribute('transform', transform)
-
-        // White mask:
-        const maskBox = L.SVG.inflate(box, 8)
-        const attrs = { x: maskBox.x, y: maskBox.y, width: maskBox.width, height: maskBox.height, transform }
-        L.SVG.setAttributes(mask)(attrs)
-      })
-
-    const box = refs.defs.current.parentNode.getBBox()
-    L.SVG.setAttributes(refs.whiteMask.current)({ ...L.SVG.inflate(box, 20) })
-  }
-}
-
 
 /**
  *
  */
 const patternFill = (id, styles) => {
   if (styles.fill !== 'diagonal') return { pattern: null, fill: null }
-
   const patternId = `pattern-${id}`
   const style = styles.path
   const stroke = style.patternStroke || style.stroke
@@ -210,6 +186,7 @@ const patternFill = (id, styles) => {
   return { fill: `url(#${patternId})`, pattern }
 }
 
+
 /**
  *
  */
@@ -220,9 +197,43 @@ const Shape = props => {
   if (d.indexOf('NaN') !== -1) return null
 
   const className = interactive ? 'leaflet-interactive' : ''
-  const refs = { labels: [], blackMasks: [] }
+  const refs = { labels: [] }
 
-  useEffect(effect(props.labels, refs))
+
+  const [ clipPath, setClipPath ] = useState('')
+  const [ labelFrames, setLabelFrames ] = useState(null)
+
+  const boxPoints = box => [
+    L.point(box.x, box.y),
+    L.point(box.x + box.width, box.y),
+    L.point(box.x + box.width, box.y + box.height),
+    L.point(box.x, box.y + box.height),
+    L.point(box.x, box.y)
+  ]
+
+  useEffect(() => {
+    if (!labels || !labels.length) return;
+    const root = () => refs.defs.current.parentNode
+
+    refs.labels.map(current)
+      .forEach((text, index) => {
+        const box = text.getBBox()
+        const transform = labelTransform(props.labels[index], box)
+        // NOTE: Transform does NOT affect bounding box.
+        text.setAttribute('transform', transform)
+      })
+
+    const box = L.SVG.inflate(root().getBBox(), 8)
+    const labelPoints = refs.labels.map(current).map(text => boxPoints(L.SVG.inflate(text.getBBox(), 4)))
+    const points = labelPoints.reduce((acc, points) => acc.concat(points), boxPoints(box))
+    const reverse = labelPoints.reverse().reduce((acc, points) => {
+      acc.push(points[0])
+      return acc
+    }, [])
+
+    const d = L.SVG.pointsToPath([points.concat(reverse)], false, false)
+    setClipPath(d)
+  })
 
   const labels = props.labels.map((label, index) =>
     label.lines
@@ -237,27 +248,13 @@ const Shape = props => {
       />
   )
 
-  const blackMasks = props.labels.map((_, index) =>
-    <rect
-      key={index} fill={'black'}
-      ref={K(React.createRef())(ref => refs.blackMasks.push(ref))}
-    />)
-
   const pathProperties = {
     id: `path-${id}`,
-    shapeRendering: 'optimizeSpeed',
+    // auto (default) | optimizeSpeed | crispEdges | geometricPrecision
+    shapeRendering: 'geometricPrecision',
     className: className,
     d
   }
-
-  if (props.labels.length) pathProperties.mask = `url(#mask-${id})`
-
-  const mask = () => props.labels.length
-    ? <mask id={`mask-${id}`}>
-      <rect ref={K(React.createRef())(ref => (refs.whiteMask = ref))} fill={'white'}/>
-      {blackMasks}
-    </mask>
-    : null
 
   // Path 'path' might get pattern fill:
   const pathStyle = translate(styles['path'])
@@ -267,14 +264,18 @@ const Shape = props => {
   return (<>
     <defs ref={K(React.createRef())(ref => (refs.defs = ref))}>
       { pattern }
-      { mask() }
+      {/* { mask() } */}
       <path {...pathProperties}/>
+      <clipPath id={`clip-${id}`} clipRule={'evenodd'}>
+        <path d={clipPath}/>
+      </clipPath>
     </defs>
     {/* re-use path definition with different styles. */}
     <use xlinkHref={`#path-${id}`} {...translate(styles['outline'])}/>
-    <use xlinkHref={`#path-${id}`} {...translate(styles['contrast'])}/>
-    <use xlinkHref={`#path-${id}`} {...pathStyle}/>
+    <use xlinkHref={`#path-${id}`} {...translate(styles['contrast'])} clipPath={`url(#clip-${id})`}/>
+    <use xlinkHref={`#path-${id}`} {...pathStyle} clipPath={`url(#clip-${id})`}/>
     { labels }
+    { labelFrames }
   </>)
 }
 
@@ -308,7 +309,7 @@ export const shape = (group, options, callbacks) => {
 
   const labelProperties = label => ({
     textAnchor: label.anchor || 'middle',
-    fontSize: label['font-size'] || 14,
+    fontSize: label['font-size'] || 24,
     angle: (typeof label.angle === 'function') ? label.angle(state.frame) : label.angle || 0,
     lines: label.lines,
     glyph: label.glyph,
