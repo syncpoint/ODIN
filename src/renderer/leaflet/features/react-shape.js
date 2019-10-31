@@ -4,9 +4,9 @@
 import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom'
 import L from 'leaflet'
-import * as R from 'ramda'
 import uuid from 'uuid-random'
 import { K } from '../../../shared/combinators'
+import transformation from './transformation'
 
 
 /**
@@ -36,63 +36,6 @@ const lineProperties = line => {
 }
 
 
-/**
- *
- */
-const adjustTextAnchor = (anchor, angle) => {
-  if (angle < 90 || angle > 270) return anchor
-  switch (anchor) {
-    case 'start': return 'end'
-    case 'end' : return 'start'
-    default: return anchor
-  }
-}
-
-
-/**
- *
- */
-const textTransform = (label, box) => {
-  const { center, fontSize, angle } = label
-  const textAnchor = adjustTextAnchor(label.textAnchor) || 'middle'
-  const flip = (angle > 90 && angle < 270) ? -1 : 1
-  const ty = fontSize / 2 - box.height / 2
-  const tx = textAnchor === 'left'
-    ? -box.width / 2
-    : textAnchor === 'right'
-      ? box.width / 2
-      : 0
-
-  const rotate = angle ? `rotate(${angle})` : ''
-  const scale = flip === -1 ? `scale(${flip} ${flip})` : ''
-  return `translate(${center.x + tx} ${center.y + ty}) ${rotate} ${scale} translate(${-center.x} ${-center.y})`
-}
-
-
-/**
- *
- */
-const glyphTransform = label => {
-  const { center, angle, scale, offset } = label
-  return `
-    translate(${center.x} ${center.y})
-    rotate(${angle})
-    scale(${scale})
-    translate(${offset.x} ${offset.y})
-  `
-}
-
-
-/**
- *
- */
-const labelTransform = (label, box) => {
-  return label.lines
-    ? textTransform(label, box)
-    : glyphTransform(label, box)
-}
-
-
 // Lift value from ref:
 const current = ref => ref.current
 
@@ -101,8 +44,7 @@ const current = ref => ref.current
  *
  */
 const Label = React.forwardRef((props, ref) => {
-  const { x, y, lines } = props
-  const fontSize = props.fontSize || 20
+  const { x, y, lines, fontSize } = props
   const textAnchor = adjustTextAnchor(props.textAnchor) || 'middle'
 
   const tspan = ({ content, fontWeight }, index) =>
@@ -187,6 +129,15 @@ const patternFill = (id, styles) => {
 }
 
 
+const boxPoints = box => [
+  L.point(box.x, box.y),
+  L.point(box.x + box.width, box.y),
+  L.point(box.x + box.width, box.y + box.height),
+  L.point(box.x, box.y + box.height),
+  L.point(box.x, box.y)
+]
+
+
 /**
  *
  */
@@ -198,33 +149,20 @@ const Shape = props => {
 
   const className = interactive ? 'leaflet-interactive' : ''
   const refs = { labels: [] }
-
+  const root = () => refs.defs.current.parentNode
 
   const [ clipPath, setClipPath ] = useState('')
-  const [ labelFrames, setLabelFrames ] = useState(null)
-
-  const boxPoints = box => [
-    L.point(box.x, box.y),
-    L.point(box.x + box.width, box.y),
-    L.point(box.x + box.width, box.y + box.height),
-    L.point(box.x, box.y + box.height),
-    L.point(box.x, box.y)
-  ]
 
   useEffect(() => {
-    if (!labels || !labels.length) return;
-    const root = () => refs.defs.current.parentNode
-
-    refs.labels.map(current)
-      .forEach((text, index) => {
-        const box = text.getBBox()
-        const transform = labelTransform(props.labels[index], box)
-        // NOTE: Transform does NOT affect bounding box.
-        text.setAttribute('transform', transform)
-      })
+    const labelPoints = refs.labels.map(current).map((text, index) => {
+      const label = props.labels[index]
+      const box = L.SVG.inflate(text.getBBox(), 4)
+      const T = transformation(label, box)
+      text.setAttribute('transform', T.matrix)
+      return T.points(boxPoints(box))
+    })
 
     const box = L.SVG.inflate(root().getBBox(), 8)
-    const labelPoints = refs.labels.map(current).map(text => boxPoints(L.SVG.inflate(text.getBBox(), 4)))
     const points = labelPoints.reduce((acc, points) => acc.concat(points), boxPoints(box))
     const reverse = labelPoints.reverse().reduce((acc, points) => {
       acc.push(points[0])
@@ -275,8 +213,20 @@ const Shape = props => {
     <use xlinkHref={`#path-${id}`} {...translate(styles['contrast'])} clipPath={`url(#clip-${id})`}/>
     <use xlinkHref={`#path-${id}`} {...pathStyle} clipPath={`url(#clip-${id})`}/>
     { labels }
-    { labelFrames }
   </>)
+}
+
+
+/**
+ *
+ */
+const adjustTextAnchor = (anchor, angle) => {
+  if (angle < 90 || angle > 270) return anchor
+  switch (anchor) {
+    case 'start': return 'end'
+    case 'end' : return 'start'
+    default: return anchor
+  }
 }
 
 
@@ -307,16 +257,20 @@ export const shape = (group, options, callbacks) => {
     }[typeof placement](placement)
   )
 
-  const labelProperties = label => ({
-    textAnchor: label.anchor || 'middle',
-    fontSize: label['font-size'] || 24,
-    angle: (typeof label.angle === 'function') ? label.angle(state.frame) : label.angle || 0,
-    lines: label.lines,
-    glyph: label.glyph,
-    offset: label.offset,
-    scale: label.scale,
-    center: center(label.placement)
-  })
+  const labelProperties = label => {
+    const angle = (typeof label.angle === 'function') ? label.angle(state.frame) : label.angle || 0
+    const textAnchor = adjustTextAnchor(label.anchor || 'middle', angle)
+    return {
+      angle,
+      textAnchor,
+      fontSize: label['font-size'] || 14,
+      lines: label.lines,
+      glyph: label.glyph,
+      offset: label.offset,
+      scale: label.scale,
+      center: center(label.placement)
+    }
+  }
 
   const render = () => {
     ReactDOM.render(<Shape {...props}/>, group)

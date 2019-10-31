@@ -21,14 +21,14 @@ const labeledLine = lines => L.TACGRP.Polyline.extend({
       return [
         {
           lines: lines(feature),
-          anchor: 'start',
+          anchor: 'end',
           placement: 'start',
           'font-size': fontSize,
           angle: s[0].angle
         },
         {
           lines: lines(feature),
-          anchor: 'end',
+          anchor: 'start',
           placement: 'end',
           'font-size': fontSize,
           angle: s[1].angle
