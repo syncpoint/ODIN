@@ -2,7 +2,6 @@ import L from 'leaflet'
 import '../features/PolygonArea'
 import '../features/Polyline'
 import { styles } from '../features/styles'
-import './TACGRP.C2GM.GNL.ARS.SRHARA'
 import './TACGRP.C2GM.GNL.LNE'
 import './TACGRP.C2GM.GNL.LNE.BNDS'
 import './TACGRP.C2GM.OFF.LNE.AXSADV.ABN'
@@ -313,7 +312,6 @@ L.Feature['G*S*AH----'] = (feature, options) => {
 L.Feature['G*F*ACPR--'] = (feature, options) => {
   options.styles = feature => ({ ...styles(feature), clipping: 'mask' })
   options.labels = feature => axisLabelsS('PAA')
-
   return new L.TACGRP.PolygonArea(feature, options)
 }
 

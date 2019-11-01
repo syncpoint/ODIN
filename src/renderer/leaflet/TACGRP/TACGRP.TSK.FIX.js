@@ -4,7 +4,7 @@ import { line } from '../features/geo-helper'
 import { shape } from '../features/shape'
 import '../features/Line2Point'
 
-L.Feature['G*T*F-----'] = L.TACGRP.Line2Point.extend({
+const FIX = L.TACGRP.Line2Point.extend({
 
   _shape (group) {
     const options = { ...this._shapeOptions }
@@ -39,14 +39,16 @@ L.Feature['G*T*F-----'] = L.TACGRP.Line2Point.extend({
         ], arrow(points[1], centerLine)]
       }
     })
-  },
-
-  _labels () {
-    return [{
-      placement: ({ points }) => line(points).point(0.125),
-      lines: ['F'],
-      'font-size': 18,
-      angle: ({ points }) => line(points).angle()
-    }]
   }
 })
+
+L.Feature['G*T*F-----'] = (feature, options) => {
+  options.labels = () => [{
+    placement: ({ points }) => line(points).point(0.125),
+    lines: ['F'],
+    'font-size': 18,
+    angle: ({ points }) => line(points).angle()
+  }]
+
+  return new FIX(feature, options)
+}
