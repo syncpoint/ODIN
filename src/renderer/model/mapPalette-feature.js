@@ -30,17 +30,22 @@ const toObject = (element, sidc) => {
 
 const featureListFromSidc = list => {
   return list.map(element => {
-    const sidc = specificSIDC(element)
-    const elementInfo = findSpecificItem(element)
-    return toObject(elementInfo, sidc)
+    return featureFromSidc(element)
   }).filter(entry => entry)
 }
 
 const featureList = list => {
+  list = list === null ? [] : list
   return list.map(element => {
     const sidc = specificSIDC(element.sidc)
     return toObject(element, sidc)
   })
 }
 
-export { featureList, featureListFromSidc }
+const featureFromSidc = element => {
+  const sidc = specificSIDC(element)
+  const elementInfo = findSpecificItem(element)
+  return toObject(elementInfo, sidc)
+}
+
+export { featureList, featureListFromSidc, featureFromSidc }

@@ -44,18 +44,18 @@ L.Feature['G*T*Z-----'] = L.TACGRP.Feature.extend({
    */
   _project () {
     const layerPoint = this._map.latLngToLayerPoint.bind(this._map)
-    const C = layerPoint(this._seize.C)
-    const O = layerPoint(this._seize.O)
-    const S = layerPoint(this._seize.S)
+    const C = layerPoint(this._geometry.C)
+    const O = layerPoint(this._geometry.O)
+    const S = layerPoint(this._geometry.S)
 
-    this._svg.updateFrame({
+    this._frame = {
       C,
       O,
       S,
-      orientation: this._seize.orientation,
+      orientation: this._geometry.orientation,
       rangeMin: line([C, S]).d,
       rangeMax: line([C, O]).d
-    })
+    }
   },
 
 
@@ -64,32 +64,31 @@ L.Feature['G*T*Z-----'] = L.TACGRP.Feature.extend({
    */
   _geometryEditor () {
     const layer = new L.Handles().addTo(this._map)
-    let current = this._seize
 
     const handlers = {
       C: {
         latlng: arc => arc.C,
-        seize: latlng => current.copy({ latlng })
+        seize: latlng => this._geometry.copy({ latlng })
       },
       O: {
         latlng: arc => arc.O,
-        seize: latlng => current.copy({
-          orientation: current.C.finalBearingTo(latlng),
-          rangeMin: Math.min(current.C.distance(latlng), current.rangeMax)
+        seize: latlng => this._geometry.copy({
+          orientation: this._geometry.C.finalBearingTo(latlng),
+          rangeMin: Math.min(this._geometry.C.distance(latlng), this._geometry.rangeMax)
         })
       },
       S: {
         latlng: arc => arc.S,
-        seize: latlng => current.copy({
-          orientation: current.C.finalBearingTo(latlng) - 90,
-          rangeMax: Math.max(current.C.distance(latlng), current.rangeMin)
+        seize: latlng => this._geometry.copy({
+          orientation: this._geometry.C.finalBearingTo(latlng) - 90,
+          rangeMax: Math.max(this._geometry.C.distance(latlng), this._geometry.rangeMin)
         })
       }
     }
 
     const update = (channel, seize) => {
-      this._seize = current = seize
-      this._project()
+      this._geometry = seize
+      this._reset()
       Object.keys(handlers).forEach(id => handles[id].setLatLng(seize[id]))
 
       if (channel === 'dragend') {
@@ -111,7 +110,7 @@ L.Feature['G*T*Z-----'] = L.TACGRP.Feature.extend({
         dragend: ({ target }) => update('dragend', handler.seize(target.getLatLng()))
       }
 
-      const latlng = handler.latlng(current)
+      const latlng = handler.latlng(this._geometry)
       acc[id] = layer.addHandle(latlng, handleOptions)
       return acc
     }, {})
@@ -129,7 +128,7 @@ L.Feature['G*T*Z-----'] = L.TACGRP.Feature.extend({
     /* eslint-disable camelcase */
     const { geometry_max_range, geometry_mnm_range, geometry_orient_angle } = feature.properties
 
-    this._seize = seizeGeometry(
+    this._geometry = seizeGeometry(
       toLatLngs(feature.geometry),
       geometry_orient_angle,
       geometry_mnm_range,

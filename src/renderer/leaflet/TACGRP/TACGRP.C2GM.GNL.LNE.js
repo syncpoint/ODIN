@@ -39,8 +39,13 @@ const labeledLine = lines => L.TACGRP.Polyline.extend({
 })
 
 L.Feature['G*G*DLF---'] = labeledLine(() => (['FEBA']))
-L.Feature['G*G*GLF---'] = labeledLine(feature => ([`${feature.properties.n || ''}`, 'FLOT']))
-L.Feature['G*G*GLC---'] = labeledLine(feature => ([`${feature.properties.n || ''}`]))
+L.Feature['G*G*GLF---'] = labeledLine(feature => {
+  const labels = ['FLOT']
+  if (feature.properties.n) labels.unshift(feature.properties.n)
+  return labels
+})
+
+L.Feature['G*G*GLC---'] = labeledLine(feature => feature.properties.n ? ['ENY'] : [])
 L.Feature['G*G*GLP---'] = labeledLine(feature => ([`PL ${feature.properties.t || ''}`]))
 L.Feature['G*G*GLL---'] = labeledLine(feature => (['LL', feature.properties.t ? `(PL ${feature.properties.t})` : '']))
 L.Feature['G*G*OLF---'] = labeledLine(feature => (['FINAL CL', feature.properties.t ? `(PL ${feature.properties.t})` : '']))
