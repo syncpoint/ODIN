@@ -6,17 +6,7 @@ import { shape } from '../features/shape'
 import { line } from '../features/geo-helper'
 import { styles } from '../features/styles'
 
-L.Feature['G*G*GLB---'] = L.TACGRP.Polyline.extend({
-
-
-  /**
-   *
-   */
-  _styles (feature) {
-    const _styles = styles(feature)
-    _styles.clipping = 'mask'
-    return _styles
-  },
+const BNDS = L.TACGRP.Polyline.extend({
 
 
   /**
@@ -66,3 +56,14 @@ L.Feature['G*G*GLB---'] = L.TACGRP.Polyline.extend({
     })
   }
 })
+
+
+L.Feature['G*G*GLB---'] = (feature, options) => {
+  options.styles = feature => {
+    const _styles = styles(feature)
+    _styles.clipping = 'mask'
+    return _styles
+  }
+
+  return new BNDS(feature, options)
+}

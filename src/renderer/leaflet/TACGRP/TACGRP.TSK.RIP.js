@@ -4,7 +4,7 @@ import { shape } from '../features/shape'
 import '../features/OrbitArea'
 import { line, arc } from '../features/geo-helper'
 
-L.Feature['G*T*R-----'] = L.TACGRP.OrbitArea.extend({
+const RIP = L.TACGRP.OrbitArea.extend({
 
   _shape (group, options) {
     options.styles.clipping = 'mask'
@@ -34,14 +34,17 @@ L.Feature['G*T*R-----'] = L.TACGRP.OrbitArea.extend({
         ]
       }
     })
-  },
-
-  _labels () {
-    return [{
-      placement: ({ A, B }) => line([A, B]).point(0.5),
-      lines: ['RIP'],
-      'font-size': 18,
-      angle: ({ A, B }) => line([A, B]).angle()
-    }]
   }
 })
+
+
+L.Feature['G*T*R-----'] = (feature, options) => {
+  options.labels = () => [{
+    placement: ({ A, B }) => line([A, B]).point(0.5),
+    lines: ['RIP'],
+    'font-size': 18,
+    angle: ({ A, B }) => line([A, B]).angle()
+  }]
+
+  return new RIP(feature, options)
+}
