@@ -19,7 +19,8 @@ linux:
     - target: deb
 #    - target: snap
     - target: tar.gz
-#  icon: 'build/icons'
+    - target: Appimage
+  icon: 'build/icons'
   category: 'Office'
 files:
   - 'dist'
