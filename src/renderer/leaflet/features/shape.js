@@ -147,6 +147,8 @@ export const shape = (group, options, callbacks) => {
    */
   const renderLabels = () => {
     clipping.reset()
+
+    if (state.options.hideLabels) return clipping.finish()
     cache.put('labels', L.SVG.create('g'))(removeChild('group'))
     cache.element('group').appendChild(cache.element('labels'))
 
@@ -164,6 +166,10 @@ export const shape = (group, options, callbacks) => {
         'string': p => placements[p],
         'object': p => p
       }[typeof descriptor.placement](descriptor.placement)
+
+      // Precede only when position is defined and valid.
+      if (!center) return
+      if (isNaN(center.x) || isNaN(center.y)) return
 
       // Label is either text lines or a glyph:
       const label = descriptor.lines
@@ -199,7 +205,13 @@ export const shape = (group, options, callbacks) => {
     state.frame = frame
     if (!state.attached) return
     const closed = callbacks.closed && callbacks.closed()
-    const d = L.SVG.pointsToPath(callbacks.points(frame), closed, state.options.lineSmoothing)
+
+    // When features are too small to provide valid path information
+    // we use the 'empty path'.
+    // This is more a hack than a sustainable solution to the problem.
+    // TODO: On a higher level, decide whether a feature is visible.
+    const raw = L.SVG.pointsToPath(callbacks.points(frame), closed, state.options.lineSmoothing)
+    const d = raw.indexOf('NaN') !== -1 ? L.SVG.pointsToPath([]) : raw
     paths.forEach(name => cache.element(name).setAttribute('d', d))
     renderLabels()
   }
