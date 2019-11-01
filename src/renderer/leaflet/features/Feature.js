@@ -1,6 +1,5 @@
 import L from 'leaflet'
 import selection from '../../components/App.selection'
-import { styles } from './styles'
 import './Handles'
 
 // TODO: defaultOptions (styles)
@@ -103,9 +102,6 @@ L.TACGRP.Feature = L.Layer.extend({
       }
     })
   },
-
-  _labels (feature) { return [] },
-  _styles (feature) { return styles(feature) },
 
 
   _viewportChanged () {

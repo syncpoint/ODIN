@@ -1,11 +1,12 @@
 import L from 'leaflet'
 import * as math from 'mathjs'
 import * as R from 'ramda'
+import bbox from '@turf/bbox'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import '../features/Feature'
 import { shape } from './shape'
 import { polyEditor } from '../features/poly-editor'
-import bbox from '@turf/bbox'
+import { styles } from '../features/styles'
 
 
 /**
@@ -124,8 +125,8 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
       interactive: this.options.interactive,
       lineSmoothing: this.options.lineSmoothing,
       hideLabels: this.options.hideLabels,
-      styles: this.options.styles(feature),
-      labels: this.options.labels(feature)
+      styles: (this.options.styles ? this.options.styles : styles)(feature),
+      labels: (this.options.labels ? this.options.labels : () => [])(feature)
     }
   },
 

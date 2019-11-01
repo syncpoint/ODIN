@@ -3,7 +3,7 @@ import { line, calcStruts } from '../features/geo-helper'
 import { shape } from '../features/shape'
 import '../features/Corridor2Point'
 
-L.Feature['G*T*C-----'] = L.TACGRP.Corridor2Point.extend({
+const CNZ = L.TACGRP.Corridor2Point.extend({
 
   _shape (group) {
     const options = { ...this._shapeOptions }
@@ -19,14 +19,17 @@ L.Feature['G*T*C-----'] = L.TACGRP.Corridor2Point.extend({
         ]
       }
     })
-  },
-
-  _labels () {
-    return [{
-      placement: ({ envelope }) => line(envelope[1]).point(0.5),
-      lines: ['C'],
-      'font-size': 18,
-      angle: ({ envelope }) => line(envelope[1]).angle() + 90
-    }]
   }
 })
+
+
+L.Feature['G*T*C-----'] = (feature, options) => {
+  options.labels = () => [{
+    placement: ({ envelope }) => line(envelope[1]).point(0.5),
+    lines: ['C'],
+    'font-size': 18,
+    angle: ({ envelope }) => line(envelope[1]).angle() + 90
+  }]
+
+  return new CNZ(feature, options)
+}

@@ -1,9 +1,10 @@
 import L from 'leaflet'
+import bbox from '@turf/bbox'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import './Feature'
 import { shape } from './shape'
 import { polyEditor } from './poly-editor'
-import bbox from '@turf/bbox'
+import { styles } from '../features/styles'
 
 const placements = ({ points }) => ({
   'start': points[0],
@@ -66,8 +67,8 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
       interactive: this.options.interactive,
       lineSmoothing: ('lineSmoothing' in this) ? this.lineSmoothing : this.options.lineSmoothing,
       hideLabels: this.options.hideLabels,
-      styles: this._styles(feature),
-      labels: this._labels(feature)
+      styles: (this.options.styles ? this.options.styles : styles)(feature),
+      labels: (this.options.labels ? this.options.labels : () => [])(feature)
     }
   },
 
