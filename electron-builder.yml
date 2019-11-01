@@ -17,9 +17,9 @@ mac:
 linux:
   target:
     - target: deb
-    - target: snap
+#    - target: snap
     - target: tar.gz
-  icon: 'icons'
+#  icon: 'build/icons'
   category: 'Office'
 files:
   - 'dist'
