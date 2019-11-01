@@ -5,6 +5,7 @@ import { toLatLngs, toGeometry } from '../GeoJSON'
 import '../features/Feature'
 import { shape } from './shape'
 import { polyEditor } from '../features/poly-editor'
+import bbox from '@turf/bbox'
 
 
 /**
@@ -68,9 +69,9 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
    */
   _project () {
     const layerPoint = this._map.latLngToLayerPoint.bind(this._map)
-    this._svg.updateFrame({
+    this._frame = {
       rings: this._geometry.map(ring => ring.map(layerPoint))
-    })
+    }
   },
 
 
@@ -87,7 +88,7 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
 
     polyEditor(this._geometry[0], layer, options)((channel, latlngs) => {
       this._geometry = [latlngs]
-      this._project()
+      this._reset()
 
       if (channel === 'dragend') {
         const geometry = toGeometry('Polygon', this._geometry)
@@ -113,9 +114,16 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
 
     this._geometry = toLatLngs(feature.geometry)
 
+    const box = bbox(feature)
+    this._bounds = L.latLngBounds(
+      L.latLng(box[1], box[0]),
+      L.latLng(box[3], box[2])
+    )
+
     this._shapeOptions = {
       interactive: this.options.interactive,
       lineSmoothing: this.options.lineSmoothing,
+      hideLabels: this.options.hideLabels,
       styles: this.options.styles(feature),
       labels: this.options.labels(feature)
     }

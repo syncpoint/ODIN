@@ -52,3 +52,7 @@ L.Feature['G*T*W-----'] = L.Feature['G*T*L-----'].extend({
 L.Feature['G*T*WP----'] = L.Feature['G*T*L-----'].extend({
   labelText: 'WP'
 })
+
+L.Feature['G*T*M-----'] = L.Feature['G*T*L-----'].extend({
+  labelText: 'R'
+})
