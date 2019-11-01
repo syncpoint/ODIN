@@ -157,7 +157,7 @@ const Shape = props => {
     const labelPoints = refs.labels.map(current).map((text, index) => {
       const label = props.labels[index]
       const box = L.SVG.inflate(text.getBBox(), 4)
-      const T = transformation(label, box)
+      const T = transformation(box)(label)
       text.setAttribute('transform', T.matrix)
       return T.points(boxPoints(box))
     })
@@ -169,8 +169,7 @@ const Shape = props => {
       return acc
     }, [])
 
-    const d = L.SVG.pointsToPath([points.concat(reverse)], false, false)
-    setClipPath(d)
+    setClipPath(L.SVG.pointsToPath([points.concat(reverse)], false, false))
   })
 
   const labels = props.labels.map((label, index) =>

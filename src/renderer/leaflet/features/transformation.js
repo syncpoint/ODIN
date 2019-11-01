@@ -8,7 +8,7 @@ const mRotate = θ => [[Math.cos(θ), Math.sin(θ), 0], [-Math.sin(θ), Math.cos
 const mTransform = xs => xs.reduce((a, b) => math.multiply(a, b))
 const DEG2RAD = Math.PI / 180
 
-export default (label, box) => {
+export default box => label => {
 
   const glyph = ({ center, angle, scale, offset }) => [
     mTranslate(offset.x, offset.y),
@@ -23,7 +23,7 @@ export default (label, box) => {
     mScale((angle > 90 && angle < 270) ? -1 : 1),
     mTranslate(
       center.x + (textAnchor === 'left' ? -box.width / 2 : textAnchor === 'right' ? box.width / 2 : 0),
-      center.y + fontSize / 2 - box.height / 2
+      center.y + fontSize / 1.2 - box.height / 2
     )
   ]
 
