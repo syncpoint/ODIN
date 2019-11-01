@@ -4,7 +4,7 @@ import { line, calcStruts2, arc } from '../features/geo-helper'
 import { shape } from '../features/shape'
 import '../features/Corridor2Point'
 
-L.Feature['G*T*J-----'] = L.TACGRP.Corridor2Point.extend({
+const CNT = L.TACGRP.Corridor2Point.extend({
 
   _shape (group, options) {
     options.styles.clipping = 'mask'
@@ -25,24 +25,26 @@ L.Feature['G*T*J-----'] = L.TACGRP.Corridor2Point.extend({
         ]
       }
     })
-  },
-
-  _labels () {
-    return [{
-      placement: ({ center }) => line(center).point(0.5),
-      lines: ['ENY'],
-      'font-size': 18,
-      angle: ({ center }) => line(center).angle()
-    },
-    {
-      placement: ({ center, envelope }) => {
-        const centerLine = line(center)
-        const width = line(envelope[0]).d
-        return centerLine.point(-0.5 * width / centerLine.d)
-      },
-      lines: ['C'],
-      'font-size': 18,
-      angle: ({ center }) => line(center).angle()
-    }]
   }
 })
+
+L.Feature['G*T*J-----'] = (feature, options) => {
+  options.labels = () => [{
+    placement: ({ center }) => line(center).point(0.5),
+    lines: ['ENY'],
+    'font-size': 18,
+    angle: ({ center }) => line(center).angle()
+  },
+  {
+    placement: ({ center, envelope }) => {
+      const centerLine = line(center)
+      const width = line(envelope[0]).d
+      return centerLine.point(-0.5 * width / centerLine.d)
+    },
+    lines: ['C'],
+    'font-size': 18,
+    angle: ({ center }) => line(center).angle()
+  }]
+
+  return new CNT(feature, options)
+}
