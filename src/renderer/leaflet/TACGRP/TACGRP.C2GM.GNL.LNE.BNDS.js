@@ -33,6 +33,17 @@ const BNDS = L.TACGRP.Polyline.extend({
       return glyph
     }
 
+    this.options.labels = () => ({ points }) => R.aperture(2, points)
+      .map(line)
+      .map(line => ({ placement: line.point(0.5), angle: line.angle() }))
+      .map(({ placement, angle }) => ({
+        placement,
+        angle,
+        scale: 0.5,
+        offset: L.point(-100, -178),
+        glyph: this._glyph()
+      }))
+
     L.TACGRP.Polyline.prototype._setFeature.call(this, feature)
   },
 
@@ -44,19 +55,6 @@ const BNDS = L.TACGRP.Polyline.extend({
     return shape(group, options, {
       points: ({ points }) => [points]
     })
-  },
-
-  _labels () {
-    return ({ points }) => R.aperture(2, points)
-      .map(line)
-      .map(line => ({ placement: line.point(0.5), angle: line.angle() }))
-      .map(({ placement, angle }) => ({
-        placement,
-        angle,
-        scale: 0.5,
-        offset: L.point(-100, -178),
-        glyph: this._glyph()
-      }))
   }
 })
 
