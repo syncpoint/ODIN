@@ -4,11 +4,7 @@ import { calcStruts, line } from '../features/geo-helper'
 import { shape } from '../features/react-shape'
 import { styles, strokeDashArray } from '../features/styles'
 
-
-/**
- *
- */
-L.Feature['G*T*KF----'] = L.TACGRP.Corridor.extend({
+const CATKF = L.TACGRP.Corridor.extend({
   _shape (group, options) {
     const points = ({ center, envelope }) => {
       const dw = line(envelope[0]).d
@@ -38,13 +34,19 @@ L.Feature['G*T*KF----'] = L.TACGRP.Corridor.extend({
     }
 
     return shape(group, options, { points })
-  },
+  }
+})
 
-
-  _styles (feature) {
+/**
+ *
+ */
+L.Feature['G*T*KF----'] = (feature, options) => {
+  options.styles = feature => {
     const _styles = styles(feature)
     _styles.contrast['stroke-dasharray'] = strokeDashArray()
     _styles.path['stroke-dasharray'] = strokeDashArray()
     return _styles
   }
-})
+
+  return new CATKF(feature, options)
+}

@@ -3,10 +3,7 @@ import '../features/Corridor'
 import { calcStruts, line } from '../features/geo-helper'
 import { shape } from '../features/react-shape'
 
-/**
- *
- */
-L.Feature['G*G*OLAGS-'] = L.TACGRP.Corridor.extend({
+const SUPATK = L.TACGRP.Corridor.extend({
   _shape (group, options) {
     const points = ({ center, envelope }) => {
       const s = calcStruts(center, envelope)([ 0.76 ])
@@ -23,3 +20,8 @@ L.Feature['G*G*OLAGS-'] = L.TACGRP.Corridor.extend({
     return shape(group, options, { points })
   }
 })
+
+/**
+ *
+ */
+L.Feature['G*G*OLAGS-'] = (feature, options) => new SUPATK(feature, options)

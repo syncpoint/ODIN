@@ -3,7 +3,7 @@ import { line, calcStruts2 } from '../features/geo-helper'
 import { shape } from '../features/react-shape'
 import '../features/Corridor2Point'
 
-L.Feature['G*T*P-----'] = L.TACGRP.Corridor2Point.extend({
+const PNE = L.TACGRP.Corridor2Point.extend({
 
   _shape (group) {
     const options = { ...this._shapeOptions }
@@ -19,14 +19,16 @@ L.Feature['G*T*P-----'] = L.TACGRP.Corridor2Point.extend({
         ]
       }
     })
-  },
-
-  _labels () {
-    return [{
-      placement: ({ center }) => line(center).point(0.5),
-      lines: ['P'],
-      'font-size': 18,
-      angle: ({ center }) => line(center).angle()
-    }]
   }
 })
+
+L.Feature['G*T*P-----'] = (feature, options) => {
+  options.labels = () => [{
+    placement: ({ center }) => line(center).point(0.5),
+    lines: ['P'],
+    'font-size': 18,
+    angle: ({ center }) => line(center).angle()
+  }]
+
+  return new PNE(feature, options)
+}

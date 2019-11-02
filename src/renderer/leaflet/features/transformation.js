@@ -23,7 +23,7 @@ export default box => label => {
     mScale((angle > 90 && angle < 270) ? -1 : 1),
     mTranslate(
       center.x + (textAnchor === 'left' ? -box.width / 2 : textAnchor === 'right' ? box.width / 2 : 0),
-      center.y + fontSize / 1.2 - box.height / 2
+      center.y + fontSize / 1.6 - box.height / 2
     )
   ]
 
