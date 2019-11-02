@@ -4,7 +4,7 @@ import { arc } from '../features/geo-helper'
 import { shape } from '../features/react-shape'
 import '../features/Arc'
 
-L.Feature['G*T*S-----'] = L.TACGRP.Arc.extend({
+const SCE = L.TACGRP.Arc.extend({
 
   _shape (group, options) {
     options.styles.clipping = 'mask'
@@ -18,9 +18,12 @@ L.Feature['G*T*S-----'] = L.TACGRP.Arc.extend({
         return [inner, this._arrow(inner[inner.length - 1], radians.end, radius / 5)]
       }
     })
-  },
+  }
+})
 
-  _labels () {
+
+L.Feature['G*T*S-----'] = (feature, options) => {
+  options.labels = () => {
     const alpha = radians => radians.start + radians.delta / 2
     return [{
       placement: ({ C, radius, radians }) => arc(C, radius)([alpha(radians)])[0],
@@ -29,4 +32,6 @@ L.Feature['G*T*S-----'] = L.TACGRP.Arc.extend({
       angle: ({ radians }) => alpha(radians) / Math.PI * 180
     }]
   }
-})
+
+  return new SCE(feature, options)
+}

@@ -1,4 +1,5 @@
 import { featureFromSidc } from '../model/mapPalette-feature'
+import settings from '../model/settings'
 
 const reorder = (arr, from, to) => {
   var element = arr[from]
@@ -16,4 +17,5 @@ export default (sidc, recentlyUsed) => {
     ? arr.unshift(featureFromSidc(sidc))
     : reorder(arr, index, 0)
   if (arr.length > 6) arr.length = 6
+  settings.palette.setRecentlyUsed(arr.map(obj => obj.sidc))
 }

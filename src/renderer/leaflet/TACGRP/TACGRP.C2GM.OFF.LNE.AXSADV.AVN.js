@@ -3,10 +3,7 @@ import '../features/Corridor'
 import { calcStruts, line } from '../features/geo-helper'
 import { shape } from '../features/react-shape'
 
-/**
- * AXIS OF ADVANCE - AVIATION
- */
-L.Feature['G*G*OLAV--'] = L.TACGRP.Corridor.extend({
+const AVN = L.TACGRP.Corridor.extend({
   _shape (group, options) {
     const points = ({ center, envelope }) => {
       const s = calcStruts(center, envelope)([ 0.76 ])
@@ -23,3 +20,8 @@ L.Feature['G*G*OLAV--'] = L.TACGRP.Corridor.extend({
     return shape(group, options, { points })
   }
 })
+
+/**
+ * AXIS OF ADVANCE - AVIATION
+ */
+L.Feature['G*G*OLAV--'] = (feature, options) => new AVN(feature, options)

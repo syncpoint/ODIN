@@ -4,8 +4,7 @@ import { shape } from '../features/react-shape'
 import '../features/OrbitArea'
 import { line, arc } from '../features/geo-helper'
 
-L.Feature['G*T*L-----'] = L.TACGRP.OrbitArea.extend({
-  labelText: 'D',
+const OrbitArea = L.TACGRP.OrbitArea.extend({
 
   _shape (group, options) {
     options.styles.clipping = 'mask'
@@ -33,26 +32,21 @@ L.Feature['G*T*L-----'] = L.TACGRP.OrbitArea.extend({
         ]
       }
     })
-  },
-
-  _labels () {
-    return [{
-      placement: ({ A, B }) => line([A, B]).point(0.5),
-      lines: [this.labelText],
-      'font-size': 18,
-      angle: ({ A, B }) => line([A, B]).angle()
-    }]
   }
 })
 
-L.Feature['G*T*W-----'] = L.Feature['G*T*L-----'].extend({
-  labelText: 'W'
-})
+const labeledOrbit = labelText => (feature, options) => {
+  options.labels = () => [{
+    placement: ({ A, B }) => line([A, B]).point(0.5),
+    lines: [labelText],
+    'font-size': 18,
+    angle: ({ A, B }) => line([A, B]).angle()
+  }]
 
-L.Feature['G*T*WP----'] = L.Feature['G*T*L-----'].extend({
-  labelText: 'WP'
-})
+  return new OrbitArea(feature, options)
+}
 
-L.Feature['G*T*M-----'] = L.Feature['G*T*L-----'].extend({
-  labelText: 'R'
-})
+L.Feature['G*T*L-----'] = labeledOrbit('D')
+L.Feature['G*T*W-----'] = labeledOrbit('W')
+L.Feature['G*T*WP----'] = labeledOrbit('WP')
+L.Feature['G*T*M-----'] = labeledOrbit('R')

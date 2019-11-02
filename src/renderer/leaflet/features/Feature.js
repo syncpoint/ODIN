@@ -1,7 +1,6 @@
 import L from 'leaflet'
 import * as R from 'ramda'
 import selection from '../../components/App.selection'
-import { styles } from './styles'
 import './Handles'
 
 // TODO: defaultOptions (styles)
@@ -100,8 +99,6 @@ L.TACGRP.Feature = L.Layer.extend({
     })
   },
 
-  _labels (feature) { return [] },
-  _styles (feature) { return styles(feature) },
 
   /**
    * Required by L.Renderer, but NOOP since we handle shape state in layer.

@@ -22,7 +22,7 @@ const genericShape = (feature, options) => {
       if (!validSymbol(sidc)) return null // no point features other than symbols
       return new L.Feature.Symbol(feature, options)
     }
-    case 'Polygon': return new L.TACGRP.PolygonAreaTitled(feature, options)
+    case 'Polygon': return new L.TACGRP.PolygonArea(feature, options)
     case 'LineString': return new L.TACGRP.Polyline(feature, options)
     default: return null
   }
@@ -46,7 +46,7 @@ const adaptFeature = (layerId, featureId, feature, featureOptions) => {
   if (!sidc) return genericShape(feature, options)
 
   const key = `${sidc[0]}*${sidc[2]}*${sidc.substring(4, 10)}`
-  const layer = L.Feature[key] ? new L.Feature[key](feature, options) : genericShape(feature, options)
+  const layer = L.Feature[key] ? L.Feature[key](feature, options) : genericShape(feature, options)
   return layer
 }
 

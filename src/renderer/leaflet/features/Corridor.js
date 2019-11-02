@@ -3,6 +3,7 @@ import { toLatLngs, toGeometry } from '../GeoJSON'
 import './Feature'
 import { corridorGeometry } from './corridor-geometry'
 import { polyEditor } from './poly-editor'
+import { styles } from '../features/styles'
 import { FULCRUM } from './handle-types'
 
 /**
@@ -107,8 +108,8 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
 
     this._shapeOptions = {
       interactive: this.options.interactive,
-      labels: this._labels(),
-      styles: this._styles(feature)
+      styles: (this.options.styles ? this.options.styles : styles)(feature),
+      labels: (this.options.labels ? this.options.labels : () => [])(feature)
     }
   }
 })

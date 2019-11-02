@@ -1,6 +1,7 @@
 import L from 'leaflet'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import { line } from './geo-helper'
+import { styles } from '../features/styles'
 import { FULCRUM } from './handle-types'
 import { wrap360 } from '../geodesy'
 
@@ -135,8 +136,8 @@ L.TACGRP.Arc = L.TACGRP.Feature.extend({
 
     this._shapeOptions = {
       interactive: this.options.interactive,
-      labels: this._labels(),
-      styles: this._styles(feature)
+      styles: (this.options.styles ? this.options.styles : styles)(feature),
+      labels: (this.options.labels ? this.options.labels : () => [])(feature)
     }
   },
 

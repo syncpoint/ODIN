@@ -1,6 +1,7 @@
 import L from 'leaflet'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import { line } from './geo-helper'
+import { styles } from '../features/styles'
 import { FULCRUM } from './handle-types'
 import { wrap360 } from '../geodesy'
 import { shape } from './react-shape'
@@ -138,8 +139,8 @@ L.TACGRP.FanArea = L.TACGRP.Feature.extend({
 
     this._shapeOptions = {
       interactive: this.options.interactive,
-      labels: this._labels(),
-      styles: this._styles(feature)
+      styles: (this.options.styles ? this.options.styles : styles)(feature),
+      labels: (this.options.labels ? this.options.labels : () => [])(feature)
     }
   },
 
@@ -167,25 +168,5 @@ L.TACGRP.FanArea = L.TACGRP.Feature.extend({
         ]
       }
     })
-  },
-
-  _labelText: 'C',
-
-  /**
-   *
-   */
-  _labels () {
-    return [{
-      placement: ({ C, O, rangeO }) => line([C, line([C, O]).translate(-rangeO / 20).point(0.55)]).point(0.3),
-      lines: [this._labelText],
-      'font-size': 18,
-      angle: ({ orientation }) => orientation - 90
-    },
-    {
-      placement: ({ C, S, rangeS }) => line([C, line([C, S]).translate(rangeS / 20).point(0.55)]).point(0.3),
-      lines: [this._labelText],
-      'font-size': 18,
-      angle: ({ orientation, size }) => orientation + size - 90
-    }]
   }
 })

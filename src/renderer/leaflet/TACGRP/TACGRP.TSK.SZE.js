@@ -1,11 +1,12 @@
 import L from 'leaflet'
 import * as R from 'ramda'
+import '../features/Feature'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import { line, arc } from '../features/geo-helper'
 import { FULCRUM } from '../features/handle-types'
-import '../features/Feature'
 import { wrap360 } from '../geodesy'
 import { shape } from '../features/react-shape'
+import { styles } from '../features/styles'
 
 
 /**
@@ -32,11 +33,7 @@ export const seizeGeometry = (latlng, orientation, rangeMin, rangeMax) => {
   return create(({ latlng, orientation, rangeMin, rangeMax }))
 }
 
-
-/**
- *
- */
-L.Feature['G*T*Z-----'] = L.TACGRP.Feature.extend({
+const SZE = L.TACGRP.Feature.extend({
 
 
   /**
@@ -137,8 +134,8 @@ L.Feature['G*T*Z-----'] = L.TACGRP.Feature.extend({
 
     this._shapeOptions = {
       interactive: this.options.interactive,
-      labels: this._labels(),
-      styles: this._styles(feature)
+      labels: () => [],
+      styles: styles(feature)
     }
   },
 
@@ -173,3 +170,9 @@ L.Feature['G*T*Z-----'] = L.TACGRP.Feature.extend({
     })
   }
 })
+
+
+/**
+ *
+ */
+L.Feature['G*T*Z-----'] = (feature, options) => new SZE(feature, options)
