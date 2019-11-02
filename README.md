@@ -1,6 +1,6 @@
-![ODIN](assets/logo_font_300.png)
+![ODIN](assets/logo_font_75.png)
 
-# ODIN - C2IS (Open Source)
+# __ODIN__: Open Source __C2IS__
 
 [![Build Status: Linux](https://travis-ci.org/syncpoint/ODIN.svg?branch=develop)](https://travis-ci.org/syncpoint/ODIN.svg?branch=develop)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
