@@ -234,7 +234,8 @@ export const shape = (group, options, callbacks) => {
 
   const state = {
     lineSmoothing: options.lineSmoothing,
-    points: callbacks.points
+    points: callbacks.points,
+    labels: options.labels
   }
 
   const props = {
@@ -272,12 +273,12 @@ export const shape = (group, options, callbacks) => {
     ReactDOM.render(<Shape {...props}/>, group)
   }
 
-  const updateLabels = options => {
+  const updateLabels = () => {
     if (hideLabels) return []
 
-    const labels = (typeof options.labels) === 'function'
-      ? options.labels(state.frame)
-      : options.labels
+    const labels = (typeof state.labels) === 'function'
+      ? state.labels(state.frame)
+      : state.labels
 
     return labels.map(labelProperties).filter(props => props.center)
   }
@@ -287,12 +288,13 @@ export const shape = (group, options, callbacks) => {
       state.frame = frame
       state.placements = callbacks.placements ? callbacks.placements(state.frame) : {}
       props.d = L.SVG.pointsToPath(state.points(state.frame), closed, state.lineSmoothing)
-      props.labels = updateLabels(options)
+      props.labels = updateLabels()
       render()
     },
     updateOptions: options => {
+      state.labels = options.labels
       props.styles = options.styles
-      props.labels = updateLabels(options)
+      props.labels = updateLabels()
       render()
     }
   }
