@@ -10,7 +10,7 @@ import transformation from './transformation'
 
 
 /**
- *
+ * TODO: rename style attributes so we can remove this translation
  */
 const translate = style => ({
   stroke: style['stroke'],
@@ -152,10 +152,10 @@ const Shape = props => {
   const className = interactive ? 'leaflet-interactive' : ''
   const refs = { labels: [] }
   const root = () => refs.defs.current.parentNode
-
   const [ clipPath, setClipPath ] = useState('')
+  const clipping = props.labels.length
 
-  useEffect(() => {
+  const effect = () => {
     const labelPoints = refs.labels.map(current).map((text, index) => {
       const label = props.labels[index]
       const box = L.SVG.inflate(text.getBBox(), 4)
@@ -172,7 +172,9 @@ const Shape = props => {
     }, [])
 
     setClipPath(L.SVG.pointsToPath([points.concat(reverse)], false, false))
-  })
+  }
+
+  if (clipping) useEffect(effect)
 
   const labels = props.labels.map((label, index) =>
     label.lines
@@ -200,19 +202,26 @@ const Shape = props => {
   const { pattern, fill } = patternFill(id, styles)
   if (fill) pathStyle.fill = fill
 
+  const [clip, clipRef] = clipping
+    ? [
+        <clipPath id={`clip-${id}`} clipRule={'evenodd'}>
+          <path d={clipPath}/>
+        </clipPath>,
+        `url(#clip-${id})`
+      ]
+    : [null, null]
+
   return (<>
     <defs ref={K(React.createRef())(ref => (refs.defs = ref))}>
       { pattern }
       {/* { mask() } */}
       <path {...pathProperties}/>
-      <clipPath id={`clip-${id}`} clipRule={'evenodd'}>
-        <path d={clipPath}/>
-      </clipPath>
+      { clip }
     </defs>
     {/* re-use path definition with different styles. */}
     <use xlinkHref={`#path-${id}`} {...translate(styles['outline'])}/>
-    <use xlinkHref={`#path-${id}`} {...translate(styles['contrast'])} clipPath={`url(#clip-${id})`}/>
-    <use xlinkHref={`#path-${id}`} {...pathStyle} clipPath={`url(#clip-${id})`}/>
+    <use xlinkHref={`#path-${id}`} {...translate(styles['contrast'])} clipPath={clipRef}/>
+    <use xlinkHref={`#path-${id}`} {...pathStyle} clipPath={clipRef}/>
     { labels }
   </>)
 }
