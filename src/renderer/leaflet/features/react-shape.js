@@ -201,7 +201,6 @@ const Shape = props => {
   return (<>
     <defs ref={K(React.createRef())(ref => (refs.defs = ref))}>
       { pattern }
-      {/* { mask() } */}
       <path {...pathProperties}/>
       { clip }
     </defs>

@@ -7,8 +7,6 @@ const BYS = L.TACGRP.Corridor2Point.extend({
 
   _shape (group) {
     const options = { ...this._shapeOptions }
-    options.styles.clipping = 'mask'
-
     return shape(group, options, {
       points: ({ center, envelope }) => {
         const s = calcStruts(center, envelope)([0.1])

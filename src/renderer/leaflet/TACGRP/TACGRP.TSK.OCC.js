@@ -7,8 +7,6 @@ import '../features/Arc'
 const OCC = L.TACGRP.Arc.extend({
 
   _shape (group, options) {
-    options.styles.clipping = 'mask'
-
     return shape(group, options, {
       points: ({ C, radius, radians }) => {
         const steps = 32

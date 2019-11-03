@@ -4,7 +4,6 @@ import '../features/Polyline'
 import echelons from '../features/echelons'
 import { shape } from '../features/react-shape'
 import { line } from '../features/geo-helper'
-import { styles } from '../features/styles'
 
 const BNDS = L.TACGRP.Polyline.extend({
 
@@ -59,12 +58,4 @@ const BNDS = L.TACGRP.Polyline.extend({
 })
 
 
-L.Feature['G*G*GLB---'] = (feature, options) => {
-  options.styles = feature => {
-    const _styles = styles(feature)
-    _styles.clipping = 'mask'
-    return _styles
-  }
-
-  return new BNDS(feature, options)
-}
+L.Feature['G*G*GLB---'] = (feature, options) => new BNDS(feature, options)
