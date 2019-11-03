@@ -61,8 +61,8 @@ L.Feature['G*G*OLP---'] = (feature, options) => {
   options.labels = lineLabels(feature => ['PLD', feature.properties.t ? `(PLD ${feature.properties.t})` : ''])
   options.styles = feature => {
     const _styles = styles(feature)
-    _styles.contrast['stroke-dasharray'] = strokeDashArray()
-    _styles.path['stroke-dasharray'] = strokeDashArray()
+    _styles.contrast.strokeDasharray = strokeDashArray()
+    _styles.path.strokeDasharray = strokeDashArray()
     return _styles
   }
 

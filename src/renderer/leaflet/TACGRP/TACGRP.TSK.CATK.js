@@ -29,8 +29,8 @@ const CATK = L.TACGRP.Corridor.extend({
 L.Feature['G*T*K-----'] = (feature, options) => {
   options.styles = feature => {
     const _styles = styles(feature)
-    _styles.contrast['stroke-dasharray'] = strokeDashArray()
-    _styles.path['stroke-dasharray'] = strokeDashArray()
+    _styles.contrast.strokeDasharray = strokeDashArray()
+    _styles.path.strokeDasharray = strokeDashArray()
     return _styles
   }
 
