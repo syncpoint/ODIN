@@ -7,8 +7,6 @@ import '../features/Corridor2Point'
 const CNT = L.TACGRP.Corridor2Point.extend({
 
   _shape (group, options) {
-    options.styles.clipping = 'mask'
-
     return shape(group, options, {
       points: ({ center, envelope }) => {
         const angle = (line(center).angle() - 90) / 180 * Math.PI

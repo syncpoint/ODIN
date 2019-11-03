@@ -70,7 +70,6 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
    *
    */
   _shape (group, options) {
-    options.styles.clipping = 'mask'
     return shape(group, options, {
       placements,
       points: ({ points }) => [points]

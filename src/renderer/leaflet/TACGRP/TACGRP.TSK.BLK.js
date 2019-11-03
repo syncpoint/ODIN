@@ -6,8 +6,6 @@ import '../features/Corridor2Point'
 const BLK = L.TACGRP.Corridor2Point.extend({
   _shape (group) {
     const options = { ...this._shapeOptions }
-    options.styles.clipping = 'mask'
-
     return shape(group, options, {
       points: ({ center, envelope }) => [center, envelope[0]]
     })

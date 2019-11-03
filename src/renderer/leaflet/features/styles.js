@@ -20,7 +20,6 @@ export const ColorSchemes = {
 export const strokeDashArray = () => '20 5'
 
 // STYLES
-// * clipping: none | mask | backdrop
 // * stroke: path stroke color
 // * patternStroke: fill pattern stroke color
 // * strokeWidth: path stroke with
@@ -55,7 +54,6 @@ export const styles = feature => {
   }
 
   return {
-    clipping: 'none',
 
     // Colored path outline to increase contrast.
     contrast: {

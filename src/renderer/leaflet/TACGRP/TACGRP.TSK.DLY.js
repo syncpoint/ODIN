@@ -7,8 +7,6 @@ import { line, arc } from '../features/geo-helper'
 const OrbitArea = L.TACGRP.OrbitArea.extend({
 
   _shape (group, options) {
-    options.styles.clipping = 'mask'
-
     return shape(group, options, {
       points: ({ A, B, A1, width }) => {
         const centerLine = line([A, B])

@@ -149,8 +149,6 @@ L.TACGRP.FanArea = L.TACGRP.Feature.extend({
    *
    */
   _shape (group, options) {
-    options.styles.clipping = 'mask'
-
     return shape(group, options, {
       points: ({ C, O, S, rangeS, rangeO }) => {
         const LCO = line([C, O])

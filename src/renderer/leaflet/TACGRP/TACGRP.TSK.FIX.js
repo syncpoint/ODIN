@@ -8,8 +8,6 @@ const FIX = L.TACGRP.Line2Point.extend({
 
   _shape (group) {
     const options = { ...this._shapeOptions }
-    options.styles.clipping = 'mask'
-
     return shape(group, options, {
       points: ({ points }) => {
         const centerLine = line(points)
