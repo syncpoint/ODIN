@@ -10,19 +10,6 @@ import transformation from './transformation'
 
 
 /**
- * TODO: rename style attributes so we can remove this translation
- */
-const translate = style => ({
-  stroke: style['stroke'],
-  strokeWidth: style['stroke-width'],
-  strokeLinejoin: style['stroke-linejoin'],
-  strokeDasharray: style['stroke-dasharray'],
-  fill: style['fill'],
-  opacity: style['opacity']
-})
-
-
-/**
  *
  */
 const lineProperties = line => {
@@ -198,7 +185,7 @@ const Shape = props => {
   }
 
   // Path 'path' might get pattern fill:
-  const pathStyle = translate(styles['path'])
+  const pathStyle = styles['path']
   const { pattern, fill } = patternFill(id, styles)
   if (fill) pathStyle.fill = fill
 
@@ -219,8 +206,8 @@ const Shape = props => {
       { clip }
     </defs>
     {/* re-use path definition with different styles. */}
-    <use xlinkHref={`#path-${id}`} {...translate(styles['outline'])}/>
-    <use xlinkHref={`#path-${id}`} {...translate(styles['contrast'])} clipPath={clipRef}/>
+    <use xlinkHref={`#path-${id}`} {...styles['outline']}/>
+    <use xlinkHref={`#path-${id}`} {...styles['contrast']} clipPath={clipRef}/>
     <use xlinkHref={`#path-${id}`} {...pathStyle} clipPath={clipRef}/>
     { labels }
   </>)
