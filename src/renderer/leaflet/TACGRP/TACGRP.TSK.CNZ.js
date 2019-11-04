@@ -1,14 +1,12 @@
 import L from 'leaflet'
 import { line, calcStruts } from '../features/geo-helper'
-import { shape } from '../features/shape'
+import { shape } from '../features/react-shape'
 import '../features/Corridor2Point'
 
 const CNZ = L.TACGRP.Corridor2Point.extend({
 
   _shape (group) {
     const options = { ...this._shapeOptions }
-    options.styles.clipping = 'mask'
-
     return shape(group, options, {
       points: ({ center, envelope }) => {
         const s = calcStruts(center, envelope)([-0.1, 0.1])

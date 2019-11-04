@@ -1,15 +1,13 @@
 import L from 'leaflet'
 import * as R from 'ramda'
 import { line } from '../features/geo-helper'
-import { shape } from '../features/shape'
+import { shape } from '../features/react-shape'
 import '../features/Line2Point'
 
 const FIX = L.TACGRP.Line2Point.extend({
 
   _shape (group) {
     const options = { ...this._shapeOptions }
-    options.styles.clipping = 'mask'
-
     return shape(group, options, {
       points: ({ points }) => {
         const centerLine = line(points)

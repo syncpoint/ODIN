@@ -1,8 +1,6 @@
 const path = require('path')
 const { spawn } = require('child_process')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
-
 
 const hash = 'hash:base64:8'
 
@@ -56,7 +54,6 @@ const rendererConfig = (env, argv) => ({
   },
 
   plugins: [
-    new BundleAnalyzerPlugin(),
     new HtmlWebpackPlugin({
       title: 'ODIN - C2IS'
     })

@@ -4,7 +4,7 @@ import { line } from './geo-helper'
 import { styles } from '../features/styles'
 import { FULCRUM } from './handle-types'
 import { wrap360 } from '../geodesy'
-import { shape } from './shape'
+import { shape } from './react-shape'
 
 
 /**
@@ -149,8 +149,6 @@ L.TACGRP.FanArea = L.TACGRP.Feature.extend({
    *
    */
   _shape (group, options) {
-    options.styles.clipping = 'mask'
-
     return shape(group, options, {
       points: ({ C, O, S, rangeS, rangeO }) => {
         const LCO = line([C, O])

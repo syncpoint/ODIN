@@ -1,14 +1,12 @@
 import L from 'leaflet'
 import * as R from 'ramda'
 import { arc } from '../features/geo-helper'
-import { shape } from '../features/shape'
+import { shape } from '../features/react-shape'
 import '../features/Arc'
 
 const SCE = L.TACGRP.Arc.extend({
 
   _shape (group, options) {
-    options.styles.clipping = 'mask'
-
     return shape(group, options, {
       points: ({ C, radius, radians }) => {
         const steps = 32

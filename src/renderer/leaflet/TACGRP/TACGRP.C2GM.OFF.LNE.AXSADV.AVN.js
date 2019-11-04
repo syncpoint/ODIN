@@ -1,7 +1,7 @@
 import L from 'leaflet'
 import '../features/Corridor'
 import { calcStruts, line } from '../features/geo-helper'
-import { shape } from '../features/shape'
+import { shape } from '../features/react-shape'
 
 const AVN = L.TACGRP.Corridor.extend({
   _shape (group, options) {

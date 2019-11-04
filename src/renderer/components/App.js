@@ -19,10 +19,6 @@ const center = L.latLng(48.65400545105681, 15.319061279296877)
 const zoom = 13
 
 const mapOptions = {
-  // TODO: move animation options to user preferences
-  zoomAnimation: false,
-  fadeAnimation: false,
-  markerZoomAnimation: false,
   worldCopyJump: true,
   keyboardPanDelta: 160, // default 80
   center,

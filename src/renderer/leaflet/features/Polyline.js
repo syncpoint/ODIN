@@ -1,8 +1,7 @@
 import L from 'leaflet'
-import bbox from '@turf/bbox'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import './Feature'
-import { shape } from './shape'
+import { shape } from './react-shape'
 import { polyEditor } from './poly-editor'
 import { styles } from '../features/styles'
 
@@ -57,12 +56,6 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
   _setFeature (feature) {
     this._geometry = toLatLngs(feature.geometry)
 
-    const box = bbox(feature)
-    this._bounds = L.latLngBounds(
-      L.latLng(box[1], box[0]),
-      L.latLng(box[3], box[2])
-    )
-
     this._shapeOptions = {
       interactive: this.options.interactive,
       lineSmoothing: ('lineSmoothing' in this) ? this.lineSmoothing : this.options.lineSmoothing,
@@ -77,7 +70,6 @@ L.TACGRP.Polyline = L.TACGRP.Feature.extend({
    *
    */
   _shape (group, options) {
-    options.styles.clipping = 'mask'
     return shape(group, options, {
       placements,
       points: ({ points }) => [points]

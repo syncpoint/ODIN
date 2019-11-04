@@ -1,14 +1,12 @@
 import L from 'leaflet'
 import * as R from 'ramda'
 import { line, calcStruts2, arc } from '../features/geo-helper'
-import { shape } from '../features/shape'
+import { shape } from '../features/react-shape'
 import '../features/Corridor2Point'
 
 const CNT = L.TACGRP.Corridor2Point.extend({
 
   _shape (group, options) {
-    options.styles.clipping = 'mask'
-
     return shape(group, options, {
       points: ({ center, envelope }) => {
         const angle = (line(center).angle() - 90) / 180 * Math.PI

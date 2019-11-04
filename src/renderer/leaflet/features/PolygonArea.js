@@ -1,10 +1,9 @@
 import L from 'leaflet'
 import * as math from 'mathjs'
 import * as R from 'ramda'
-import bbox from '@turf/bbox'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import '../features/Feature'
-import { shape } from './shape'
+import { shape } from './react-shape'
 import { polyEditor } from '../features/poly-editor'
 import { styles } from '../features/styles'
 
@@ -107,19 +106,7 @@ L.TACGRP.PolygonArea = L.TACGRP.Feature.extend({
    *
    */
   _setFeature (feature) {
-    if (feature.geometry.type !== 'Polygon') {
-      this._invalid = true
-      console.log('unexpected geometry', feature)
-      return
-    }
-
     this._geometry = toLatLngs(feature.geometry)
-
-    const box = bbox(feature)
-    this._bounds = L.latLngBounds(
-      L.latLng(box[1], box[0]),
-      L.latLng(box[3], box[2])
-    )
 
     this._shapeOptions = {
       interactive: this.options.interactive,
