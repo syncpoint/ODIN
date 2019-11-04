@@ -26,4 +26,4 @@ files:
   - 'dist'
   - 'feature-sets.json'
 
-electronVersion: 3.1.9
+electronVersion: 6.1.2
