@@ -1,37 +1,35 @@
-import React from 'react'
-import Map from './Map'
+import React, { useEffect, useState } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
-import L from 'leaflet'
+import * as R from 'ramda'
+// import Map from './Map-leaflet'
+import Map from './Map-openlayers'
+import { map as mapSettings } from './settings'
 
-const center = L.latLng(48.65400545105681, 15.319061279296877)
-const zoom = 13
+const App = () => {
+  const [ viewport, setViewport ] = useState(null)
+  const viewportChanged = mapSettings.setViewport
+  const loadViewport = () => mapSettings.getViewport().then(setViewport)
 
-const mapOptions = {
-  center,
-  zoom,
-  zoomControl: false, // default: true
-  minZoom: 3, // 1:70 million
-  attributionControl: false
-}
+  useEffect(() => {
+    loadViewport()
+    /* eslint-disable no-useless-return */
+    return R.always(undefined)()
+  }, [])
 
-class App extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = { center, zoom }
-  }
+  if (!viewport) return null
 
-  render () {
-    return (
-      <div>
-        <Map
-          id='map'
-          className='map'
-          options={ mapOptions }
-        />
-      </div>
-    )
-  }
+  return (
+    <div>
+      <Map
+        id='map'
+        className='map'
+        viewport={viewport}
+        options={{ minZoom: 3 }}
+        viewportChanged={ viewportChanged }
+      />
+    </div>
+  )
 }
 
 App.propTypes = {

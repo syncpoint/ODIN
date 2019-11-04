@@ -11,7 +11,4 @@ document.body.appendChild(K(document.createElement('div'))(div => {
   div.id = rootId
 }))
 
-ReactDOM.render(
-  <App></App>,
-  document.getElementById(rootId)
-)
+ReactDOM.render(<App/>, document.getElementById(rootId))
