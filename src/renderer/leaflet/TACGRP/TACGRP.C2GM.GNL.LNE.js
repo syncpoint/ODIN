@@ -21,14 +21,14 @@ const lineLabels = lines => feature => ({ points }) => {
   return [
     {
       lines: lines(feature),
-      anchor: 'start',
+      anchor: 'end',
       placement: 'start',
       'font-size': fontSize,
       angle: s[0].angle
     },
     {
       lines: lines(feature),
-      anchor: 'end',
+      anchor: 'start',
       placement: 'end',
       'font-size': fontSize,
       angle: s[1].angle
@@ -58,12 +58,11 @@ L.Feature['G*G*OLT---'] = labeledLine(feature => (['LD', feature.properties.t ? 
 L.Feature['G*G*OLC---'] = labeledLine(feature => (['LD/LC', feature.properties.t ? `(PL ${feature.properties.t})` : '']))
 
 L.Feature['G*G*OLP---'] = (feature, options) => {
-  console.log('PLD')
   options.labels = lineLabels(feature => ['PLD', feature.properties.t ? `(PLD ${feature.properties.t})` : ''])
   options.styles = feature => {
     const _styles = styles(feature)
-    _styles.contrast['stroke-dasharray'] = strokeDashArray()
-    _styles.path['stroke-dasharray'] = strokeDashArray()
+    _styles.contrast.strokeDasharray = strokeDashArray()
+    _styles.path.strokeDasharray = strokeDashArray()
     return _styles
   }
 

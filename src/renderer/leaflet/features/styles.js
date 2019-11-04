@@ -20,7 +20,6 @@ export const ColorSchemes = {
 export const strokeDashArray = () => '20 5'
 
 // STYLES
-// * clipping: none | mask | backdrop
 // * stroke: path stroke color
 // * patternStroke: fill pattern stroke color
 // * strokeWidth: path stroke with
@@ -55,32 +54,31 @@ export const styles = feature => {
   }
 
   return {
-    clipping: 'none',
 
     // Colored path outline to increase contrast.
     contrast: {
-      'stroke': _outlineStroke(),
-      'stroke-width': 3,
-      'stroke-linejoin': 'round',
-      'stroke-dasharray': _strokeDashArray(),
-      'fill': 'none'
+      stroke: _outlineStroke(),
+      strokeWidth: 3,
+      strokeLinejoin: 'round',
+      strokeDasharray: _strokeDashArray(),
+      fill: 'none'
     },
 
     // Principal path style.
     path: {
-      'stroke': _stroke(),
-      'stroke-width': 2,
-      'stroke-linejoin': 'round',
-      'stroke-dasharray': _strokeDashArray(),
-      'fill': 'none'
+      stroke: _stroke(),
+      strokeWidth: 2,
+      strokeLinejoin: 'round',
+      strokeDasharray: _strokeDashArray(),
+      fill: 'none'
     },
 
     // Transparent path to ease selection.
     outline: {
-      'stroke': 'yellow',
-      'stroke-width': 12,
-      'fill': 'none',
-      'opacity': 0.0
+      stroke: 'yellow',
+      strokeWidth: 12,
+      fill: 'none',
+      opacity: 0.0
     }
   }
 }

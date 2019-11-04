@@ -2,9 +2,8 @@ import L from 'leaflet'
 import * as R from 'ramda'
 import '../features/Polyline'
 import echelons from '../features/echelons'
-import { shape } from '../features/shape'
+import { shape } from '../features/react-shape'
 import { line } from '../features/geo-helper'
-import { styles } from '../features/styles'
 
 const BNDS = L.TACGRP.Polyline.extend({
 
@@ -22,7 +21,7 @@ const BNDS = L.TACGRP.Polyline.extend({
         L.SVG.setAttributes(element)(description)
         acc.appendChild(element)
         return acc
-      }, L.SVG.g({}))
+      }, L.SVG.create('g'))
 
       L.SVG.setAttributes(glyph)({
         'stroke-width': 4,
@@ -33,6 +32,17 @@ const BNDS = L.TACGRP.Polyline.extend({
       return glyph
     }
 
+    this.options.labels = () => ({ points }) => R.aperture(2, points)
+      .map(line)
+      .map(line => ({ placement: line.point(0.5), angle: line.angle() }))
+      .map(({ placement, angle }) => ({
+        placement,
+        angle,
+        scale: 0.5,
+        offset: L.point(-100, -178),
+        glyph: this._glyph()
+      }))
+
     L.TACGRP.Polyline.prototype._setFeature.call(this, feature)
   },
 
@@ -42,28 +52,10 @@ const BNDS = L.TACGRP.Polyline.extend({
    */
   _shape (group, options) {
     return shape(group, options, {
-      points: ({ points }) => [points],
-      labels: ({ points }) => R.aperture(2, points)
-        .map(line)
-        .map(line => ({ placement: line.point(0.5), angle: line.angle() }))
-        .map(({ placement, angle }) => ({
-          placement,
-          angle,
-          scale: 0.5,
-          offset: L.point(-100, -178),
-          glyph: this._glyph()
-        }))
+      points: ({ points }) => [points]
     })
   }
 })
 
 
-L.Feature['G*G*GLB---'] = (feature, options) => {
-  options.styles = feature => {
-    const _styles = styles(feature)
-    _styles.clipping = 'mask'
-    return _styles
-  }
-
-  return new BNDS(feature, options)
-}
+L.Feature['G*G*GLB---'] = (feature, options) => new BNDS(feature, options)

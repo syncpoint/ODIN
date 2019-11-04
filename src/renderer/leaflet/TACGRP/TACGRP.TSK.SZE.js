@@ -5,7 +5,7 @@ import { toLatLngs, toGeometry } from '../GeoJSON'
 import { line, arc } from '../features/geo-helper'
 import { FULCRUM } from '../features/handle-types'
 import { wrap360 } from '../geodesy'
-import { shape } from '../features/shape'
+import { shape } from '../features/react-shape'
 import { styles } from '../features/styles'
 
 

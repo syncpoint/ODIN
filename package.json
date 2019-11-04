@@ -51,14 +51,12 @@
     "mocha": "^6.2.1",
     "style-loader": "^0.23.1",
     "webpack": "^4.41.1",
-    "webpack-bundle-analyzer": "^3.5.2",
     "webpack-cli": "^3.3.9",
     "webpack-dev-server": "^3.8.2"
   },
   "dependencies": {
     "@material-ui/core": "^4.5.0",
     "@material-ui/icons": "^4.4.3",
-    "@turf/bbox": "^6.0.1",
     "electron-settings": "^3.2.0",
     "geodesy": "^2.2.0",
     "leaflet": "1.5.1",
