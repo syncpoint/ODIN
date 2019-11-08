@@ -61,7 +61,7 @@ const Label = React.forwardRef((props, ref) => {
         strokeWidth={2} stroke={'white'} fill={'none'}
         strokeLinecap={'round'} strokeLinejoin={'round'}
         // auto (default) | optimizeSpeed | optimizeLegibility | geometricPrecision
-        textRendering={'optimizeSpeed'}
+        textRendering={'auto'}
       >
         {content}
         {tspans()}
@@ -179,7 +179,7 @@ const Shape = props => {
   const pathProperties = {
     id: `path-${id}`,
     // auto (default) | optimizeSpeed | crispEdges | geometricPrecision
-    shapeRendering: 'optimizeSpeed',
+    shapeRendering: 'auto',
     className,
     d
   }
