@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import * as R from 'ramda'
+import './layer-loader'
 import LeafletMap from './Map-leaflet'
 import OpenLayersMap from './Map-openlayers'
 import MapboxMap from './Map-mapbox'
@@ -13,7 +14,6 @@ const MAPS = {
 }
 
 const App = () => {
-  mapSettings.resetViewport()
   const [ viewport, setViewport ] = useState(null)
   const viewportChanged = mapSettings.setViewport
   const loadViewport = () => mapSettings.getViewport().then(setViewport)
