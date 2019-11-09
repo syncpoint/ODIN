@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 
 export const propTypes = {
   classes: PropTypes.any.isRequired,
-  options: PropTypes.object.isRequired,
   viewport: PropTypes.object.isRequired,
   id: PropTypes.string.isRequired,
   viewportChanged: PropTypes.func.isRequired

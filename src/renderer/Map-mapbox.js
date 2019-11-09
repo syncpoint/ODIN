@@ -1,24 +1,22 @@
 import * as R from 'ramda'
 import React from 'react'
-import 'leaflet/dist/leaflet.css'
-import L from 'leaflet'
+import mapboxgl from 'mapbox-gl'
 import { withStyles } from '@material-ui/core/styles'
 import { propTypes, styles } from './Map'
 
 const lnglat = ({ lng, lat }) => [lng, lat]
 const zoom = map => map.getZoom()
 const center = map => lnglat(map.getCenter())
-const viewport = map => ({ zoom: zoom(map), center: center(map) })
+const viewport = map => ({ zoom: zoom, center: center(map) })
 
 class Map extends React.Component {
   componentDidMount () {
     const { id, viewportChanged } = this.props
 
-    const url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    this.map = L.map(id, {
-      zoom: this.props.viewport.zoom,
-      center: L.latLng(this.props.viewport.center.reverse()),
-      layers: [new L.TileLayer(url, { maxZoom: 19 })]
+    this.map = new mapboxgl.Map({
+      container: id,
+      style: 'http://localhost:8081/styles/osm-bright/style.json',
+      ...this.props.viewport
     })
 
     const moveend = R.compose(viewportChanged, viewport)
