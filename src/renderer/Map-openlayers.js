@@ -20,17 +20,10 @@ const Map = props => {
   const [setMap] = tail(useState(null))
 
   const effect = () => {
-    const view = new ol.View({
-      center: fromWGS84(props.viewport.center),
-      zoom: props.viewport.zoom
-    })
-
-    const map = new ol.Map({
-      view,
-      target: id,
-      layers: [new TileLayer({ source: new OSM() })]
-    })
-
+    const options = ({ zoom, center }) => ({ zoom, center: fromWGS84(center) })
+    const view = new ol.View(options(props.viewport))
+    const layers = [new TileLayer({ source: new OSM() })]
+    const map = new ol.Map({ view, layers, target: id })
     map.on('moveend', () => viewportChanged(viewport(view)))
     setMap(map)
   }
