@@ -5,9 +5,10 @@ import { remote } from 'electron'
 import evented from './evented'
 
 const LAYERS = [
-  'examples/division/1.Brig (Kampf).json',
-  'examples/division/2.Brig (EU).json',
-  'examples/division/3.Brig (Luft).json'
+  // 'examples/division/1.Brig (Kampf).json',
+  // 'examples/division/2.Brig (EU).json',
+  // 'examples/division/3.Brig (Luft).json'
+  'examples/scenario-002.json'
 ]
 
 const loadLayers = () => {
