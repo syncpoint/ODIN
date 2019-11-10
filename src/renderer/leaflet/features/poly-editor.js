@@ -49,7 +49,15 @@ export const polyEditor = (latlngs, layer, options) => callback => {
       alignMidways()
       emit('dragend')
     },
-    drag: () => { alignMidways(); emit('drag') },
+    drag: () => {
+      const valid = options.valid
+        ? options.valid(fulcrums().map(handle => handle.getLatLng()))
+        : true
+
+      if (!valid) return
+      alignMidways()
+      emit('drag')
+    },
     dragend: () => emit('dragend')
   }
 

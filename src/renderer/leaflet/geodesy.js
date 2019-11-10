@@ -159,6 +159,11 @@ L.LatLng.line = ([a, b]) => {
     midpoint: () => {
       const distance = a.distance(b)
       return a.destinationPoint(distance / 2, initialBearing)
+    },
+    distance: () => a.distance(b),
+    angle: line => {
+      const x = Math.abs(finalBearing - line.initialBearing)
+      return x > 180 ? 360 - x : x
     }
   }
 }
