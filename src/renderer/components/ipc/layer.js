@@ -48,19 +48,18 @@ export const COMMAND_EXPORT_DEFAULT_LAYER = () => () => {
     { name: 'All Files', extensions: ['*'] }
   ]
 
-  const filePath = remote.dialog.showSaveDialog({
-    filters
-  })
+  remote.dialog.showSaveDialog({ filters }, filePath => {
 
-  // For now, default layer only:
-  const features = Object.entries(store.layer('0').features).map(([_, feature]) => feature)
-  const layer = {
-    type: 'FeatureCollection',
-    features: features
-  }
+    // For now, default layer only:
+    const features = Object.entries(store.layer('0').features).map(([_, feature]) => feature)
+    const layer = {
+      type: 'FeatureCollection',
+      features: features
+    }
 
-  fs.writeFile(filePath, JSON.stringify(layer), err => {
-    if (err) evented.emit('OSD_MESSAGE', { message: err.message, duration: 5000 })
+    fs.writeFile(filePath, JSON.stringify(layer), err => {
+      if (err) evented.emit('OSD_MESSAGE', { message: err.message, duration: 5000 })
+    })
   })
 }
 
