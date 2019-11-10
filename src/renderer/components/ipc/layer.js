@@ -34,12 +34,12 @@ export const COMMAND_IMPORT_LAYER = () => () => {
     { name: 'All Files', extensions: ['*'] }
   ]
 
-  const filenames = remote.dialog.showOpenDialog({
+  remote.dialog.showOpenDialog({
     filters,
     properties: ['openFile', 'multiSelections']
+  }, filenames => {
+    if (filenames) filenames.forEach(importFile)
   })
-
-  if (filenames) filenames.forEach(importFile)
 }
 
 export const COMMAND_EXPORT_DEFAULT_LAYER = () => () => {
