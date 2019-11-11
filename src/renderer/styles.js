@@ -95,65 +95,54 @@ const defaultGfxStyle = feature => {
   ]
 }
 
-const axisIntersect = (points, y, z) => {
-  return R.aperture(2, points).reduce((acc, segment) => {
-    const w = segment[0]
-    const x = segment[1]
-    const intersection = math.intersect(w, x, y, z)
-    if (!intersection) return acc
-
-    const lineExtent = new LineString(segment).getExtent()
-    if (containsXY(lineExtent, intersection[0], intersection[1])) {
-      acc.push(intersection)
-    }
-
-    return acc
-  }, [])
+const segmentIntersect = (y, z) => segment => {
+  const intersection = math.intersect(segment[0], segment[1], y, z)
+  if (!intersection) return []
+  const extent = new LineString(segment).getExtent()
+  if (!containsXY(extent, intersection[0], intersection[1])) return []
+  return [intersection]
 }
+
+const axisIntersect = (points, y, z) => R
+  .aperture(2, points)
+  .map(segment => segmentIntersect(y, z)(segment))
+  .reduce((acc, intersections) => acc.concat(intersections), [])
 
 const placements = geometry => {
   if (!(geometry instanceof Polygon)) return
 
   const ring = geometry.getLinearRing(0)
-  const extent = ring.getExtent()
-  const interiorPoint = geometry.getInteriorPoint().getCoordinates()
+  const box = ring.getExtent()
+  const points = ring.getCoordinates()
+  const C = geometry.getInteriorPoint().getCoordinates()
 
   const hIntersect = () => {
-    const points = axisIntersect(ring.getCoordinates(), [extent[0], interiorPoint[1]], [extent[2], interiorPoint[1]])
-    if (points.length !== 2) return {}
-    return {
-      east: new Point(points[0][0] > points[1][0] ? points[0] : points[1]),
-      west: new Point(points[0][0] > points[1][0] ? points[1] : points[0])
+    const xs = axisIntersect(points, [box[0], C[1]], [box[2], C[1]])
+    return xs.length !== 2 ? {} : {
+      east: new Point(xs[0][0] > xs[1][0] ? xs[0] : xs[1]),
+      west: new Point(xs[0][0] > xs[1][0] ? xs[1] : xs[0])
     }
   }
 
   const vIntersect = () => {
-    const points = axisIntersect(ring.getCoordinates(), [interiorPoint[0], extent[1]], [interiorPoint[0], extent[3]])
-    if (points.length !== 2) return {}
-    return {
-      north: new Point(points[0][1] > points[1][1] ? points[1] : points[0]),
-      south: new Point(points[0][1] > points[1][1] ? points[0] : points[1])
+    const xs = axisIntersect(points, [C[0], box[1]], [C[0], box[3]])
+    return xs.length !== 2 ? {} : {
+      north: new Point(xs[0][1] > xs[1][1] ? xs[1] : xs[0]),
+      south: new Point(xs[0][1] > xs[1][1] ? xs[0] : xs[1])
     }
   }
 
   const width = 3
   const pointStyle = point => new Style({
+    geometry: point,
     image: new Circle({
       radius: width * 2,
-      stroke: new Stroke({
-        color: 'red',
-        width: width / 2
-      })
-    }),
-    geometry: point
+      stroke: new Stroke({ color: 'red', width: width / 2 })
+    })
   })
 
-  const intersections = { ...hIntersect(), ...vIntersect() }
-  return Object.values(intersections)
-    .reduce((acc, point) => {
-      acc.push(point)
-      return acc
-    }, [geometry.getInteriorPoint()])
+  return Object.values({ ...hIntersect(), ...vIntersect() })
+    .reduce((acc, point) => acc.concat(point), [geometry.getInteriorPoint()])
     .map(pointStyle)
 }
 
