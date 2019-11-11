@@ -55,6 +55,7 @@
     "leaflet": "1.5.1",
     "level": "^6.0.0",
     "mapbox-gl": "^1.5.0",
+    "mathjs": "^6.2.3",
     "milsymbol": "^2.0.0",
     "ol": "^6.1.1",
     "prop-types": "^15.7.2",

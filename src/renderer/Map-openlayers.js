@@ -5,7 +5,7 @@ import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
 import { OSM, Vector as VectorSource } from 'ol/source'
 import GeoJSON from 'ol/format/GeoJSON'
 import { transform } from 'ol/proj'
-import { defaults as defaultInteractions, Select, Translate } from 'ol/interaction'
+import { defaults as defaultInteractions, Select, Translate, Modify } from 'ol/interaction'
 import { click } from 'ol/events/condition'
 import { withStyles } from '@material-ui/core/styles'
 import evented from './evented'
@@ -34,7 +34,8 @@ const effect = (props, [setMap]) => () => {
 
   const select = new Select({ condition: click, style: highlightStyle })
   const translate = new Translate({ features: select.getFeatures() })
-  const interactions = defaultInteractions().extend([select, translate])
+  const modify = new Modify({ features: select.getFeatures() })
+  const interactions = defaultInteractions().extend([translate, modify, select])
   const map = new ol.Map({ view, layers, interactions, target: id })
   map.on('moveend', () => viewportChanged(viewport(view)))
 

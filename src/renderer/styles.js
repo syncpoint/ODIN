@@ -1,8 +1,11 @@
+/* eslint-disable */
 import * as R from 'ramda'
-import { Style, Stroke } from 'ol/style'
+import * as math from 'mathjs'
+import { Style, Fill, Stroke, Circle } from 'ol/style'
 import Icon from 'ol/style/Icon'
+import { containsXY } from 'ol/extent'
+import { Polygon, LineString, Point } from 'ol/geom'
 import ms from 'milsymbol'
-
 
 const ColorSchemes = {
   dark: {
@@ -79,7 +82,12 @@ const strokeOutlineColor = sidc => {
   return identity === '*' ? 'white' : 'black'
 }
 
-const gfxStyle = modeOptions => (feature, resolution) => {
+/**
+ * normSidc :: string -> string
+ */
+const normSidc = sidc => `${sidc[0]}-${sidc[2]}-${sidc.substring(4, 10)}`
+
+const defaultGfxStyle = feature => {
   const { sidc, n } = feature.getProperties()
   return [
     new Style({ stroke: new Stroke({ color: strokeOutlineColor(sidc), width: 3 }) }),
@@ -87,9 +95,90 @@ const gfxStyle = modeOptions => (feature, resolution) => {
   ]
 }
 
+const axisIntersect = (points, y, z) => {
+  return R.aperture(2, points).reduce((acc, segment) => {
+    const w = segment[0]
+    const x = segment[1]
+    const intersection = math.intersect(w, x, y, z)
+    if (!intersection) return acc
+
+    const lineExtent = new LineString(segment).getExtent()
+    if (containsXY(lineExtent, intersection[0], intersection[1])) {
+      acc.push(intersection)
+    }
+
+    return acc
+  }, [])
+}
+
+const placements = geometry => {
+  if (!(geometry instanceof Polygon)) return
+
+  const ring = geometry.getLinearRing(0)
+  const extent = ring.getExtent()
+  const interiorPoint = geometry.getInteriorPoint().getCoordinates()
+
+  const hIntersect = () => {
+    const points = axisIntersect(ring.getCoordinates(), [extent[0], interiorPoint[1]], [extent[2], interiorPoint[1]])
+    if (points.length !== 2) return {}
+    return {
+      east: new Point(points[0][0] > points[1][0] ? points[0] : points[1]),
+      west: new Point(points[0][0] > points[1][0] ? points[1] : points[0])
+    }
+  }
+
+  const vIntersect = () => {
+    const points = axisIntersect(ring.getCoordinates(), [interiorPoint[0], extent[1]], [interiorPoint[0], extent[3]])
+    if (points.length !== 2) return {}
+    return {
+      north: new Point(points[0][1] > points[1][1] ? points[1] : points[0]),
+      south: new Point(points[0][1] > points[1][1] ? points[0] : points[1])
+    }
+  }
+
+  const width = 3
+  const pointStyle = point => new Style({
+    image: new Circle({
+      radius: width * 2,
+      stroke: new Stroke({
+        color: 'red',
+        width: width / 2
+      })
+    }),
+    geometry: point
+  })
+
+  const intersections = { ...hIntersect(), ...vIntersect() }
+  return Object.values(intersections)
+    .reduce((acc, point) => {
+      acc.push(point)
+      return acc
+    }, [geometry.getInteriorPoint()])
+    .map(pointStyle)
+}
+
+const styles = {}
+
+// G-M-OFA--- : MINDED AREA : TACGRP.MOBSU.OBST.MNEFLD.MNDARA
+styles['G-M-OFA---'] = feature => {
+  placements(feature.getGeometry())
+  const style = defaultGfxStyle(feature)
+  return [...style, ...placements(feature.getGeometry())]
+}
+
+// G-G-OLAGM- : MAIN ATTACK : TACGRP.C2GM.OFF.LNE.AXSADV.GRD.MANATK
+styles['G-G-OLAGM-'] = feature => null
+
+// G-G-GLL--- : LIGHT LINE : TACGRP.C2GM.GNL.LNE.LITLNE
+styles['G-G-GLL---'] = feature => null
+
+const gfxStyle = modeOptions => (feature, resolution) => {
+  const { sidc } = feature.getProperties()
+  return (styles[normSidc(sidc)] || defaultGfxStyle)(feature)
+}
+
 const featureStyle = modeOptions => (feature, resolution) => {
   if (!feature.getGeometry()) return null
-
   const fn = feature.getGeometry().getType() === 'Point'
     ? symbolStyle
     : gfxStyle
