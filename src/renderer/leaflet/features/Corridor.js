@@ -1,4 +1,5 @@
 import L from 'leaflet'
+import * as R from 'ramda'
 import { toLatLngs, toGeometry } from '../GeoJSON'
 import './Feature'
 import { corridorGeometry } from './corridor-geometry'
@@ -9,16 +10,24 @@ import { FULCRUM } from './handle-types'
 /**
  *
  */
-export const widthEditor = (corridor, layer, events) => {
+export const widthEditor = (corridor, layer, options) => events => {
 
   let current = corridor
 
   const width = handle => {
     const distance = handle.getLatLng().distanceTo(current.latlngs[0])
-    return distance * 2
+    const width = distance * 2
+    return width
   }
 
   const update = (latlngs, width = current.width) => {
+
+    const valid = options.valid
+      ? options.valid(width)
+      : true
+
+    if (!valid) return current
+
     current = corridorGeometry(latlngs, width)
     const tip = current.envelope()[0]
     A1.setLatLng(tip[0])
@@ -73,23 +82,61 @@ L.TACGRP.Corridor = L.TACGRP.Feature.extend({
       }
     }
 
-    // Downstream editor: polyline + width
-    const width = widthEditor(this._geometry, layer, (channel, corridor) => {
-      this._geometry = corridor
-      callback(channel, this._geometry)
-    })
+    const segmentMetrics = latlngs => {
+      const segments = R.aperture(2, latlngs).map(L.LatLng.line)
 
-    const options = {
-      closed: false,
-      midways: ('midways' in this) ? this.midways : true
+      const { minDistance, maxDistance } = segments
+        .map(line => line.distance())
+        .reduce((acc, distance) => {
+          if (distance < acc.minDistance) acc.minDistance = distance
+          if (distance > acc.maxDistance) acc.maxDistance = distance
+          return acc
+        }, ({ minDistance: Number.MAX_VALUE, maxDistance: 0 }))
+
+      const maxAngle = R.aperture(2, segments)
+        .map(([A, B]) => A.angle(B))
+        .reduce((acc, x) => Math.max(acc, x), 0)
+
+      return {
+        minDistance,
+        maxDistance,
+        maxAngle
+      }
     }
 
-    // Upstream editor: polyline only
-    polyEditor(this._geometry.latlngs, layer, options)((channel, latlngs) => {
-      this._geometry = corridorGeometry(latlngs, this._geometry.width)
-      width(latlngs)
-      callback(channel, this._geometry)
-    })
+    // Downstream editor: polyline + width
+    const width = (() => {
+
+      const options = {
+        valid: width => {
+          const { minDistance } = segmentMetrics(this._geometry.latlngs)
+          return width >= 100 && width <= 10000 && width < minDistance
+        }
+      }
+
+      return widthEditor(this._geometry, layer, options)((channel, corridor) => {
+        this._geometry = corridor
+        callback(channel, this._geometry)
+      })
+    })()
+
+    ;(() => {
+      const options = {
+        closed: false,
+        midways: ('midways' in this) ? this.midways : true,
+        valid: latlngs => {
+          const { minDistance, maxAngle } = segmentMetrics(latlngs)
+          return minDistance > this._geometry.width && maxAngle < 120
+        }
+      }
+
+      // Upstream editor: polyline only
+      polyEditor(this._geometry.latlngs, layer, options)((channel, latlngs) => {
+        this._geometry = corridorGeometry(latlngs, this._geometry.width)
+        width(latlngs)
+        callback(channel, this._geometry)
+      })
+    })()
 
     return {
       dispose: () => this._map.removeLayer(layer)
