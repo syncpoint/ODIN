@@ -1,7 +1,7 @@
 /* eslint-disable */
 import * as R from 'ramda'
 import * as math from 'mathjs'
-import { Style, Fill, Stroke, Circle } from 'ol/style'
+import { Style, Fill, Stroke, Circle, Text } from 'ol/style'
 import Icon from 'ol/style/Icon'
 import { containsXY } from 'ol/extent'
 import { Polygon, LineString, Point } from 'ol/geom'
@@ -108,13 +108,14 @@ const axisIntersect = (points, y, z) => R
   .map(segment => segmentIntersect(y, z)(segment))
   .reduce((acc, intersections) => acc.concat(intersections), [])
 
-const placements = geometry => {
-  if (!(geometry instanceof Polygon)) return
 
-  const ring = geometry.getLinearRing(0)
+const directionalPlacements = polygon => {
+  if (!(polygon instanceof Polygon)) return
+
+  const ring = polygon.getLinearRing(0)
   const box = ring.getExtent()
   const points = ring.getCoordinates()
-  const C = geometry.getInteriorPoint().getCoordinates()
+  const C = polygon.getInteriorPoint().getCoordinates()
 
   const hIntersect = () => {
     const xs = axisIntersect(points, [box[0], C[1]], [box[2], C[1]])
@@ -132,34 +133,84 @@ const placements = geometry => {
     }
   }
 
-  const width = 3
-  const pointStyle = point => new Style({
-    geometry: point,
-    image: new Circle({
-      radius: width * 2,
-      stroke: new Stroke({ color: 'red', width: width / 2 })
-    })
-  })
-
-  return Object.values({ ...hIntersect(), ...vIntersect() })
-    .reduce((acc, point) => acc.concat(point), [geometry.getInteriorPoint()])
-    .map(pointStyle)
+  return { ...hIntersect(), ...vIntersect() }
 }
 
 const styles = {}
 
+const textStyle = ({ geometry, text }) => new Style({
+  geometry,
+  text: new Text({
+    text,
+    font: '16px sans-serif',
+    stroke: new Stroke({ color: 'white', width: 3 })
+  })
+})
+
+
+const vector = points => [points[1][1] - points[0][1], points[1][0] - points[0][0]]
+const atan2 = delta => -1 * Math.atan2(delta[0], delta[1])
+const normalizeAngle = x => x < 0 ? 2 * Math.PI + x : x
+const segmentAngle = R.compose(normalizeAngle, atan2, vector)
+
 // G-M-OFA--- : MINDED AREA : TACGRP.MOBSU.OBST.MNEFLD.MNDARA
 styles['G-M-OFA---'] = feature => {
-  placements(feature.getGeometry())
-  const style = defaultGfxStyle(feature)
-  return [...style, ...placements(feature.getGeometry())]
+
+  const labelStyles = feature => {
+    const labels = text => xs => xs.map(placement => ({ text, placement }))
+    const placements = directionalPlacements(feature.getGeometry())
+    return labels('M')(['east', 'west', 'north', 'south'])
+      .map(({ placement, text }) => ({ geometry: placements[placement], text }))
+      .filter(({ geometry }) => geometry)
+      .map(textStyle)
+  }
+
+  return [defaultGfxStyle, labelStyles].flatMap(fn => fn(feature))
 }
 
 // G-G-OLAGM- : MAIN ATTACK : TACGRP.C2GM.OFF.LNE.AXSADV.GRD.MANATK
 styles['G-G-OLAGM-'] = feature => null
 
 // G-G-GLL--- : LIGHT LINE : TACGRP.C2GM.GNL.LNE.LITLNE
-styles['G-G-GLL---'] = feature => null
+styles['G-G-GLL---'] = feature => {
+  const segments = R.aperture(2, feature.getGeometry().getCoordinates())
+
+
+  const textStyle = ({ geometry, rotation, textAlign, text, offsetX }) => new Style({
+    geometry,
+    text: new Text({
+      text,
+      rotation,
+      textAlign,
+      offsetX,
+      font: '16px sans-serif',
+      stroke: new Stroke({ color: 'white', width: 3 })
+    })
+  })
+
+  const α1 = segmentAngle(segments[0])
+  const αn = segmentAngle(segments[segments.length - 1])
+  const flip = α => (α > Math.PI / 2 && α < Math.PI * 3 / 2) ? true : false
+
+  const labelStyles = () => [
+    textStyle({
+      geometry: new Point(segments[0][0]),
+      rotation: flip(α1) ? α1 - Math.PI : α1,
+      textAlign: flip(α1) ? 'end' : 'start',
+      offsetX: flip(α1) ? 20 : -20,
+      text: 'Cinderella'
+    }),
+    textStyle({
+      geometry: new Point(segments[segments.length - 1][1]),
+      rotation: flip(αn) ? αn - Math.PI : αn,
+      textAlign: flip(αn) ? 'start' : 'end',
+      offsetX: flip(αn) ? -20 : 20,
+      text: 'Snow White and\nthe Seven Dwarfs'
+    })
+  ]
+
+  return [defaultGfxStyle, labelStyles].flatMap(fn => fn(feature))
+}
 
 const gfxStyle = modeOptions => (feature, resolution) => {
   const { sidc } = feature.getProperties()
