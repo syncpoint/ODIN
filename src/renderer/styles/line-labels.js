@@ -1,5 +1,6 @@
 import * as R from 'ramda'
 import { Point, Stroke, Style, Text } from './predef'
+import { defaultFont } from './font'
 
 const { PI: _PI } = Math
 const _TWO_PI = 2 * _PI
@@ -27,7 +28,7 @@ export default lines => feature => {
       geometry: Point.of(head(points)),
       text: Text.of({
         text,
-        font: '16px sans-serif',
+        font: defaultFont(),
         stroke: Stroke.of({ color: 'white', width: 3 }),
         rotation: flip(α1) ? α1 - _PI : α1,
         textAlign: flip(α1) ? 'end' : 'start',
@@ -38,7 +39,7 @@ export default lines => feature => {
       geometry: Point.of(last(points)),
       text: Text.of({
         text,
-        font: '16px sans-serif',
+        font: defaultFont(),
         stroke: Stroke.of({ color: 'white', width: 3 }),
         rotation: flip(αn) ? αn - _PI : αn,
         textAlign: flip(αn) ? 'start' : 'end',

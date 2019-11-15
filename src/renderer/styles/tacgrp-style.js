@@ -1,15 +1,15 @@
-/* eslint-disable */
-import * as style from 'ol/style'
+import * as R from 'ramda'
 import ColorSchemes from './color-schemes'
+import { Style, Stroke } from './predef'
 import tacgrp from './tacgrp'
+import './G-G-GAA---'
 import './G-G-GLL---'
 import './G-M-OFA---'
+import './G-S-AE----'
 
-const Style = { of: props => new style.Style(props) }
-const Stroke = { of: props => new style.Stroke(props) }
 
 /**
- * normalizeSIDC :: string -> string
+ * normalizeSIDC :: String -> String
  */
 const normalizeSIDC = sidc => `${sidc[0]}-${sidc[2]}-${sidc.substring(4, 10)}`
 
@@ -28,7 +28,7 @@ const strokeColor = (sidc, n) => {
 
 const strokeOutlineColor = sidc => {
   const identity = sidc ? sidc[1] : 'U' // identity or U - UNKNOWN
-  return identity === '*' ? 'white' : 'black'
+  return identity === '*' ? '#FFFFFF' : '#000000'
 }
 
 const lineDash = sidc => {
@@ -38,29 +38,30 @@ const lineDash = sidc => {
 
 const defaultStyle = color => feature => {
   const { sidc, n } = feature.getProperties()
-  const strokeOutline = color(strokeOutlineColor(sidc))
-  const stroke = color(strokeColor(sidc, n))
+  const strokeProps = (color, width) => ({ color, width, lineDash: lineDash(sidc) })
+  const outline = Stroke.of(strokeProps(color(strokeOutlineColor(sidc)), 3))
+  const stroke = Stroke.of(strokeProps(color(strokeColor(sidc, n)), 2))
 
-  const defaultStyle = feature => {
-    return [
-      Style.of({ stroke: Stroke.of({ color: strokeOutline, width: 3, lineDash: lineDash(sidc) }) }),
-      Style.of({ stroke: Stroke.of({ color: stroke, width: 2, lineDash: lineDash(sidc) }) })
-    ]
-  }
+  // Label function or noop:
+  const labelStyle = R.cond([
+    [R.complement(R.isNil), o => o.labels],
+    [R.T, () => () => []]
+  ])(tacgrp[normalizeSIDC(sidc)])
 
-  const labelStyle =
-    (tacgrp[normalizeSIDC(sidc)] && tacgrp[normalizeSIDC(sidc)].labels) || (() => [])
-
-  return [defaultStyle, labelStyle].flatMap(fn => fn(feature))
-}
-
-const invertColor = hexColor => {
-  const color = parseInt(hexColor.substring(1), 16)
-  const invertedValue = 0xFFFFFF ^ color
-  return '#' + ("000000" + invertedValue.toString(16)).slice(-6)
+  return [
+    () => Style.of({ stroke: outline }),
+    () => Style.of({ stroke: stroke }),
+    labelStyle
+  ].flatMap(fn => fn(feature))
 }
 
 export default modeOptions => (feature, resolution) => {
-  const color = modeOptions.mode === 'highlighted' ? invertColor : x => x
+  const parseColor = hex => parseInt(hex.substring(1), 16)
+  const invertColor = color => 0xFFFFFF ^ color
+  const formatColor = color => '#' + ('000000' + color.toString(16)).slice(-6)
+
+  const color = modeOptions.mode === 'highlighted'
+    ? R.compose(formatColor, invertColor, parseColor)
+    : x => x
   return defaultStyle(color)(feature)
 }
