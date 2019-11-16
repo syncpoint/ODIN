@@ -4,6 +4,7 @@ import { Style, Stroke } from './predef'
 import tacgrp from './tacgrp'
 import './G-G-GAA---'
 import './G-G-GLL---'
+import './G-G-OLAGM-'
 import './G-M-OFA---'
 import './G-S-AE----'
 
@@ -43,16 +44,23 @@ const defaultStyle = color => feature => {
   const stroke = Stroke.of(strokeProps(color(strokeColor(sidc, n)), 2))
 
   // Label function or noop:
-  const labelStyle = R.cond([
-    [R.complement(R.isNil), o => o.labels],
+  const labels = R.cond([
+    [R.complement(R.isNil), o => o.labels || (() => [])],
     [R.T, () => () => []]
   ])(tacgrp[normalizeSIDC(sidc)])
 
+  const geometry = R.cond([
+    [R.complement(R.isNil), o => o.geometry || (() => null)],
+    [R.T, () => () => null]
+  ])(tacgrp[normalizeSIDC(sidc)])
+
   return [
-    () => Style.of({ stroke: outline }),
-    () => Style.of({ stroke: stroke }),
-    labelStyle
-  ].flatMap(fn => fn(feature))
+    () => Style.of({ stroke: outline, geometry: geometry(feature) }),
+    () => Style.of({ stroke: stroke, geometry: geometry(feature) }),
+    labels
+  ]
+    .filter(fn => typeof fn === 'function')
+    .flatMap(fn => fn(feature))
 }
 
 export default modeOptions => (feature, resolution) => {

@@ -4,7 +4,7 @@ import * as ol from 'ol'
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
 import { OSM, Vector as VectorSource } from 'ol/source'
 import GeoJSON from 'ol/format/GeoJSON'
-import { transform } from 'ol/proj'
+import { toLonLat, fromLonLat } from 'ol/proj'
 import { defaults as defaultInteractions, Select, Translate, Modify } from 'ol/interaction'
 import { click } from 'ol/events/condition'
 import { withStyles } from '@material-ui/core/styles'
@@ -13,11 +13,8 @@ import { propTypes, styles } from './Map'
 import { defaultStyle, highlightStyle } from './styles'
 
 const tail = ([_, ...values]) => values
-const fromWGS84 = lnglat => transform(lnglat, 'EPSG:4326', 'EPSG:3857')
-const toWGS84 = coord => transform(coord, 'EPSG:3857', 'EPSG:4326')
-
 const zoom = view => view.getZoom()
-const center = view => toWGS84(view.getCenter())
+const center = view => toLonLat(view.getCenter())
 const viewport = view => ({ zoom: zoom(view), center: center(view) })
 
 
@@ -28,7 +25,7 @@ const viewport = view => ({ zoom: zoom(view), center: center(view) })
  */
 const effect = (props, [setMap]) => () => {
   const { id, viewportChanged } = props
-  const options = ({ zoom, center }) => ({ zoom, center: fromWGS84(center) })
+  const options = ({ zoom, center }) => ({ zoom, center: fromLonLat(center) })
   const view = new ol.View(options(props.viewport))
   const layers = [new TileLayer({ source: new OSM() })]
 
@@ -40,6 +37,7 @@ const effect = (props, [setMap]) => () => {
   map.on('moveend', () => viewportChanged(viewport(view)))
 
   evented.on('layer.geojson', json => {
+    // Data projection defaults to 'EPSG:4326'.
     const features = new GeoJSON().readFeatures(json, { featureProjection: 'EPSG:3857' })
     const source = new VectorSource({ features })
     const layer = new VectorLayer({ source, style: defaultStyle })

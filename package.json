@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.5.2",
+    "geodesy": "^2.2.0",
     "leaflet": "1.5.1",
     "level": "^6.0.0",
     "mapbox-gl": "^1.5.0",
