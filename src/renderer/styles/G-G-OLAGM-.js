@@ -1,62 +1,100 @@
 import * as R from 'ramda'
-import * as math from 'mathjs'
+import { getTransform } from 'ol/proj'
+import { K } from '../../shared/combinators'
 import tacgrp from './tacgrp'
 import { MultiLineString } from './predef'
+import { Line } from './geodesy'
 
-const Point = {}
-Point.translate = v => point => math.add(point, v)
-Point.project = p => line => {
-  const e1 = [line[1][0] - line[0][0], line[1][1] - line[0][1]]
-  const e2 = [p[0] - line[0][0], p[1] - line[0][1]]
-  const dp = math.dot(e1, e2)
-  const d = e1[0] * e1[0] + e1[1] * e1[1]
-  return [line[0][0] + (dp * e1[0]) / d, line[0][1] + (dp * e1[1]) / d]
-}
-
-const Line = {}
-Line.intersect = xs => math.intersect(xs[0][0], xs[0][1], xs[1][0], xs[1][1])
-Line.length = line => Math.hypot(line[0][0] - line[1][0], line[0][1] - line[1][1])
-Line.orthv = line => [-(line[1][1] - line[0][1]), line[1][0] - line[0][0]]
-Line.normv = (orthv, d = 1) => math.multiply(orthv, d / Math.hypot(orthv[0], orthv[1]))
-Line.translate = d => line => line.map(Point.translate(Line.normv(Line.orthv(line), d)))
-Line.point = line => f => [
-  line[0][0] + f * (line[1][0] - line[0][0]),
-  line[0][1] + f * (line[1][1] - line[0][1])
-]
+const toEPSG4326 = getTransform('EPSG:3857', 'EPSG:4326')
+const toEPSG3857 = getTransform('EPSG:4326', 'EPSG:3857')
+const toLonLat = p => toEPSG4326(p)
+const fromLonLat = p => toEPSG3857(p)
 
 // MAIN ATTACK (AXIS OF ADVANCE): TACGRP.C2GM.OFF.LNE.AXSADV.GRD.MANATK
 const geometry = feature => {
-  const { length, point, translate, intersect } = Line
-  const { project } = Point
+
+  // MAIN ATTACK is a corridor with a line string as a center line
+  // and a given width. Orientation of center line is defined to be
+  // from end (last point) to beginning (first point) of the corridor with
+  // an optional arrow at the beginning.
+  // Corridor width is meassured at the corridor's 'body' and not at
+  // the arrow.
+  // For MAIN ATTACK, and others, the arrow width is twice the corridor width.
+
+  // At this point feature geometry coordinates are projected to Web Mercator,
+  // i.e. EPSG:3857. This projection cannot be used to meassure distances.
+  // We create a suitable corridor representation in WGS84, which then can be
+  // used to derive the actual feature geometry, most notably the arrow.
+
+  // From here on EPSG:4326.
 
   /* eslint-disable camelcase */
   const { geometry_width } = feature.getProperties()
-  const width = geometry_width / 2
-  const points = feature.getGeometry().getCoordinates().reverse()
-  const segments = R.aperture(2, points)
-  const left = segments.map(translate(-width))
-  const right = segments.map(translate(width))
+  const centerLine = feature.getGeometry().getCoordinates().reverse().map(toLonLat)
+  const halfWidth = geometry_width / 2
+  const segments = R.aperture(2, centerLine).map(Line.of)
 
-  const struts = (width, s0) => fs => fs.map(f => {
-    const projectC = project(point(s0)(f * width / length(s0)))
-    return [projectC([...left[0]]), projectC([...right[0]])]
-  })
+  // To construct a buffer for center line, we translate each line
+  // segment 90° to the left and right by half the corridor width in
+  // respect to segment bearing.
+  // Then we intersect translated segments on each side.
+  // Finally, the last point of the last buffer segments are added
+  // to the intersections on both sides. We leave out the first
+  // segment for it contains the arrow.
 
-  /* eslint-disable */
+  const buffer = segments.reduce((acc, segment) => K(acc)(acc => {
+    acc[0].push(Line.translate(halfWidth, -90)(segment))
+    acc[1].push(Line.translate(halfWidth, +90)(segment))
+  }), [[], []])
 
-  const s = struts(geometry_width, points.slice(0, 2))([ 0.76, 0.38 ])
-  return MultiLineString.of([
+  const last = xs => xs[xs.length - 1]
+  const lastPoints = buffer.map(side => Line.points(last(side))[1])
+  const [left, right] = buffer
+    .map(Line.intersections)
+    .map((side, index) => side.concat([lastPoints[index]]))
+
+  // Now for the funny part: arrow construction.
+  // The first two points (left/right) of first buffer segment
+  // form a 'strut' `s`, which is then moved away from the arrow tip
+  // as necessary for the respective arrow form. Each position allows
+  // for additional points to be inserted to the path.
+  // The positions are expressed as percentages respective to the
+  // corridor width.
+
+  // Struts explained:
+  // For MAIN ATTACK arrow we need two struts `si[0]` @ 38% and `si[1]` @ 76%
+  // of corridor width away from the arrow tip. `si[0]` is only used for a
+  // center point. With `si[1]` four points are interpolated.
+  //
+  //      |----------------  2 * width  ------------------|
+  //                  |--------  width  ------|
+  //                 LEFT                   RIGHT
+  //      |           |           |           |           |
+  // s[i] +===========+===========+===========+===========+
+  //      |           |           |           |           |
+  //    -0.5         0.0         0.5         1.0         1.5  *  width
+  //     p1D         p1B         p0          p1A         P1C
+
+  const s = Line.of(buffer.map(side => Line.points(side[0])[0]))
+  const si = [0.38, 0.76].map(f => Line.translate(f * geometry_width, -90)(s))
+  const p0 = Line.point(0.5)(si[0])
+  const p1A = Line.point(1)(si[1])
+  const p1B = Line.point(0)(si[1])
+  const p1C = Line.point(1.5)(si[1])
+  const p1D = Line.point(-0.5)(si[1])
+
+  const lineStrings = [
     [
-      left[left.length - 1][1], ...R.aperture(2, left).map(intersect).reverse(),
-      point(s[0])(0), point(s[0])(-0.5),
-      points[0],
-      point(s[0])(1.5), point(s[0])(1),
-      ...R.aperture(2, right).map(intersect), right[right.length - 1][1]
+      ...right.reverse(), p1A, p1C,
+      centerLine[0],
+      p1D, p1B, ...left
     ],
-    [
-      point(s[0])(1), point(s[1])(0.5), point(s[0])(0)
-    ]
-  ])
+    [p1A, p0, p1B]
+  ]
+
+  // Back to EPSG:3857.
+
+  return MultiLineString.of(lineStrings.map(ring => ring.map(fromLonLat)))
 }
 
 tacgrp['G-G-OLAGM-'] = { geometry }
