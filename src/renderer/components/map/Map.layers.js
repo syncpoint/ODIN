@@ -10,6 +10,7 @@ import settings from '../../model/settings'
 
 const layerUrn = layerId => ResourceNames.layerId(layerId)
 const featureUrn = (layerId, featureId) => ResourceNames.featureId(layerId, featureId)
+const isFeature = urn => ResourceNames.nid(urn) === 'feature'
 const validSymbol = sidc => new ms.Symbol(sidc, {}).isValid()
 
 const genericShape = (feature, options) => {
@@ -85,7 +86,12 @@ evented.on('MAP_CREATED', map => {
   // layers :: urn -> (layer group | feature layer)
   const layers = {}
 
-  const deleteLayer = urn => { layers[urn].remove(); delete layers[urn] }
+  const deleteLayer = urn => {
+    const layer = layers[urn]
+    if (isFeature(urn)) layers[layerUrn(urn.split(':')[2])].removeLayer(layer)
+    layers[urn].remove()
+    delete layers[urn]
+  }
 
   const refreshView = () => Object.entries(state).reduce((acc, [layerId, layer]) => {
 
