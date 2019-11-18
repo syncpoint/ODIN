@@ -37,7 +37,8 @@ const effect = (props, [setMap]) => () => {
   const modify = new Modify({ features: select.getFeatures() })
   const customInteraction = new CustomInteraction()
 
-  const interactions = defaultInteractions().extend([customInteraction])
+  // const interactions = defaultInteractions().extend([customInteraction])
+  const interactions = defaultInteractions().extend([select, translate, modify])
   const map = new ol.Map({ view, layers, interactions, target: id })
   map.on('moveend', () => viewportChanged(viewport(view)))
 

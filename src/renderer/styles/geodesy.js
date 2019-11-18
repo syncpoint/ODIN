@@ -7,7 +7,7 @@ import LatLon from 'geodesy/latlon-spherical.js'
  */
 export const Point = {}
 
-Point.lonLat = point => [point.lon, point.lat]
+Point.lonLat = ({ lon, lat }) => [lon, lat]
 
 
 /**
@@ -15,9 +15,9 @@ Point.lonLat = point => [point.lon, point.lat]
  */
 export const Line = {}
 
-Line.of = points => {
-  const a = new LatLon(points[0][1], points[0][0])
-  const b = new LatLon(points[1][1], points[1][0])
+Line.of = ([A, B]) => {
+  const a = new LatLon(A[1], A[0])
+  const b = new LatLon(B[1], B[0])
   const initialBearing = a.initialBearingTo(b)
   const finalBearing = a.finalBearingTo(b)
   return { a, b, initialBearing, finalBearing, distance: a.distanceTo(b) }
@@ -33,13 +33,14 @@ Line.translate = (distance, bearing) => line => {
 
 Line.points = line => [Point.lonLat(line.a), Point.lonLat(line.b)]
 
-Line.intersection = lines => Point.lonLat(LatLon.intersection(
-  lines[0].a, lines[0].initialBearing,
-  lines[1].b, lines[1].finalBearing + 180
-))
+Line.intersectionPoint = R.compose(Point.lonLat, LatLon.intersection)
+
+Line.intersection = ([A, B]) =>
+  Line.intersectionPoint(A.a, A.initialBearing, B.b, B.finalBearing + 180)
 
 Line.intersections = lines => R.aperture(2, lines).map(Line.intersection)
 
+// Interpolate line point.
 Line.point = f => line => {
   const bearing = (line.initialBearing + line.finalBearing) / 2
   return Point.lonLat(line.a.destinationPoint(f * line.distance, bearing))
