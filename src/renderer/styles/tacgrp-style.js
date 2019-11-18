@@ -1,18 +1,12 @@
 import * as R from 'ramda'
 import ColorSchemes from './color-schemes'
 import { Style, Stroke } from './predef'
-import tacgrp from './tacgrp'
+import tacgrp, { normalizeSIDC } from './tacgrp'
 import './G-G-GAA---'
 import './G-G-GLL---'
 import './G-G-OLAGM-'
 import './G-M-OFA---'
 import './G-S-AE----'
-
-
-/**
- * normalizeSIDC :: String -> String
- */
-const normalizeSIDC = sidc => `${sidc[0]}-${sidc[2]}-${sidc.substring(4, 10)}`
 
 const strokeColor = (sidc, n) => {
   const colorScheme = ColorSchemes['medium']

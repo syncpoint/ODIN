@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { useEffect, useState } from 'react'
 import 'ol/ol.css'
 import * as ol from 'ol'
@@ -11,6 +13,7 @@ import { withStyles } from '@material-ui/core/styles'
 import evented from './evented'
 import { propTypes, styles } from './Map'
 import { defaultStyle, highlightStyle } from './styles'
+import { CustomInteraction } from './CustomInteraction'
 
 const tail = ([_, ...values]) => values
 const zoom = view => view.getZoom()
@@ -32,7 +35,9 @@ const effect = (props, [setMap]) => () => {
   const select = new Select({ condition: click, style: highlightStyle })
   const translate = new Translate({ features: select.getFeatures() })
   const modify = new Modify({ features: select.getFeatures() })
-  const interactions = defaultInteractions().extend([translate, modify, select])
+  const customInteraction = new CustomInteraction()
+
+  const interactions = defaultInteractions().extend([customInteraction])
   const map = new ol.Map({ view, layers, interactions, target: id })
   map.on('moveend', () => viewportChanged(viewport(view)))
 
