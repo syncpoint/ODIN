@@ -4,36 +4,57 @@ import { getBottomLeft, getTopLeft, getTopRight, getBottomRight } from 'ol/exten
 import tacgrp from './tacgrp'
 import { centerLabel, ewLabels } from './area-labels'
 
+
+/**
+ *
+ */
 const extentCoordinates = extent => [[
   getBottomLeft(extent), getTopLeft(extent),
   getTopRight(extent), getBottomRight(extent)
 ]]
 
+
+/**
+ *
+ */
 const extentPolygon = geometry =>
   new geom.Polygon(extentCoordinates(geometry.getExtent()))
 
-// ASSEMBLY AREA: TACGRP.C2GM.GNL.ARS.ABYARA
 
+/**
+ *
+ */
 const labels = feature => [
   centerLabel(props => ['AA', props.t]),
   ewLabels(props => props.n === 'ENY' ? ['ENY'] : [])
 ].flatMap(fn => fn(feature))
 
-const editor = (feature, multiselect) => {
-  const features = geometry => {
-    const bbox = new Feature({ geometry: extentPolygon(geometry) })
-    const handles = multiselect
-      ? []
-      : geometry.getCoordinates()[0].map(point => new Feature({ geometry: new geom.Point(point) }))
 
-    return [...handles, bbox]
-  }
-
-  return features(feature.getGeometry())
+/**
+ *
+ */
+const selectionFeatures = feature => {
+  const geometry = extentPolygon(feature.getGeometry())
+  return [new Feature({ geometry })]
 }
 
 
+/**
+ *
+ */
+const editorFeatures = feature => {
+  const geometry = feature.getGeometry()
+  const pointFeature = point => new Feature({ geometry: new geom.Point(point) })
+  const handles = geometry.getCoordinates()[0].map(pointFeature)
+  return selectionFeatures(feature).concat(handles)
+}
+
+
+/**
+ * ASSEMBLY AREA: TACGRP.C2GM.GNL.ARS.ABYARA
+ */
 tacgrp['G-G-GAA---'] = {
   labels,
-  editor
+  selectionFeatures,
+  editorFeatures
 }

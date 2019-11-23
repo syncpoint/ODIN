@@ -15,7 +15,19 @@ const featureEditor = feature => {
   const { sidc } = feature.getProperties()
   if (!sidc) return noop
   if (!tacgrp[normalizeSIDC(sidc)]) return noop
-  return tacgrp[normalizeSIDC(sidc)].editor || noop
+  return tacgrp[normalizeSIDC(sidc)].editorFeatures || noop
+}
+
+
+/**
+ * featureSelection :: feature -> feature -> [feature]
+ */
+const featureSelection = feature => {
+  const noop = () => []
+  const { sidc } = feature.getProperties()
+  if (!sidc) return noop
+  if (!tacgrp[normalizeSIDC(sidc)]) return noop
+  return tacgrp[normalizeSIDC(sidc)].selectionFeatures || noop
 }
 
 
@@ -34,10 +46,9 @@ export function CustomInteraction (options) {
     if (this.selection.getLength() === 0) return
 
     const multiselect = this.selection.getLength() > 1
-    const editorFeatures = this.selection.getArray()
-      .flatMap(feature => featureEditor(feature)(feature, multiselect))
-
-    addFeatures(false)(this.overlay.getSource(), editorFeatures)
+    const features = multiselect ? featureSelection : featureEditor
+    const overlayFeatures = this.selection.getArray().flatMap(feature => features(feature)(feature))
+    addFeatures(false)(this.overlay.getSource(), overlayFeatures)
   }
 
   // TODO: unbind listener when interaction is removed from map.
@@ -66,6 +77,7 @@ CustomInteraction.prototype.setMap = function (map) {
   PointerInteraction.prototype.setMap.call(this, map)
 
   // Setup editor feature overlay.
+  // NOTE: This layer is unmanaged.
   this.overlay = new VectorLayer({
     map,
     source: new VectorSource({
@@ -75,8 +87,11 @@ CustomInteraction.prototype.setMap = function (map) {
     })
   })
 
-  const options = { hitTolerance: 4 }
-  this.featuresAtPixel = featuresAtPixel(map, options)
+  this.featuresAtPixel = featuresAtPixel(map, {
+    hitTolerance: 4,
+    // Exclude interaction overlay from hit test:
+    layerFilter: layer => layer !== this.overlay
+  })
 }
 
 
@@ -88,8 +103,6 @@ CustomInteraction.prototype.handleDownEvent = function (event) {
   const appendSelection = originalEvent.shiftKey
   if (!appendSelection) this.selection.clear()
   const alreadySelected = feature => this.selection.getArray().indexOf(feature) !== -1
-
-  // TODO: only include 'real' features, i.e. not editor features
   const [selected, notSelected] = R.partition(alreadySelected)(this.featuresAtPixel(pixel))
   if (appendSelection) selected.forEach(feature => this.selection.remove(feature))
   this.selection.extend(notSelected)
@@ -109,7 +122,6 @@ CustomInteraction.prototype.handleUpEvent = function (event) {
  */
 CustomInteraction.prototype.handleMoveEvent = function ({ map, pixel }) {
   const hit = this.featuresAtPixel(pixel).length > 0
-  // TODO: choose cursor depending on feature type
   const cursor = hit ? 'pointer' : ''
   map.getTargetElement().style.cursor = cursor
 }

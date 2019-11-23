@@ -47,7 +47,10 @@ const Buffer = {
   }
 }
 
-// MAIN ATTACK (AXIS OF ADVANCE): TACGRP.C2GM.OFF.LNE.AXSADV.GRD.MANATK
+
+/**
+ *
+ */
 const geometry = feature => {
 
   // MAIN ATTACK is a corridor with a line string as a center line
@@ -122,20 +125,32 @@ const geometry = feature => {
   return MultiLineString.of(lineStrings.map(ring => ring.map(fromLonLat)))
 }
 
-const editor = (feature, multiselect) => {
-  const features = coordinates => {
-    const handles = multiselect
-      ? []
-      : coordinates.map(point => new Feature({ geometry: new geom.Point(point) }))
-    const centerLine = new Feature({ geometry: new geom.LineString(coordinates) })
-    return [...handles, centerLine]
-  }
 
+/**
+ *
+ */
+const selectionFeatures = feature => {
   const coordinates = feature.getGeometry().getCoordinates()
-  return features(coordinates)
+  return [new Feature({ geometry: new geom.LineString(coordinates) })]
 }
 
+
+/**
+ *
+ */
+const editorFeatures = feature => {
+  const coordinates = feature.getGeometry().getCoordinates()
+  const pointFeature = point => new Feature({ geometry: new geom.Point(point) })
+  const centerLine = coordinates.map(pointFeature)
+  return selectionFeatures(feature).concat(centerLine)
+}
+
+
+/**
+ * MAIN ATTACK (AXIS OF ADVANCE): TACGRP.C2GM.OFF.LNE.AXSADV.GRD.MANATK
+ */
 tacgrp['G-G-OLAGM-'] = {
   geometry,
-  editor
+  selectionFeatures,
+  editorFeatures
 }
