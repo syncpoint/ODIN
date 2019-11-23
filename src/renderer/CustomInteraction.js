@@ -43,20 +43,12 @@ export function CustomInteraction (options) {
   this.selection = new Collection()
 
   const selectionChanged = () => {
-    const fast = true // no event dispatching
-    clearFeatues(fast)(this.overlay.getSource())
-    if (this.selection.getLength() === 0) return
-
-    const multiselect = this.selection.getLength() > 1
-    const features = multiselect ? featureSelection : featureEditor
-    const overlayFeatures = this.selection.getArray().flatMap(feature => features(feature)(feature))
-    addFeatures(false)(this.overlay.getSource(), overlayFeatures)
+    this.clearFeatues()
+    if (this.selection.getLength() > 0) this.drawFeatures()
   }
 
   // TODO: unbind listener when interaction is removed from map.
   this.selection.on('change:length', selectionChanged)
-
-  /* eslint-disable */
 
   PointerInteraction.call(this, {
     handleDownEvent: this.handleDownEvent,
@@ -73,6 +65,17 @@ export function CustomInteraction (options) {
 CustomInteraction.prototype = Object.create(PointerInteraction.prototype)
 CustomInteraction.prototype.constructor = CustomInteraction
 
+CustomInteraction.prototype.clearFeatues = function () {
+  const fast = true // no event dispatching
+  clearFeatues(fast)(this.overlay.getSource())
+}
+
+CustomInteraction.prototype.drawFeatures = function () {
+  const multiselect = this.selection.getLength() > 1
+  const features = multiselect ? featureSelection : featureEditor
+  const overlayFeatures = this.selection.getArray().flatMap(feature => features(feature)(feature))
+  addFeatures(false)(this.overlay.getSource(), overlayFeatures)
+}
 
 /**
  * Style for editor/selection features.
@@ -119,13 +122,20 @@ CustomInteraction.prototype.setMap = function (map) {
 CustomInteraction.prototype.handleDownEvent = function (event) {
   const { pixel, originalEvent } = event
   const multiselect = originalEvent.shiftKey
-  if (!multiselect) this.selection.clear()
   const selected = feature => this.selection.getArray().indexOf(feature) !== -1
   const [positives, negatives] = R.partition(selected)(this.featuresAtPixel(pixel))
 
   // Remove positives when multi-select, add negatives unconditionally.
   if (multiselect) positives.forEach(feature => this.selection.remove(feature))
+  else if (negatives.length > 0 || positives.length === 0) this.selection.clear()
+
   this.selection.extend(negatives)
+  if (this.selection.getArray().length === 0) return
+  if (this.dragCoordinate) return
+
+  this.dragCoordinate = event.coordinate
+  this.handleMoveEvent(event)
+  return true // initiate drag operation
 }
 
 
@@ -133,7 +143,12 @@ CustomInteraction.prototype.handleDownEvent = function (event) {
  *
  */
 CustomInteraction.prototype.handleUpEvent = function (event) {
-  console.log('event', event.type)
+  if (!this.dragCoordinate) return
+
+  delete this.dragCoordinate
+  this.handleMoveEvent(event)
+  this.drawFeatures()
+  return true // terminate drag operation
 }
 
 
@@ -151,7 +166,16 @@ CustomInteraction.prototype.handleMoveEvent = function ({ map, pixel }) {
  *
  */
 CustomInteraction.prototype.handleDragEvent = function (event) {
-  console.log('event', event.type)
+  if (!this.dragCoordinate) return
+
+  this.clearFeatues()
+  const deltaX = event.coordinate[0] - this.dragCoordinate[0]
+  const deltaY = event.coordinate[1] - this.dragCoordinate[1]
+
+  // NOTE: `translate` mutates feature geometry.
+  const translate = (dx, dy) => feature => feature.getGeometry().translate(dx, dy)
+  this.selection.forEach(translate(deltaX, deltaY))
+  this.dragCoordinate = event.coordinate
 }
 
 
