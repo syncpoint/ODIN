@@ -122,9 +122,11 @@ const geometry = feature => {
   return MultiLineString.of(lineStrings.map(ring => ring.map(fromLonLat)))
 }
 
-const editor = feature => {
+const editor = (feature, multiselect) => {
   const features = coordinates => {
-    const handles = coordinates.map(point => new Feature({ geometry: new geom.Point(point) }))
+    const handles = multiselect
+      ? []
+      : coordinates.map(point => new Feature({ geometry: new geom.Point(point) }))
     const centerLine = new Feature({ geometry: new geom.LineString(coordinates) })
     return [...handles, centerLine]
   }

@@ -19,11 +19,13 @@ const labels = feature => [
   ewLabels(props => props.n === 'ENY' ? ['ENY'] : [])
 ].flatMap(fn => fn(feature))
 
-const editor = feature => {
+const editor = (feature, multiselect) => {
   const features = geometry => {
     const bbox = new Feature({ geometry: extentPolygon(geometry) })
-    const coordinates = geometry.getCoordinates()[0]
-    const handles = coordinates.map(point => new Feature({ geometry: new geom.Point(point) }))
+    const handles = multiselect
+      ? []
+      : geometry.getCoordinates()[0].map(point => new Feature({ geometry: new geom.Point(point) }))
+
     return [...handles, bbox]
   }
 
