@@ -7,3 +7,4 @@ export const MultiLineString = { of: xs => new geom.MultiLineString(xs) }
 export const Stroke = { of: props => new style.Stroke(props) }
 export const Text = { of: props => new style.Text(props) }
 export const Style = { of: props => new style.Style(props) }
+export const RegularShape = { of: props => new style.RegularShape(props) }

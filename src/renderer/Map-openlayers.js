@@ -32,13 +32,13 @@ const effect = (props, [setMap]) => () => {
   const view = new ol.View(options(props.viewport))
   const layers = [new TileLayer({ source: new OSM() })]
 
-  const select = new Select({ condition: click, style: highlightStyle })
-  const translate = new Translate({ features: select.getFeatures() })
-  const modify = new Modify({ features: select.getFeatures() })
+  // const select = new Select({ condition: click, style: highlightStyle })
+  // const translate = new Translate({ features: select.getFeatures() })
+  // const modify = new Modify({ features: select.getFeatures() })
   const customInteraction = new CustomInteraction()
 
-  // const interactions = defaultInteractions().extend([customInteraction])
-  const interactions = defaultInteractions().extend([select, translate, modify])
+  const interactions = defaultInteractions().extend([customInteraction])
+  // const interactions = defaultInteractions().extend([select, translate, modify])
   const map = new ol.Map({ view, layers, interactions, target: id })
   map.on('moveend', () => viewportChanged(viewport(view)))
 

@@ -1,5 +1,7 @@
 import * as R from 'ramda'
 import { getTransform } from 'ol/proj'
+import { Feature } from 'ol'
+import * as geom from 'ol/geom'
 import { K } from '../../shared/combinators'
 import tacgrp from './tacgrp'
 import { MultiLineString } from './predef'
@@ -120,4 +122,18 @@ const geometry = feature => {
   return MultiLineString.of(lineStrings.map(ring => ring.map(fromLonLat)))
 }
 
-tacgrp['G-G-OLAGM-'] = { geometry }
+const editor = feature => {
+  const features = coordinates => {
+    const handles = coordinates.map(point => new Feature({ geometry: new geom.Point(point) }))
+    const centerLine = new Feature({ geometry: new geom.LineString(coordinates) })
+    return [...handles, centerLine]
+  }
+
+  const coordinates = feature.getGeometry().getCoordinates()
+  return features(coordinates)
+}
+
+tacgrp['G-G-OLAGM-'] = {
+  geometry,
+  editor
+}
