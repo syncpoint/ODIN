@@ -131,7 +131,10 @@ const geometry = feature => {
  */
 const selectionFeatures = feature => {
   const coordinates = feature.getGeometry().getCoordinates()
-  return [new Feature({ geometry: new geom.LineString(coordinates) })]
+  return [new Feature({
+    role: 'wire-frame',
+    geometry: new geom.LineString(coordinates)
+  })]
 }
 
 
@@ -140,7 +143,10 @@ const selectionFeatures = feature => {
  */
 const editorFeatures = feature => {
   const coordinates = feature.getGeometry().getCoordinates()
-  const pointFeature = point => new Feature({ geometry: new geom.Point(point) })
+  const pointFeature = point => new Feature({
+    role: 'handle',
+    geometry: new geom.Point(point)
+  })
   const centerLine = coordinates.map(pointFeature)
   return selectionFeatures(feature).concat(centerLine)
 }

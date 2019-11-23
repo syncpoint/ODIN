@@ -32,10 +32,11 @@ const effect = (props, [setMap]) => () => {
   const view = new ol.View(options(props.viewport))
   const layers = [new TileLayer({ source: new OSM() })]
 
+  const hitTolerance = 4
+  const customInteraction = new CustomInteraction({ hitTolerance })
   // const select = new Select({ condition: click, style: highlightStyle })
-  // const translate = new Translate({ features: select.getFeatures() })
+  // const translate = new Translate({ features: customInteraction.getFeatures(), hitTolerance })
   // const modify = new Modify({ features: select.getFeatures() })
-  const customInteraction = new CustomInteraction()
 
   const interactions = defaultInteractions().extend([customInteraction])
   // const interactions = defaultInteractions().extend([select, translate, modify])

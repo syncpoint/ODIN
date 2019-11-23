@@ -3,6 +3,7 @@ import { Collection } from 'ol'
 import { Pointer as PointerInteraction } from 'ol/interaction'
 import { Vector as VectorLayer } from 'ol/layer'
 import { Vector as VectorSource } from 'ol/source'
+import { Fill, Stroke, Circle, Style } from 'ol/style'
 import tacgrp, { normalizeSIDC } from './styles/tacgrp'
 import { featuresAtPixel, clearFeatues, addFeatures } from './map-utils'
 
@@ -35,6 +36,7 @@ const featureSelection = feature => {
  *
  */
 export function CustomInteraction (options) {
+  this.options = options || { hitTolerance: 4 }
 
   // Keep track of selected features.
   // NOTE: Setting unique option throws assertion error instread silently ignoring duplicate entry.
@@ -54,6 +56,8 @@ export function CustomInteraction (options) {
   // TODO: unbind listener when interaction is removed from map.
   this.selection.on('change:length', selectionChanged)
 
+  /* eslint-disable */
+
   PointerInteraction.call(this, {
     handleDownEvent: this.handleDownEvent,
     handleUpEvent: this.handleUpEvent,
@@ -71,6 +75,19 @@ CustomInteraction.prototype.constructor = CustomInteraction
 
 
 /**
+ * Style for editor/selection features.
+ */
+const defaultStyle = [new Style({
+  image: new Circle({
+    fill: new Fill({ color: 'white' }),
+    stroke: new Stroke({ color: 'red', width: 1 }),
+    radius: 8
+  }),
+  stroke: new Stroke({ color: 'red', width: 1.25, lineDash: [18, 5, 3, 5] })
+})]
+
+
+/**
  *
  */
 CustomInteraction.prototype.setMap = function (map) {
@@ -80,6 +97,7 @@ CustomInteraction.prototype.setMap = function (map) {
   // NOTE: This layer is unmanaged.
   this.overlay = new VectorLayer({
     map,
+    style: () => defaultStyle,
     source: new VectorSource({
       features: new Collection(),
       useSpatialIndex: false,
@@ -88,7 +106,7 @@ CustomInteraction.prototype.setMap = function (map) {
   })
 
   this.featuresAtPixel = featuresAtPixel(map, {
-    hitTolerance: 4,
+    hitTolerance: this.options.hitTolerance,
     // Exclude interaction overlay from hit test:
     layerFilter: layer => layer !== this.overlay
   })
@@ -100,12 +118,14 @@ CustomInteraction.prototype.setMap = function (map) {
  */
 CustomInteraction.prototype.handleDownEvent = function (event) {
   const { pixel, originalEvent } = event
-  const appendSelection = originalEvent.shiftKey
-  if (!appendSelection) this.selection.clear()
-  const alreadySelected = feature => this.selection.getArray().indexOf(feature) !== -1
-  const [selected, notSelected] = R.partition(alreadySelected)(this.featuresAtPixel(pixel))
-  if (appendSelection) selected.forEach(feature => this.selection.remove(feature))
-  this.selection.extend(notSelected)
+  const multiselect = originalEvent.shiftKey
+  if (!multiselect) this.selection.clear()
+  const selected = feature => this.selection.getArray().indexOf(feature) !== -1
+  const [positives, negatives] = R.partition(selected)(this.featuresAtPixel(pixel))
+
+  // Remove positives when multi-select, add negatives unconditionally.
+  if (multiselect) positives.forEach(feature => this.selection.remove(feature))
+  this.selection.extend(negatives)
 }
 
 
@@ -132,4 +152,12 @@ CustomInteraction.prototype.handleMoveEvent = function ({ map, pixel }) {
  */
 CustomInteraction.prototype.handleDragEvent = function (event) {
   console.log('event', event.type)
+}
+
+
+/**
+ *  getFeatures :: () -> [feature]
+ */
+CustomInteraction.prototype.getFeatures = function () {
+  return this.selection
 }
