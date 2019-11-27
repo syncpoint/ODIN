@@ -180,8 +180,11 @@ clipboard.register('feature', {
   paste: feature => evented.addFeature(0)(uuid(), feature)
 })
 
-ipcRenderer.on('COMMAND_LOAD_LAYER', (_, name, content) => {
-  evented.add(name, content)
+ipcRenderer.on('COMMAND_LOAD_LAYER', (_, name, collection) => {
+  if (!collection.type === 'FeatureCollection') return
+  const layerId = uuid()
+  evented.addLayer(layerId, name)
+  collection.features.forEach(feature => evented.addFeature(layerId)(uuid(), feature))
 })
 
 export default evented
