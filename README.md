@@ -52,6 +52,37 @@ To delete application data simply delete the entire `odin-c2is` application data
 * Windows: `%APPDATA%\odin-c2is` (e.g. `C:\Users\{your-user}\AppData\Roaming\odin-c2is`)
 * macOS: `~/Library/Application\ Support/odin-c2is`
 
+### REST interface
+Currently, the application exposes one REST endpoint to import layers in GeoJSON format.
+The interface is bound to port 8001 on localhost.
+
+```
+METHOD
+  POST /layer/:name - import layer
+
+PARAMETERS
+  :name - layer name
+
+BODY
+  GeoJSON feature collection.
+  Feature geometries are expected in EPSG:4326 (WGS84) projection (long/lat format).
+  A range of APP6/2525 symbol modifiers are supported as feature properties,
+  such as 'm', 'n' 't', 'w', etc. A special property 'sidc' is used to supply a 15 character
+  symbol identification. Where possible generic graphics are rendered when SIDC is not
+  supplied.
+
+DESCRIPTION
+  Import a layer with given name.
+  Either creates a new layer or replaces an existing layer.
+
+EXAMPLE
+  Import layer from a file.
+
+  curl -H "Content-Type: application/json" \
+    -X POST \
+    -d @examples/scenario-002.json \
+    http:/localhost:8001/layer/SCENARIO-2
+```
 
 ## License
 
