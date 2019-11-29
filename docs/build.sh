@@ -2,15 +2,17 @@
 
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
+DEST_PATH=$SCRIPTPATH/book
+TEMP_BOOK=$SCRIPTPATH/tmpbook
 ## clean up
-rm -rf $SCRIPTPATH/dist
-mkdir -p  $SCRIPTPATH/dist
+rm -rf $DEST_PATH
+mkdir -p  $DEST_PATH
 
 ## create keyboard Cheat Sheets 
 $SCRIPTPATH/src/pdf/genpdf.sh
 
 ## copy README 
-cp -rf $SCRIPTPATH/src/README.md $SCRIPTPATH/dist
+cp -rf $SCRIPTPATH/src/README.md $DEST_PATH
 
 
 ## create book
@@ -18,8 +20,8 @@ mdbook build $SCRIPTPATH/src/de
 mdbook build $SCRIPTPATH/src/en
 
 ## copy book
-cp -rf $SCRIPTPATH/book/de/html $SCRIPTPATH/dist/de
-cp -rf $SCRIPTPATH/book/en/html $SCRIPTPATH/dist/en
+cp -rf $TEMP_BOOK/de/html $DEST_PATH/de
+cp -rf $TEMP_BOOK/en/html $DEST_PATH/en
 
-rm -rf $SCRIPTPATH/book 
+rm -rf $TEMP_BOOK 
 

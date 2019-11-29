@@ -6,7 +6,7 @@ src = "src"
 
 
 [build]
-build-dir = "../../book/en"
+build-dir = "../../tmpbook/en"
 create-missing = false
 use-default-preprocessors = true
 
