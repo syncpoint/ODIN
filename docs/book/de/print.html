@@ -1,0 +1,278 @@
+<!DOCTYPE HTML>
+<html lang="de" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title></title>
+        
+        <meta name="robots" content="noindex" />
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class=""><a href="odin.html"><strong aria-hidden="true">1.</strong> ODIN</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class=""><a href="kb_shortcuts.html"><strong aria-hidden="true">1.1.</strong> Tastaturkürzel</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title"></h1>
+
+                        <div class="right-buttons">
+                            <a href="print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+
+                    
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <img title="" src="./assets/logo_font.png" alt="logo_font.png" width="343">
+<h1><a class="header" href="#benutzerdocumentation" id="benutzerdocumentation">Benutzerdocumentation</a></h1>
+<h2><a class="header" href="#was-ist-odin" id="was-ist-odin">Was ist ODIN?</a></h2>
+<p>ODIN, noch in einer frühen Anfangsphase, setzt sich zum Ziel eine Open Source Alternative zu kommerziell verfügbaren Führungsinformationssystemen (Command and Control Information System) zu werden</p>
+<h3><a class="header" href="#die-wichtigsten-konzepte" id="die-wichtigsten-konzepte">Die wichtigsten Konzepte</a></h3>
+<h1><a class="header" href="#tastaturkurzel" id="tastaturkurzel">Tastaturkürzel</a></h1>
+<p>Dieses Blatt beschreibt viele nützliche Tastenkombinationen für <strong>ODIN</strong>. Einige dieser Tastaturkürzel entsprechen den Kurzbefehlen anderer Programme (zum Beispiel <kbd>Strg</kbd>+<kbd>C</kbd>bzw.<kbd>Cmd</kbd>+<kbd>C</kbd>für das Kopieren). </p>
+<h2><a class="header" href="#microsoft-windows" id="microsoft-windows">Microsoft Windows</a></h2>
+<table><thead><tr><th>Allgemein</th><th></th></tr></thead><tbody>
+<tr><td><kbd>F11</kbd></td><td>Vollbild ein/aus</td></tr>
+<tr><td><kbd>Alt</kbd></td><td>Menüleite anzeigen</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>F</kbd></td><td>Suche öffnen</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>P</kbd></td><td>Palette öffnen</td></tr>
+</tbody></table>
+<table><thead><tr><th>Anzeige</th><th></th></tr></thead><tbody>
+<tr><td><kbd>Strg</kbd>+<kbd>Shift</kbd>+<kbd>+</kbd></td><td>Zoom hinein (vergrößern)</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>Shift</kbd>+<kbd>-</kbd></td><td>Zoom herraus (verkleinern)</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>0</kbd></td><td>Zoom normal</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>L</kbd></td><td>Zeige Beschriftung (bis 1:250.000)</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>1</kbd></td><td>Kartenwerk 1</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>(n)</kbd></td><td>Kartenwerk (n)</td></tr>
+<tr><td></td><td></td></tr>
+</tbody></table>
+<table><thead><tr><th>Bearbeiten</th><th></th></tr></thead><tbody>
+<tr><td><kbd>Klick</kbd></td><td>Element auswählen</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>Klick</kbd></td><td>Punkt löschen</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>A</kbd></td><td>Alles auswahlen</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>C</kbd></td><td>Kopieren (Zwischenablage)</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>V</kbd></td><td>Einfügen (Zwischenablage)</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>X</kbd></td><td>Ausschneiden   (Zwischenablage)</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>Rück</kbd></td><td>Element löschen</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>Entf</kbd></td><td>Element löschen</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>Z</kbd></td><td>Rückgängig</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>Schift</kbd>+<kbd>Z</kbd></td><td>Wiederherstellen</td></tr>
+</tbody></table>
+<table><thead><tr><th>Verschiedenes</th><th></th></tr></thead><tbody>
+<tr><td><kbd>Strg</kbd>+<kbd>B</kbd></td><td>Lesezeichen anlegen</td></tr>
+<tr><td><kbd>Alt</kbd>+<kbd>C</kbd></td><td>Koordinate kopieren (Zwischenablage)</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>M</kbd></td><td>Fenster mimmieren</td></tr>
+<tr><td><kbd>Strg</kbd>+<kbd>W</kbd></td><td>Anwendung schließen</td></tr>
+</tbody></table>
+<h2><a class="header" href="#mac-osx" id="mac-osx">Mac OSX</a></h2>
+<table><thead><tr><th>Allgemein</th><th></th></tr></thead><tbody>
+<tr><td><kbd>Control</kbd><kbd>Command</kbd><kbd>F</kbd></td><td>Vollbild ein/aus</td></tr>
+<tr><td><kbd>Command</kbd>+<kbd>F</kbd></td><td>Suche öffnen</td></tr>
+<tr><td><kbd>Command</kbd>+<kbd>P</kbd></td><td>Palette öffnen</td></tr>
+</tbody></table>
+<table><thead><tr><th>Anzeige</th><th></th></tr></thead><tbody>
+<tr><td><kbd>Command</kbd>+<kbd>+</kbd></td><td>Zoom hinein (vergrößern)</td></tr>
+<tr><td><kbd>Command</kbd>+<kbd>-</kbd></td><td>Zoom herraus (verkleinern)</td></tr>
+<tr><td><kbd>Command</kbd>+<kbd>0</kbd></td><td>Zoom normal</td></tr>
+<tr><td><kbd>Command</kbd>+<kbd>L</kbd></td><td>Zeige Beschriftung (bis 1:250.000)</td></tr>
+<tr><td><kbd>Command</kbd>+<kbd>1</kbd></td><td>Kartenwerk 1</td></tr>
+<tr><td><kbd>Command</kbd>+<kbd>(n)</kbd></td><td>Kartenwerk (n)</td></tr>
+</tbody></table>
+<table><thead><tr><th>Bearbeiten</th><th></th></tr></thead><tbody>
+<tr><td><kbd>Klick</kbd></td><td>Element auswählen</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>Klick</kbd></td><td>Punkt löschen</td></tr>
+<tr><td><kbd>Command</kbd>+<kbd>A</kbd></td><td>Alles auswahlen</td></tr>
+<tr><td><kbd>Command</kbd>+<kbd>C</kbd></td><td>Kopieren (Zwischenablage)</td></tr>
+<tr><td><kbd>Command</kbd>+<kbd>V</kbd></td><td>Einfügen (Zwischenablage)</td></tr>
+<tr><td><kbd>Command</kbd>+<kbd>X</kbd></td><td>Ausschneiden   (Zwischenablage)</td></tr>
+<tr><td><kbd>Command</kbd>+<kbd>Rück</kbd></td><td>Element löschen</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>Rück</kbd></td><td>Element löschen</td></tr>
+<tr><td><kbd>Command</kbd>+<kbd>Z</kbd></td><td>Rückgängig</td></tr>
+<tr><td><kbd>Command</kbd>+<kbd>Schift</kbd>+<kbd>Z</kbd></td><td>Wiederherstellen</td></tr>
+</tbody></table>
+<table><thead><tr><th>Verschiedenes</th><th></th></tr></thead><tbody>
+<tr><td><kbd>Command</kbd>+<kbd>B</kbd></td><td>Lesezeichen anlegen</td></tr>
+<tr><td><kbd>Option</kbd>+<kbd>C</kbd></td><td>Koordinate kopieren (Zwischenablage)</td></tr>
+<tr><td><kbd>Command</kbd>+<kbd>H</kbd></td><td>Anwendung ausblenden</td></tr>
+<tr><td><kbd>Command</kbd>+<kbd>W</kbd></td><td>Fenster schließen</td></tr>
+<tr><td><kbd>Command</kbd><kbd>Q</kbd></td><td>Anwendung schließen</td></tr>
+</tbody></table>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+        
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+        
+        
+
+    </body>
+</html>
