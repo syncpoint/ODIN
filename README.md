@@ -38,6 +38,11 @@ Create main and renderer bundles first, then start development server (for rende
 We had no time to come up with a user's manual so far. But eventually we will get there...
 In the meantime, here is some information which might come in handy at some point.
 
+You can here find a cheatsheet showing the keyboard shortcuts
+
+  - [English Cheatsheet](https://syncpoint.github.io/ODIN/kb_shortcuts_cheat_en.pdf)
+  - [German Cheatsheet](https://syncpoint.github.io/ODIN/kb_shortcuts_cheat_de.pdf)
+
 ### Resetting application state
 You might want to/or are forced to reset stored application data, or example in the case of an unrecoverable error which is based on invalid application data.
 
