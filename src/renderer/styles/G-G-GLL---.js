@@ -1,4 +1,4 @@
-import tacgrp from './tacgrp'
+import { tacgrp } from './tacgrp'
 import lineLabels from './line-labels'
 
 // LIGHT LINE: TACGRP.C2GM.GNL.LNE.LITLNE

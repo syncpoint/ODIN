@@ -1,7 +1,7 @@
 import * as R from 'ramda'
 import ColorSchemes from './color-schemes'
 import { Style, Stroke } from './predef'
-import tacgrp, { normalizeSIDC } from './tacgrp'
+import { tacgrp, normalizeSIDC } from './tacgrp'
 import './G-G-GAA---'
 import './G-G-GLL---'
 import './G-G-OLAGM-'

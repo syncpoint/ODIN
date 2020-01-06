@@ -14,6 +14,7 @@ import evented from './evented'
 import { propTypes, styles } from './Map'
 import { defaultStyle, highlightStyle } from './styles'
 import { CustomInteraction } from './CustomInteraction'
+import Mousetrap from 'mousetrap'
 
 const tail = ([_, ...values]) => values
 const zoom = view => view.getZoom()
@@ -33,13 +34,17 @@ const effect = (props, [setMap]) => () => {
   const layers = [new TileLayer({ source: new OSM() })]
 
   const hitTolerance = 4
-  const customInteraction = new CustomInteraction({ hitTolerance })
-  // const select = new Select({ condition: click, style: highlightStyle })
-  // const translate = new Translate({ features: customInteraction.getFeatures(), hitTolerance })
-  // const modify = new Modify({ features: select.getFeatures() })
 
-  const interactions = defaultInteractions().extend([customInteraction])
-  // const interactions = defaultInteractions().extend([select, translate, modify])
+  // const select = new Select({ condition: click, style: highlightStyle, hitTolerance })
+  // const translate = new Translate({ features: select.getFeatures(), hitTolerance })
+  // const modify = new Modify({ features: select.getFeatures(), hitTolerance })
+  // const interactions = defaultInteractions().extend([modify, translate, select])
+
+  const select = new CustomInteraction({ hitTolerance })
+  const modify = new Modify({ features: select.getFeatures(), hitTolerance })
+  const interactions = defaultInteractions().extend([select, modify])
+
+
   const map = new ol.Map({ view, layers, interactions, target: id })
   map.on('moveend', () => viewportChanged(viewport(view)))
 
@@ -47,8 +52,15 @@ const effect = (props, [setMap]) => () => {
     // Data projection defaults to 'EPSG:4326'.
     const features = new GeoJSON().readFeatures(json, { featureProjection: 'EPSG:3857' })
     const source = new VectorSource({ features })
+    const removeFeature = feature => source.removeFeature(feature)
+    // FIXME: style must be associated directly with feature
     const layer = new VectorLayer({ source, style: defaultStyle })
     map.addLayer(layer)
+
+    Mousetrap.bind('mod+backspace', () => {
+      select.getFeatures().forEach(removeFeature)
+      select.clearSelection()
+    })
   })
 
   evented.emit('map.ready')
@@ -60,6 +72,7 @@ const effect = (props, [setMap]) => () => {
  * React OpenLayers Map function component.
  */
 const Map = props => {
+  // Only used once:
   useEffect(effect(props, tail(useState(null))), [])
   return <div id={props.id} className={props.classes.root} />
 }

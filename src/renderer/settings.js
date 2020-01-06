@@ -7,7 +7,6 @@ const defaultViewport = {
 }
 
 const get = (key, value) => db.get(key).catch(() => value)
-
 const put = (key, value) => db.put(key, value)
 
 export const map = {

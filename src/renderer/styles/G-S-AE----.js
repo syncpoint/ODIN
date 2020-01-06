@@ -1,4 +1,4 @@
-import tacgrp from './tacgrp'
+import { tacgrp } from './tacgrp'
 import { centerLabel } from './area-labels'
 
 // ENEMY PRISONER OF WAR (EPW) HOLDING AREA: TACGRP.CSS.ARA.EPWHA

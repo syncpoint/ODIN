@@ -1,4 +1,4 @@
-import tacgrp from './tacgrp'
+import { tacgrp } from './tacgrp'
 import { nsewLabel } from './area-labels'
 
 // MINED AREA: TACGRP.MOBSU.OBST.MNEFLD.MNDARA

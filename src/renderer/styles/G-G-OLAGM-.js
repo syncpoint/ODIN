@@ -3,7 +3,7 @@ import { getTransform } from 'ol/proj'
 import { Feature } from 'ol'
 import * as geom from 'ol/geom'
 import { K } from '../../shared/combinators'
-import tacgrp from './tacgrp'
+import { tacgrp } from './tacgrp'
 import { MultiLineString } from './predef'
 import { Line, Point } from './geodesy'
 

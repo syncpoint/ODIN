@@ -1,35 +1,27 @@
+/**
+ * Attempt to understand feature interactions.
+ *
+ * SELECTION FEATURES:
+ *   Bounding boxes and other lines which give visual hints
+ *   about selected (business domain) feature.
+ *
+ * EDITOR FEATURES:
+ *   Mainly handles for changing geometry points while editing
+ *   (business domain) feature.
+ *   Editor features usually also include selection features.
+ *
+ * AUXILIARY FEATURES:
+ *   Selection and/or editor features.
+ */
+
 import * as R from 'ramda'
 import { Collection } from 'ol'
 import { Pointer as PointerInteraction } from 'ol/interaction'
 import { Vector as VectorLayer } from 'ol/layer'
 import { Vector as VectorSource } from 'ol/source'
 import { Fill, Stroke, Circle, Style } from 'ol/style'
-import tacgrp, { normalizeSIDC } from './styles/tacgrp'
+import { selectionFeatures, editorFeatures } from './styles/tacgrp'
 import { featuresAtPixel, clearFeatues, addFeatures } from './map-utils'
-
-
-/**
- * featureEditor :: feature -> feature -> [feature]
- */
-const featureEditor = feature => {
-  const noop = () => []
-  const { sidc } = feature.getProperties()
-  if (!sidc) return noop
-  if (!tacgrp[normalizeSIDC(sidc)]) return noop
-  return tacgrp[normalizeSIDC(sidc)].editorFeatures || noop
-}
-
-
-/**
- * featureSelection :: feature -> feature -> [feature]
- */
-const featureSelection = feature => {
-  const noop = () => []
-  const { sidc } = feature.getProperties()
-  if (!sidc) return noop
-  if (!tacgrp[normalizeSIDC(sidc)]) return noop
-  return tacgrp[normalizeSIDC(sidc)].selectionFeatures || noop
-}
 
 
 /**
@@ -70,24 +62,30 @@ CustomInteraction.prototype.clearFeatues = function () {
   clearFeatues(fast)(this.overlay.getSource())
 }
 
-CustomInteraction.prototype.drawFeatures = function () {
-  const multiselect = this.selection.getLength() > 1
-  const features = multiselect ? featureSelection : featureEditor
-  const overlayFeatures = this.selection.getArray().flatMap(feature => features(feature)(feature))
-  addFeatures(false)(this.overlay.getSource(), overlayFeatures)
-}
 
 /**
- * Style for editor/selection features.
+ *
  */
-const defaultStyle = [new Style({
-  image: new Circle({
-    fill: new Fill({ color: 'white' }),
-    stroke: new Stroke({ color: 'red', width: 1 }),
-    radius: 8
-  }),
-  stroke: new Stroke({ color: 'red', width: 1.25, lineDash: [18, 5, 3, 5] })
-})]
+CustomInteraction.prototype.drawFeatures = function () {
+  const disposeAuxiliaries = feature => this.overlay.getSource().removeFeature(feature)
+  const multiselect = this.selection.getLength() > 1
+  const auxiliaryFeatures = multiselect ? selectionFeatures : editorFeatures
+  const overlayFeatures = this.selection.getArray().flatMap(feature => {
+
+    // Nasty side effect ahead:
+    // Since we want to be able to selectively remove auxiliary features
+    // from overlay when a feature needs to be redrawn (or is removed from selection),
+    // we need a way to associate those auxiliary features with the business
+    // domain feature. The association is captured in a clean-up function that
+    // is stored within the business domain feature.
+
+    const auxiliaries = auxiliaryFeatures(feature)(feature)
+    feature.set('dispose', () => auxiliaries.forEach(disposeAuxiliaries))
+    return auxiliaries
+  })
+
+  addFeatures(false)(this.overlay.getSource(), overlayFeatures)
+}
 
 
 /**
@@ -96,11 +94,23 @@ const defaultStyle = [new Style({
 CustomInteraction.prototype.setMap = function (map) {
   PointerInteraction.prototype.setMap.call(this, map)
 
-  // Setup editor feature overlay.
+  /**
+   * Style for editor/selection (i.e. auxiliary) features.
+   */
+  const image = new Circle({
+    fill: new Fill({ color: 'white' }),
+    stroke: new Stroke({ color: 'red', width: 1 }),
+    radius: 8
+  })
+
+  const stroke = new Stroke({ color: 'red', width: 1.25, lineDash: [18, 5, 3, 5] })
+
+  // Setup editor/selection feature overlay.
   // NOTE: This layer is unmanaged.
   this.overlay = new VectorLayer({
     map,
-    style: () => defaultStyle,
+    // TODO: performance - attach style directly to auxiliary features
+    style: () => new Style({ image, stroke }),
     source: new VectorSource({
       features: new Collection(),
       useSpatialIndex: false,
@@ -113,11 +123,64 @@ CustomInteraction.prototype.setMap = function (map) {
     // Exclude interaction overlay from hit test:
     layerFilter: layer => layer !== this.overlay
   })
+
+  const role = name => feature => feature.get('role') === name
+  this.handlesAtPixel = pixel => featuresAtPixel(map, {
+    hitTolerance: this.options.hitTolerance,
+    layerFilter: layer => layer === this.overlay
+  })(pixel).filter(role('handle'))
 }
 
 
 /**
  *
+ */
+CustomInteraction.prototype.removeSelection = function (feature) {
+  feature.un('change', feature.get('change'))
+  feature.unset('change')
+  this.selection.remove(feature)
+}
+
+
+/**
+ *
+ */
+CustomInteraction.prototype.extendSelection = function (features) {
+  const geometryChanged = feature => event => {
+    console.log('[feature] dispose', feature.get('dispose'))
+    const dispose = feature.get('dispose') || (() => {})
+    dispose()
+    feature.unset('dispose')
+    // TODO: performance - selectively re-draw single feature
+    this.drawFeatures()
+  }
+
+  features.forEach(feature => {
+    const handler = geometryChanged(feature)
+    feature.set('change', handler) // store handler for later removal
+    feature.on('change', handler)
+  })
+
+  this.selection.extend(features)
+}
+
+
+/**
+ *
+ */
+CustomInteraction.prototype.clearSelection = function () {
+  this.selection.getArray().forEach(feature => {
+    // unregister and remove change handler from feature:
+    feature.un('change', feature.get('change'))
+    feature.unset('change')
+  })
+
+  this.selection.clear()
+}
+
+
+/**
+ * @return {boolean} `true` to start the drag sequence.
  */
 CustomInteraction.prototype.handleDownEvent = function (event) {
   const { pixel, originalEvent } = event
@@ -126,29 +189,29 @@ CustomInteraction.prototype.handleDownEvent = function (event) {
   const [positives, negatives] = R.partition(selected)(this.featuresAtPixel(pixel))
 
   // Remove positives when multi-select, add negatives unconditionally.
-  if (multiselect) positives.forEach(feature => this.selection.remove(feature))
-  else if (negatives.length > 0 || positives.length === 0) this.selection.clear()
+  if (multiselect) positives.forEach(feature => this.removeSelection(feature))
+  else if (negatives.length > 0 || positives.length === 0) this.clearSelection()
+  this.extendSelection(negatives)
 
-  this.selection.extend(negatives)
   if (this.selection.getArray().length === 0) return
   if (this.dragCoordinate) return
 
   this.dragCoordinate = event.coordinate
   this.handleMoveEvent(event)
-  return true // initiate drag operation
+  return true // initiate drag sequence
 }
 
 
 /**
- *
+ * @return {boolean} `false` to stop the drag sequence.
  */
 CustomInteraction.prototype.handleUpEvent = function (event) {
   if (!this.dragCoordinate) return
 
+  console.log('[handleUpEvent] updating store...', this.dragCoordinate)
   delete this.dragCoordinate
   this.handleMoveEvent(event)
-  this.drawFeatures()
-  return true // terminate drag operation
+  return false // stop drag sequence
 }
 
 
@@ -168,7 +231,6 @@ CustomInteraction.prototype.handleMoveEvent = function ({ map, pixel }) {
 CustomInteraction.prototype.handleDragEvent = function (event) {
   if (!this.dragCoordinate) return
 
-  this.clearFeatues()
   const deltaX = event.coordinate[0] - this.dragCoordinate[0]
   const deltaY = event.coordinate[1] - this.dragCoordinate[1]
 
@@ -180,7 +242,11 @@ CustomInteraction.prototype.handleDragEvent = function (event) {
 
 
 /**
- *  getFeatures :: () -> [feature]
+ * getFeatures :: () -> [feature]
+ *
+ * Get the selected features.
+ * Can be used by other interactions to determine current selection.
+ * See also `ol/interaction/Select#getFeatures()`
  */
 CustomInteraction.prototype.getFeatures = function () {
   return this.selection

@@ -9,7 +9,8 @@ const LAYERS = [
   // 'examples/division/2.Brig (EU).json',
   // 'examples/division/3.Brig (Luft).json'
   // 'examples/scenario-002.json'
-  'examples/MAIN ATTACK.json'
+  // 'examples/MAIN ATTACK.json'
+  'examples/TACGRP.json'
 ]
 
 const loadLayers = () => {

@@ -1,7 +1,7 @@
 import { Feature } from 'ol'
 import * as geom from 'ol/geom'
 import { getBottomLeft, getTopLeft, getTopRight, getBottomRight } from 'ol/extent'
-import tacgrp from './tacgrp'
+import { tacgrp } from './tacgrp'
 import { centerLabel, ewLabels } from './area-labels'
 
 
@@ -44,8 +44,9 @@ const selectionFeatures = feature => {
  */
 const editorFeatures = feature => {
   const geometry = feature.getGeometry()
-  const pointFeature = point => new Feature({ geometry: new geom.Point(point) })
-  const handles = geometry.getCoordinates()[0].map(pointFeature)
+  const pointFeature = point => new Feature({ geometry: new geom.Point(point), role: 'handle' })
+  // NOTE: Outer linear ring only, skip first point which is equal to last point.
+  const handles = geometry.getCoordinates()[0].slice(1).map(pointFeature)
   return selectionFeatures(feature).concat(handles)
 }
 
