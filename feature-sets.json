@@ -1,5 +1,82 @@
 [
   {
+    "name": "Offensive Operations",
+    "content": [
+      "G*GPGLB---****X",
+      "G*GPGLP---****X",
+      "G*GPOLT---****X",
+      "G*GPOLL---****X",
+      "G*FPLCF---****X",
+      "G*GPOLAGM-****X",
+      "G*GPOLAGS-****X",
+      "G*GPOLKGM-****X",
+      "G*GPOLKGS-****X",
+      "G*GPGAA---****X",
+      "G*GPOAK---****X",
+      "G*FPACPR--****X",
+      "G*GPOAO---****X",
+      "G*GPDAE---****X",
+      "G*SPASB---****X",
+      "G*TPB-----****X",
+      "G*GPOAF---****X",
+      "G*GPOAS---****X",
+      "G*TPUS----****X"
+    ]
+  },
+  {
+    "name": "Defensive Operations",
+    "content": [
+      "G*GPGLB---****X",
+      "G*GPDLF---****X",
+      "G*GPGLF---****X",
+      "G*GPGAA---****X",
+      "G*FPACPR--****X",
+      "G*GPDAE---****X",
+      "G*MPSP----****X",
+      "G*SPASB---****X",
+      "G*TPB-----****X",
+      "G*TPUS----****X",
+      "G*GPGPPO--****X",
+      "G*MPOFS---****X",
+      "G*MPOFD---****X",
+      "G*MPOFA---****X"
+    ]
+  },
+  {
+    "name": "Delay Operations",
+    "content": [
+      "G*GPGLB---****X",
+      "G*GPGLP---****X",
+      "G*GPDLF---****X",
+      "G*GPGAA---****X",
+      "G*FPACPR--****X",
+      "G*GPDAE---****X",
+      "G*TPB-----****X",
+      "G*TPUS----****X",
+      "G*TPL-----****X",
+      "G*GPGPPO--****X",
+      "G*GPGPRI--****X",
+      "G*GPGPPP--****X",
+      "G*MPOFS---****X",
+      "G*MPOFD---****X",
+      "G*MPOFA---****X"
+    ]
+  },
+  {
+    "name": "Security Operations",
+    "content": [
+      "G*GPGLB---****X",
+      "G*MPSP----****X",
+      "G*TPUS----****X",
+      "G*GPDPO---****X",
+      "G*GPGPPK--****X",
+      "G*SPPT----****X",
+      "G*SPPD----****X",
+      "G*SPPE----****X",
+      "G*GPGPPO--****X"
+    ]
+  },
+  {
     "name": "Combat Units (Ground)",
     "content": [
       "SFGPUCI---*****",
