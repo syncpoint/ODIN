@@ -129,8 +129,8 @@ L.TACGRP.OrbitArea = L.TACGRP.Feature.extend({
    */
   _setFeature (feature) {
     const latlngs = toLatLngs(feature.geometry)
-    const width = feature.properties.geometry_width
-    const alignment = feature.properties.geometry_alignment
+    const width = feature.properties.geometry_width || feature.properties.orbit_area_width_dim
+    const alignment = feature.properties.geometry_alignment || feature.properties.orbit_area_alignment_code
     this._geometry = orbitGeometry(latlngs, width, alignment)
 
     this._shapeOptions = {

@@ -122,14 +122,16 @@ const SZE = L.TACGRP.Feature.extend({
    *
    */
   _setFeature (feature) {
-    /* eslint-disable camelcase */
-    const { geometry_max_range, geometry_mnm_range, geometry_orient_angle } = feature.properties
+    const props = feature.properties
+    const orientAngle = props.geometry_orient_angle || props.fan_area_orient_angle
+    const mnmRange = props.geometry_mnm_range || props.fan_area_mnm_range_dim
+    const maxRange = props.geometry_max_range || props.fan_area_max_range_dim
 
     this._geometry = seizeGeometry(
       toLatLngs(feature.geometry),
-      geometry_orient_angle,
-      geometry_mnm_range,
-      geometry_max_range
+      orientAngle,
+      mnmRange,
+      maxRange
     )
 
     this._shapeOptions = {

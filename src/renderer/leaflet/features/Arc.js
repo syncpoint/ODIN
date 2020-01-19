@@ -124,14 +124,16 @@ L.TACGRP.Arc = L.TACGRP.Feature.extend({
    *
    */
   _setFeature (feature) {
-    /* eslint-disable camelcase */
-    const { geometry_max_range, geometry_orient_angle, geometry_size_angle } = feature.properties
+    const props = feature.properties
+    const maxRange = props.geometry_max_range || props.fan_area_max_range_dim
+    const orientAngle = props.geometry_orient_angle || props.fan_area_orient_angle
+    const sizeAngle = props.geometry_size_angle || props.fan_area_sctr_size_angle
 
     this._geometry = arcGeometry(
       toLatLngs(feature.geometry),
-      geometry_orient_angle,
-      geometry_size_angle,
-      geometry_max_range
+      orientAngle,
+      sizeAngle,
+      maxRange
     )
 
     this._shapeOptions = {
