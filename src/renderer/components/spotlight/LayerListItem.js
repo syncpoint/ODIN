@@ -1,23 +1,34 @@
 import React from 'react'
-import { ListItemText, ListItemSecondaryAction, Switch } from '@material-ui/core'
+import { IconButton, ListItemText, ListItemSecondaryAction, Switch, ListItemIcon } from '@material-ui/core'
+import SaveAlt from '@material-ui/icons/SaveAlt'
 import PropTypes from 'prop-types'
 
-const LayerListItem = props => (
-  <div>
-    <ListItemText primary={ props.label } secondary={ props.tags.join(' ') }/>
+const SecondaryAction = p => {
+  if (!p.func) return null
+  return (
     <ListItemSecondaryAction>
-      <Switch
-        edge="end"
-        checked={ props.checked }
-      />
+      <IconButton edge="end" onClick={ p.func }>
+        <SaveAlt />
+      </IconButton>
     </ListItemSecondaryAction>
-  </div>
+  )
+}
+
+const LayerListItem = props => (
+  <React.Fragment>
+    <ListItemIcon>
+      <Switch edge="start" checked={ props.checked } />
+    </ListItemIcon>
+    <ListItemText primary={ props.label } secondary={ props.tags.join(' ') }/>
+    <SecondaryAction func={ props.onSecondaryActionClicked } />
+  </React.Fragment>
 )
 
 LayerListItem.propTypes = {
   tags: PropTypes.array.isRequired,
   checked: PropTypes.bool.isRequired,
-  label: PropTypes.string.isRequired
+  label: PropTypes.string.isRequired,
+  onSecondaryActionClicked: PropTypes.func
 }
 
 export default LayerListItem
