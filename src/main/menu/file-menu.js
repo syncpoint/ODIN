@@ -7,10 +7,6 @@ const menu = {
     {
       label: 'Import Layer...',
       click: sendMessage('COMMAND_IMPORT_LAYER')
-    },
-    {
-      label: 'Export Default Layer...',
-      click: sendMessage('COMMAND_EXPORT_DEFAULT_LAYER')
     }
   ]
 }

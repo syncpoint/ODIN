@@ -42,16 +42,17 @@ export const COMMAND_IMPORT_LAYER = () => () => {
   })
 }
 
-export const COMMAND_EXPORT_DEFAULT_LAYER = () => () => {
+export const COMMAND_EXPORT_LAYER = () => (layerId) => {
+
   const filters = [
     { name: 'Layers', extensions: ['json'] },
     { name: 'All Files', extensions: ['*'] }
   ]
+  const defaultPath = `${store.layer(layerId).name || layerId}.json`
 
-  remote.dialog.showSaveDialog({ filters }, filePath => {
+  remote.dialog.showSaveDialog({ filters, defaultPath }, filePath => {
 
-    // For now, default layer only:
-    const features = Object.entries(store.layer('0').features).map(([_, feature]) => feature)
+    const features = Object.entries(store.layer(layerId).features).map(([_, feature]) => feature)
     const layer = {
       type: 'FeatureCollection',
       features: features
