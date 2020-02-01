@@ -1,3 +1,5 @@
+import electron from 'electron'
+import fs from 'fs'
 import EventEmitter from 'events'
 import React from 'react'
 import LayerListItem from '../components/spotlight/LayerListItem'
@@ -15,8 +17,25 @@ export default register => {
     : () => true
 
   const layerItem = (layerId, name, checked) => {
+
+    const exportLayer = (event) => {
+      event.stopPropagation()
+      electron.remote.dialog.showSaveDialog({ defaultPath: `layer-${layerId}.json` })
+        .then(result => {
+          if (result.canceled) return
+          try {
+            fs.writeFileSync(result.filePath, JSON.stringify(store.layer(layerId)))
+          } catch (error) {
+            console.error(error)
+          }
+        })
+        .catch(error => {
+          console.error(error)
+        })
+    }
+
     const [label, ...tags] = name.split(':')
-    const props = { label, tags: ['Layer', ...tags], checked }
+    const props = { label, tags: ['Layer', ...tags], checked, onSecondaryActionClicked: exportLayer }
 
     return {
       key: ResourceNames.layerId(layerId),
