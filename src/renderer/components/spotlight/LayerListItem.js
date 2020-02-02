@@ -2,15 +2,18 @@ import React from 'react'
 import { IconButton, ListItemText, ListItemSecondaryAction, Switch, ListItemIcon } from '@material-ui/core'
 import SaveAlt from '@material-ui/icons/SaveAlt'
 import PropTypes from 'prop-types'
-import { COMMAND_EXPORT_LAYER } from '../ipc/layer'
+import { exportLayerPrompt } from '../../filesystem/layer-fs'
 
 
-const ExportLayerButton = p => {
-  if (!p.layerId) return null
+/**
+ *
+ */
+const ExportLayerButton = props => {
+  if (!props.layerId) return null
 
   const exportLayer = event => {
     event.stopPropagation()
-    COMMAND_EXPORT_LAYER()(p.layerId)
+    exportLayerPrompt(props.layerId)
   }
 
   return (
@@ -22,6 +25,14 @@ const ExportLayerButton = p => {
   )
 }
 
+ExportLayerButton.propTypes = {
+  layerId: PropTypes.string.isRequired
+}
+
+
+/**
+ *
+ */
 const LayerListItem = props => (
   <React.Fragment>
     <ListItemIcon>
