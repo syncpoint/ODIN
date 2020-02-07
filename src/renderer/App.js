@@ -5,7 +5,7 @@ import Map from './Map'
 import { map as mapSettings } from './settings'
 
 const App = () => {
-  const [ viewport, setViewport ] = useState(null)
+  const [viewport, setViewport] = useState(null)
   const viewportChanged = mapSettings.setViewport
   const loadViewport = () => mapSettings.getViewport().then(setViewport)
   const effect = R.compose(R.always(undefined), loadViewport)
