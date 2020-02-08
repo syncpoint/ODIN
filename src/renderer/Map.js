@@ -3,10 +3,13 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import 'ol/ol.css'
 import * as ol from 'ol'
-import { Tile as TileLayer } from 'ol/layer'
-import { OSM } from 'ol/source'
+import { Tile as TileLayer, Vector as FeatureLayer } from 'ol/layer'
+import { OSM, Vector as VectorSource } from 'ol/source'
+import { GeoJSON } from 'ol/format'
 import { toLonLat, fromLonLat } from 'ol/proj'
+import { Pool } from 'pg'
 import evented from './evented'
+import style from './style'
 
 const tail = ([_, ...values]) => values
 const zoom = view => view.getZoom()
@@ -40,13 +43,48 @@ const effect = (props, [setMap]) => () => {
   const url = 'http://localhost:32768/styles/osm-bright/{z}/{x}/{y}{ratio}.png'
   const { zoom, center } = props.viewport
   const view = new ol.View({ zoom, center: fromLonLat(center) })
-  const layers = [tileLayer(url)]
+
+  const pool = new Pool({
+    database: 'scen'
+  })
+
+  const featureSource = new VectorSource({
+    format: new GeoJSON(),
+    loader: (extent, resolution, projection) => {
+      pool.connect(function (err, client, done) {
+        if (err) {
+          done()
+          return console.error(err)
+        } else {
+          const query =
+            `SELECT layer
+             FROM   public.contxts
+             JOIN   public.oigs USING (oig_id)
+             JOIN   gis.layers USING (contxt_id)
+             WHERE  oig_name_txt = 'SCEN | PLNORD | OVERLAY ORDER NO. 4 (XXX) [CIAVX]'`
+
+          pool.query(query).then(result => {
+            result.rows.forEach(row => {
+              const features = featureSource.getFormat().readFeatures(row.layer, { featureProjection: 'EPSG:3857' })
+              featureSource.addFeatures(features)
+            })
+          })
+        }
+      })
+    }
+  })
+
+  const featureLayer = new FeatureLayer({
+    style,
+    source: featureSource
+  })
+
+  const layers = [tileLayer(url), featureLayer]
   const map = new ol.Map({ view, layers, target: id })
 
   map.on('moveend', () => viewportChanged(viewport(view)))
   evented.emit('map.ready')
   setMap(map)
-
 }
 
 

@@ -1,6 +1,7 @@
 const path = require('path')
 const { spawn } = require('child_process')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const webpack = require('webpack')
 
 const hash = 'hash:base64:8'
 
@@ -54,9 +55,8 @@ const rendererConfig = (env, argv) => ({
   },
 
   plugins: [
-    new HtmlWebpackPlugin({
-      title: 'ODIN - C2IS'
-    })
+    new HtmlWebpackPlugin({ title: 'ODIN - C2IS' }),
+    new webpack.IgnorePlugin(/^pg-native$/)
   ]
 })
 
