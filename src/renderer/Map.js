@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
 import 'ol/ol.css'
 import * as ol from 'ol'
 import { Tile as TileLayer, Vector as FeatureLayer } from 'ol/layer'
@@ -16,9 +15,13 @@ const zoom = view => view.getZoom()
 const center = view => toLonLat(view.getCenter())
 const viewport = view => ({ zoom: zoom(view), center: center(view) })
 
+// const tileSource = (url, devicePixelRatio) => new OSM({
+//   url: url.replace(/{ratio}/, devicePixelRatio === 2 ? '@2x' : ''),
+//   tilePixelRatio: devicePixelRatio
+// })
+
 const tileSource = (url, devicePixelRatio) => new OSM({
-  url: url.replace(/{ratio}/, devicePixelRatio === 2 ? '@2x' : ''),
-  tilePixelRatio: window.devicePixelRatio
+  tilePixelRatio: devicePixelRatio
 })
 
 const tileLayer = url => {
@@ -56,14 +59,14 @@ const effect = (props, [setMap]) => () => {
           done()
           return console.error(err)
         } else {
-          const query =
+          const oneOIG =
             `SELECT layer
              FROM   public.contxts
              JOIN   public.oigs USING (oig_id)
              JOIN   gis.layers USING (contxt_id)
              WHERE  oig_name_txt = 'SCEN | PLNORD | OVERLAY ORDER NO. 4 (XXX) [CIAVX]'`
 
-          pool.query(query).then(result => {
+          pool.query(oneOIG).then(result => {
             result.rows.forEach(row => {
               const features = featureSource.getFormat().readFeatures(row.layer, { featureProjection: 'EPSG:3857' })
               featureSource.addFeatures(features)
@@ -94,25 +97,13 @@ const effect = (props, [setMap]) => () => {
 const Map = props => {
   // Only used once:
   useEffect(effect(props, tail(useState(null))), [])
-  return <div id={props.id} className={props.classes.root} />
+  return <div id={props.id} />
 }
 
 Map.propTypes = {
-  classes: PropTypes.any.isRequired,
   viewport: PropTypes.object.isRequired,
   id: PropTypes.string.isRequired,
   viewportChanged: PropTypes.func.isRequired
 }
 
-const styles = {
-  root: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    zIndex: 10
-  }
-}
-
-export default withStyles(styles)(Map)
+export default Map

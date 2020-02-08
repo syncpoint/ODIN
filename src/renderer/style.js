@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { Stroke, Style, Icon } from 'ol/style'
+import { Stroke, Style, Icon, Fill } from 'ol/style'
 import ms from 'milsymbol'
 import { K } from '../shared/combinators'
 import ColorSchemes from './color-schemes'
@@ -81,10 +81,11 @@ const defaultStyle = (feature, resolution) => {
   const stroke = new Stroke({
     color: strokeColor(sidc, n),
     lineDash: lineDash(sidc),
+
     width: 2
   })
 
-  return [new Style({ stroke: outline }), new Style({ stroke })]
+  return [new Style({ stroke: outline }), new Style({ stroke, fill: new Fill({ color: 'rgba(255,255,255,0.3)' }) })]
 }
 
 const styles = {}

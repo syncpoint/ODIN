@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { withStyles } from '@material-ui/core/styles'
 import * as R from 'ramda'
 import Map from './Map'
 import { map as mapSettings } from './settings'
@@ -23,5 +22,4 @@ const App = () => {
 }
 
 App.propTypes = {}
-const styles = {}
-export default withStyles(styles)(App)
+export default App

@@ -51,10 +51,7 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
-    "@material-ui/core": "^4.9.1",
-    "geodesy": "^2.2.0",
     "level": "^6.0.0",
-    "mathjs": "^6.6.0",
     "milsymbol": "^2.0.0",
     "moment": "^2.24.0",
     "mousetrap": "^1.6.5",
@@ -63,7 +60,6 @@
     "prop-types": "^15.7.2",
     "ramda": "^0.27.0",
     "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "typeface-roboto": "0.0.75"
+    "react-dom": "^16.12.0"
   }
 }

@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
 import { K } from '../shared/combinators'
-import 'typeface-roboto' // material-ui dependency
+import './index.css'
 
 const rootId = 'root'
 
