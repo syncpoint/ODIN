@@ -1,5 +1,7 @@
 import moment from 'moment'
-import { Stroke, Style, Icon, Fill } from 'ol/style'
+import { Stroke, Style, Icon } from 'ol/style'
+import * as geom from 'ol/geom'
+import { getBottomLeft, getTopLeft, getTopRight, getBottomRight } from 'ol/extent'
 import ms from 'milsymbol'
 import { K } from '../shared/combinators'
 import ColorSchemes from './color-schemes'
@@ -82,31 +84,55 @@ const lineDash = sidc => {
   if (status === 'A') return [20, 10]
 }
 
+/**
+ *
+ */
+const extentCoordinates = extent => [[
+  getBottomLeft(extent), getTopLeft(extent),
+  getTopRight(extent), getBottomRight(extent)
+]]
+
+const outlineStroke = sidc => new Stroke({
+  color: strokeOutlineColor(sidc),
+  lineDash: lineDash(sidc),
+  width: 3
+})
+
+const stroke = (sidc, n) => new Stroke({
+  color: strokeColor(sidc, n),
+  lineDash: lineDash(sidc),
+  width: 2
+})
+
+const blackStroke = new Stroke({
+  color: 'black',
+  width: 2
+})
+
 const fallbackStyle = (feature, resolution) => {
   const { sidc, n } = feature.getProperties()
+  const geometry = feature.getGeometry()
+  const selected = feature.get('selected')
+  const styles = []
 
-  const outline = new Stroke({
-    color: strokeOutlineColor(sidc),
-    lineDash: lineDash(sidc),
-    width: 3
-  })
+  styles.push(new Style({ stroke: outlineStroke(sidc) }))
+  styles.push(new Style({
+    stroke: selected ? blackStroke : stroke(sidc, n)
+    // fill: new Fill({ color: 'rgba(255,255,255,0.3)' })
+  }))
 
-  const stroke = new Stroke({
-    color: strokeColor(sidc, n),
-    lineDash: lineDash(sidc),
-
-    width: 2
-  })
-
-  return [
-    new Style({ stroke: outline }),
-    new Style({
-      stroke,
-      fill: new Fill({
-        color: 'rgba(255,255,255,0.3)'
+  if (selected) {
+    styles.push(new Style({
+      geometry: new geom.Polygon(extentCoordinates(geometry.getExtent())),
+      stroke: new Stroke({
+        color: 'red',
+        lineDash: [20, 5],
+        width: 2
       })
-    })
-  ]
+    }))
+  }
+
+  return styles
 }
 
 const styles = {}
@@ -125,7 +151,6 @@ styles.Point = (feature, resolution) => {
 }
 
 export const style = function (feature, resolution) {
-  console.log('selected', feature.get('selected'))
   const styleProvider = styles[feature.getGeometry().getType()] || fallbackStyle
   const style = styleProvider(feature, resolution)
   feature.setStyle(style)

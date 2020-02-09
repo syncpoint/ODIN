@@ -59,7 +59,7 @@ const effect = (props, [setMap]) => () => {
 
   const select = new Select({
     layers: [featureLayer],
-    hitTolerance: 10,
+    hitTolerance: 3,
     style: style,
     condition: click // faster than single click
   })
@@ -69,9 +69,8 @@ const effect = (props, [setMap]) => () => {
     const select = f => f.set('selected', true)
     const unselect = f => f.unset('selected')
     selected.forEach(select)
-    selected.forEach(f => console.log(f.getProperties()))
     deselected.forEach(unselect)
-    featureLayer.setOpacity(selected.length ? 0.4 : 1)
+    featureLayer.setOpacity(selected.length ? 0.2 : 1)
     selected.forEach(move(featureSource, selectionSource))
     deselected.forEach(move(selectionSource, featureSource))
   })
