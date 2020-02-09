@@ -82,7 +82,7 @@ const lineDash = sidc => {
   if (status === 'A') return [20, 10]
 }
 
-const defaultStyle = (feature, resolution) => {
+const fallbackStyle = (feature, resolution) => {
   const { sidc, n } = feature.getProperties()
 
   const outline = new Stroke({
@@ -98,11 +98,20 @@ const defaultStyle = (feature, resolution) => {
     width: 2
   })
 
-  return [new Style({ stroke: outline }), new Style({ stroke, fill: new Fill({ color: 'rgba(255,255,255,0.3)' }) })]
+  return [
+    new Style({ stroke: outline }),
+    new Style({
+      stroke,
+      fill: new Fill({
+        color: 'rgba(255,255,255,0.3)'
+      })
+    })
+  ]
 }
 
 const styles = {}
 
+// Point geometry, aka symbol.
 styles.Point = (feature, resolution) => {
   const { sidc, ...properties } = feature.getProperties()
   const symbolProperties = showLabels
@@ -112,10 +121,12 @@ styles.Point = (feature, resolution) => {
   const symbol = new ms.Symbol(sidc, symbolProperties)
   return symbol.isValid()
     ? new Style({ image: icon(symbol) })
-    : defaultStyle(feature, resolution)
+    : fallbackStyle(feature, resolution)
 }
 
-export default (feature, resolution) => {
-  const styleProvider = styles[feature.getGeometry().getType()] || defaultStyle
-  return styleProvider(feature, resolution)
+export const style = function (feature, resolution) {
+  const styleProvider = styles[feature.getGeometry().getType()] || fallbackStyle
+  const style = styleProvider(feature, resolution)
+  feature.setStyle(style)
+  return style
 }

@@ -1,16 +1,19 @@
-/* eslint-disable */
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
+
 import 'ol/ol.css'
 import * as ol from 'ol'
-import { Tile as TileLayer, Vector as FeatureLayer, Heatmap } from 'ol/layer'
+import { Tile as TileLayer, Vector as FeatureLayer } from 'ol/layer'
 import { OSM, Vector as VectorSource } from 'ol/source'
+import { click } from 'ol/events/condition'
 import { GeoJSON } from 'ol/format'
 import { toLonLat, fromLonLat } from 'ol/proj'
 import { Style } from 'ol/style'
-import { Pool } from 'pg'
+import Select from 'ol/interaction/Select'
+
+import loaders from './loaders'
 import evented from './evented'
-import style from './style'
+import { style } from './style'
 import preferences from './preferences'
 
 const tail = ([_, ...values]) => values
@@ -38,6 +41,7 @@ const tileLayer = url => {
   return layer
 }
 
+const sidc = feature => feature.getProperties().sidc
 
 /**
  * Setup map instance (aka `componentDidMount`).
@@ -49,87 +53,65 @@ const effect = (props, [setMap]) => () => {
   const url = 'http://localhost:32768/styles/osm-bright/{z}/{x}/{y}{ratio}.png'
   const { zoom, center } = props.viewport
   const view = new ol.View({ zoom, center: fromLonLat(center) })
+  const featureSource = new VectorSource({ format: new GeoJSON(), loader: loaders.mipdb })
+  const featureLayer = new FeatureLayer({ style, source: featureSource })
+  const selectionSource = new VectorSource()
+  const selectionLayer = new FeatureLayer({ style, source: selectionSource })
 
-  const pool = new Pool({
-    database: 'scen'
+  const select = new Select({
+    layers: [featureLayer],
+    hitTolerance: 10,
+
+    // FIXME: Click should be more responsive than single click,
+    // but style function gets evaluated for each feature,
+    // thus making things slow again.
+    condition: click
   })
 
-  const featureSource = new VectorSource({
-    format: new GeoJSON(),
-    loader: (extent, resolution, projection) => {
-      pool.connect(function (err, client, done) {
-        if (err) {
-          done()
-          return console.error(err)
-        } else {
-          console.log('loading features...')
-          const oneOIG =
-            `SELECT layer
-             FROM   public.contxts
-             JOIN   public.oigs USING (oig_id)
-             JOIN   gis.layers USING (contxt_id)
-             WHERE  oig_name_txt = 'SCEN | PLNORD | OVERLAY ORDER NO. 4 (XXX) [CIAVX]'`
-
-          pool.query(oneOIG).then(result => {
-            result.rows.forEach(row => {
-              const features = featureSource.getFormat().readFeatures(row.layer, { featureProjection: 'EPSG:3857' })
-              const validFeatures = features.filter(feature => feature.getGeometry())
-              featureSource.addFeatures(validFeatures)
-            })
-            console.log('loading features...done.', featureSource.getFeatures().length)
-          })
-        }
-      })
-    }
+  select.on('select', ({ selected, deselected }) => {
+    const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
+    featureLayer.setOpacity(selected.length ? 0.4 : 1)
+    selected.forEach(move(featureSource, selectionSource))
+    deselected.forEach(move(selectionSource, featureSource))
   })
-
-  const featureLayer = new FeatureLayer({
-    style,
-    source: featureSource
-  })
-
-  const sidc = feature => feature.getProperties().sidc
-
-  const heatmap = (color, weight) => {
-    return new Heatmap({
-      source: featureSource,
-      radius: 50,
-      blur: 20,
-      gradient: ['#fff', color],
-      opacity: 0.5,
-      weight
-    })
-  }
 
   const layers = [
     tileLayer(url),
-    // heatmap('#FF3031', f => sidc(f).match(/SHG.U/) ? 1 : 0),
-    // heatmap('#00A8DC', f => sidc(f).match(/SFG.U/) ? 1 : 0),
-    featureLayer
+    featureLayer,
+    selectionLayer
   ]
 
   const map = new ol.Map({ view, layers, target: id })
+  map.addInteraction(select) // don't replace default interactions
 
   map.on('moveend', () => viewportChanged(viewport(view)))
 
   const featuresPrefs = preferences.features()
-  featuresPrefs.observe(() => featureSource.changed())('labels')
-  featuresPrefs.observe(() => featureSource.changed())('symbol-scale')
 
-  const toggleFeatures = style => predicate => featureSource.getFeatures()
+  const applyStyle = style => predicate => featureSource.getFeatures()
     .filter(predicate)
     .forEach(feature => feature.setStyle(style))
 
-    const oberservers = {
-    'all': _ => true,
-    'units': f => sidc(f).match(/S.G.U/),
-    'graphics': f => f.getGeometry().getType() !== 'Point',
-    'points': f => f.getGeometry().getType() === 'Point'
+  // Clear cached feature styles, so they are refreshed in next cycle.
+  const clearStylesAndRefresh = () => {
+    applyStyle(null)(_ => true)
+    featureSource.changed()
   }
 
-  Object.entries(oberservers).forEach(([what, predicate]) => {
+  // TODO: limit refresh to point geometries.
+  featuresPrefs.observe(clearStylesAndRefresh)('symbol-scale')
+  featuresPrefs.observe(clearStylesAndRefresh)('labels')
+
+  const visibilityOberservers = {
+    all: _ => true,
+    units: f => sidc(f).match(/S.G.U/),
+    graphics: f => f.getGeometry().getType() !== 'Point',
+    points: f => f.getGeometry().getType() === 'Point'
+  }
+
+  Object.entries(visibilityOberservers).forEach(([what, predicate]) => {
     featuresPrefs.observe(flag => {
-      toggleFeatures(flag ? null : new Style())(predicate)
+      applyStyle(flag ? null : new Style())(predicate)
       featureSource.changed()
     })(what)
   })
