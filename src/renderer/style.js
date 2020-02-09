@@ -3,6 +3,16 @@ import { Stroke, Style, Icon, Fill } from 'ol/style'
 import ms from 'milsymbol'
 import { K } from '../shared/combinators'
 import ColorSchemes from './color-schemes'
+import { map as mapSettings } from './settings'
+import evented from './evented'
+
+const visibility = mapSettings.defaultVisibility
+let symbolSize = 0.3
+;(async () => (symbolSize = await mapSettings.getSymbolSize()))()
+
+evented.on('map.show', event => (visibility[event.what] = true))
+evented.on('map.hide', event => (visibility[event.what] = false))
+evented.on('map.symbol-size', event => (symbolSize = event.size))
 
 const MODIFIERS = {
   c: 'quantity',
@@ -38,7 +48,7 @@ const icon = symbol => {
   const imgSize = size => [Math.floor(size.width), Math.floor(size.height)]
   return new Icon({
     anchor,
-    scale: 0.3,
+    scale: symbolSize,
     anchorXUnits: 'pixels',
     anchorYUnits: 'pixels',
     imgSize: imgSize(symbol.getSize()),
@@ -92,7 +102,10 @@ const styles = {}
 
 styles.Point = (feature, resolution) => {
   const { sidc, ...properties } = feature.getProperties()
-  const symbolProperties = { ...modifiers(properties) }
+  const symbolProperties = visibility.labels
+    ? { ...modifiers(properties) }
+    : {}
+
   const symbol = new ms.Symbol(sidc, symbolProperties)
   return symbol.isValid()
     ? new Style({ image: icon(symbol) })
@@ -101,9 +114,5 @@ styles.Point = (feature, resolution) => {
 
 export default (feature, resolution) => {
   const styleProvider = styles[feature.getGeometry().getType()] || defaultStyle
-  const style = styleProvider(feature, resolution)
-
-  // cache style per feature, function will no longer be called.
-  feature.setStyle(style)
-  return style
+  return styleProvider(feature, resolution)
 }

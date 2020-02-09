@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import 'ol/ol.css'
 import * as ol from 'ol'
-import { Tile as TileLayer, Vector as FeatureLayer } from 'ol/layer'
+import { Tile as TileLayer, Vector as FeatureLayer, Heatmap } from 'ol/layer'
 import { OSM, Vector as VectorSource } from 'ol/source'
 import { GeoJSON } from 'ol/format'
 import { toLonLat, fromLonLat } from 'ol/proj'
 import { Pool } from 'pg'
 import evented from './evented'
 import style from './style'
+import { Style } from 'ol/style'
 
 const tail = ([_, ...values]) => values
 const zoom = view => view.getZoom()
@@ -59,6 +60,7 @@ const effect = (props, [setMap]) => () => {
           done()
           return console.error(err)
         } else {
+          console.log('loading features...')
           const oneOIG =
             `SELECT layer
              FROM   public.contxts
@@ -69,23 +71,75 @@ const effect = (props, [setMap]) => () => {
           pool.query(oneOIG).then(result => {
             result.rows.forEach(row => {
               const features = featureSource.getFormat().readFeatures(row.layer, { featureProjection: 'EPSG:3857' })
-              featureSource.addFeatures(features)
+              const validFeatures = features.filter(feature => feature.getGeometry())
+              featureSource.addFeatures(validFeatures)
             })
+            console.log('loading features...done.', featureSource.getFeatures().length)
           })
         }
       })
     }
   })
 
+  const toggleFeatures = style => predicate => featureSource.getFeatures()
+    .filter(predicate)
+    .forEach(feature => feature.setStyle(style))
+
+  const showFeatures = toggleFeatures(null)
+  const hideFeatures = toggleFeatures(new Style())
+
   const featureLayer = new FeatureLayer({
     style,
     source: featureSource
   })
 
-  const layers = [tileLayer(url), featureLayer]
+  const sidc = feature => feature.getProperties().sidc
+
+  const heatmap = (color, weight) => {
+    return new Heatmap({
+      source: featureSource,
+      radius: 50,
+      blur: 20,
+      gradient: ['#fff', color],
+      opacity: 0.5,
+      weight
+    })
+  }
+
+  const layers = [
+    tileLayer(url),
+    heatmap('#FF3031', f => sidc(f).match(/SHG.U/) ? 1 : 0),
+    heatmap('#00A8DC', f => sidc(f).match(/SFG.U/) ? 1 : 0),
+    featureLayer
+  ]
+
   const map = new ol.Map({ view, layers, target: id })
 
   map.on('moveend', () => viewportChanged(viewport(view)))
+  evented.on('map.show', event => {
+    switch (event.what) {
+      case 'all': return showFeatures(_ => true)
+      case 'units': return showFeatures(f => sidc(f).match(/S.G.U/))
+      case 'graphics': return showFeatures(f => f.getGeometry().getType() !== 'Point')
+      case 'points': return showFeatures(f => f.getGeometry().getType() === 'Point')
+    }
+
+    featureSource.changed()
+  })
+
+  evented.on('map.hide', event => {
+    switch (event.what) {
+      case 'all': return hideFeatures(_ => true)
+      case 'units': return hideFeatures(f => sidc(f).match(/S.G.U/))
+      case 'graphics': return hideFeatures(f => f.getGeometry().getType() !== 'Point')
+      case 'points': return hideFeatures(f => f.getGeometry().getType() === 'Point')
+    }
+
+    featureSource.changed()
+  })
+
+  evented.on('map.symbol-size', () => featureSource.changed())
+
   evented.emit('map.ready')
   setMap(map)
 }
