@@ -125,6 +125,7 @@ styles.Point = (feature, resolution) => {
 }
 
 export const style = function (feature, resolution) {
+  console.log('selected', feature.get('selected'))
   const styleProvider = styles[feature.getGeometry().getType()] || fallbackStyle
   const style = styleProvider(feature, resolution)
   feature.setStyle(style)

@@ -20,6 +20,7 @@ const tail = ([_, ...values]) => values
 const zoom = view => view.getZoom()
 const center = view => toLonLat(view.getCenter())
 const viewport = view => ({ zoom: zoom(view), center: center(view) })
+const sidc = feature => feature.getProperties().sidc
 
 // const tileSource = (url, devicePixelRatio) => new OSM({
 //   url: url.replace(/{ratio}/, devicePixelRatio === 2 ? '@2x' : ''),
@@ -41,8 +42,6 @@ const tileLayer = url => {
   return layer
 }
 
-const sidc = feature => feature.getProperties().sidc
-
 /**
  * Setup map instance (aka `componentDidMount`).
  *
@@ -61,26 +60,23 @@ const effect = (props, [setMap]) => () => {
   const select = new Select({
     layers: [featureLayer],
     hitTolerance: 10,
-
-    // FIXME: Click should be more responsive than single click,
-    // but style function gets evaluated for each feature,
-    // thus making things slow again.
-    condition: click
+    style: style,
+    condition: click // faster than single click
   })
 
   select.on('select', ({ selected, deselected }) => {
     const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
+    const select = f => f.set('selected', true)
+    const unselect = f => f.unset('selected')
+    selected.forEach(select)
+    selected.forEach(f => console.log(f.getProperties()))
+    deselected.forEach(unselect)
     featureLayer.setOpacity(selected.length ? 0.4 : 1)
     selected.forEach(move(featureSource, selectionSource))
     deselected.forEach(move(selectionSource, featureSource))
   })
 
-  const layers = [
-    tileLayer(url),
-    featureLayer,
-    selectionLayer
-  ]
-
+  const layers = [tileLayer(url), featureLayer, selectionLayer]
   const map = new ol.Map({ view, layers, target: id })
   map.addInteraction(select) // don't replace default interactions
 
