@@ -1,15 +1,12 @@
-// import Mousetrap from 'mousetrap'
-// import { map } from './settings'
+import Mousetrap from 'mousetrap'
+import preferences from './preferences'
 
-// Mousetrap.bind('s a', () => map.showAll())
-// Mousetrap.bind('h a', () => map.hideAll())
-// Mousetrap.bind('s l', () => map.showLabels())
-// Mousetrap.bind('h l', () => map.hideLabels())
-// Mousetrap.bind('s u', () => map.showUnits())
-// Mousetrap.bind('h u', () => map.hideUnits())
-// Mousetrap.bind('s g', () => map.showGraphics())
-// Mousetrap.bind('h g', () => map.hideGraphics())
-// Mousetrap.bind('s p', () => map.showPoints())
-// Mousetrap.bind('h p', () => map.hidePoints())
-// Mousetrap.bind('q', () => map.increaseSymbolSize())
-// Mousetrap.bind('a', () => map.decreaseSymbolSize())
+const featuresPrefs = preferences.features()
+
+Mousetrap.bind('a', () => featuresPrefs.toggle('all'))
+Mousetrap.bind('l', () => featuresPrefs.toggle('labels'))
+Mousetrap.bind('u', () => featuresPrefs.toggle('units'))
+Mousetrap.bind('g', () => featuresPrefs.toggle('graphics'))
+Mousetrap.bind('p', () => featuresPrefs.toggle('points'))
+Mousetrap.bind('+', () => featuresPrefs.scaleUpSymbols())
+Mousetrap.bind('-', () => featuresPrefs.scaleDownSymbols())

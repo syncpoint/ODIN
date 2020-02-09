@@ -3,16 +3,19 @@ import { Stroke, Style, Icon, Fill } from 'ol/style'
 import ms from 'milsymbol'
 import { K } from '../shared/combinators'
 import ColorSchemes from './color-schemes'
-import { map as mapSettings } from './settings'
-import evented from './evented'
+import preferences from './preferences'
 
-const visibility = mapSettings.defaultVisibility
-let symbolSize = 0.3
-;(async () => (symbolSize = await mapSettings.getSymbolSize()))()
+const featuresPrefs = preferences.features()
 
-evented.on('map.show', event => (visibility[event.what] = true))
-evented.on('map.hide', event => (visibility[event.what] = false))
-evented.on('map.symbol-size', event => (symbolSize = event.size))
+let showLabels = true
+let symbolScale = featuresPrefs.defaultSymbolScale
+
+;(async () => {
+  showLabels = await featuresPrefs.get('labels')
+  symbolScale = await featuresPrefs.symbolScale()
+  featuresPrefs.observe(value => (showLabels = value))('labels')
+  featuresPrefs.observe(value => (symbolScale = value))('symbol-scale')
+})()
 
 const MODIFIERS = {
   c: 'quantity',
@@ -48,7 +51,7 @@ const icon = symbol => {
   const imgSize = size => [Math.floor(size.width), Math.floor(size.height)]
   return new Icon({
     anchor,
-    scale: symbolSize,
+    scale: symbolScale,
     anchorXUnits: 'pixels',
     anchorYUnits: 'pixels',
     imgSize: imgSize(symbol.getSize()),
@@ -102,7 +105,7 @@ const styles = {}
 
 styles.Point = (feature, resolution) => {
   const { sidc, ...properties } = feature.getProperties()
-  const symbolProperties = visibility.labels
+  const symbolProperties = showLabels
     ? { ...modifiers(properties) }
     : {}
 

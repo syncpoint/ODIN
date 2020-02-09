@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import 'ol/ol.css'
@@ -6,10 +7,11 @@ import { Tile as TileLayer, Vector as FeatureLayer, Heatmap } from 'ol/layer'
 import { OSM, Vector as VectorSource } from 'ol/source'
 import { GeoJSON } from 'ol/format'
 import { toLonLat, fromLonLat } from 'ol/proj'
+import { Style } from 'ol/style'
 import { Pool } from 'pg'
 import evented from './evented'
 import style from './style'
-import { Style } from 'ol/style'
+import preferences from './preferences'
 
 const tail = ([_, ...values]) => values
 const zoom = view => view.getZoom()
@@ -81,13 +83,6 @@ const effect = (props, [setMap]) => () => {
     }
   })
 
-  const toggleFeatures = style => predicate => featureSource.getFeatures()
-    .filter(predicate)
-    .forEach(feature => feature.setStyle(style))
-
-  const showFeatures = toggleFeatures(null)
-  const hideFeatures = toggleFeatures(new Style())
-
   const featureLayer = new FeatureLayer({
     style,
     source: featureSource
@@ -108,37 +103,36 @@ const effect = (props, [setMap]) => () => {
 
   const layers = [
     tileLayer(url),
-    heatmap('#FF3031', f => sidc(f).match(/SHG.U/) ? 1 : 0),
-    heatmap('#00A8DC', f => sidc(f).match(/SFG.U/) ? 1 : 0),
+    // heatmap('#FF3031', f => sidc(f).match(/SHG.U/) ? 1 : 0),
+    // heatmap('#00A8DC', f => sidc(f).match(/SFG.U/) ? 1 : 0),
     featureLayer
   ]
 
   const map = new ol.Map({ view, layers, target: id })
 
   map.on('moveend', () => viewportChanged(viewport(view)))
-  evented.on('map.show', event => {
-    switch (event.what) {
-      case 'all': return showFeatures(_ => true)
-      case 'units': return showFeatures(f => sidc(f).match(/S.G.U/))
-      case 'graphics': return showFeatures(f => f.getGeometry().getType() !== 'Point')
-      case 'points': return showFeatures(f => f.getGeometry().getType() === 'Point')
-    }
 
-    featureSource.changed()
+  const featuresPrefs = preferences.features()
+  featuresPrefs.observe(() => featureSource.changed())('labels')
+  featuresPrefs.observe(() => featureSource.changed())('symbol-scale')
+
+  const toggleFeatures = style => predicate => featureSource.getFeatures()
+    .filter(predicate)
+    .forEach(feature => feature.setStyle(style))
+
+    const oberservers = {
+    'all': _ => true,
+    'units': f => sidc(f).match(/S.G.U/),
+    'graphics': f => f.getGeometry().getType() !== 'Point',
+    'points': f => f.getGeometry().getType() === 'Point'
+  }
+
+  Object.entries(oberservers).forEach(([what, predicate]) => {
+    featuresPrefs.observe(flag => {
+      toggleFeatures(flag ? null : new Style())(predicate)
+      featureSource.changed()
+    })(what)
   })
-
-  evented.on('map.hide', event => {
-    switch (event.what) {
-      case 'all': return hideFeatures(_ => true)
-      case 'units': return hideFeatures(f => sidc(f).match(/S.G.U/))
-      case 'graphics': return hideFeatures(f => f.getGeometry().getType() !== 'Point')
-      case 'points': return hideFeatures(f => f.getGeometry().getType() === 'Point')
-    }
-
-    featureSource.changed()
-  })
-
-  evented.on('map.symbol-size', () => featureSource.changed())
 
   evented.emit('map.ready')
   setMap(map)
