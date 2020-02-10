@@ -67,7 +67,11 @@ const effect = (props, [setMap]) => () => {
 
   select.on('select', ({ selected, deselected }) => {
     const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
+    const select = f => f.set('selected', true)
+    const deselect = f => f.unset('selected')
     featureLayer.setOpacity(selected.length ? 0.35 : 1)
+    selected.forEach(select)
+    deselected.forEach(deselect)
     selected.forEach(move(featureSource, selectionSource))
     deselected.forEach(move(selectionSource, featureSource))
   })

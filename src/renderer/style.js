@@ -1,9 +1,23 @@
 import moment from 'moment'
+import * as R from 'ramda'
 import { Stroke, Style, Icon } from 'ol/style'
 import ms from 'milsymbol'
 import { K } from '../shared/combinators'
 import ColorSchemes from './color-schemes'
 import preferences from './preferences'
+
+/*
+  INGREDIENTS:
+  - STYLE PREFERENCE OBSERVERS
+  - (MIL) SYMBOL STYLING
+  - TACTICAL GRAPHICS STYLING
+  - FEATURE STYLE FUNCTION
+*/
+
+
+/**
+ * STYLE PREFERENCES OBSERVERS.
+ */
 
 const featuresPrefs = preferences.features()
 
@@ -16,6 +30,11 @@ let symbolScale = featuresPrefs.defaultSymbolScale
   featuresPrefs.observe(value => (showLabels = value))('labels')
   featuresPrefs.observe(value => (symbolScale = value))('symbol-scale')
 })()
+
+
+/**
+ * (MIL) SYMBOL STYLING.
+ */
 
 const MODIFIERS = {
   c: 'quantity',
@@ -30,6 +49,7 @@ const MODIFIERS = {
   aa: 'specialHeadquarters'
 }
 
+const fromNow = dtg => dtg && moment(dtg, 'DDHHmmZ MMM YYYY').fromNow()
 const modifiers = properties => Object.entries(properties)
   .filter(([key, value]) => MODIFIERS[key] && value)
   .map(([key, value]) => ([key, key === 'w' ? fromNow(value) : value]))
@@ -42,10 +62,7 @@ const modifiers = properties => Object.entries(properties)
   })
   .reduce((acc, [key, value]) => K(acc)(acc => (acc[MODIFIERS[key]] = value)), {})
 
-const fromNow = dtg => dtg && moment(dtg, 'DDHHmmZ MMM YYYY').fromNow()
 
-// TODO: increase icon image cache:
-// TODO: https://openlayers.org/en/latest/apidoc/module-ol_style_IconImageCache-IconImageCache.html
 const icon = symbol => {
   const anchor = [symbol.getAnchor().x, symbol.getAnchor().y]
   const imgSize = size => [Math.floor(size.width), Math.floor(size.height)]
@@ -64,6 +81,37 @@ const status = sidc => sidc ? sidc[3] : 'P' // status or P - PRESENT
 const strokeOutlineColor = sidc => identity(sidc) === '*' ? '#FFFFFF' : '#000000'
 const lineDash = sidc => status(sidc) === 'A' ? [20, 10] : null
 
+const symbolStyleModes = {
+  default: {
+    outlineWidth: 4,
+    outlineColor: 'white'
+  },
+  selected: {
+    outlineWidth: 6,
+    outlineColor: 'black',
+    monoColor: 'white'
+  }
+}
+
+// Point geometry, aka symbol.
+const symbolStyle = (feature, resolution) => {
+  const { sidc, ...properties } = feature.getProperties()
+  const mode = feature.get('selected') ? 'selected' : 'default'
+  const symbolProperties = showLabels
+    ? { ...modifiers(properties), ...symbolStyleModes[mode] }
+    : { ...symbolStyleModes[mode] }
+
+  const symbol = new ms.Symbol(sidc, symbolProperties)
+  return symbol.isValid()
+    ? new Style({ image: icon(symbol) })
+    : fallbackStyle(feature, resolution)
+}
+
+
+/**
+ * TACTICAL GRAPHICS STYLING.
+ */
+
 const strokeColor = (sidc, n) => {
   const colorScheme = ColorSchemes.medium
   if (n === 'ENY') return colorScheme.red
@@ -75,7 +123,6 @@ const strokeColor = (sidc, n) => {
     default: return 'black'
   }
 }
-
 
 const outlineStroke = sidc => new Stroke({
   color: strokeOutlineColor(sidc),
@@ -97,24 +144,20 @@ const fallbackStyle = (feature, resolution) => {
   return styles
 }
 
-const styles = {}
 
-// Point geometry, aka symbol.
-styles.Point = (feature, resolution) => {
-  const { sidc, ...properties } = feature.getProperties()
-  const symbolProperties = showLabels
-    ? { ...modifiers(properties) }
-    : {}
+/**
+ * FEATURE STYLE FUNCTION.
+ */
 
-  const symbol = new ms.Symbol(sidc, symbolProperties)
-  return symbol.isValid()
-    ? new Style({ image: icon(symbol) })
-    : fallbackStyle(feature, resolution)
-}
+export const style = (feature, resolution) => {
+  const geometryType = feature.getGeometry().getType()
+  const provider = R.cond([
+    [R.equals('Point'), R.always(symbolStyle)],
+    [R.T, R.always(fallbackStyle)]
+  ])
 
-export const style = function (feature, resolution) {
-  const styleProvider = styles[feature.getGeometry().getType()] || fallbackStyle
-  const style = styleProvider(feature, resolution)
+  // NOTE: Style is cached unconditionally; clear cache when necessary.
+  const style = provider(geometryType)(feature, resolution)
   feature.setStyle(style)
   return style
 }
