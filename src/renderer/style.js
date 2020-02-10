@@ -1,7 +1,5 @@
 import moment from 'moment'
 import { Stroke, Style, Icon } from 'ol/style'
-import * as geom from 'ol/geom'
-import { getBottomLeft, getTopLeft, getTopRight, getBottomRight } from 'ol/extent'
 import ms from 'milsymbol'
 import { K } from '../shared/combinators'
 import ColorSchemes from './color-schemes'
@@ -61,11 +59,15 @@ const icon = symbol => {
   })
 }
 
+const identity = sidc => sidc ? sidc[1] : 'U' // identity or U - UNKNOWN
+const status = sidc => sidc ? sidc[3] : 'P' // status or P - PRESENT
+const strokeOutlineColor = sidc => identity(sidc) === '*' ? '#FFFFFF' : '#000000'
+const lineDash = sidc => status(sidc) === 'A' ? [20, 10] : null
+
 const strokeColor = (sidc, n) => {
   const colorScheme = ColorSchemes.medium
   if (n === 'ENY') return colorScheme.red
-  const identity = sidc ? sidc[1] : 'U' // identity or U - UNKNOWN
-  switch (identity) {
+  switch (identity(sidc)) {
     case 'F': return colorScheme.blue
     case 'H': return colorScheme.red
     case 'N': return colorScheme.green
@@ -74,28 +76,11 @@ const strokeColor = (sidc, n) => {
   }
 }
 
-const strokeOutlineColor = sidc => {
-  const identity = sidc ? sidc[1] : 'U' // identity or U - UNKNOWN
-  return identity === '*' ? '#FFFFFF' : '#000000'
-}
-
-const lineDash = sidc => {
-  const status = sidc ? sidc[3] : 'P' // status or P - PRESENT
-  if (status === 'A') return [20, 10]
-}
-
-/**
- *
- */
-const extentCoordinates = extent => [[
-  getBottomLeft(extent), getTopLeft(extent),
-  getTopRight(extent), getBottomRight(extent)
-]]
 
 const outlineStroke = sidc => new Stroke({
   color: strokeOutlineColor(sidc),
   lineDash: lineDash(sidc),
-  width: 3
+  width: 3.5
 })
 
 const stroke = (sidc, n) => new Stroke({
@@ -104,34 +89,11 @@ const stroke = (sidc, n) => new Stroke({
   width: 2
 })
 
-const blackStroke = new Stroke({
-  color: 'black',
-  width: 2
-})
-
 const fallbackStyle = (feature, resolution) => {
   const { sidc, n } = feature.getProperties()
-  const geometry = feature.getGeometry()
-  const selected = feature.get('selected')
   const styles = []
-
   styles.push(new Style({ stroke: outlineStroke(sidc) }))
-  styles.push(new Style({
-    stroke: selected ? blackStroke : stroke(sidc, n)
-    // fill: new Fill({ color: 'rgba(255,255,255,0.3)' })
-  }))
-
-  if (selected) {
-    styles.push(new Style({
-      geometry: new geom.Polygon(extentCoordinates(geometry.getExtent())),
-      stroke: new Stroke({
-        color: 'red',
-        lineDash: [20, 5],
-        width: 2
-      })
-    }))
-  }
-
+  styles.push(new Style({ stroke: stroke(sidc, n) }))
   return styles
 }
 

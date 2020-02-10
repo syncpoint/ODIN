@@ -9,7 +9,7 @@ import { click } from 'ol/events/condition'
 import { GeoJSON } from 'ol/format'
 import { toLonLat, fromLonLat } from 'ol/proj'
 import { Style } from 'ol/style'
-import Select from 'ol/interaction/Select'
+import { Select, Modify } from 'ol/interaction'
 
 import loaders from './loaders'
 import evented from './evented'
@@ -22,12 +22,8 @@ const center = view => toLonLat(view.getCenter())
 const viewport = view => ({ zoom: zoom(view), center: center(view) })
 const sidc = feature => feature.getProperties().sidc
 
-// const tileSource = (url, devicePixelRatio) => new OSM({
-//   url: url.replace(/{ratio}/, devicePixelRatio === 2 ? '@2x' : ''),
-//   tilePixelRatio: devicePixelRatio
-// })
-
 const tileSource = (url, devicePixelRatio) => new OSM({
+  // url: url.replace(/{ratio}/, devicePixelRatio === 2 ? '@2x' : ''),
   tilePixelRatio: devicePixelRatio
 })
 
@@ -64,13 +60,14 @@ const effect = (props, [setMap]) => () => {
     condition: click // faster than single click
   })
 
+  const modify = new Modify({
+    features: select.getFeatures(),
+    hitTolerance: 3
+  })
+
   select.on('select', ({ selected, deselected }) => {
     const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
-    const select = f => f.set('selected', true)
-    const unselect = f => f.unset('selected')
-    selected.forEach(select)
-    deselected.forEach(unselect)
-    featureLayer.setOpacity(selected.length ? 0.2 : 1)
+    featureLayer.setOpacity(selected.length ? 0.35 : 1)
     selected.forEach(move(featureSource, selectionSource))
     deselected.forEach(move(selectionSource, featureSource))
   })
@@ -78,6 +75,7 @@ const effect = (props, [setMap]) => () => {
   const layers = [tileLayer(url), featureLayer, selectionLayer]
   const map = new ol.Map({ view, layers, target: id })
   map.addInteraction(select) // don't replace default interactions
+  map.addInteraction(modify) // don't replace default interactions
 
   map.on('moveend', () => viewportChanged(viewport(view)))
 
