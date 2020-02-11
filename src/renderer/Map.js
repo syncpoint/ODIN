@@ -53,33 +53,38 @@ const effect = (props, [setMap]) => () => {
   const selectionSource = new VectorSource()
   const selectionLayer = new FeatureLayer({ style, source: selectionSource })
 
-  const select = new Select({
+  const selectInteraction = new Select({
     layers: [featureLayer],
     hitTolerance: 3,
     style: style,
     condition: click // faster than single click
   })
 
-  const modify = new Modify({
-    features: select.getFeatures(),
+  const modifyInteraction = new Modify({
+    features: selectInteraction.getFeatures(),
     hitTolerance: 3
   })
 
-  select.on('select', ({ selected, deselected }) => {
-    const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
-    const select = f => f.set('selected', true)
-    const deselect = f => f.unset('selected')
+  selectInteraction.on('select', ({ selected, deselected }) => {
     featureLayer.setOpacity(selected.length ? 0.35 : 1)
-    selected.forEach(select)
-    deselected.forEach(deselect)
-    selected.forEach(move(featureSource, selectionSource))
-    deselected.forEach(move(selectionSource, featureSource))
+    const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
+
+    selected.forEach(feature => {
+      feature.set('selected', true)
+      move(featureSource, selectionSource)(feature)
+    })
+
+    deselected.forEach(feature => {
+      move(selectionSource, featureSource)(feature)
+      feature.unset('selected')
+      feature.setStyle(null) // refresh style with updated geometry.
+    })
   })
 
   const layers = [tileLayer(url), featureLayer, selectionLayer]
   const map = new ol.Map({ view, layers, target: id })
-  map.addInteraction(select) // don't replace default interactions
-  map.addInteraction(modify) // don't replace default interactions
+  map.addInteraction(selectInteraction) // don't replace default interactions
+  map.addInteraction(modifyInteraction) // don't replace default interactions
 
   map.on('moveend', () => viewportChanged(viewport(view)))
 

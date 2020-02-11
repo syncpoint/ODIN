@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "level": "^6.0.0",
+    "mathjs": "^6.6.0",
     "milsymbol": "^2.0.0",
     "moment": "^2.24.0",
     "mousetrap": "^1.6.5",

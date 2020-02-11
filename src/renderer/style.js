@@ -1,9 +1,11 @@
+/* eslint-disable */
 import moment from 'moment'
 import * as R from 'ramda'
 import { Stroke, Style, Icon } from 'ol/style'
 import ms from 'milsymbol'
 import { K } from '../shared/combinators'
 import ColorSchemes from './color-schemes'
+import Polygon from './style-polygon'
 import preferences from './preferences'
 
 /*
@@ -14,6 +16,10 @@ import preferences from './preferences'
   - FEATURE STYLE FUNCTION
 */
 
+/**
+ * normalizeSIDC :: String -> String
+ */
+export const normalizeSIDC = sidc => `${sidc[0]}-${sidc[2]}-${sidc.substring(4, 10)}`
 
 /**
  * STYLE PREFERENCES OBSERVERS.
@@ -144,6 +150,13 @@ const fallbackStyle = (feature, resolution) => {
   return styles
 }
 
+const polygonStyle = (feature, resolution) => {
+  const sidc = normalizeSIDC(feature.getProperties().sidc)
+  const { labels } = Polygon.style[sidc] || Polygon.defaultStyle
+  const fallback = fallbackStyle(feature, resolution)
+  if (labels) return fallback.concat(labels.flatMap(fn => fn(feature)))
+  else return fallback
+}
 
 /**
  * FEATURE STYLE FUNCTION.
@@ -153,11 +166,12 @@ export const style = (feature, resolution) => {
   const geometryType = feature.getGeometry().getType()
   const provider = R.cond([
     [R.equals('Point'), R.always(symbolStyle)],
+    [R.equals('Polygon'), R.always(polygonStyle)],
     [R.T, R.always(fallbackStyle)]
   ])
 
-  // NOTE: Style is cached unconditionally; clear cache when necessary.
+  // NOTE: Style is cached when not selected; clear cache when necessary.
   const style = provider(geometryType)(feature, resolution)
-  feature.setStyle(style)
+  if (!feature.get('selected')) feature.setStyle(style)
   return style
 }
