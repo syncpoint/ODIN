@@ -39,8 +39,8 @@ export const directionalPlacements = polygon => {
   const vIntersect = () => {
     const xs = axisIntersect(points, [C[0], box[1]], [C[0], box[3]])
     return xs.length !== 2 ? {} : {
-      north: new geom.Point(xs[0][1] > xs[1][1] ? xs[1] : xs[0]),
-      south: new geom.Point(xs[0][1] > xs[1][1] ? xs[0] : xs[1])
+      south: new geom.Point(xs[0][1] > xs[1][1] ? xs[1] : xs[0]),
+      north: new geom.Point(xs[0][1] > xs[1][1] ? xs[0] : xs[1])
     }
   }
 
@@ -66,7 +66,8 @@ const axisLabels = axes => lines => feature => {
     .map(textStyle)
 }
 
-export const nsewLabel = axisLabels(['north', 'south', 'east', 'west'])
+export const nsewLabels = axisLabels(['north', 'south', 'east', 'west'])
 export const ewLabels = axisLabels(['east', 'west'])
 export const southLabel = axisLabels(['south'])
+export const northLabel = axisLabels(['north'])
 export const centerLabel = axisLabels(['center'])

@@ -77,7 +77,7 @@ const effect = (props, [setMap]) => () => {
     deselected.forEach(feature => {
       move(selectionSource, featureSource)(feature)
       feature.unset('selected')
-      feature.setStyle(null) // refresh style with updated geometry.
+      feature.setStyle(null) // cache style with updated geometry.
     })
   })
 
