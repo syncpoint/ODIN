@@ -152,10 +152,9 @@ const fallbackStyle = (feature, resolution) => {
 
 const polygonStyle = (feature, resolution) => {
   const sidc = normalizeSIDC(feature.getProperties().sidc)
-  const { labels } = Polygon.style[sidc] || Polygon.defaultStyle
+  const styleFns = Polygon.style[sidc] || Polygon.defaultStyle
   const fallback = fallbackStyle(feature, resolution)
-  if (labels) return fallback.concat(labels.flatMap(fn => fn(feature)))
-  else return fallback
+  return fallback.concat(styleFns.flatMap(fn => fn(feature)))
 }
 
 /**
