@@ -4,8 +4,9 @@ import * as R from 'ramda'
 import { Stroke, Style, Icon } from 'ol/style'
 import ms from 'milsymbol'
 import { K } from '../shared/combinators'
-import ColorSchemes from './color-schemes'
+import style from './style-default'
 import Polygon from './style-polygon'
+import Corridor from './style-corridor'
 import preferences from './preferences'
 
 /*
@@ -82,10 +83,6 @@ const icon = symbol => {
   })
 }
 
-const identity = sidc => sidc ? sidc[1] : 'U' // identity or U - UNKNOWN
-const status = sidc => sidc ? sidc[3] : 'P' // status or P - PRESENT
-const strokeOutlineColor = sidc => identity(sidc) === '*' ? '#FFFFFF' : '#000000'
-const lineDash = sidc => status(sidc) === 'A' ? [20, 10] : null
 
 const symbolStyleModes = {
   default: {
@@ -110,7 +107,7 @@ const symbolStyle = (feature, resolution) => {
   const symbol = new ms.Symbol(sidc, symbolProperties)
   return symbol.isValid()
     ? new Style({ image: icon(symbol) })
-    : fallbackStyle(feature, resolution)
+    : style(feature, resolution)
 }
 
 
@@ -118,59 +115,43 @@ const symbolStyle = (feature, resolution) => {
  * TACTICAL GRAPHICS STYLING.
  */
 
-const strokeColor = (sidc, n) => {
-  const colorScheme = ColorSchemes.medium
-  if (n === 'ENY') return colorScheme.red
-  switch (identity(sidc)) {
-    case 'F': return colorScheme.blue
-    case 'H': return colorScheme.red
-    case 'N': return colorScheme.green
-    case 'U': return colorScheme.yellow
-    default: return 'black'
-  }
-}
-
-const outlineStroke = sidc => new Stroke({
-  color: strokeOutlineColor(sidc),
-  lineDash: lineDash(sidc),
-  width: 3.5
-})
-
-const stroke = (sidc, n) => new Stroke({
-  color: strokeColor(sidc, n),
-  lineDash: lineDash(sidc),
-  width: 2
-})
-
-const fallbackStyle = (feature, resolution) => {
-  const { sidc, n } = feature.getProperties()
-  const styles = []
-  styles.push(new Style({ stroke: outlineStroke(sidc) }))
-  styles.push(new Style({ stroke: stroke(sidc, n) }))
-  return styles
-}
-
 const polygonStyle = (feature, resolution) => {
   const sidc = normalizeSIDC(feature.getProperties().sidc)
   const styleFns = Polygon.style[sidc] || Polygon.defaultStyle
-  const fallback = fallbackStyle(feature, resolution)
-  return fallback.concat(styleFns.flatMap(fn => fn(feature)))
+  const styles = style(feature, resolution)
+  return styles.concat(styleFns.flatMap(fn => fn(feature)))
+}
+
+const corridorStyle = (feature, resolution) => {
+  const sidc = normalizeSIDC(feature.getProperties().sidc)
+  const styleFns = Corridor.style[sidc] || Corridor.defaultStyle
+  return styleFns.flatMap(fn => fn(feature))
 }
 
 /**
  * FEATURE STYLE FUNCTION.
  */
 
-export const style = (feature, resolution) => {
-  const geometryType = feature.getGeometry().getType()
+const geometryType = feature => {
+  const type = feature.getGeometry().getType()
+  const { corridor_area_width_dim } = feature.getProperties()
+  switch(type) {
+    case 'LineString': return corridor_area_width_dim ? 'Corridor' : type
+    default: return type
+  }
+}
+
+export default (feature, resolution) => {
+
   const provider = R.cond([
     [R.equals('Point'), R.always(symbolStyle)],
     [R.equals('Polygon'), R.always(polygonStyle)],
-    [R.T, R.always(fallbackStyle)]
+    [R.equals('Corridor'), R.always(corridorStyle)],
+    [R.T, R.always(style)]
   ])
 
   // NOTE: Style is cached when not selected; clear cache when necessary.
-  const style = provider(geometryType)(feature, resolution)
-  if (!feature.get('selected')) feature.setStyle(style)
-  return style
+  const styles = provider(geometryType(feature))(feature, resolution)
+  if (!feature.get('selected')) feature.setStyle(styles)
+  return styles
 }

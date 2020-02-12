@@ -13,7 +13,7 @@ import { Select, Modify } from 'ol/interaction'
 
 import loaders from './loaders'
 import evented from './evented'
-import { style } from './style'
+import style from './style'
 import preferences from './preferences'
 
 const tail = ([_, ...values]) => values

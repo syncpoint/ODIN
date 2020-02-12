@@ -51,6 +51,7 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
+    "@turf/buffer": "^5.1.5",
     "level": "^6.0.0",
     "mathjs": "^6.6.0",
     "milsymbol": "^2.0.0",
