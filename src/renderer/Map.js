@@ -82,7 +82,7 @@ const effect = (props, [setMap]) => () => {
   })
 
   const layers = [tileLayer(url), featureLayer, selectionLayer]
-  const map = new ol.Map({ view, layers, target: id })
+  const map = new ol.Map({ view, layers, target: id, controls: [] })
   map.addInteraction(selectInteraction) // don't replace default interactions
   map.addInteraction(modifyInteraction) // don't replace default interactions
 
