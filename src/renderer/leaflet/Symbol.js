@@ -16,6 +16,7 @@ const MODIFIER_MAP = {
   q: 'direction',
   t: 'uniqueDesignation',
   v: 'type',
+  w: 'dtg',
   z: 'speed',
   aa: 'specialHeadquarters'
 }
@@ -28,7 +29,6 @@ const icon = symbol => L.divIcon({
 
 const modifiers = feature => Object.entries(feature.properties)
   .filter(([key, value]) => MODIFIER_MAP[key] && value)
-  .map(([key, value]) => ([key, key === 'w' ? fromNow(value) : value]))
   .reduce((acc, [key, value]) => K(acc)(acc => (acc[MODIFIER_MAP[key]] = value)), {})
 
 const symbolOptions = feature => ({

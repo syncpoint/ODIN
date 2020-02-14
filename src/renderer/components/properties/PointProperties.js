@@ -9,11 +9,14 @@ class PointProperties extends FeatureProperties {
   extractState (feature) {
     const { title, properties } = feature
 
+    console.log(properties)
     return {
       name: title || '',
       uniqueDesignation: properties.t || '',
       additionalInformation: properties.h || '',
-      hostile: properties.n || ''
+      hostile: properties.n || '',
+      effectiveFrom: properties.w || '',
+      effectiveTo: properties.w1 || ''
     }
   }
 
@@ -28,7 +31,9 @@ class PointProperties extends FeatureProperties {
       sidc,
       h: this.state.additionalInformation,
       n: this.state.hostile,
-      t: this.state.uniqueDesignation
+      t: this.state.uniqueDesignation,
+      w: this.state.effectiveFrom,
+      w1: this.state.effectiveTo
     }
 
     return {
@@ -72,6 +77,20 @@ class PointProperties extends FeatureProperties {
           labelPlacement="end"
           onChange={ event => this.updateField('hostile', hostile(event)) }
         />
+
+        <TextField
+          className={ this.props.classes.effectiveFrom }
+          label={'Effective (from)'}
+          value={ this.state.effectiveFrom }
+          onChange={ event => this.updateField('effectiveFrom', event.target.value) }
+        />
+
+        <TextField
+          className={ this.props.classes.effectiveTo }
+          label={'Effective (to)'}
+          value={ this.state.effectiveTo }
+          onChange={ event => this.updateField('effectiveTo', event.target.value) }
+        />
       </Paper>
     )
   }
@@ -91,7 +110,9 @@ const styles = theme => ({
   },
   name: { gridColumn: '1 / span 2' },
   uniqueDesignation: { gridColumn: '1 / span 2' },
-  additionalInformation: { gridColumn: '1 / span 2' }
+  additionalInformation: { gridColumn: '1 / span 2' },
+  effectiveFrom: { gridColumn: '1 / span 2' },
+  effectiveTo: { gridColumn: '1 / span 2' }
 })
 
 PointProperties.propTypes = {
