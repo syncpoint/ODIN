@@ -4,7 +4,8 @@ import { OSM } from 'ol/source'
 /**
  *
  */
-const tileSource = (url, devicePixelRatio) => new OSM({
+const url = 'http://localhost:32768/styles/osm-bright/{z}/{x}/{y}{ratio}.png'
+const tileSource = devicePixelRatio => new OSM({
   // url: url.replace(/{ratio}/, devicePixelRatio === 2 ? '@2x' : ''),
   tilePixelRatio: devicePixelRatio
 })
@@ -13,8 +14,8 @@ const tileSource = (url, devicePixelRatio) => new OSM({
 /**
  *
  */
-export const tileLayer = url => {
-  const layer = new Tile({ source: tileSource(url, window.devicePixelRatio) })
+export const tileLayer = () => {
+  const layer = new Tile({ source: tileSource(window.devicePixelRatio) })
 
   // Update tile source when device pixel ratio changes:
   matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`).addListener(() => {
