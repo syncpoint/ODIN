@@ -7,9 +7,9 @@ import { toLonLat, fromLonLat } from 'ol/proj'
 
 import evented from './evented'
 import style from './style'
-import { tileLayer } from './map-tiles'
-import { featureLayer, selectionLayer } from './map-vector'
-import { interactions } from './map-interaction'
+import { tileLayer } from './map/map-tiles'
+import { featureLayer, selectionLayer } from './map/map-vector'
+import { interactions } from './map/map-interaction'
 
 const tail = ([_, ...values]) => values
 const zoom = view => view.getZoom()

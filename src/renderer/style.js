@@ -3,9 +3,9 @@ import * as R from 'ramda'
 import { Style, Icon } from 'ol/style'
 import ms from 'milsymbol'
 import { K } from '../shared/combinators'
-import style from './style-default'
-import Polygon from './style-polygon'
-import Corridor from './style-corridor'
+import style from './style/style-default'
+import Polygon from './style/style-polygon'
+import Corridor from './style/style-corridor'
 
 /*
   INGREDIENTS:

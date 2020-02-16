@@ -1,5 +1,5 @@
 import { Stroke, Style } from 'ol/style'
-import ColorSchemes from './color-schemes'
+import ColorSchemes from '../color-schemes'
 
 const identity = sidc => sidc ? sidc[1] : 'U' // identity or U - UNKNOWN
 const status = sidc => sidc ? sidc[3] : 'P' // status or P - PRESENT

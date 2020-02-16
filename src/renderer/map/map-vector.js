@@ -3,8 +3,8 @@ import { bbox } from 'ol/loadingstrategy'
 import { Vector as VectorLayer } from 'ol/layer'
 import { Vector as VectorSource } from 'ol/source'
 
-import loaders from './loaders'
-import style from './style'
+import loaders from '../loaders'
+import style from '../style'
 
 const source = new VectorSource({
   format: new GeoJSON({ dataProjection: 'EPSG:3857' }),
