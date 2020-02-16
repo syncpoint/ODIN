@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 
 import 'ol/ol.css'
 import * as ol from 'ol'
-import { Tile as TileLayer, Vector as FeatureLayer } from 'ol/layer'
-import { OSM, Vector as VectorSource } from 'ol/source'
+import { Vector as FeatureLayer } from 'ol/layer'
+import { Vector as VectorSource } from 'ol/source'
 import { click } from 'ol/events/condition'
 import { GeoJSON } from 'ol/format'
 import { toLonLat, fromLonLat } from 'ol/proj'
@@ -17,27 +17,14 @@ import evented from './evented'
 import style from './style'
 import preferences from './preferences'
 
+import { tileLayer } from './map-tiles'
+
 const tail = ([_, ...values]) => values
 const zoom = view => view.getZoom()
 const center = view => toLonLat(view.getCenter())
 const viewport = view => ({ zoom: zoom(view), center: center(view) })
 const sidc = feature => feature.getProperties().sidc
 
-const tileSource = (url, devicePixelRatio) => new OSM({
-  // url: url.replace(/{ratio}/, devicePixelRatio === 2 ? '@2x' : ''),
-  tilePixelRatio: devicePixelRatio
-})
-
-const tileLayer = url => {
-  const layer = new TileLayer({ source: tileSource(url, window.devicePixelRatio) })
-
-  // Update tile source when device pixel ratio changes:
-  matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`).addListener(() => {
-    layer.setSource(tileSource(url, window.devicePixelRatio))
-  })
-
-  return layer
-}
 
 /**
  * Setup map instance (aka `componentDidMount`).
