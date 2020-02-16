@@ -2,7 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
 import { K } from '../shared/combinators'
-import './keyboard'
 import './index.css'
 
 const rootId = 'root'

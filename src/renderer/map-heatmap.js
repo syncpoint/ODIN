@@ -3,7 +3,7 @@ import { Heatmap } from 'ol/layer'
 
 const sidc = feature => feature.getProperties().sidc
 
-export default (map, source) => {
+export const heatmap = map => source => {
   let attached = false
 
   const heatmap = (color, weight) => new Heatmap({

@@ -1,4 +1,3 @@
-/* eslint-disable */
 import db from './db'
 
 const partition = 'preference'
@@ -19,46 +18,6 @@ const viewport = () => {
   }
 }
 
-const features = () => {
-  const key = what => `map.display.${what}`
-  const defaultScale = 0.3
-
-  const toggle = async what => {
-    const flag = await get(key(what), true)
-    put(key(what), !flag)
-  }
-
-  const observe = callback => what => {
-    db.on('put', (k, v) => {
-      if (key(what) === k.replace(`${partition}:`, '')) callback(v)
-    })
-  }
-
-  const scaleUpSymbols = async () => {
-    let scale = await get(key('symbol-scale'), defaultScale)
-    scale += scale < 0.4 ? 0.05 : 0
-    put(key('symbol-scale'), scale)
-  }
-
-  const scaleDownSymbols = async () => {
-    let scale = await get(key('symbol-scale'), defaultScale)
-    scale -= scale > 0.2 ? 0.05 : 0
-    put(key('symbol-scale'), scale)
-  }
-
-  return {
-    toggle,
-    observe,
-    scaleUpSymbols,
-    scaleDownSymbols,
-    get: what => get(key(what), true),
-    symbolScale: () => get(key('symbol-scale'), defaultScale),
-    defaultSymbolScale: defaultScale
-  }
-}
-
-
 export default {
-  viewport,
-  features
+  viewport
 }

@@ -6,11 +6,9 @@ import { K } from '../shared/combinators'
 import style from './style-default'
 import Polygon from './style-polygon'
 import Corridor from './style-corridor'
-import preferences from './preferences'
 
 /*
   INGREDIENTS:
-  - STYLE PREFERENCE OBSERVERS
   - (MIL) SYMBOL STYLING
   - TACTICAL GRAPHICS STYLING
   - FEATURE STYLE FUNCTION
@@ -22,23 +20,6 @@ import preferences from './preferences'
 export const normalizeSIDC = sidc => sidc
   ? `${sidc[0]}-${sidc[2]}-${sidc.substring(4, 10)}`
   : 'MUZP------*****'
-
-/**
- * STYLE PREFERENCES OBSERVERS.
- */
-
-const featuresPrefs = preferences.features()
-
-let showLabels = true
-let symbolScale = featuresPrefs.defaultSymbolScale
-
-;(async () => {
-  showLabels = await featuresPrefs.get('labels')
-  symbolScale = await featuresPrefs.symbolScale()
-  featuresPrefs.observe(value => (showLabels = value))('labels')
-  featuresPrefs.observe(value => (symbolScale = value))('symbol-scale')
-})()
-
 
 /**
  * (MIL) SYMBOL STYLING.
@@ -76,7 +57,7 @@ const icon = symbol => {
   const imgSize = size => [Math.floor(size.width), Math.floor(size.height)]
   return new Icon({
     anchor,
-    scale: symbolScale,
+    scale: 0.4,
     anchorXUnits: 'pixels',
     anchorYUnits: 'pixels',
     imgSize: imgSize(symbol.getSize()),
@@ -101,10 +82,7 @@ const symbolStyleModes = {
 const symbolStyle = (feature, resolution) => {
   const { sidc, ...properties } = feature.getProperties()
   const mode = feature.get('selected') ? 'selected' : 'default'
-  const symbolProperties = showLabels
-    ? { ...modifiers(properties), ...symbolStyleModes[mode] }
-    : { ...symbolStyleModes[mode] }
-
+  const symbolProperties = { ...modifiers(properties), ...symbolStyleModes[mode] }
   const symbol = new ms.Symbol(sidc, symbolProperties)
   return symbol.isValid()
     ? new Style({ image: icon(symbol) })

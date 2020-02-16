@@ -7,14 +7,11 @@ import { Vector as FeatureLayer } from 'ol/layer'
 import { Vector as VectorSource } from 'ol/source'
 import { GeoJSON } from 'ol/format'
 import { toLonLat, fromLonLat } from 'ol/proj'
-import { Style } from 'ol/style'
 import { bbox } from 'ol/loadingstrategy'
 
 import loaders from './loaders'
 import evented from './evented'
 import style from './style'
-import preferences from './preferences'
-
 import { tileLayer } from './map-tiles'
 import { interactions } from './map-interaction'
 
@@ -22,7 +19,6 @@ const tail = ([_, ...values]) => values
 const zoom = view => view.getZoom()
 const center = view => toLonLat(view.getCenter())
 const viewport = view => ({ zoom: zoom(view), center: center(view) })
-const sidc = feature => feature.getProperties().sidc
 
 
 /**
@@ -37,9 +33,8 @@ const effect = (props, [setMap]) => () => {
   const view = new ol.View({ zoom, center: fromLonLat(center) })
 
   const featureSource = new VectorSource({
-    format: new GeoJSON({
-      dataProjection: 'EPSG:3857'
-    }),
+    format: new GeoJSON({ dataProjection: 'EPSG:3857' }),
+    // Strategy function for loading features based on the view's extent and resolution.
     strategy: bbox,
     loader: loaders.mipdb
   })
@@ -52,36 +47,6 @@ const effect = (props, [setMap]) => () => {
   // don't replace default interactions
   interactions(map)({ featureLayer, selectionLayer, style })
   map.on('moveend', () => viewportChanged(viewport(view)))
-
-  const featuresPrefs = preferences.features()
-
-  const applyStyle = style => predicate => featureSource.getFeatures()
-    .filter(predicate)
-    .forEach(feature => feature.setStyle(style))
-
-  // Clear cached feature styles, so they are refreshed in next cycle.
-  const clearStylesAndRefresh = () => {
-    applyStyle(null)(_ => true)
-    featureSource.changed()
-  }
-
-  // TODO: limit refresh to point geometries.
-  featuresPrefs.observe(clearStylesAndRefresh)('symbol-scale')
-  featuresPrefs.observe(clearStylesAndRefresh)('labels')
-
-  const visibilityOberservers = {
-    all: _ => true,
-    units: f => sidc(f).match(/S.G.U/),
-    graphics: f => f.getGeometry().getType() !== 'Point',
-    points: f => f.getGeometry().getType() === 'Point'
-  }
-
-  Object.entries(visibilityOberservers).forEach(([what, predicate]) => {
-    featuresPrefs.observe(flag => {
-      applyStyle(flag ? null : new Style())(predicate)
-      featureSource.changed()
-    })(what)
-  })
 
   evented.emit('map.ready')
   setMap(map)
