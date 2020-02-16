@@ -1,7 +1,6 @@
-/* eslint-disable */
 import moment from 'moment'
 import * as R from 'ramda'
-import { Stroke, Style, Icon } from 'ol/style'
+import { Style, Icon } from 'ol/style'
 import ms from 'milsymbol'
 import { K } from '../shared/combinators'
 import style from './style-default'
@@ -20,7 +19,9 @@ import preferences from './preferences'
 /**
  * normalizeSIDC :: String -> String
  */
-export const normalizeSIDC = sidc => `${sidc[0]}-${sidc[2]}-${sidc.substring(4, 10)}`
+export const normalizeSIDC = sidc => sidc
+  ? `${sidc[0]}-${sidc[2]}-${sidc.substring(4, 10)}`
+  : 'MUZP------*****'
 
 /**
  * STYLE PREFERENCES OBSERVERS.
@@ -134,8 +135,10 @@ const corridorStyle = (feature, resolution) => {
 
 const geometryType = feature => {
   const type = feature.getGeometry().getType()
+
+  /* eslint-disable camelcase */
   const { corridor_area_width_dim } = feature.getProperties()
-  switch(type) {
+  switch (type) {
     case 'LineString': return corridor_area_width_dim ? 'Corridor' : type
     default: return type
   }

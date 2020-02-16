@@ -10,6 +10,7 @@ import { GeoJSON } from 'ol/format'
 import { toLonLat, fromLonLat } from 'ol/proj'
 import { Style } from 'ol/style'
 import { Select, Modify } from 'ol/interaction'
+import { bbox } from 'ol/loadingstrategy'
 
 import loaders from './loaders'
 import evented from './evented'
@@ -48,7 +49,15 @@ const effect = (props, [setMap]) => () => {
   const url = 'http://localhost:32768/styles/osm-bright/{z}/{x}/{y}{ratio}.png'
   const { zoom, center } = props.viewport
   const view = new ol.View({ zoom, center: fromLonLat(center) })
-  const featureSource = new VectorSource({ format: new GeoJSON(), loader: loaders.mipdb })
+
+  const featureSource = new VectorSource({
+    format: new GeoJSON({
+      dataProjection: 'EPSG:3857'
+    }),
+    strategy: bbox,
+    loader: loaders.mipdb
+  })
+
   const featureLayer = new FeatureLayer({ style, source: featureSource })
   const selectionSource = new VectorSource()
   const selectionLayer = new FeatureLayer({ style, source: selectionSource })
