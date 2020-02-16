@@ -5,11 +5,9 @@ import 'ol/ol.css'
 import * as ol from 'ol'
 import { Vector as FeatureLayer } from 'ol/layer'
 import { Vector as VectorSource } from 'ol/source'
-import { click } from 'ol/events/condition'
 import { GeoJSON } from 'ol/format'
 import { toLonLat, fromLonLat } from 'ol/proj'
 import { Style } from 'ol/style'
-import { Select, Modify } from 'ol/interaction'
 import { bbox } from 'ol/loadingstrategy'
 
 import loaders from './loaders'
@@ -18,6 +16,7 @@ import style from './style'
 import preferences from './preferences'
 
 import { tileLayer } from './map-tiles'
+import { interactions } from './map-interaction'
 
 const tail = ([_, ...values]) => values
 const zoom = view => view.getZoom()
@@ -46,42 +45,12 @@ const effect = (props, [setMap]) => () => {
   })
 
   const featureLayer = new FeatureLayer({ style, source: featureSource })
-  const selectionSource = new VectorSource()
-  const selectionLayer = new FeatureLayer({ style, source: selectionSource })
-
-  const selectInteraction = new Select({
-    layers: [featureLayer],
-    hitTolerance: 3,
-    style: style,
-    condition: click // faster than single click
-  })
-
-  const modifyInteraction = new Modify({
-    features: selectInteraction.getFeatures(),
-    hitTolerance: 3
-  })
-
-  selectInteraction.on('select', ({ selected, deselected }) => {
-    featureLayer.setOpacity(selected.length ? 0.35 : 1)
-    const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
-
-    selected.forEach(feature => {
-      feature.set('selected', true)
-      move(featureSource, selectionSource)(feature)
-    })
-
-    deselected.forEach(feature => {
-      move(selectionSource, featureSource)(feature)
-      feature.unset('selected')
-      feature.setStyle(null) // cache style with updated geometry.
-    })
-  })
-
+  const selectionLayer = new FeatureLayer({ style, source: new VectorSource() })
   const layers = [tileLayer(url), featureLayer, selectionLayer]
   const map = new ol.Map({ view, layers, target: id, controls: [] })
-  map.addInteraction(selectInteraction) // don't replace default interactions
-  map.addInteraction(modifyInteraction) // don't replace default interactions
 
+  // don't replace default interactions
+  interactions(map)({ featureLayer, selectionLayer, style })
   map.on('moveend', () => viewportChanged(viewport(view)))
 
   const featuresPrefs = preferences.features()
