@@ -3881,8 +3881,7 @@
       "AMMUNITION SUPPLY POINT (ASP)"
     ],
     "geometries": [
-      "point",
-      "polygon"
+      "point"
     ]
   },
   {
