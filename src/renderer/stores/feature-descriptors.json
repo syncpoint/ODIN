@@ -3868,8 +3868,7 @@
       "GROUND SURVEILLANCE RADAR"
     ],
     "geometries": [
-      "point",
-      "polygon"
+      "point"
     ]
   },
   {
