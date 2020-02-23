@@ -1,5 +1,6 @@
 import { BrowserWindow } from 'electron'
 import url from 'url'
+import tileProviders from '../../main/tile-providers'
 
 const clickHandler = (menuItem, focusedWindow) => {
   const child = new BrowserWindow({ modal: true, show: false, webPreferences: {
@@ -26,6 +27,7 @@ const clickHandler = (menuItem, focusedWindow) => {
   child.loadURL(indexURL)
   child.once('ready-to-show', () => {
     child.show()
+    child.webContents.send('tile-providers-loaded', tileProviders())
   })
   child.onbeforeunload = event => {
     console.log('should save tile-providers now ...')
