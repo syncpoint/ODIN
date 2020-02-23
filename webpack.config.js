@@ -2,6 +2,8 @@ const path = require('path')
 const { spawn } = require('child_process')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
+const tileProvidersAppConfig = require('./src/apps/tileProviders/webpack.config')
+
 const hash = 'hash:base64:8'
 
 const RULES = {
@@ -52,7 +54,6 @@ const rendererConfig = (env, argv) => ({
   entry: {
     renderer: ['./index.js']
   },
-
   plugins: [
     new HtmlWebpackPlugin({
       title: 'ODIN - C2IS'
@@ -116,7 +117,7 @@ module.exports = (env, argv) => {
     devServer(env),
     devtool(env)
   )
-
+  const tPAC = tileProvidersAppConfig(path.resolve(__dirname, 'dist'), mode(env))
   const main = mainConfig(env, argv)
-  return [renderer, main]
+  return [renderer, tPAC, main]
 }

@@ -1,6 +1,8 @@
 import { sendMessage } from './ipc'
 import tileProviders from '../tile-providers'
 
+import tileProvidersAppActivator from '../../apps/tileProviders/activator'
+
 const menu = settings => {
 
   const mapVisible = settings.has('mapVisible') ? settings.get('mapVisible') : true
@@ -42,6 +44,10 @@ const menu = settings => {
       {
         label: 'Tile Providers',
         submenu: tileProvidersMenu
+      },
+      {
+        label: tileProvidersAppActivator.label,
+        click: tileProvidersAppActivator.clickHandler
       },
       {
         label: 'HiDPI Support',
