@@ -1,16 +1,22 @@
 import path from 'path'
 import url from 'url'
-import { app, BrowserWindow, Menu } from 'electron'
+import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import settings from 'electron-settings'
 import { K, noop } from '../shared/combinators'
 import { buildFromTemplate } from '../main/menu/menu'
 import './REST'
+import { persist } from './tile-providers'
 import AppIcon from './img/icon.png'
 
 // Disable for production:
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
 const on = emitter => ([event, handler]) => emitter.on(event, handler)
+
+// handle tile-provider (CRUD) changes
+ipcMain.on('tile-providers-changed', (event, providers) => {
+  persist(providers)
+}) 
 
 let mainWindow
 

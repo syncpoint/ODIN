@@ -13,4 +13,9 @@ const defaultProviders = () => [{
   'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }]
 
+export const persist = tileProviders => {
+  fs.writeFileSync(filename, JSON.stringify(tileProviders))
+  console.log('persisted tile-providers.json')
+}
+
 export default (fs.existsSync(filename) ? readProviders : defaultProviders)

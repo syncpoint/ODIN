@@ -19,15 +19,18 @@ function App () {
   const onDelete = providerToDelete => {
     const providers = tileProviders.filter(provider => provider.id !== providerToDelete.id)
     setTileProviders(providers)
+    /* see event handler in main.js */
+    ipcRenderer.send('tile-providers-changed', providers)
   }
 
   useEffect(() => {
-    ipcRenderer.on('tile-providers-loaded', (event, providers) => {
+    const register = (event, providers) => {
       console.dir(providers)
       setTileProviders(providers)
-    })
+    }
+    ipcRenderer.on('tile-providers-loaded', register)
     return function cleanup () {
-      console.log('cleanup')
+      ipcRenderer.removeListener('tile-providers-loaded', register)
     }
   })
   return (
