@@ -4,6 +4,9 @@ import ReactDOM from 'react-dom'
 import ProviderList from './ProviderList'
 import ProviderEditor from './ProviderEditor'
 
+import Fab from '@material-ui/core/Fab'
+import AddIcon from '@material-ui/icons/Add'
+
 import { K } from '../../../shared/combinators'
 import { ipcRenderer } from 'electron'
 import uuid from 'uuid-random'
@@ -15,14 +18,28 @@ document.body.appendChild(K(document.createElement('div'))(div => {
   div.id = rootId
 }))
 
+const stickyHeaderStyle = {
+  margin: '0 auto',
+  position: 'sticky',
+  top: 0
+}
+
+const hasAtLeastOneElement = tileProviders => tileProviders.length > 0
+const hasOnlyOneElement = tileProviders => tileProviders.length === 1
+
 function App () {
 
   const [ tileProviders, setTileProviders ] = useState([])
   const [ currentProvider, setCurrentProvider ] = useState(null)
 
-  // fire message to main process when tileProviders changes
+  // watch 'tileProviders' and send message to main process when tileProviders changes
   useEffect(() => {
-    ipcRenderer.send('tile-providers-changed', tileProviders)
+    console.dir(tileProviders)
+    if (hasAtLeastOneElement(tileProviders)) {
+      console.log('sending IPC message to main because tileProviders has changed ...')
+      debugger
+      ipcRenderer.send('tile-providers-changed', tileProviders)
+    }
   }, [ tileProviders ])
 
   // subscribe and unsubscribe to message from main process
@@ -31,7 +48,7 @@ function App () {
     const register = (event, providers) => {
       setTileProviders(providers)
     }
-    ipcRenderer.once('tile-providers-loaded', register)
+    ipcRenderer.on('tile-providers-loaded', register)
 
     // get's called when react unmounts the component
     return function cleanup () {
@@ -42,12 +59,14 @@ function App () {
   const handleDelete = providerToDelete => {
     const providers = tileProviders.filter(provider => provider.id !== providerToDelete.id)
     setTileProviders(providers)
-    /* see event handler in main.js */
-    ipcRenderer.send('tile-providers-changed', providers)
   }
 
   const handleEditStart = provider => {
     setCurrentProvider(provider)
+  }
+
+  const handleNewProviderStart = () => {
+    setCurrentProvider({})
   }
 
   const handlEditDone = provider => {
@@ -73,7 +92,14 @@ function App () {
     )
   }
   return (
-    <ProviderList providers={tileProviders} handleEdit={handleEditStart} handleDelete={handleDelete}/>
+    <React.Fragment>
+      <div style={stickyHeaderStyle}>
+        <Fab color="primary" onClick={handleNewProviderStart}>
+          <AddIcon />
+        </Fab>
+      </div>
+      <ProviderList providers={tileProviders} handleEdit={handleEditStart} handleDelete={handleDelete} disableDelete={hasOnlyOneElement(tileProviders)}/>
+    </React.Fragment>
   )
 }
 

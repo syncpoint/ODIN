@@ -15,6 +15,7 @@ const on = emitter => ([event, handler]) => emitter.on(event, handler)
 
 // handle tile-provider (CRUD) changes
 ipcMain.on('tile-providers-changed', (event, providers) => {
+  console.dir(providers)
   persist(providers)
 }) 
 

@@ -26,8 +26,8 @@ const clickHandler = (menuItem, focusedWindow) => {
 
   child.loadURL(indexURL)
   child.once('ready-to-show', () => {
-    child.show()
     child.webContents.send('tile-providers-loaded', tileProviders())
+    child.show()
   })
 }
 
