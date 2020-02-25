@@ -14,13 +14,9 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 const on = emitter => ([event, handler]) => emitter.on(event, handler)
 
 // handle tile-provider (CRUD) changes
-ipcMain.on('tile-providers-changed', (event, providers) => {
-  console.dir(providers)
-  persist(providers)
-}) 
+ipcMain.on('tile-providers-changed', (event, providers) => persist(providers)) 
 
 let mainWindow
-
 
 const createWindow = name => {
   const bounds = settings.get(`windowState.${name}`) || { width: 800, height: 600 }

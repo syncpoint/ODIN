@@ -19,7 +19,6 @@ const ProviderEditor = props => {
       case 'url':
       case 'name': {
         if (!value) { hasValidationErrors = true }
-        debugger
         break
       }
       case 'maxZoom': {

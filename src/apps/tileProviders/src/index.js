@@ -34,10 +34,7 @@ function App () {
 
   // watch 'tileProviders' and send message to main process when tileProviders changes
   useEffect(() => {
-    console.dir(tileProviders)
     if (hasAtLeastOneElement(tileProviders)) {
-      console.log('sending IPC message to main because tileProviders has changed ...')
-      debugger
       ipcRenderer.send('tile-providers-changed', tileProviders)
     }
   }, [ tileProviders ])
