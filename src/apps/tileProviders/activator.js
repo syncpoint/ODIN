@@ -1,5 +1,6 @@
-import { BrowserWindow } from 'electron'
+import { app, BrowserWindow } from 'electron'
 import url from 'url'
+import path from 'path'
 import tileProviders from '../../main/tile-providers'
 
 const clickHandler = (menuItem, focusedWindow) => {
