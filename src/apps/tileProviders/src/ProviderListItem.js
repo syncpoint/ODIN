@@ -15,7 +15,7 @@ const ProviderListItem = props => {
       </ListItemIcon>
       <ListItemText primary={provider.name} secondary={provider.url} />
       <ListItemSecondaryAction>
-        <IconButton edge="end" disabled={disableDelete}  onClick={() => handleDelete(provider)}>
+        <IconButton edge="end" disabled={disableDelete} onClick={() => handleDelete(provider)}>
           <DeleteForeverIcon />
         </IconButton>
       </ListItemSecondaryAction>

@@ -14,6 +14,8 @@ const ProviderEditor = props => {
   const handlePropertyUpdate = (propertyName, value) => {
     currentProvider[propertyName] = value
     setCurrentProvider(currentProvider)
+
+    // do some validation in order to enable/disable the SAVE button
     let hasValidationErrors = false
     switch (propertyName) {
       case 'url':
@@ -33,8 +35,6 @@ const ProviderEditor = props => {
     setHasInvalidFields(hasValidationErrors)
   }
 
-
-
   return (
     <Paper>
       <Card>
@@ -43,7 +43,7 @@ const ProviderEditor = props => {
           <FormControl required={true} fullWidth={true}>
             <InputLabel htmlFor="name">Name</InputLabel>
             <Input id="name" aria-describedby="nameHelper" defaultValue={ currentProvider.name } onChange={ event => handlePropertyUpdate('name', event.target.value) }/>
-            <FormHelperText id="nameHelper">The name of the tile provider (will show up in the menu bar)</FormHelperText>
+            <FormHelperText id="nameHelper">will show up in the tile provider menu</FormHelperText>
           </FormControl>
           <FormControl required={true} fullWidth={true}>
             <InputLabel htmlFor="url">URL</InputLabel>

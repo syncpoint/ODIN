@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 
-import ProviderList from './ProviderList'
+import ProviderListItem from './ProviderListItem'
 import ProviderEditor from './ProviderEditor'
 
-import Fab from '@material-ui/core/Fab'
+import { Fab, List } from '@material-ui/core'
 import AddIcon from '@material-ui/icons/Add'
 
 import { K } from '../../../shared/combinators'
@@ -18,12 +18,14 @@ document.body.appendChild(K(document.createElement('div'))(div => {
   div.id = rootId
 }))
 
+// CSS inline styles
 const stickyHeaderStyle = {
   margin: '0 auto',
   position: 'sticky',
   top: 0
 }
 
+// helper used to enable/disable buttons
 const hasAtLeastOneElement = tileProviders => tileProviders.length > 0
 const hasOnlyOneElement = tileProviders => tileProviders.length === 1
 
@@ -53,6 +55,7 @@ function App () {
     }
   }, [])
 
+  // user interaction handlers
   const handleDelete = providerToDelete => {
     const providers = tileProviders.filter(provider => provider.id !== providerToDelete.id)
     setTileProviders(providers)
@@ -83,6 +86,11 @@ function App () {
     setCurrentProvider(null)
   }
 
+  // an array of provider items
+  const Items = tileProviders.map(provider =>
+    <ProviderListItem key={provider.id} provider={provider} handleEdit={handleEditStart} handleDelete={handleDelete} disableDelete={hasOnlyOneElement(tileProviders)}/>
+  )
+
   if (currentProvider) {
     return (
       <ProviderEditor provider={currentProvider} handleDone={handlEditDone}/>
@@ -95,7 +103,9 @@ function App () {
           <AddIcon />
         </Fab>
       </div>
-      <ProviderList providers={tileProviders} handleEdit={handleEditStart} handleDelete={handleDelete} disableDelete={hasOnlyOneElement(tileProviders)}/>
+      <List dense>
+        {Items}
+      </List>
     </React.Fragment>
   )
 }
