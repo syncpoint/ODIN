@@ -91,11 +91,13 @@ function App () {
     <ProviderListItem key={provider.id} provider={provider} handleEdit={handleEditStart} handleDelete={handleDelete} disableDelete={hasOnlyOneElement(tileProviders)}/>
   )
 
+  // new or edit mode
   if (currentProvider) {
     return (
       <ProviderEditor provider={currentProvider} handleDone={handlEditDone}/>
     )
   }
+  // list all mode
   return (
     <React.Fragment>
       <div style={stickyHeaderStyle}>
