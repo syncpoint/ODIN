@@ -3,12 +3,16 @@ import url from 'url'
 import path from 'path'
 import tileProviders from '../../main/tile-providers'
 
-const clickHandler = (menuItem, focusedWindow) => {
+let childExists = false
+
+const clickHandler = () => {
+  if (childExists) return
   const child = new BrowserWindow({ modal: true, show: false, webPreferences: {
     nodeIntegration: true
-  } })
+  }})
   child.setMinimizable(false)
   child.setMaximizable(false)
+  childExists = true
 
   const devServer = () => process.argv.indexOf('--noDevServer') === -1
 
@@ -30,6 +34,8 @@ const clickHandler = (menuItem, focusedWindow) => {
     child.webContents.send('tile-providers-loaded', tileProviders())
     child.show()
   })
+
+  child.on('close', () => childExists = false)
 }
 
 export default {
