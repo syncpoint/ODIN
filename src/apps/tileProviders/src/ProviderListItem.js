@@ -6,16 +6,16 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 
 const ProviderListItem = props => {
   const { provider } = props
-  const { onDelete } = props
+  const { handleEdit, handleDelete } = props
   if (!provider) return null
   return (
-    <ListItem button >
+    <ListItem button onClick={() => handleEdit(provider)}>
       <ListItemIcon>
         <DragHandleIcon edge="start" />
       </ListItemIcon>
       <ListItemText primary={provider.name} secondary={provider.url} />
       <ListItemSecondaryAction>
-        <IconButton edge="end" onClick={() => onDelete(provider)}>
+        <IconButton edge="end" onClick={() => handleDelete(provider)}>
           <DeleteForeverIcon />
         </IconButton>
       </ListItemSecondaryAction>
@@ -24,7 +24,8 @@ const ProviderListItem = props => {
 }
 ProviderListItem.propTypes = {
   provider: PropTypes.object,
-  onDelete: PropTypes.func
+  handleDelete: PropTypes.func,
+  handleEdit: PropTypes.func
 }
 
 export default ProviderListItem

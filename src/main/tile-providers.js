@@ -15,7 +15,7 @@ const defaultProviders = () => [{
 
 export const persist = tileProviders => {
   fs.writeFileSync(filename, JSON.stringify(tileProviders))
-  console.log('persisted tile-providers.json')
+  console.log('persisted tileproviders to ' + filename)
 }
 
 export default (fs.existsSync(filename) ? readProviders : defaultProviders)

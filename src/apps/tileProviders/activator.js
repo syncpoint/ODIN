@@ -29,9 +29,6 @@ const clickHandler = (menuItem, focusedWindow) => {
     child.show()
     child.webContents.send('tile-providers-loaded', tileProviders())
   })
-  child.onbeforeunload = event => {
-    console.log('should save tile-providers now ...')
-  }
 }
 
 export default {

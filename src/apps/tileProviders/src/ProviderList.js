@@ -4,11 +4,11 @@ import { List } from '@material-ui/core'
 import ProviderListItem from './ProviderListItem'
 
 const ProviderList = props => {
-  const { providers, onDelete } = props
+  const { providers, handleEdit, handleDelete } = props
   if (!providers) return null
 
   const Items = providers.map(provider =>
-    <ProviderListItem key={provider.id} provider={provider} onDelete={onDelete}/>
+    <ProviderListItem key={provider.id} provider={provider} handleEdit={handleEdit} handleDelete={handleDelete}/>
   )
   return (
     <List dense>
@@ -18,7 +18,8 @@ const ProviderList = props => {
 }
 ProviderList.propTypes = {
   providers: PropTypes.array,
-  onDelete: PropTypes.func
+  handleEdit: PropTypes.func,
+  handleDelete: PropTypes.func
 }
 
 export default ProviderList
