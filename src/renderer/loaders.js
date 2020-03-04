@@ -27,6 +27,7 @@ const mipdb = function (extent, resolution, projection) {
 
   pool.query(query).then(result => {
     const features = result.rows.flatMap(readFeatures)
+      .filter(feature => feature.getGeometry().getType() !== 'Point')
     this.clear(true)
     this.addFeatures(features)
   })

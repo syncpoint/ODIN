@@ -6,6 +6,12 @@ import { K, noop } from '../shared/combinators'
 // Disable for production:
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
+// Silence:
+// (electron) The default value of app.allowRendererProcessReuse is deprecated,
+// it is currently "false".  It will change to be "true" in Electron 9.
+// For more information please check https://github.com/electron/electron/issues/18397
+app.allowRendererProcessReuse = true // `false` also removes deprecation message
+
 const on = emitter => ([event, handler]) => emitter.on(event, handler)
 
 let mainWindow
