@@ -13,7 +13,7 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 // it is currently "false".  It will change to be "true" in Electron 9.
 // For more information please check https://github.com/electron/electron/issues/18397
 
-// NOTE: Must be currently false to not crash renderer because og GEOSJS.
+// NOTE: Must be currently false to not crash renderer because of GEOSJS.
 app.allowRendererProcessReuse = false // `false` also removes deprecation message
 
 const on = emitter => ([event, handler]) => emitter.on(event, handler)
