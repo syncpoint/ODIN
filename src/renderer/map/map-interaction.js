@@ -29,6 +29,7 @@ export const interactions = map => opts => {
     const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
 
     selected.forEach(feature => {
+      console.log('selected', feature.getProperties().sidc)
       feature.set('selected', true)
       move(featureSource, selectionSource)(feature)
     })
