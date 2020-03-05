@@ -1,9 +1,10 @@
 import { WKT } from 'ol/format'
 import defaultStyle from './style-default'
 import { GEOS, proj } from './geos-utils'
+import G_G_OAF from './G_G_OAF'
 import G_G_OLAGM from './G_G_OLAGM'
 import G_G_OLAGS from './G_G_OLAGS'
-import G_G_OAF from './G_G_OAF'
+import G_G_OLAV from './G_G_OLAV'
 
 const wktFormat = new WKT()
 
@@ -27,15 +28,22 @@ const geometry = fn => feature => {
   return readWKTGeometry(geometry)
 }
 
-const corridorStyle = fn => feature => defaultStyle(feature).map(style => {
-  style.setGeometry(geometry(fn)(feature))
-  return style
-})
+const corridorStyle = fn => feature => {
+  try {
+    return defaultStyle(feature).map(style => {
+      style.setGeometry(geometry(fn)(feature))
+      return style
+    })
+  } catch (err) {
+    console.error(err)
+  }
+}
 
 const style = {
+  'G-G-OAF---': [corridorStyle(G_G_OAF)],
   'G-G-OLAGM-': [corridorStyle(G_G_OLAGM)],
   'G-G-OLAGS-': [corridorStyle(G_G_OLAGS)],
-  'G-G-OAF---': [corridorStyle(G_G_OAF)]
+  'G-G-OLAV--': [corridorStyle(G_G_OLAV)]
 }
 
 export default {
@@ -43,10 +51,9 @@ export default {
   defaultStyle: [
     feature => {
       const wkt = writeWKTGeometry(feature)
-      const centerLine = GEOS.readWKT(wkt)
-      const geometry = centerLine
+      const geometry = GEOS.readWKT(wkt)
         .transform((x, y) => proj.forward([x, y]))
-        .buffer(corridorWidth(feature) / 2, 16, GEOS.CAP_ROUND, GEOS.JOIN_ROUND)
+        .buffer(corridorWidth(feature), 16, GEOS.CAP_ROUND, GEOS.JOIN_ROUND)
         .transform((x, y) => proj.inverse([x, y]))
 
       return defaultStyle(feature).map(style => {

@@ -14,7 +14,7 @@ export default (wkt, width) => {
 
   const BUFFER = geometry
     .transform((x, y) => proj.forward([x, y]))
-    .buffer(halfWidth, 16, GEOS.CAP_FLAT, GEOS.JOIN_ROUND)
+    .buffer(width, 16, GEOS.CAP_FLAT, GEOS.JOIN_ROUND)
     .transform((x, y) => proj.inverse([x, y]))
 
   // TODO: directly create POLYGON not LINE_STRING

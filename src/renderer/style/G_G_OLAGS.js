@@ -13,7 +13,7 @@ export default (wkt, width) => {
 
   const BUFFER = geometry
     .transform((x, y) => proj.forward([x, y]))
-    .buffer(halfWidth, 16, GEOS.CAP_FLAT, GEOS.JOIN_ROUND)
+    .buffer(width, 16, GEOS.CAP_FLAT, GEOS.JOIN_ROUND)
     .transform((x, y) => proj.inverse([x, y]))
 
   const CUTOUT = GEOS.createLineString([
@@ -21,7 +21,7 @@ export default (wkt, width) => {
     projectPoint(P_B, halfWidth, ALPHA + HALF_PI)
   ])
     .transform((x, y) => proj.forward([x, y]))
-    .buffer(halfWidth, 16, GEOS.CAP_SQUARE, GEOS.JOIN_ROUND)
+    .buffer(width, 16, GEOS.CAP_SQUARE, GEOS.JOIN_ROUND)
     .transform((x, y) => proj.inverse([x, y]))
 
   const ARROW = GEOS.createLineString([
