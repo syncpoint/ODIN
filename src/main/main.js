@@ -1,3 +1,5 @@
+/* eslint-disable dot-notation */
+
 import path from 'path'
 import url from 'url'
 import { app, BrowserWindow } from 'electron'
@@ -10,7 +12,9 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 // (electron) The default value of app.allowRendererProcessReuse is deprecated,
 // it is currently "false".  It will change to be "true" in Electron 9.
 // For more information please check https://github.com/electron/electron/issues/18397
-app.allowRendererProcessReuse = true // `false` also removes deprecation message
+
+// NOTE: Must be currently false to not crash renderer because og GEOSJS.
+app.allowRendererProcessReuse = false // `false` also removes deprecation message
 
 const on = emitter => ([event, handler]) => emitter.on(event, handler)
 
