@@ -17,7 +17,7 @@ const mipdb = function (extent, resolution, projection) {
              gis.overlay(contxt_id, ${extent.join(',')}) AS features
       FROM   contxts
       LEFT   JOIN oigs USING (oig_id)
-      WHERE  oig_name_txt = 'SCEN | PLNORD | OVERLAY ORDER NO. 4 (XXX) [CIAVX]'
+      WHERE  oig_name_txt = 'SCEN | PLNORD | OVERLAY ORDER NO. 3 (XXX) [CIAVX]'
     `,
     rowMode: 'array'
   }
@@ -26,7 +26,9 @@ const mipdb = function (extent, resolution, projection) {
   const readFeatures = row => format.readFeatures(row[4])
 
   pool.query(query).then(result => {
-    const features = result.rows.flatMap(readFeatures)
+    const features = result.rows
+      .flatMap(readFeatures)
+
     this.clear(true)
     this.addFeatures(features)
   })

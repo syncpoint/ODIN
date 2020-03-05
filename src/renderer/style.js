@@ -6,6 +6,7 @@ import { K } from '../shared/combinators'
 import style from './style/style-default'
 import Polygon from './style/style-polygon'
 import Corridor from './style/style-corridor'
+import LineString from './style/style-linestring'
 
 /*
   INGREDIENTS:
@@ -107,6 +108,13 @@ const corridorStyle = (feature, resolution) => {
   return styleFns.flatMap(fn => fn(feature))
 }
 
+const lineStringStyle = (feature, resolution) => {
+  const sidc = normalizeSIDC(feature.getProperties().sidc)
+  console.log('[LineString]', sidc)
+  const styleFns = LineString.style[sidc] || LineString.defaultStyle
+  return styleFns.flatMap(fn => fn(feature))
+}
+
 /**
  * FEATURE STYLE FUNCTION.
  */
@@ -128,6 +136,7 @@ export default (feature, resolution) => {
     [R.equals('Point'), R.always(symbolStyle)],
     [R.equals('Polygon'), R.always(polygonStyle)],
     [R.equals('Corridor'), R.always(corridorStyle)],
+    [R.equals('LineString'), R.always(lineStringStyle)],
     [R.T, R.always(style)]
   ])
 
