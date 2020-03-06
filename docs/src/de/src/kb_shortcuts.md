@@ -25,7 +25,7 @@ Dieses Blatt beschreibt viele nützliche Tastenkombinationen für **ODIN**. Eini
 | ---------------------------------------------- | ------------------------------- |
 | <kbd>Klick</kbd>                               | Element auswählen               |
 | <kbd>Strg</kbd>+<kbd>Klick</kbd>               | Punkt löschen                   |
-| <kbd>Strg</kbd>+<kbd>A</kbd>                   | Alles auswahlen                 |
+| <kbd>Strg</kbd>+<kbd>A</kbd>                   | Alles auswählen                 |
 | <kbd>Strg</kbd>+<kbd>C</kbd>                   | Kopieren (Zwischenablage)       |
 | <kbd>Strg</kbd>+<kbd>V</kbd>                   | Einfügen (Zwischenablage)       |
 | <kbd>Strg</kbd>+<kbd>X</kbd>                   | Ausschneiden   (Zwischenablage) |
@@ -62,7 +62,7 @@ Dieses Blatt beschreibt viele nützliche Tastenkombinationen für **ODIN**. Eini
 | ------------------------------------------------- | ------------------------------- |
 | <kbd>Klick</kbd>                                  | Element auswählen               |
 | <kbd>Ctrl</kbd>+<kbd>Klick</kbd>                  | Punkt löschen                   |
-| <kbd>Command</kbd>+<kbd>A</kbd>                   | Alles auswahlen                 |
+| <kbd>Command</kbd>+<kbd>A</kbd>                   | Alles auswählen                 |
 | <kbd>Command</kbd>+<kbd>C</kbd>                   | Kopieren (Zwischenablage)       |
 | <kbd>Command</kbd>+<kbd>V</kbd>                   | Einfügen (Zwischenablage)       |
 | <kbd>Command</kbd>+<kbd>X</kbd>                   | Ausschneiden   (Zwischenablage) |
