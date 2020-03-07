@@ -9,7 +9,7 @@ let childExists = false
 
 const clickHandler = () => {
   if (childExists) return
-  const child = new BrowserWindow({ modal: true, show: false, webPreferences: {
+  const child = new BrowserWindow({ webPreferences: {
     nodeIntegration: true
   }})
   child.setMinimizable(false)
