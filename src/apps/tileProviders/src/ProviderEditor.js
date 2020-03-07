@@ -18,9 +18,12 @@ const ProviderEditor = props => {
     // do some validation in order to enable/disable the SAVE button
     let hasValidationErrors = false
     switch (propertyName) {
-      case 'url':
+      case 'url': {
+        if (!value || !currentProvider.name) { hasValidationErrors = true }
+        break
+      }
       case 'name': {
-        if (!value) { hasValidationErrors = true }
+        if (!value || !currentProvider.url) { hasValidationErrors = true }
         break
       }
       case 'maxZoom': {
