@@ -27,7 +27,7 @@ Clone repository, install dependencies then build and start the application.
 To create Windows or macOS binaries, webpack first for production, then build package with electron-builder.
 
 1. `npm run webpack:production`
-2. `npm run builder:win` or `npm run builder:mac`
+2. `npm run builder:win`, `npm run builder:linux` or `npm run builder:mac`
 
 ### Development mode (hot deployment for renderer only)
 Create main and renderer bundles first, then start development server (for renderer only).
