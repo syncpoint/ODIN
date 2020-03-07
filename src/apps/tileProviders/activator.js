@@ -1,7 +1,9 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu } from 'electron'
+import settings from 'electron-settings'
 import url from 'url'
 import path from 'path'
 import tileProviders, { persist } from '../../main/tile-providers'
+import { buildFromTemplate } from '../../main/menu/menu'
 
 let childExists = false
 
@@ -35,7 +37,10 @@ const clickHandler = () => {
 
   ipcMain.on('tile-providers-window-ready', sendTileProviders)
   // handle tile-provider (CRUD) changes
-  ipcMain.on('tile-providers-changed', (event, providers) => persist(providers)) 
+  ipcMain.on('tile-providers-changed', (_, providers) => {
+    persist(providers)
+    Menu.setApplicationMenu(buildFromTemplate(settings))
+  }) 
 
   child.once('close', () =>  {
     ipcMain.removeListener('tile-providers-window-ready', sendTileProviders)
