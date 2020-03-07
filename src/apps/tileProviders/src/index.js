@@ -48,7 +48,7 @@ function App () {
       setTileProviders(providers)
     }
     ipcRenderer.on('tile-providers-loaded', register)
-
+    ipcRenderer.send('tile-providers-window-ready')
     // get's called when react unmounts the component
     return function cleanup () {
       ipcRenderer.removeListener('tile-providers-loaded', register)

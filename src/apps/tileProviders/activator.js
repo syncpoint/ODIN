@@ -1,7 +1,7 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import url from 'url'
 import path from 'path'
-import tileProviders from '../../main/tile-providers'
+import tileProviders, { persist } from '../../main/tile-providers'
 
 let childExists = false
 
@@ -29,13 +29,20 @@ const clickHandler = () => {
       slashes: true
     })
 
-  child.loadURL(indexURL)
-  child.once('ready-to-show', () => {
-    child.webContents.send('tile-providers-loaded', tileProviders())
-    child.show()
-  })
+  child.once('ready-to-show', child.show)
+  
+  const sendTileProviders = () => child.webContents.send('tile-providers-loaded', tileProviders())
 
-  child.on('close', () => childExists = false)
+  ipcMain.on('tile-providers-window-ready', sendTileProviders)
+  // handle tile-provider (CRUD) changes
+  ipcMain.on('tile-providers-changed', (event, providers) => persist(providers)) 
+
+  child.once('close', () =>  {
+    ipcMain.removeListener('tile-providers-window-ready', sendTileProviders)
+    childExists = false
+  })
+  
+  child.loadURL(indexURL)
 }
 
 export default {
