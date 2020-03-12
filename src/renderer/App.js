@@ -1,26 +1,12 @@
-import React, { useEffect, useState } from 'react'
-import * as R from 'ramda'
+import React from 'react'
 import Map from './Map'
-import settings from './preferences'
-
-const viewportPrefs = settings.viewport()
 
 const App = () => {
-  const [viewport, setViewport] = useState(null)
-  const viewportChanged = viewportPrefs.set
-  const loadViewport = () => viewportPrefs.get().then(setViewport)
-  const effect = R.compose(R.always(undefined), loadViewport)
-
-  useEffect(effect, [])
-
   const props = {
-    viewport,
-    viewportChanged,
     id: 'map'
   }
 
-  const map = viewport ? <Map { ...props }/> : null
-  return <div>{ map }</div>
+  return <div><Map { ...props }/></div>
 }
 
 App.propTypes = {}

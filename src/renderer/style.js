@@ -1,19 +1,10 @@
+/* eslint-disable */
 import moment from 'moment'
 import * as R from 'ramda'
 import { Style, Icon } from 'ol/style'
 import ms from 'milsymbol'
 import { K } from '../shared/combinators'
-import style from './style/style-default'
-import Polygon from './style/style-polygon'
-import Corridor from './style/style-corridor'
-import LineString from './style/style-linestring'
-
-/*
-  INGREDIENTS:
-  - (MIL) SYMBOL STYLING
-  - TACTICAL GRAPHICS STYLING
-  - FEATURE STYLE FUNCTION
-*/
+import defaultStyle from './style-default'
 
 /**
  * normalizeSIDC :: String -> String
@@ -87,33 +78,10 @@ const symbolStyle = (feature, resolution) => {
   const symbol = new ms.Symbol(sidc, symbolProperties)
   return symbol.isValid()
     ? new Style({ image: icon(symbol) })
-    : style(feature, resolution)
+    : defaultStyle(feature)
 }
 
 
-/**
- * TACTICAL GRAPHICS STYLING.
- */
-
-const polygonStyle = (feature, resolution) => {
-  const sidc = normalizeSIDC(feature.getProperties().sidc)
-  const styleFns = Polygon.style[sidc] || Polygon.defaultStyle
-  const styles = style(feature, resolution)
-  return styles.concat(styleFns.flatMap(fn => fn(feature)))
-}
-
-const corridorStyle = (feature, resolution) => {
-  const sidc = normalizeSIDC(feature.getProperties().sidc)
-  const styleFns = Corridor.style[sidc] || Corridor.defaultStyle
-  return styleFns.flatMap(fn => fn(feature))
-}
-
-const lineStringStyle = (feature, resolution) => {
-  const sidc = normalizeSIDC(feature.getProperties().sidc)
-  console.log('[LineString]', sidc)
-  const styleFns = LineString.style[sidc] || LineString.defaultStyle
-  return styleFns.flatMap(fn => fn(feature))
-}
 
 /**
  * FEATURE STYLE FUNCTION.
@@ -134,14 +102,8 @@ export default (feature, resolution) => {
 
   const provider = R.cond([
     [R.equals('Point'), R.always(symbolStyle)],
-    [R.equals('Polygon'), R.always(polygonStyle)],
-    [R.equals('Corridor'), R.always(corridorStyle)],
-    [R.equals('LineString'), R.always(lineStringStyle)],
-    [R.T, R.always(style)]
+    [R.T, R.always(defaultStyle)]
   ])
 
-  // NOTE: Style is cached when not selected; clear cache when necessary.
-  const styles = provider(geometryType(feature))(feature, resolution)
-  if (!feature.get('selected')) feature.setStyle(styles)
-  return styles
+  return provider(geometryType(feature))(feature, resolution)
 }

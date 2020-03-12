@@ -1,6 +1,6 @@
 {
   "name": "odin-c2is-ol",
-  "version": "0.2.5",
+  "version": "0.6.0",
   "description": "ODIN Command and Control Information System",
   "main": "dist/main.js",
   "scripts": {
@@ -53,13 +53,11 @@
   "dependencies": {
     "@syncpoint/geosjs": "github:dehmer/geosjs",
     "geographiclib": "^1.50.0",
-    "level": "^6.0.1",
     "mathjs": "^6.6.1",
     "milsymbol": "^2.0.0",
     "moment": "^2.24.0",
     "mousetrap": "^1.6.5",
     "ol": "^6.2.1",
-    "pg": "^7.18.2",
     "proj4": "^2.6.0",
     "prop-types": "^15.7.2",
     "ramda": "^0.27.0",
