@@ -1,13 +1,21 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-
+import { ipcRenderer, remote } from 'electron'
 import 'ol/ol.css'
 import * as ol from 'ol'
-import { fromLonLat } from 'ol/proj'
+import { fromLonLat, toLonLat } from 'ol/proj'
 import { feature as featureSource } from './source/feature'
 import { feature as featureLayer } from './layer/feature'
 import { tile as tileLayer } from './layer/tile'
 
+const zoom = view => view.getZoom()
+const center = view => toLonLat(view.getCenter())
+const viewport = view => ({ zoom: zoom(view), center: center(view) })
+
+const viewportChanged = viewport => {
+  console.log('viewport', viewport)
+  ipcRenderer.send('IPC_VIEWPORT_CHANGED', viewport)
+}
 
 /**
  * Setup map instance (aka `componentDidMount`).
@@ -16,12 +24,9 @@ import { tile as tileLayer } from './layer/tile'
  */
 const effect = props => () => {
   const { id } = props
-
-  // TODO: grab center/zoom from project preferences
-  const view = new ol.View({
-    center: fromLonLat([25.353574, 59.036962]),
-    zoom: 9
-  })
+  const vienna = [16.363449, 48.210033]
+  const { center = vienna, zoom = 8 } = remote.getCurrentWindow().viewport || {}
+  const view = new ol.View({ center: fromLonLat(center), zoom })
 
   const layers = [
     tileLayer(),
@@ -29,13 +34,14 @@ const effect = props => () => {
     featureLayer(featureSource())
   ]
 
-  /* eslint-disable no-new */
-  new ol.Map({
+  const map = new ol.Map({
     view,
     layers,
     target: id,
     controls: []
   })
+
+  map.on('moveend', () => viewportChanged(viewport(view)))
 }
 
 

@@ -1,5 +1,6 @@
 import React from 'react'
 import Map from './map/Map'
+import './ipc'
 
 const App = () => {
   const props = {
