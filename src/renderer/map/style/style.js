@@ -1,5 +1,4 @@
 /* eslint-disable */
-import moment from 'moment'
 import * as R from 'ramda'
 import { Style, Icon } from 'ol/style'
 import ms from 'milsymbol'
@@ -30,7 +29,7 @@ const MODIFIERS = {
   aa: 'specialHeadquarters'
 }
 
-const fromNow = dtg => dtg && moment(dtg, 'DDHHmmZ MMM YYYY').fromNow()
+const fromNow = dtg => dtg && 'TIMNA'
 const modifiers = properties => Object.entries(properties)
   .filter(([key, value]) => MODIFIERS[key] && value)
   .map(([key, value]) => ([key, key === 'w' ? fromNow(value) : value]))
