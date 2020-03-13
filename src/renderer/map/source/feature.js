@@ -1,7 +1,5 @@
 import { Vector } from 'ol/source'
 import { GeoJSON } from 'ol/format'
-
-// TODO: transform sample file to WGS84 (GeoJSON no longer supports `crs` property)
 import layer from './layer.json'
 
 /**
@@ -19,5 +17,9 @@ export const feature = () => new Vector({
     const features = format.readFeatures(layer)
     this.addFeatures(features)
   },
-  format: new GeoJSON({ dataProjection: 'EPSG:3857' })
+
+  format: new GeoJSON({
+    dataProjection: 'EPSG:4326',
+    featureProjection: 'EPSG:3857'
+  })
 })
