@@ -1,12 +1,13 @@
 import { Vector } from 'ol/source'
-import layer from './layer.json'
 import { GeoJSON } from 'ol/format'
+
+// TODO: transform sample file to WGS84 (GeoJSON no longer supports `crs` property)
+import layer from './layer.json'
 
 /**
  * Feature vector source for GeoJSON file.
  *
  * TODO: provide loader function (or better, file name)
- * TODO: take SRID from GeoJSON file when supplied
  */
 export const feature = () => new Vector({
 
