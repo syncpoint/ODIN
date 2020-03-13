@@ -51,11 +51,12 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
+    "@material-ui/core": "^4.9.5",
     "@syncpoint/geosjs": "github:dehmer/geosjs",
     "geographiclib": "^1.50.0",
+    "luxon": "^1.22.0",
     "mathjs": "^6.6.1",
     "milsymbol": "^2.0.0",
-    "moment": "^2.24.0",
     "mousetrap": "^1.6.5",
     "ol": "^6.2.1",
     "proj4": "^2.6.0",
