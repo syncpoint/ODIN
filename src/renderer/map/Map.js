@@ -38,8 +38,6 @@ const effect = (props, [setMap]) => () => {
     controls: []
   })
 
-  console.log(map)
-
   setMap(map)
 }
 
