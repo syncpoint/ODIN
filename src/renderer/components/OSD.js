@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
-import { DateTime } from 'luxon'
-import milTimeZones from '../../shared/milTimeZones'
-
-const MIL_DATE_FORMAT = 'ddHHmm--LLLyy'
+import getCurrentDateTime from '../../shared/militaryTime'
 
 const OSD = (props) => {
   const { classes } = props
@@ -17,10 +14,7 @@ const OSD = (props) => {
 
   useEffect(() => {
     const updateCurrentTime = setInterval(function () {
-      const currentTime = DateTime.local()
-      const offset = Math.floor(currentTime.offset / 60)
-      const offsetAsString = (offset >= 0) ? `+${offset}` : `-${offset}`
-      const newState = { ...state, ...{ A1: currentTime.toFormat(MIL_DATE_FORMAT).toLowerCase().replace('--', milTimeZones[offsetAsString]) } }
+      const newState = { ...state, ...{ A1: getCurrentDateTime() } }
       setState(newState)
     }, 1000)
     return function cleanup () {
