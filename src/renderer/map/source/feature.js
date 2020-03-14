@@ -1,20 +1,19 @@
 import { Vector } from 'ol/source'
 import { GeoJSON } from 'ol/format'
-import layer from './layer.json'
+import fs from 'fs'
 
 /**
  * Feature vector source for GeoJSON file.
- *
- * TODO: provide loader function (or better, file name)
  */
-export const feature = () => new Vector({
+export const feature = filename => new Vector({
 
   /**
    * NOTE: function is bound to underlying VectorSource.
    */
   loader: function (extent, resolution, projection) {
+    const file = fs.readFileSync(filename).toString()
     const format = this.getFormat()
-    const features = format.readFeatures(layer)
+    const features = format.readFeatures(file)
     this.addFeatures(features)
   },
 
