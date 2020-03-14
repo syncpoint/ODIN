@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { ipcRenderer, remote } from 'electron'
+import evented from '../evented'
 import fs from 'fs'
 import path from 'path'
 import 'ol/ol.css'
@@ -9,6 +10,7 @@ import { fromLonLat, toLonLat } from 'ol/proj'
 import { feature as featureSource } from './source/feature'
 import { feature as featureLayer } from './layer/feature'
 import { tile as tileLayer } from './layer/tile'
+import coordinateFormat from '../../shared/coord-format'
 
 const zoom = view => view.getZoom()
 const center = view => toLonLat(view.getCenter())
@@ -58,6 +60,11 @@ const effect = props => () => {
   projectOverlays(project).then(layers => layers.forEach(layer => map.addLayer(layer)))
 
   map.on('moveend', viewportChanged(view))
+  map.on('pointermove', pointerMovedEvent => {
+    const lonLatCooridinate = toLonLat(pointerMovedEvent.coordinate)
+    const currentCoordinate = coordinateFormat.format({ lng: lonLatCooridinate[0], lat: lonLatCooridinate[1] })
+    evented.emit('OSD_MESSAGE', { message: currentCoordinate, slot: 'A2' })
+  })
   ipcRenderer.on('IPC_OPEN_PROJECT', (_, [project]) => {
     map.getLayers().clear()
     map.addLayer(tileLayer())

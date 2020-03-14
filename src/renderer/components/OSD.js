@@ -15,7 +15,6 @@ const OSD = (props) => {
 
   const handleOSDMessage = ({ message, duration, slot = 'B1' }) => {
     if (state[slot] === message) return
-
     const updateSlot = message => {
       const newState = { ...state }
       newState[slot] = message
