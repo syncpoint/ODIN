@@ -29,7 +29,7 @@ const OSD = (props) => {
   useEffect(() => {
     evented.on('OSD_MESSAGE', handleOSDMessage)
     return function cleanup () {
-      // should we remove the evented listener?
+      evented.removeListener('OSD_MESSAGE', handleOSDMessage)
     }
   })
 
