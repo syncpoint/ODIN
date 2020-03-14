@@ -71,12 +71,13 @@ export const createProject = (options = {}) => {
 
 /**
  * Open project path in window.
- * @param {*} window project window
+ * @param {*} window project window (optional)
  */
 export const openProject = window => {
 
   const open = ({ canceled, filePaths = [] }) => {
     if (canceled) return
+
     if (!filePaths.length) return
     const path = filePaths[0]
     const candidate = Object
@@ -84,9 +85,13 @@ export const openProject = window => {
       .find(([_, value]) => value.path === path)
 
     if (candidate) return BrowserWindow.fromId(Number.parseInt(candidate[0])).focus()
-    State.updateWindow(window.id, { path })
-    window.setTitle(windowTitle({ path }))
-    sendMessage(window)('IPC_OPEN_PROJECT', path)
+
+    if (!window) createProject({ path })
+    else {
+      State.updateWindow(window.id, { path })
+      window.setTitle(windowTitle({ path }))
+      sendMessage(window)('IPC_OPEN_PROJECT', path)
+    }
   }
 
   dialog.showOpenDialog(window, { properties: ['openDirectory'] })
