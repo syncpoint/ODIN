@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react'
+import path from 'path'
+import { remote } from 'electron'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import getCurrentDateTime from '../../shared/militaryTime'
 import evented from '../evented'
 
+
 const OSD = (props) => {
   const { classes } = props
-  const [state, setState] = useState({
-    A1: 'LOCAL_TIME',
-    A2: 'COORDINATES',
-    C1: 'PROJECT_NAME',
-    C2: 'ACTIVE_LAYER'
-  })
+  const { path: project } = remote.getCurrentWindow()
+  const title = project ? path.basename(project) : 'ODIN - C2IS'
+  const [state, setState] = useState({ A1: title })
 
   const handleOSDMessage = ({ message, duration, slot = 'B1' }) => {
     if (state[slot] === message) return
@@ -27,18 +27,13 @@ const OSD = (props) => {
 
   useEffect(() => {
     evented.on('OSD_MESSAGE', handleOSDMessage)
-    return function cleanup () {
-      evented.removeListener('OSD_MESSAGE', handleOSDMessage)
-    }
+    return () => evented.removeListener('OSD_MESSAGE', handleOSDMessage)
   })
 
   useEffect(() => {
-    const updateCurrentTime = setInterval(() => {
-      evented.emit('OSD_MESSAGE', { message: getCurrentDateTime(), slot: 'A1' })
-    }, 1000)
-    return function cleanup () {
-      clearInterval(updateCurrentTime)
-    }
+    const updateTime = () => evented.emit('OSD_MESSAGE', { message: getCurrentDateTime(), slot: 'C1' })
+    const interval = setInterval(updateTime, 1000)
+    return () => clearInterval(interval)
   }, [])
 
   const valueOf = slot => state[slot] ? state[slot] : ''

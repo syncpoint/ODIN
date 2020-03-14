@@ -63,13 +63,14 @@ const effect = props => () => {
   map.on('pointermove', pointerMovedEvent => {
     const lonLatCooridinate = toLonLat(pointerMovedEvent.coordinate)
     const currentCoordinate = coordinateFormat.format({ lng: lonLatCooridinate[0], lat: lonLatCooridinate[1] })
-    evented.emit('OSD_MESSAGE', { message: currentCoordinate, slot: 'A2' })
+    evented.emit('OSD_MESSAGE', { message: currentCoordinate, slot: 'C2' })
   })
+
   ipcRenderer.on('IPC_OPEN_PROJECT', (_, [project]) => {
     map.getLayers().clear()
     map.addLayer(tileLayer())
     projectOverlays(project).then(layers => layers.forEach(layer => map.addLayer(layer)))
-    evented.emit('OSD_MESSAGE', { message: path.basename(project), slot: 'C1' })
+    evented.emit('OSD_MESSAGE', { message: path.basename(project), slot: 'A1' })
   })
 }
 
