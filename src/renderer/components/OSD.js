@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
+import { withStyles } from '@material-ui/core/styles'
 import getCurrentDateTime from '../../shared/militaryTime'
+import evented from '../evented'
 
 const OSD = (props) => {
   const { classes } = props
@@ -12,10 +13,29 @@ const OSD = (props) => {
     C2: 'ACTIVE_LAYER'
   })
 
-  useEffect(() => {
-    const updateCurrentTime = setInterval(function () {
-      const newState = { ...state, ...{ A1: getCurrentDateTime() } }
+  const handleOSDMessage = ({ message, duration, slot = 'B1' }) => {
+    if (state[slot] === message) return
+
+    const updateSlot = message => {
+      const newState = { ...state }
+      newState[slot] = message
       setState(newState)
+    }
+
+    updateSlot(message)
+    if (duration) setTimeout(() => updateSlot(''), duration)
+  }
+
+  useEffect(() => {
+    evented.on('OSD_MESSAGE', handleOSDMessage)
+    return function cleanup () {
+      // should we remove the evented listener?
+    }
+  })
+
+  useEffect(() => {
+    const updateCurrentTime = setInterval(() => {
+      evented.emit('OSD_MESSAGE', { message: getCurrentDateTime(), slot: 'A1' })
     }, 1000)
     return function cleanup () {
       clearInterval(updateCurrentTime)
