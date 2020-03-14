@@ -23,6 +23,7 @@ const sendMessage = window => (event, ...args) => {
   window.send(event, args)
 }
 
+const windowTitle = options => options.path ? path.basename(options.path) : 'ODIN - C2IS'
 
 /**
  * Open project window.
@@ -40,6 +41,7 @@ export const createProject = (options = {}) => {
 
   const window = new BrowserWindow({
     ...options,
+    title: windowTitle(options),
     show: false,
     webPreferences: {
       nodeIntegration: true
@@ -57,6 +59,7 @@ export const createProject = (options = {}) => {
   window.path = options.path
   window.once('ready-to-show', () => window.show())
   window.once('close', deleteWindow)
+  window.on('page-title-updated', event => event.preventDefault())
   window.on('move', updateBounds)
   window.on('resize', updateBounds)
   // TODO: support fullscreen
@@ -82,6 +85,7 @@ export const openProject = window => {
 
     if (candidate) return BrowserWindow.fromId(Number.parseInt(candidate[0])).focus()
     State.updateWindow(window.id, { path })
+    window.setTitle(windowTitle({ path }))
     sendMessage(window)('IPC_OPEN_PROJECT', path)
   }
 
@@ -104,7 +108,6 @@ app.on('ready', () => {
   if (state.length) state.forEach(createProject)
   else createProject(/* empty project */)
 })
-
 
 ipcMain.on('IPC_VIEWPORT_CHANGED', (event, viewport) => {
   const { id } = event.sender.getOwnerBrowserWindow()
