@@ -69,9 +69,9 @@ const effect = props => () => {
     map.getLayers().clear()
     map.addLayer(tileLayer())
     projectOverlays(project).then(layers => layers.forEach(layer => map.addLayer(layer)))
+    evented.emit('OSD_MESSAGE', { message: path.basename(project), slot: 'C1' })
   })
 }
-
 
 /**
  * React OpenLayers Map function component.
