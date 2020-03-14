@@ -7,7 +7,7 @@ import OSD from './components/OSD'
 const App = (props) => {
   const { classes } = props
 
-  const appProps = { ...props, ...{ id: 'map'} }
+  const appProps = { ...props, ...{ id: 'map' } }
 
   return (
     <React.Fragment>
