@@ -2,6 +2,7 @@ import path from 'path'
 import url from 'url'
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import settings from 'electron-settings'
+import { addRecentProject } from './recentProjects'
 
 // Facade for windows state =>
 
@@ -92,6 +93,7 @@ export const openProject = window => {
       window.setTitle(windowTitle({ path }))
       sendMessage(window)('IPC_OPEN_PROJECT', path)
     }
+    addRecentProject(path)
   }
 
   dialog.showOpenDialog(window, { properties: ['openDirectory'] })

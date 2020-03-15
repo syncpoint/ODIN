@@ -15,10 +15,12 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 // NOTE: Must be currently false to not crash renderer because of GEOSJS.
 app.allowRendererProcessReuse = false // `false` also removes deprecation message
 
-
 Menu.setApplicationMenu(buildFromTemplate(settings))
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit()
+const rebuildMenu = settings.watch('recentProjects', () => {
+  Menu.setApplicationMenu(buildFromTemplate(settings))
 })
 
+app.on('window-all-closed', () => {
+  rebuildMenu.dispose()
+  if (process.platform !== 'darwin') app.quit()
+})
