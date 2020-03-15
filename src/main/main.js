@@ -15,16 +15,14 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 // NOTE: Must be currently false to not crash renderer because of GEOSJS.
 app.allowRendererProcessReuse = false // `false` also removes deprecation message
 
-Menu.setApplicationMenu(buildFromTemplate(settings))
-
-/*  As of version 8.1 electron doeas not support adding/removing menu items dynamically.
-    In order to add/remove recently used projects we need to rebuild and set the application menu
+/*  As of version 8.1 electron does not support adding/removing menu items dynamically.
+    In order to add/remove recently used projects we need to rebuild and
+    set the application menu.
 */
-const rebuildApplicationMenu = settings.watch('recentProjects', () => {
-  Menu.setApplicationMenu(buildFromTemplate(settings))
-})
+const buildApplicationMenu = () => Menu.setApplicationMenu(buildFromTemplate(settings))
+buildApplicationMenu()
+settings.watch('recentProjects', buildApplicationMenu)
 
 app.on('window-all-closed', () => {
-  rebuildApplicationMenu.dispose()
   if (process.platform !== 'darwin') app.quit()
 })

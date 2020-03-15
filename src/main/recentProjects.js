@@ -3,6 +3,7 @@ import settings from 'electron-settings'
 const RECENT_PROJECTS = 'recentProjects'
 const MAX_ENTRIES = 5
 
+// TODO: move to projects.js
 export const addRecentProject = project => {
   let recentProjects = settings.get(RECENT_PROJECTS)
   if (!recentProjects) recentProjects = []
