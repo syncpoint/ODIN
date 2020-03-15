@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useReducer } from 'react'
 import path from 'path'
 import { remote } from 'electron'
 import PropTypes from 'prop-types'
@@ -8,33 +8,35 @@ import evented from '../evented'
 
 
 const OSD = (props) => {
+  /* must be declared before using 'useReducer' */
+  const osdSlotReducer = (state, action) => {
+    const newState = { ...state }
+    newState[action.slot] = action.message
+    return newState
+  }
+
   const { classes } = props
   const { path: project } = remote.getCurrentWindow()
   const title = project ? path.basename(project) : 'ODIN - C2IS'
-  const [state, setState] = useState({ A1: title })
+  const [state, dispatch] = useReducer(osdSlotReducer, { A1: title })
 
   const handleOSDMessage = ({ message, duration, slot = 'B1' }) => {
-    if (state[slot] === message) return
-    const updateSlot = message => {
-      const newState = { ...state }
-      newState[slot] = message
-      setState(newState)
-    }
-
-    updateSlot(message)
-    if (duration) setTimeout(() => updateSlot(''), duration)
+    dispatch({ slot: slot, message: message })
+    if (duration) setTimeout(() => dispatch({ slot: slot, message: '' }), duration)
   }
 
   useEffect(() => {
     evented.on('OSD_MESSAGE', handleOSDMessage)
-    return () => evented.removeListener('OSD_MESSAGE', handleOSDMessage)
-  })
+    return () => {
+      evented.removeListener('OSD_MESSAGE', handleOSDMessage)
+    }
+  }, []) // no dependency on local state
 
   useEffect(() => {
     const updateTime = () => evented.emit('OSD_MESSAGE', { message: getCurrentDateTime(), slot: 'C1' })
     const interval = setInterval(updateTime, 1000)
     return () => clearInterval(interval)
-  }, [])
+  }, []) // no dependency on local state
 
   const valueOf = slot => state[slot] ? state[slot] : ''
 
