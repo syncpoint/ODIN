@@ -3,6 +3,7 @@ import url from 'url'
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import settings from 'electron-settings'
 import { addRecentProject } from './recentProjects'
+import { existsSync } from 'fs'
 
 // Facade for windows state =>
 
@@ -72,7 +73,7 @@ export const createProject = (options = {}) => {
 /**
  * Open project path in window.
  * @param {*} window project window (optional)
- * @param {*} projectPath the path to a project (Optional. If given, the application will not open the chooseProjectPath dialog.) 
+ * @param {*} projectPath the path to a project (Optional. If given, the application will not open the chooseProjectPath dialog.)
  */
 export const openProject = (window, projectPath) => {
 
@@ -81,6 +82,11 @@ export const openProject = (window, projectPath) => {
 
     if (!filePaths.length) return
     const path = filePaths[0]
+
+    if (!existsSync(path)) {
+      return dialog.showErrorBox('Path does not exist', `The project path ${path} does not exist.`)
+    }
+
     const candidate = Object
       .entries(State.allWindows())
       .find(([_, value]) => value.path === path)
