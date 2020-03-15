@@ -1,6 +1,4 @@
-import React, { useEffect, useReducer } from 'react'
-import path from 'path'
-import { remote } from 'electron'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import getCurrentDateTime from '../../shared/militaryTime'
@@ -16,23 +14,22 @@ const OSD = (props) => {
   }
 
   const { classes } = props
-  const { path: project } = remote.getCurrentWindow()
-  const title = project ? path.basename(project) : 'ODIN - C2IS'
-  const [state, dispatch] = useReducer(osdSlotReducer, { A1: title })
+  const [state, dispatch] = React.useReducer(osdSlotReducer, {})
 
   const handleOSDMessage = ({ message, duration, slot = 'B1' }) => {
-    dispatch({ slot: slot, message: message })
+    dispatch({ slot, message: message })
     if (duration) setTimeout(() => dispatch({ slot: slot, message: '' }), duration)
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
+    console.log('OSD registering')
     evented.on('OSD_MESSAGE', handleOSDMessage)
     return () => {
       evented.removeListener('OSD_MESSAGE', handleOSDMessage)
     }
   }, []) // no dependency on local state
 
-  useEffect(() => {
+  React.useEffect(() => {
     const updateTime = () => evented.emit('OSD_MESSAGE', { message: getCurrentDateTime(), slot: 'C1' })
     const interval = setInterval(updateTime, 1000)
     return () => clearInterval(interval)

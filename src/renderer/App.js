@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
-import Map from './map/Map'
 import OSD from './components/OSD'
+import Map from './map/Map'
 
 const App = (props) => {
   const { classes } = props
