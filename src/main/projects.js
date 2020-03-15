@@ -69,12 +69,12 @@ export const createProject = (options = {}) => {
   return window
 }
 
-
 /**
  * Open project path in window.
  * @param {*} window project window (optional)
+ * @param {*} projectPath the path to a project (Optional. If given, the application will not open the chooseProjectPath dialog.) 
  */
-export const openProject = window => {
+export const openProject = (window, projectPath) => {
 
   const open = ({ canceled, filePaths = [] }) => {
     if (canceled) return
@@ -96,9 +96,14 @@ export const openProject = window => {
     addRecentProject(path)
   }
 
-  dialog.showOpenDialog(window, { properties: ['openDirectory'] })
+  if (projectPath) {
+    open({ filePaths: [projectPath] })
+  }
+  else {
+    dialog.showOpenDialog(window, { properties: ['openDirectory'] })
     .then(open)
     .catch(/* TODO: handle */)
+  }
 }
 
 // listeners =>

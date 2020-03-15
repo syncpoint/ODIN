@@ -1,14 +1,16 @@
 import { createProject, openProject, saveProject } from '../projects'
 import { clearRecentProjects } from '../recentProjects'
 
-const projectToMenuItem = projects => {
-  if (!projects) return []
-  return projects.map(project => ({
-    label: project
-  }))
-}
-
 const buildRecentProjectsSubmenu = settings => {
+
+  const projectToMenuItem = projects => {
+    if (!projects) return []
+    return projects.map(project => ({
+      label: project,
+      click: (menuItem, browserWindow, event) => openProject(browserWindow, project)
+    }))
+  }
+
   const entries = projectToMenuItem(settings.get('recentProjects'))
   if (entries && entries.length > 0) {
     entries.push({ type: 'separator' })

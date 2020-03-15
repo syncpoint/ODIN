@@ -16,11 +16,15 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 app.allowRendererProcessReuse = false // `false` also removes deprecation message
 
 Menu.setApplicationMenu(buildFromTemplate(settings))
-const rebuildMenu = settings.watch('recentProjects', () => {
+
+/*  As of version 8.1 electron doeas not support adding/removing menu items dynamically.
+    In order to add/remove recently used projects we need to rebuild and set the application menu
+*/
+const rebuildApplicationMenu = settings.watch('recentProjects', () => {
   Menu.setApplicationMenu(buildFromTemplate(settings))
 })
 
 app.on('window-all-closed', () => {
-  rebuildMenu.dispose()
+  rebuildApplicationMenu.dispose()
   if (process.platform !== 'darwin') app.quit()
 })
