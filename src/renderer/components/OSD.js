@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import path from 'path'
-import { remote } from 'electron'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import getCurrentDateTime from '../../shared/militaryTime'
@@ -9,9 +7,7 @@ import evented from '../evented'
 
 const OSD = (props) => {
   const { classes } = props
-  const { path: project } = remote.getCurrentWindow()
-  const title = project ? path.basename(project) : 'ODIN - C2IS'
-  const [state, setState] = useState({ A1: title })
+  const [state, setState] = useState({ A1: 'ODIN - C2IS' })
 
   const handleOSDMessage = ({ message, duration, slot = 'B1' }) => {
     if (state[slot] === message) return
