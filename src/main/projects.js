@@ -98,11 +98,10 @@ export const openProject = (window, projectPath) => {
 
   if (projectPath) {
     open({ filePaths: [projectPath] })
-  }
-  else {
+  } else {
     dialog.showOpenDialog(window, { properties: ['openDirectory'] })
-    .then(open)
-    .catch(/* TODO: handle */)
+      .then(open)
+      .catch(/* TODO: handle */)
   }
 }
 
