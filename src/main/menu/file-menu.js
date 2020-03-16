@@ -1,5 +1,4 @@
 import projects from '../projects'
-console.log('projects', projects)
 
 const buildRecentProjectsSubmenu = () => {
 
