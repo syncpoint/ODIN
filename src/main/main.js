@@ -21,7 +21,7 @@ app.allowRendererProcessReuse = false // `false` also removes deprecation messag
 */
 const buildApplicationMenu = () => Menu.setApplicationMenu(buildFromTemplate(settings))
 buildApplicationMenu()
-settings.watch('recentProjects', buildApplicationMenu)
+settings.watch('app.state.recent-projects', buildApplicationMenu)
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
