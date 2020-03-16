@@ -13,7 +13,7 @@
     "builder:mac": "electron-builder --mac",
     "builder:win": "electron-builder --win",
     "eslint": "eslint src/",
-    "test": "mocha --require esm"
+    "test": "mocha --require @babel/register --recursive"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,7 @@
     "@babel/core": "^7.8.7",
     "@babel/preset-env": "^7.8.7",
     "@babel/preset-react": "^7.8.3",
+    "@babel/register": "^7.8.6",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.0.6",
     "css-loader": "^3.4.2",
