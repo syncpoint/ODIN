@@ -3,6 +3,8 @@
 import { app, Menu } from 'electron'
 import { buildFromTemplate } from '../main/menu/menu'
 import settings from 'electron-settings'
+import projects from './projects'
+console.log(projects.watchRecentProjects)
 
 // Disable for production:
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
@@ -21,7 +23,7 @@ app.allowRendererProcessReuse = false // `false` also removes deprecation messag
 */
 const buildApplicationMenu = () => Menu.setApplicationMenu(buildFromTemplate(settings))
 buildApplicationMenu()
-settings.watch('app.state.recent-projects', buildApplicationMenu)
+projects.watchRecentProjects(buildApplicationMenu)
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()

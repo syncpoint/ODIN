@@ -28,6 +28,7 @@ State.allWindows = () => settings.get(WINDOWS_KEY, {})
 State.deleteWindow = id => settings.delete(windowKey(id))
 State.deleteRecentProjects = () => settings.set(RECENT_PROJECTS_KEY, [])
 State.recentProjects = () => settings.get(RECENT_PROJECTS_KEY, [])
+State.watch = (keyPath, handler) => settings.watch(keyPath, handler)
 
 // TODO: unit test
 
@@ -165,5 +166,6 @@ export default {
   createProject,
   openProject,
   clearRecentProjects: State.deleteRecentProjects,
-  recentProjects: State.recentProjects
+  recentProjects: State.recentProjects,
+  watchRecentProjects: handler => State.watch(RECENT_PROJECTS_KEY, handler)
 }
