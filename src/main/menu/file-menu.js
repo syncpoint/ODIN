@@ -25,7 +25,7 @@ const menu = () => {
       {
         label: 'New Project',
         accelerator: 'Shift+CmdOrCtrl+N',
-        click: projects.createProject
+        click: () => projects.createProject()
       },
       {
         label: 'Open Project...',
