@@ -1,47 +1,45 @@
-import { createProject, openProject, saveProject, clearRecentProjects } from '../projects'
+import projects from '../projects'
+console.log('projects', projects)
 
-const buildRecentProjectsSubmenu = settings => {
+const buildRecentProjectsSubmenu = () => {
 
-  const projectToMenuItem = projects => {
-    if (!projects) return []
-    return projects.map(project => ({
-      label: project,
-      click: (menuItem, browserWindow, event) => openProject(browserWindow, project)
-    }))
-  }
+  const entries = projects.recentProjects().map(project => ({
+    label: project,
+    click: (menuItem, browserWindow, event) => projects.openProject(browserWindow, project)
+  }))
 
-  const entries = projectToMenuItem(settings.get('recentProjects'))
   if (entries && entries.length > 0) {
     entries.push({ type: 'separator' })
     entries.push({
       label: 'Clear Recently Opened',
-      click: clearRecentProjects
+      click: projects.clearRecentProjects
     })
   }
+
   return entries
 }
 
-const menu = settings => ({
+const menu = () => ({
   label: 'File',
   submenu: [
     {
       label: 'New Project',
       accelerator: 'Shift+CmdOrCtrl+N',
-      click: () => createProject()
+      click: projects.createProject
     },
     {
       label: 'Open Project...',
       accelerator: 'CmdOrCtrl+O',
-      click: (menuItem, browserWindow, event) => openProject(browserWindow)
+      click: (menuItem, browserWindow, event) => projects.openProject(browserWindow)
     },
     {
       label: 'Open Recent Projects...',
-      submenu: buildRecentProjectsSubmenu(settings)
+      submenu: buildRecentProjectsSubmenu()
     },
     {
       label: 'Save As...',
       accelerator: 'Shift+CmdOrCtrl+S',
-      click: () => saveProject()
+      click: () => projects.saveProject()
     }
   ]
 })

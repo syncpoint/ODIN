@@ -5,23 +5,36 @@ import settings from 'electron-settings'
 import * as R from 'ramda'
 import { existsSync } from 'fs'
 
-// Facade for windows state =>
 
-// TODO: define naming scheme for settings keys
-// -> e.g. application preferences, session state (windows), etc.
-const RECENT_PROJECTS = 'recentProjects'
-const MAX_ENTRIES = 5
+/**
+ * Facade for application windows/project state.
+ * Encapsulates settings access.
+ */
+
+const MAX_RECENT_PROJECTS = 5
+
+const APP_KEY = 'app'
+const STATE_KEY = `${APP_KEY}.state`
+const WINDOWS_KEY = `${STATE_KEY}.windows`
+const windowKey = id => `${WINDOWS_KEY}.${id}`
+const RECENT_PROJECTS_KEY = `${STATE_KEY}.recent-projects`
 
 const State = {}
-State.clear = () => settings.delete('global.windows')
-State.allWindows = () => settings.get('global.windows', {})
-State.deleteWindow = id => settings.delete(`global.windows.${id}`)
-State.updateWindow = (id, props) => {
-  const key = `global.windows.${id}`
-  settings.set(key, { ...settings.get(key, {}), ...props })
-}
+State.update = key => (fn, defaultvalue) =>
+  settings.set(key, fn(settings.get(key, defaultvalue)))
 
-// project handling =>
+State.deleteAllWindows = () => settings.delete(WINDOWS_KEY)
+State.allWindows = () => settings.get(WINDOWS_KEY, {})
+State.deleteWindow = id => settings.delete(windowKey(id))
+State.deleteRecentProjects = () => settings.set(RECENT_PROJECTS_KEY, [])
+State.recentProjects = () => settings.get(RECENT_PROJECTS_KEY, [])
+
+// TODO: unit test
+
+/**
+ * Project/window handling.
+ * No direct access to settings beyond this point.
+ */
 
 let shuttingDown = false
 
@@ -32,11 +45,13 @@ const sendMessage = window => (event, ...args) => {
 
 const windowTitle = options => options.path ? path.basename(options.path) : 'ODIN - C2IS'
 
+
 /**
  * Open project window.
+ *
  * @param {*} options window options
  */
-export const createProject = (options = {}) => {
+const createProject = (options = {}) => {
   const devServer = process.argv.indexOf('--noDevServer') === -1
   const hotDeployment = process.defaultApp ||
     /[\\/]electron-prebuilt[\\/]/.test(process.execPath) ||
@@ -55,13 +70,15 @@ export const createProject = (options = {}) => {
     }
   })
 
-  const updateBounds = () => State.updateWindow(window.id, { ...window.getBounds() })
+  const key = windowKey(window.id)
+  State.update(key)(props => ({ ...props, ...options }), {})
+
+  const updateBounds = () => State.update(key)(props => ({ ...props, ...window.getBounds() }))
   const deleteWindow = () => {
     if (shuttingDown) return
     State.deleteWindow(window.id)
   }
 
-  State.updateWindow(window.id, options)
   window.viewport = options.viewport
   window.path = options.path
   window.once('ready-to-show', () => window.show())
@@ -75,17 +92,19 @@ export const createProject = (options = {}) => {
   return window
 }
 
+
 /**
- * Open project path in window.
+ * Open project path in current or new window.
+ *
  * @param {*} window project window (optional)
  * @param {*} projectPath the path to a project (Optional. If given, the application will not open the chooseProjectPath dialog.)
  */
-export const openProject = (window, projectPath) => {
+const openProject = (window, projectPath) => {
 
   const open = ({ canceled, filePaths = [] }) => {
     if (canceled) return
-
     if (!filePaths.length) return
+
     const path = filePaths[0]
 
     if (!existsSync(path)) {
@@ -101,16 +120,15 @@ export const openProject = (window, projectPath) => {
 
     if (!window) createProject({ path })
     else {
-      State.updateWindow(window.id, { path })
+      State.update(windowKey(window.id))(props => ({ ...props, path }), {})
       window.setTitle(windowTitle({ path }))
       sendMessage(window)('IPC_OPEN_PROJECT', path)
     }
 
     // Remember path in 'recent projects':
     // Add path to tail, make entries unique and cap to max size:
-    const prepend = R.compose(R.slice(0, MAX_ENTRIES), R.uniq, R.prepend(path))
-    const projects = settings.get(RECENT_PROJECTS, [])
-    settings.set(RECENT_PROJECTS, prepend(projects))
+    const prepend = R.compose(R.slice(0, MAX_RECENT_PROJECTS), R.uniq, R.prepend(path))
+    State.update(RECENT_PROJECTS_KEY)(prepend, [])
   }
 
   if (projectPath) {
@@ -122,9 +140,6 @@ export const openProject = (window, projectPath) => {
   }
 }
 
-export const clearRecentProjects = () => {
-  settings.set(RECENT_PROJECTS, [])
-}
 
 // listeners =>
 
@@ -135,7 +150,7 @@ app.on('ready', () => {
   // Since window ids are not stable between session,
   // we clear state now and recreate it with current ids.
   const state = Object.values(State.allWindows())
-  State.clear()
+  State.deleteAllWindows()
 
   if (state.length) state.forEach(createProject)
   else createProject(/* empty project */)
@@ -143,5 +158,12 @@ app.on('ready', () => {
 
 ipcMain.on('IPC_VIEWPORT_CHANGED', (event, viewport) => {
   const { id } = event.sender.getOwnerBrowserWindow()
-  State.updateWindow(id, { viewport })
+  State.update(windowKey(id))(props => ({ ...props, viewport }), {})
 })
+
+export default {
+  createProject,
+  openProject,
+  clearRecentProjects: State.deleteRecentProjects,
+  recentProjects: State.recentProjects
+}

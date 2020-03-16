@@ -10,7 +10,7 @@ import windowMenu from './window-menu'
 const template = settings => ([
   // darwin only (must be filtered for other platforms)
   applicationMenu,
-  fileMenu(settings),
+  fileMenu(),
   // editMenu,
   viewMenu(settings),
   // goMenu,
