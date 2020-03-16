@@ -37,6 +37,7 @@ const loadPreferences = () => {
  * @param {object} args partial preference values
  */
 const updatePreferences = args => {
+  if (!currentProject) return
   preferences = { ...preferences, ...args }
   const location = path.join(currentProject, 'preferences.json')
   fs.writeFileSync(location, JSON.stringify(preferences, null, 2))

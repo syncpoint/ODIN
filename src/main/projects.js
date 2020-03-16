@@ -2,10 +2,15 @@ import path from 'path'
 import url from 'url'
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import settings from 'electron-settings'
-import { addRecentProject } from './recentProjects'
+import * as R from 'ramda'
 import { existsSync } from 'fs'
 
 // Facade for windows state =>
+
+// TODO: define naming scheme for settings keys
+// -> e.g. application preferences, session state (windows), etc.
+const RECENT_PROJECTS = 'recentProjects'
+const MAX_ENTRIES = 5
 
 const State = {}
 State.clear = () => settings.delete('global.windows')
@@ -87,6 +92,7 @@ export const openProject = (window, projectPath) => {
       return dialog.showErrorBox('Path does not exist', `The project path ${path} does not exist.`)
     }
 
+    // Check if project is already open in another window:
     const candidate = Object
       .entries(State.allWindows())
       .find(([_, value]) => value.path === path)
@@ -99,7 +105,12 @@ export const openProject = (window, projectPath) => {
       window.setTitle(windowTitle({ path }))
       sendMessage(window)('IPC_OPEN_PROJECT', path)
     }
-    addRecentProject(path)
+
+    // Remember path in 'recent projects':
+    // Add path to tail, make entries unique and cap to max size:
+    const prepend = R.compose(R.slice(0, MAX_ENTRIES), R.uniq, R.prepend(path))
+    const projects = settings.get(RECENT_PROJECTS, [])
+    settings.set(RECENT_PROJECTS, prepend(projects))
   }
 
   if (projectPath) {
@@ -109,6 +120,10 @@ export const openProject = (window, projectPath) => {
       .then(open)
       .catch(/* TODO: handle */)
   }
+}
+
+export const clearRecentProjects = () => {
+  settings.set(RECENT_PROJECTS, [])
 }
 
 // listeners =>

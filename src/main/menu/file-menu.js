@@ -1,5 +1,4 @@
-import { createProject, openProject, saveProject } from '../projects'
-import { clearRecentProjects } from '../recentProjects'
+import { createProject, openProject, saveProject, clearRecentProjects } from '../projects'
 
 const buildRecentProjectsSubmenu = settings => {
 
