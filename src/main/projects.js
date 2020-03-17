@@ -1,9 +1,9 @@
 import path from 'path'
+import { existsSync } from 'fs'
 import url from 'url'
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import settings from 'electron-settings'
 import * as R from 'ramda'
-import { existsSync } from 'fs'
 
 
 /**
@@ -42,7 +42,18 @@ const windowTitle = options => options.path ? path.basename(options.path) : 'ODI
  *
  * @param {*} options window options
  */
-const createProject = (options = {}) => {
+const createProject = async (options = {}) => {
+
+  // Request project path from user, if not given.
+  if (!options.path) {
+    const { canceled, filePaths } = await dialog.showOpenDialog({ properties: ['openDirectory'] })
+    if (canceled) return
+    options.path = filePaths && filePaths && filePaths[0]
+  }
+
+  // Still no path? Bail out.
+  if (!options.path) return
+
   const devServer = process.argv.indexOf('--noDevServer') === -1
   const hotDeployment = process.defaultApp ||
     /[\\/]electron-prebuilt[\\/]/.test(process.execPath) ||
@@ -135,7 +146,6 @@ const openProject = (window, projectPath) => {
 
 // listeners =>
 
-app.on('activate', () => createProject(/* empty project */))
 app.on('before-quit', () => (shuttingDown = true))
 app.on('ready', () => {
 
