@@ -4,6 +4,16 @@ import path from 'path'
 import { List } from 'immutable'
 import evented from './evented'
 
+const DEFAULT_PREFERENCES = {
+  viewport: {
+    zoom: 10.29344451062811,
+    center: [
+      15.517894187589647,
+      48.21987507926943
+    ]
+  }
+}
+
 /** Current project directory. */
 let currentProject /* undefined: no project open. */
 
@@ -11,7 +21,7 @@ let currentProject /* undefined: no project open. */
  * Preferences (in-memory).
  * Should always be in sync with file: preferences.json
  */
-let preferences = {}
+let preferences = DEFAULT_PREFERENCES
 
 /** Open/close event listeners. */
 let listeners = List()
@@ -28,7 +38,7 @@ const register = listener => {
 const loadPreferences = () => {
   if (!currentProject) return
   const location = path.join(currentProject, 'preferences.json')
-  preferences = JSON.parse(fs.readFileSync(location))
+  if (fs.existsSync(location)) preferences = JSON.parse(fs.readFileSync(location))
 }
 
 
@@ -76,7 +86,7 @@ const overlays = () => {
   if (!currentProject) return []
 
   const dir = path.join(currentProject, 'overlays')
-
+  if (!fs.existsSync(dir)) return []
   return fs.readdirSync(dir)
     .filter(filename => filename.endsWith('.json'))
     .map(filename => path.join(dir, filename))

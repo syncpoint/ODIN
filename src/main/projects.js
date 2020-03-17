@@ -51,54 +51,54 @@ const updateRecentProjects = path => {
 const createProject = async (options = {}) => {
 
   // Request project path from user, if not given.
-  if (!options.path) {
-    const { canceled, filePaths } = await dialog.showOpenDialog({ properties: ['openDirectory'] })
-    if (canceled) return
-    options.path = filePaths && filePaths && filePaths[0]
-  }
+  const create = (options = {}) => {
+    const devServer = process.argv.indexOf('--noDevServer') === -1
+    const hotDeployment = process.defaultApp ||
+      /[\\/]electron-prebuilt[\\/]/.test(process.execPath) ||
+      /[\\/]electron[\\/]/.test(process.execPath)
 
-  // Still no path? Bail out.
-  if (!options.path) return
+    const windowUrl = (hotDeployment && devServer)
+      ? url.format({ protocol: 'http:', host: 'localhost:8080', pathname: 'index.html', slashes: true })
+      : url.format({ protocol: 'file:', pathname: path.join(app.getAppPath(), 'dist', 'index.html'), slashes: true })
 
-  const devServer = process.argv.indexOf('--noDevServer') === -1
-  const hotDeployment = process.defaultApp ||
-    /[\\/]electron-prebuilt[\\/]/.test(process.execPath) ||
-    /[\\/]electron[\\/]/.test(process.execPath)
+    const window = new BrowserWindow({
+      ...options,
+      title: windowTitle(options),
+      show: false,
+      webPreferences: {
+        nodeIntegration: true
+      }
+    })
 
-  const windowUrl = (hotDeployment && devServer)
-    ? url.format({ protocol: 'http:', host: 'localhost:8080', pathname: 'index.html', slashes: true })
-    : url.format({ protocol: 'file:', pathname: path.join(app.getAppPath(), 'dist', 'index.html'), slashes: true })
+    const key = windowKey(window.id)
+    merge(key)(props => ({ ...props, ...options }), {})
 
-  const window = new BrowserWindow({
-    ...options,
-    title: windowTitle(options),
-    show: false,
-    webPreferences: {
-      nodeIntegration: true
+    const updateBounds = () => merge(key)(props => ({ ...props, ...window.getBounds() }))
+    const deleteWindow = () => {
+      // don't delete when shutting down the application.
+      if (shuttingDown) return
+      settings.delete(windowKey(window.id))
     }
-  })
 
-  const key = windowKey(window.id)
-  merge(key)(props => ({ ...props, ...options }), {})
+    window.viewport = options.viewport
+    window.path = options.path
+    window.once('ready-to-show', () => window.show())
+    window.once('close', deleteWindow)
+    window.on('page-title-updated', event => event.preventDefault())
+    window.on('move', updateBounds)
+    window.on('resize', updateBounds)
+    // TODO: support fullscreen
 
-  const updateBounds = () => merge(key)(props => ({ ...props, ...window.getBounds() }))
-  const deleteWindow = () => {
-    // don't delete when shutting down the application.
-    if (shuttingDown) return
-    settings.delete(windowKey(window.id))
+    window.loadURL(windowUrl)
+    updateRecentProjects(options.path)
   }
 
-  window.viewport = options.viewport
-  window.path = options.path
-  window.once('ready-to-show', () => window.show())
-  window.once('close', deleteWindow)
-  window.on('page-title-updated', event => event.preventDefault())
-  window.on('move', updateBounds)
-  window.on('resize', updateBounds)
-  // TODO: support fullscreen
-
-  window.loadURL(windowUrl)
-  updateRecentProjects(options.path)
+  dialog.showOpenDialog({ properties: ['openDirectory'] }).then(
+    result => {
+      if (result.canceled) return
+      create({ path: result.filePaths[0] })
+    }
+  )
 }
 
 
