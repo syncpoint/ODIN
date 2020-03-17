@@ -19,23 +19,13 @@ const WINDOWS_KEY = `${STATE_KEY}.windows`
 const windowKey = id => `${WINDOWS_KEY}.${id}`
 const RECENT_PROJECTS_KEY = `${STATE_KEY}.recent-projects`
 
-const State = {}
-State.update = key => (fn, defaultvalue) =>
-  settings.set(key, fn(settings.get(key, defaultvalue)))
-
-State.deleteAllWindows = () => settings.delete(WINDOWS_KEY)
-State.allWindows = () => settings.get(WINDOWS_KEY, {})
-State.deleteWindow = id => settings.delete(windowKey(id))
-State.deleteRecentProjects = () => settings.set(RECENT_PROJECTS_KEY, [])
-State.recentProjects = () => settings.get(RECENT_PROJECTS_KEY, [])
-State.watch = (keyPath, handler) => settings.watch(keyPath, handler)
+/**
+ * Merge current value (object) with supplied (map) function.
+ */
+const merge = keyPath => (fn, defaultvalue) =>
+  settings.set(keyPath, fn(settings.get(keyPath, defaultvalue)))
 
 // TODO: unit test
-
-/**
- * Project/window handling.
- * No direct access to settings beyond this point.
- */
 
 let shuttingDown = false
 
@@ -72,12 +62,13 @@ const createProject = (options = {}) => {
   })
 
   const key = windowKey(window.id)
-  State.update(key)(props => ({ ...props, ...options }), {})
+  merge(key)(props => ({ ...props, ...options }), {})
 
-  const updateBounds = () => State.update(key)(props => ({ ...props, ...window.getBounds() }))
+  const updateBounds = () => merge(key)(props => ({ ...props, ...window.getBounds() }))
   const deleteWindow = () => {
+    // don't delete when shutting down the application.
     if (shuttingDown) return
-    State.deleteWindow(window.id)
+    settings.delete(windowKey(window.id))
   }
 
   window.viewport = options.viewport
@@ -114,14 +105,14 @@ const openProject = (window, projectPath) => {
 
     // Check if project is already open in another window:
     const candidate = Object
-      .entries(State.allWindows())
+      .entries(settings.get(WINDOWS_KEY, {}))
       .find(([_, value]) => value.path === path)
 
     if (candidate) return BrowserWindow.fromId(Number.parseInt(candidate[0])).focus()
 
     if (!window) createProject({ path })
     else {
-      State.update(windowKey(window.id))(props => ({ ...props, path }), {})
+      merge(windowKey(window.id))(props => ({ ...props, path }), {})
       window.setTitle(windowTitle({ path }))
       sendMessage(window)('IPC_OPEN_PROJECT', path)
     }
@@ -129,7 +120,7 @@ const openProject = (window, projectPath) => {
     // Remember path in 'recent projects':
     // Add path to tail, make entries unique and cap to max size:
     const prepend = R.compose(R.slice(0, MAX_RECENT_PROJECTS), R.uniq, R.prepend(path))
-    State.update(RECENT_PROJECTS_KEY)(prepend, [])
+    merge(RECENT_PROJECTS_KEY)(prepend, [])
   }
 
   if (projectPath) {
@@ -148,10 +139,10 @@ app.on('activate', () => createProject(/* empty project */))
 app.on('before-quit', () => (shuttingDown = true))
 app.on('ready', () => {
 
-  // Since window ids are not stable between session,
+  // Since window ids are not stable between sessions,
   // we clear state now and recreate it with current ids.
-  const state = Object.values(State.allWindows())
-  State.deleteAllWindows()
+  const state = Object.values(settings.get(WINDOWS_KEY, {}))
+  settings.delete(WINDOWS_KEY)
 
   if (state.length) state.forEach(createProject)
   else createProject(/* empty project */)
@@ -159,13 +150,13 @@ app.on('ready', () => {
 
 ipcMain.on('IPC_VIEWPORT_CHANGED', (event, viewport) => {
   const { id } = event.sender.getOwnerBrowserWindow()
-  State.update(windowKey(id))(props => ({ ...props, viewport }), {})
+  merge(windowKey(id))(props => ({ ...props, viewport }), {})
 })
 
 export default {
   createProject,
   openProject,
-  clearRecentProjects: State.deleteRecentProjects,
-  recentProjects: State.recentProjects,
-  watchRecentProjects: handler => State.watch(RECENT_PROJECTS_KEY, handler)
+  clearRecentProjects: () => settings.set(RECENT_PROJECTS_KEY, []),
+  recentProjects: () => settings.get(RECENT_PROJECTS_KEY, []),
+  watchRecentProjects: handler => settings.watch(RECENT_PROJECTS_KEY, handler)
 }

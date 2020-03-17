@@ -4,7 +4,6 @@ import { app, Menu } from 'electron'
 import { buildFromTemplate } from '../main/menu/menu'
 import settings from 'electron-settings'
 import projects from './projects'
-console.log(projects.watchRecentProjects)
 
 // Disable for production:
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
