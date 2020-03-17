@@ -22,7 +22,6 @@ const OSD = (props) => {
   }
 
   React.useEffect(() => {
-    console.log('OSD registering')
     evented.on('OSD_MESSAGE', handleOSDMessage)
     return () => {
       evented.removeListener('OSD_MESSAGE', handleOSDMessage)
