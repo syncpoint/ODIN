@@ -22,8 +22,7 @@ const RECENT_PROJECTS_KEY = `${STATE_KEY}.recent-projects`
 /**
  * Merge current value (object) with supplied (map) function.
  */
-const merge = keyPath => (fn, defaultvalue) =>
-  settings.set(keyPath, fn(settings.get(keyPath, defaultvalue)))
+const merge = keyPath => (fn, defaultvalue) => settings.set(keyPath, fn(settings.get(keyPath, defaultvalue)))
 
 // TODO: unit test
 
@@ -51,7 +50,7 @@ const updateRecentProjects = path => {
 const createProject = async (options = {}) => {
 
   // Request project path from user, if not given.
-  const create = (options = {}) => {
+  const create = (projectOptions) => {
     const devServer = process.argv.indexOf('--noDevServer') === -1
     const hotDeployment = process.defaultApp ||
       /[\\/]electron-prebuilt[\\/]/.test(process.execPath) ||
@@ -62,8 +61,8 @@ const createProject = async (options = {}) => {
       : url.format({ protocol: 'file:', pathname: path.join(app.getAppPath(), 'dist', 'index.html'), slashes: true })
 
     const window = new BrowserWindow({
-      ...options,
-      title: windowTitle(options),
+      ...projectOptions,
+      title: windowTitle(projectOptions),
       show: false,
       webPreferences: {
         nodeIntegration: true
@@ -71,7 +70,7 @@ const createProject = async (options = {}) => {
     })
 
     const key = windowKey(window.id)
-    merge(key)(props => ({ ...props, ...options }), {})
+    merge(key)(props => ({ ...props, ...projectOptions }), {})
 
     const updateBounds = () => merge(key)(props => ({ ...props, ...window.getBounds() }))
     const deleteWindow = () => {
@@ -80,8 +79,8 @@ const createProject = async (options = {}) => {
       settings.delete(windowKey(window.id))
     }
 
-    window.viewport = options.viewport
-    window.path = options.path
+    window.viewport = projectOptions.viewport
+    window.path = projectOptions.path
     window.once('ready-to-show', () => window.show())
     window.once('close', deleteWindow)
     window.on('page-title-updated', event => event.preventDefault())
@@ -90,15 +89,19 @@ const createProject = async (options = {}) => {
     // TODO: support fullscreen
 
     window.loadURL(windowUrl)
-    updateRecentProjects(options.path)
+    updateRecentProjects(projectOptions.path)
   }
 
-  dialog.showOpenDialog({ properties: ['openDirectory'] }).then(
-    result => {
-      if (result.canceled) return
-      create({ path: result.filePaths[0] })
-    }
-  )
+  if (options.path) {
+    create(options)
+  } else {
+    dialog.showOpenDialog({ properties: ['openDirectory'] }).then(
+      result => {
+        if (result.canceled) return
+        create({ path: result.filePaths[0] })
+      }
+    )
+  }
 }
 
 
@@ -158,7 +161,6 @@ app.on('ready', () => {
   settings.delete(WINDOWS_KEY)
 
   if (state.length) state.forEach(createProject)
-  else createProject(/* empty project */)
 })
 
 ipcMain.on('IPC_VIEWPORT_CHANGED', (event, viewport) => {
