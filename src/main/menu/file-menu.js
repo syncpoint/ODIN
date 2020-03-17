@@ -35,11 +35,6 @@ const menu = () => {
       {
         label: 'Open Recent Projects...',
         submenu: buildRecentProjectsSubmenu()
-      },
-      {
-        label: 'Save As...',
-        accelerator: 'Shift+CmdOrCtrl+S',
-        click: () => projects.saveProject()
       }
     ]
   }
