@@ -36,6 +36,12 @@ const sendMessage = window => (event, ...args) => {
 
 const windowTitle = options => options.path ? path.basename(options.path) : 'ODIN - C2IS'
 
+const updateRecentProjects = path => {
+  // Add path to tail, make entries unique and cap to max size:
+  const prepend = R.compose(R.slice(0, MAX_RECENT_PROJECTS), R.uniq, R.prepend(path))
+  merge(RECENT_PROJECTS_KEY)(prepend, [])
+}
+
 
 /**
  * Open project window.
@@ -92,7 +98,7 @@ const createProject = async (options = {}) => {
   // TODO: support fullscreen
 
   window.loadURL(windowUrl)
-  return window
+  updateRecentProjects(options.path)
 }
 
 
@@ -128,10 +134,7 @@ const openProject = (window, projectPath) => {
       sendMessage(window)('IPC_OPEN_PROJECT', path)
     }
 
-    // Remember path in 'recent projects':
-    // Add path to tail, make entries unique and cap to max size:
-    const prepend = R.compose(R.slice(0, MAX_RECENT_PROJECTS), R.uniq, R.prepend(path))
-    merge(RECENT_PROJECTS_KEY)(prepend, [])
+    updateRecentProjects(path)
   }
 
   if (projectPath) {
