@@ -161,6 +161,7 @@ app.on('ready', () => {
   settings.delete(WINDOWS_KEY)
 
   if (state.length) state.forEach(createProject)
+  else createProject({ /* empty project */ })
 })
 
 ipcMain.on('IPC_VIEWPORT_CHANGED', (event, viewport) => {
