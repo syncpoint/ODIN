@@ -28,7 +28,7 @@ let listeners = List()
 
 const register = listener => {
   listeners = listeners.push(listener)
-  if (currentProject) setImmediate(() => listener('open'))
+  if (currentProject) setTimeout(() => listener('open'), 0)
 }
 
 
@@ -73,7 +73,10 @@ const openProject = project => {
   currentProject = project
 
   // NOTE: Defer message, so OSD has a chance to register event handler:
-  setImmediate(() => evented.emit('OSD_MESSAGE', { message: path.basename(project), slot: 'A1' }))
+  const updateProject = () =>
+    evented.emit('OSD_MESSAGE', { message: path.basename(project), slot: 'A1' })
+
+  setTimeout(updateProject, 0)
   loadPreferences()
   listeners.forEach(listener => listener('open'))
 }
@@ -96,10 +99,10 @@ window.addEventListener('beforeunload', () => closeProject())
 ipcRenderer.on('IPC_OPEN_PROJECT', (_, [project]) => openProject(project))
 
 // Wait until next tick for other components to be ready:
-setImmediate(() => {
+setTimeout(() => {
   const { path: project } = remote.getCurrentWindow()
   if (project) openProject(project)
-})
+}, 0)
 
 export default {
   register,
