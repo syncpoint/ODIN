@@ -25,8 +25,8 @@ const viewportChanged = view => () => {
 const projectEventHandler = (view, map) => event => {
   const handlers = {
     open: () => {
-      // Set feature vector overlays.
-      project.overlays()
+      // Set feature vector layers.
+      project.layers()
         .map(filename => featureSource(filename))
         .map(source => featureLayer(source))
         .forEach(layer => map.addLayer(layer))
@@ -38,7 +38,7 @@ const projectEventHandler = (view, map) => event => {
     },
 
     close: () => {
-      // Clear feature overlays.
+      // Clear feature layers.
       map.getLayers().clear()
       map.addLayer(tileLayer())
     }

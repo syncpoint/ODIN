@@ -83,12 +83,12 @@ const openProject = project => {
 
 
 /**
- * Read (absolute) overlay file names from open project.
+ * Read (absolute) layer file names from open project.
  */
-const overlays = () => {
+const layers = () => {
   if (!currentProject) return []
 
-  const dir = path.join(currentProject, 'overlays')
+  const dir = path.join(currentProject, 'layers')
   if (!fs.existsSync(dir)) return []
   return fs.readdirSync(dir)
     .filter(filename => filename.endsWith('.json'))
@@ -106,7 +106,7 @@ setTimeout(() => {
 
 export default {
   register,
-  overlays,
+  layers,
   preferences: () => preferences,
   updatePreferences
 }
