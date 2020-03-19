@@ -1,10 +1,13 @@
 import path from 'path'
-import { existsSync } from 'fs'
+import { existsSync, mkdirSync } from 'fs'
 import url from 'url'
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import settings from 'electron-settings'
 import * as R from 'ramda'
 
+const ODIN_HOME = path.join(app.getPath('home'), 'ODIN')
+const ODIN_PROJECTS = path.join(ODIN_HOME, 'projects')
+const ODIN_PROJECT_PREFIX = 'untiteled project '
 
 /**
  * Facade for application windows/project state.
@@ -47,7 +50,7 @@ const updateRecentProjects = path => {
  *
  * @param {*} options window options
  */
-const createProject = async (options = {}) => {
+const createProject = async (options = { path: path.join(ODIN_PROJECTS, `${ODIN_PROJECT_PREFIX} - ${100 * Math.random()}`) }) => {
 
   // Request project path from user, if not given.
   const create = (projectOptions) => {
@@ -92,15 +95,15 @@ const createProject = async (options = {}) => {
     updateRecentProjects(projectOptions.path)
   }
 
-  if (options.path) {
-    create(options)
+  if (!existsSync(options.path)) {
+    try {
+      mkdirSync(options.path, { recursive: true })
+      create(options)
+    } catch (error) {
+      dialog.showErrorBox('Error creating project folder', error.message)
+    }
   } else {
-    dialog.showOpenDialog({ properties: ['openDirectory'] }).then(
-      result => {
-        if (result.canceled) return
-        create({ path: result.filePaths[0] })
-      }
-    )
+    create(options)
   }
 }
 
@@ -149,6 +152,11 @@ const openProject = (window, projectPath) => {
   }
 }
 
+const manageProjects = () => {
+  const win = new BrowserWindow({ width: 800, height: 600, frame: false })
+  win.show()
+}
+
 
 // listeners =>
 
@@ -161,7 +169,7 @@ app.on('ready', () => {
   settings.delete(WINDOWS_KEY)
 
   if (state.length) state.forEach(createProject)
-  else createProject({ /* empty project */ })
+  else createProject(/* use function params defaults */)
 })
 
 ipcMain.on('IPC_VIEWPORT_CHANGED', (event, viewport) => {
@@ -174,5 +182,6 @@ export default {
   openProject,
   clearRecentProjects: () => settings.set(RECENT_PROJECTS_KEY, []),
   recentProjects: () => settings.get(RECENT_PROJECTS_KEY, []),
-  watchRecentProjects: handler => settings.watch(RECENT_PROJECTS_KEY, handler)
+  watchRecentProjects: handler => settings.watch(RECENT_PROJECTS_KEY, handler),
+  manageProjects
 }

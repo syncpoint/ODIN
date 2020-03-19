@@ -3,15 +3,32 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import OSD from './components/OSD'
 import Map from './map/Map'
+import Management from './components/Management'
+import Sidebar from './components/Sidebar'
 
 const App = (props) => {
   const { classes } = props
-
   const appProps = { ...props, ...{ id: 'map' } }
+
+  const [showManagement, setManagement] = React.useState(false)
+
+  const toggleManagementUI = event => {
+    setManagement(showManagement => !showManagement)
+  }
+
+  if (showManagement) {
+    return (
+      <React.Fragment>
+        <Sidebar clickAction={toggleManagementUI}/>
+        <Management />
+      </React.Fragment>
+    )
+  }
 
   return (
     <React.Fragment>
       <Map { ...appProps }/>
+      <Sidebar clickAction={toggleManagementUI}/>
       <div className={classes.overlay}>
         <OSD />
       </div>
@@ -27,7 +44,7 @@ const styles = {
   overlay: {
     position: 'fixed',
     top: '1em',
-    left: '1em',
+    left: '3em',
     bottom: '1.5em',
     right: '1em',
     zIndex: 20,

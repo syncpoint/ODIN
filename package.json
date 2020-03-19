@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.9.5",
+    "@material-ui/icons": "^4.9.1",
     "electron-settings": "^3.2.0",
     "geodesy": "^2.2.0",
     "geographiclib": "^1.50.0",

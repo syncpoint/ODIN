@@ -23,16 +23,6 @@ const menu = () => {
     label: 'File',
     submenu: [
       {
-        label: 'New Project',
-        accelerator: 'Shift+CmdOrCtrl+N',
-        click: () => projects.createProject()
-      },
-      {
-        label: 'Open Project...',
-        accelerator: 'CmdOrCtrl+O',
-        click: (menuItem, browserWindow, event) => projects.openProject(browserWindow)
-      },
-      {
         label: 'Open Recent Projects...',
         submenu: buildRecentProjectsSubmenu()
       }
