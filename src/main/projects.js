@@ -18,6 +18,8 @@ const STATE_KEY = `${APP_KEY}.state`
 const WINDOWS_KEY = `${STATE_KEY}.windows`
 const windowKey = id => `${WINDOWS_KEY}.${id}`
 const RECENT_PROJECTS_KEY = `${STATE_KEY}.recent-projects`
+const USER_HOME = path.join(app.getPath('home'))
+const DEFAULT_PROJECT_PATH = { path: USER_HOME }
 
 /**
  * Merge current value (object) with supplied (map) function.
@@ -159,9 +161,10 @@ app.on('ready', () => {
   // we clear state now and recreate it with current ids.
   const state = Object.values(settings.get(WINDOWS_KEY, {}))
   settings.delete(WINDOWS_KEY)
-
   if (state.length) state.forEach(createProject)
-  else createProject({ /* empty project */ })
+  else {
+    createProject(DEFAULT_PROJECT_PATH)
+  }
 })
 
 ipcMain.on('IPC_VIEWPORT_CHANGED', (event, viewport) => {
