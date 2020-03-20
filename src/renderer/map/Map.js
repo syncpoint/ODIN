@@ -5,6 +5,7 @@ import evented from '../evented'
 import 'ol/ol.css'
 import * as ol from 'ol'
 import { fromLonLat, toLonLat } from 'ol/proj'
+import { ScaleLine } from 'ol/control'
 import { feature as featureSource } from './source/feature'
 import { feature as featureLayer } from './layer/feature'
 import { tile as tileLayer } from './layer/tile'
@@ -44,7 +45,7 @@ const projectEventHandler = (view, map) => event => {
     }
   }
 
-  ;(handlers[event] || (() => {}))()
+    ; (handlers[event] || (() => { }))()
 }
 
 
@@ -57,12 +58,19 @@ const effect = props => () => {
   const { id } = props
   const { center, zoom } = { center: [16.363449, 48.210033], zoom: 8 }
   const view = new ol.View({ center: fromLonLat(center), zoom })
+  const scaleBar = new ScaleLine({
+    units: 'metric',
+    bar: true,
+    steps: 4,
+    text: true,
+    minWidth: 140
+  })
 
   const map = new ol.Map({
     view,
     layers: [tileLayer()],
     target: id,
-    controls: []
+    controls: [scaleBar]
   })
 
   map.on('moveend', viewportChanged(view))
