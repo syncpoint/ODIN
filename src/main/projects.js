@@ -18,8 +18,6 @@ const STATE_KEY = `${APP_KEY}.state`
 const WINDOWS_KEY = `${STATE_KEY}.windows`
 const windowKey = id => `${WINDOWS_KEY}.${id}`
 const RECENT_PROJECTS_KEY = `${STATE_KEY}.recent-projects`
-const USER_HOME = path.join(app.getPath('home'))
-const DEFAULT_PROJECT_PATH = { path: USER_HOME }
 
 /**
  * Merge current value (object) with supplied (map) function.
@@ -156,6 +154,11 @@ const openProject = (window, projectPath) => {
 
 app.on('before-quit', () => (shuttingDown = true))
 app.on('ready', () => {
+  let options = {}
+  const projectPath = process.argv.filter(x => x.startsWith('projectPath='))[0]
+  if (projectPath && existsSync(projectPath.slice(12))) {
+    options = { path: projectPath }
+  }
 
   // Since window ids are not stable between sessions,
   // we clear state now and recreate it with current ids.
@@ -163,7 +166,7 @@ app.on('ready', () => {
   settings.delete(WINDOWS_KEY)
   if (state.length) state.forEach(createProject)
   else {
-    createProject(DEFAULT_PROJECT_PATH)
+    createProject(options)
   }
 })
 
