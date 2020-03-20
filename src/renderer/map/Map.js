@@ -11,6 +11,7 @@ import { feature as featureLayer } from './layer/feature'
 import { tile as tileLayer } from './layer/tile'
 import project from '../project'
 import coordinateFormat from '../../shared/coord-format'
+import './style/scalebar.css'
 
 const zoom = view => view.getZoom()
 const center = view => toLonLat(view.getCenter())
