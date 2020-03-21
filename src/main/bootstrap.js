@@ -86,7 +86,7 @@ const createProjectWindow = async (options) => {
   }
 
   try {
-    const projectPath = await projects.createProject(projects.brandNew())
+    const projectPath = await projects.createProject()
     createWindow({ ...options, ...{ path: projectPath } })
   } catch (error) {
     dialog.showErrorBox('Error creating project folder', error.message)

@@ -18,7 +18,7 @@ const ODIN_DEFAULT_METADATA = {
 
 const exists = projectPath => fs.existsSync(projectPath)
 
-const createProject = async (name) => {
+const createProject = async (name = uuid()) => {
   const projectPath = path.join(ODIN_PROJECTS, name)
   if (exists(projectPath)) return
   /* create subfolder structure, too */
@@ -54,7 +54,6 @@ const readMetadata = async (projectPath) => {
 export default {
   exists,
   createProject,
-  brandNew: () => uuid(),
   enumerateProjects,
   readMetadata
 }
