@@ -23,6 +23,16 @@ const Projects = props => {
   ))
 }
 
+const Details = props => {
+  const { project } = props
+  if (!project) return null
+  return (
+    <React.Fragment>
+      <Preview project={project} />
+    </React.Fragment>
+  )
+}
+
 const Preview = props => {
   const { project } = props
   if (!project) return null
@@ -40,16 +50,19 @@ const Management = props => {
   const [focusedProject, setFocusedProject] = React.useState(undefined)
   /* holds an array of all projects metadata */
   const [currentProjects, setCurrentProjects] = React.useState([])
+  const [reloadProjects, setReloadProjects] = React.useState(true)
 
   React.useEffect(() => {
     projects.enumerateProjects().then(allProjects => {
       /* read all metadata */
       Promise.all(
         allProjects.map(projectPath => projects.readMetadata(projectPath)))
-        .then(augmentedProjects => setCurrentProjects(augmentedProjects)
-        )
+        .then(augmentedProjects => {
+          setReloadProjects(false)
+          setCurrentProjects(augmentedProjects)
+        })
     })
-  }, [])
+  }, [reloadProjects])
 
   const handleProjectSelected = (event, project) => {
     ipcRenderer.send('IPC_COMMAND_OPEN_PROJECT', project.path)
@@ -60,9 +73,10 @@ const Management = props => {
     /* TODO: lazy load last screenshot (if exists) */
   }
 
-  const handleNewProject = event => {
-    console.dir(event)
-    /* TODO: show edit form and go for a project name */
+  const handleNewProject = () => {
+    projects.createProject().then((_) => {
+      setReloadProjects(true)
+    })
   }
 
   return (
@@ -76,7 +90,7 @@ const Management = props => {
         </div>
         <List><Projects currentProjects={currentProjects} onProjectFocus={handleProjectFocus} onProjectSelected={handleProjectSelected}/></List>
       </div>
-      <div className={classes.preview}><Preview project={focusedProject} /></div>
+      <div className={classes.details}><Details project={focusedProject} /></div>
     </div>
   )
 }
@@ -84,6 +98,10 @@ const Management = props => {
 /* validating component property types */
 Management.propTypes = {
   classes: PropTypes.object
+}
+
+Details.propTypes = {
+  project: PropTypes.object
 }
 
 Preview.propTypes = {
@@ -101,7 +119,7 @@ const styles = {
     gridTemplateColumns: '1fr 2fr',
     gridTemplateRows: 'auto',
     gridGap: '1em',
-    gridTemplateAreas: '"projects preview"'
+    gridTemplateAreas: '"projects details"'
   },
 
   projects: {
@@ -109,8 +127,8 @@ const styles = {
     width: '100%'
   },
 
-  preview: {
-    gridArea: 'preview'
+  details: {
+    gridArea: 'details'
   }
 }
 
