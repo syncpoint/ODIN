@@ -1,23 +1,16 @@
-import React, { useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import { IconButton, List, ListItem, ListItemText, TextField, Typography } from '@material-ui/core'
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 
-import oans from '../img/oans.jpg'
-import zwoa from '../img/zwoa.jpg'
-import drei from '../img/drei.jpg'
+import projects from '../../shared/projects'
 
-const images = {
-  oans: oans,
-  zwoa: zwoa,
-  drei: drei
-}
 
 const Projects = props => {
-  const { onProjectFocus, onProjectSelected } = props
-  return ['oans', 'zwoa', 'drei'].map(projectName => (
+  const { currentProjects, onProjectFocus, onProjectSelected } = props
+  return currentProjects.map(projectName => (
     <ListItem alignItems="flex-start" key={projectName} button>
       <ListItemText primary={projectName} secondary="some other text" onClick={ event => onProjectFocus(event, projectName) }/>
       <IconButton color="primary" size="medium" onClick={ event => onProjectSelected(event, projectName)}>
@@ -32,7 +25,7 @@ const Preview = props => {
   return (
     <div>
       <Typography variant="h5">{project}</Typography>
-      <img src={images[project]} style={{ width: '100%', objectFit: 'contain' }} />
+      <img src='' style={{ width: '100%', objectFit: 'contain' }} />
     </div>
   )
 }
@@ -40,7 +33,14 @@ const Preview = props => {
 const Management = props => {
   const { classes } = props
 
-  const [focusedProject, setFocusedProject] = useState(undefined)
+  const [focusedProject, setFocusedProject] = React.useState(undefined)
+  const [currentProjects, setCurrentProjects] = React.useState([])
+
+  React.useEffect(() => {
+    projects.enumerateProjects().then(allProjects => {
+      setCurrentProjects(allProjects)
+    })
+  }, [currentProjects])
 
   const handleProjectSelected = (event, project) => {
     console.log(`selected project ${project}`)
@@ -64,7 +64,7 @@ const Management = props => {
             <AddCircleOutlineIcon />
           </IconButton>
         </div>
-        <List><Projects onProjectFocus={handleProjectFocus} onProjectSelected={handleProjectSelected}/></List>
+        <List><Projects currentProjects={currentProjects} onProjectFocus={handleProjectFocus} onProjectSelected={handleProjectSelected}/></List>
       </div>
       <div className={classes.preview}><Preview project={focusedProject} /></div>
     </div>
