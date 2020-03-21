@@ -1,9 +1,14 @@
 import path from 'path'
 import fs from 'fs'
 import uuid from 'uuid-random'
-import { app } from 'electron'
 
-const ODIN_HOME = path.join(app.getPath('home'), 'ODIN')
+/*  since this module is shared and may be uses both in the main and in the
+    renderer process we must import both in order to resolve the HOME path
+*/
+import { app, remote } from 'electron'
+
+const HOME = remote ? remote.app.getPath('home') : app.getPath('home')
+const ODIN_HOME = path.join(HOME, 'ODIN')
 const ODIN_PROJECTS = path.join(ODIN_HOME, 'projects')
 const ODIN_LAYERS = 'layers'
 
