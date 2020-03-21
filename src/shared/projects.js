@@ -37,7 +37,6 @@ const enumerateProjects = async () => {
 }
 
 const readMetadata = async (projectPath) => {
-  console.dir(projectPath)
   if (!exists(projectPath)) return { path: projectPath, metadata: ODIN_DEFAULT_METADATA }
   try {
     const content = await fs.promises.readFile(path.join(projectPath, ODIN_METADATA))
