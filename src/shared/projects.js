@@ -11,6 +11,10 @@ const HOME = remote ? remote.app.getPath('home') : app.getPath('home')
 const ODIN_HOME = path.join(HOME, 'ODIN')
 const ODIN_PROJECTS = path.join(ODIN_HOME, 'projects')
 const ODIN_LAYERS = 'layers'
+const ODIN_METADATA = 'metadata.json'
+const ODIN_DEFAULT_METADATA = {
+  name: 'untiteled project'
+}
 
 const exists = projectPath => fs.existsSync(projectPath)
 
@@ -19,21 +23,39 @@ const createProject = async (name) => {
   if (exists(projectPath)) return
   /* create subfolder structure, too */
   await fs.promises.mkdir(path.join(projectPath, ODIN_LAYERS), { recursive: true })
+  await fs.promises.writeFile(path.join(projectPath, ODIN_METADATA), JSON.stringify(ODIN_DEFAULT_METADATA))
   return projectPath
 }
 
 const enumerateProjects = async () => {
   const enumerateDirectoryEntries = fs.promises.readdir(ODIN_PROJECTS, { withFileTypes: true })
   const foldersOnly = dirEntries => dirEntries.filter(dirEntry => dirEntry.isDirectory())
-  const extractNames = dirEntries => dirEntries.map(entry => entry.name)
+  const constructPath = dirEntries => dirEntries.map(entry => path.join(ODIN_PROJECTS, entry.name))
   return enumerateDirectoryEntries
     .then(foldersOnly)
-    .then(extractNames)
+    .then(constructPath)
+}
+
+const readMetadata = async (projectPath) => {
+  console.dir(projectPath)
+  if (!exists(projectPath)) return { path: projectPath, metadata: ODIN_DEFAULT_METADATA }
+  try {
+    const content = await fs.promises.readFile(path.join(projectPath, ODIN_METADATA))
+    const metadata = JSON.parse(content)
+    return {
+      path: projectPath,
+      metadata
+    }
+  } catch (error) {
+    console.error(error)
+    return { path: projectPath, metadata: ODIN_DEFAULT_METADATA, error: error.message }
+  }
 }
 
 export default {
   exists,
   createProject,
   brandNew: () => uuid(),
-  enumerateProjects
+  enumerateProjects,
+  readMetadata
 }

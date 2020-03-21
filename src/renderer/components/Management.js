@@ -10,10 +10,10 @@ import projects from '../../shared/projects'
 
 const Projects = props => {
   const { currentProjects, onProjectFocus, onProjectSelected } = props
-  return currentProjects.map(projectName => (
-    <ListItem alignItems="flex-start" key={projectName} button>
-      <ListItemText primary={projectName} secondary="some other text" onClick={ event => onProjectFocus(event, projectName) }/>
-      <IconButton color="primary" size="medium" onClick={ event => onProjectSelected(event, projectName)}>
+  return currentProjects.map(project => (
+    <ListItem alignItems="flex-start" key={project.path} button>
+      <ListItemText primary={project.metadata.name} secondary="some other text" onClick={ event => onProjectFocus(event, project) }/>
+      <IconButton color="primary" size="medium" onClick={ event => onProjectSelected(event, project)}>
         <PlayCircleOutlineIcon />
       </IconButton>
     </ListItem>
@@ -22,9 +22,10 @@ const Projects = props => {
 
 const Preview = props => {
   const { project } = props
+  if (!project) return null
   return (
     <div>
-      <Typography variant="h5">{project}</Typography>
+      <Typography variant="h5">{project.metadata.name}</Typography>
       <img src='' style={{ width: '100%', objectFit: 'contain' }} />
     </div>
   )
@@ -38,16 +39,19 @@ const Management = props => {
 
   React.useEffect(() => {
     projects.enumerateProjects().then(allProjects => {
-      setCurrentProjects(allProjects)
+      /* read all metadata */
+      Promise.all(allProjects.map(projectPath => projects.readMetadata(projectPath))).then(augmentedProjects => {
+        setCurrentProjects(augmentedProjects)
+      })
     })
-  }, [currentProjects])
+  }, [])
 
   const handleProjectSelected = (event, project) => {
-    console.log(`selected project ${project}`)
+    console.log(`selected project ${project.metadata.name}`)
   }
 
   const handleProjectFocus = (event, project) => {
-    console.log(`focused project ${project}`)
+    console.log(`focused project ${project.metadata.name}`)
     setFocusedProject(project)
   }
 
@@ -77,7 +81,7 @@ Management.propTypes = {
 }
 
 Preview.propTypes = {
-  project: PropTypes.string
+  project: PropTypes.object
 }
 
 const styles = {
