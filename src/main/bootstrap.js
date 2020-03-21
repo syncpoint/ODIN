@@ -22,8 +22,13 @@ const merge = keyPath => (fn, defaultvalue) => settings.set(keyPath, fn(settings
 
 let shuttingDown = false
 
-const windowTitle = options => options.path ? path.basename(options.path) : 'ODIN - C2IS'
-
+/**
+ * @param {*} projectPath the fully qualified filesystem path to the project folder
+ */
+const windowTitle = async (projectPath) => {
+  const data = await projects.readMetadata(projectPath)
+  return data.metadata.name
+}
 
 /**
  * create the project window.
@@ -32,7 +37,7 @@ const windowTitle = options => options.path ? path.basename(options.path) : 'ODI
  */
 const createProjectWindow = async (options) => {
 
-  const createWindow = (projectOptions) => {
+  const createWindow = async (projectOptions) => {
     const devServer = process.argv.indexOf('--noDevServer') === -1
     const hotDeployment = process.defaultApp ||
       /[\\/]electron-prebuilt[\\/]/.test(process.execPath) ||
@@ -42,9 +47,11 @@ const createProjectWindow = async (options) => {
       ? url.format({ protocol: 'http:', host: 'localhost:8080', pathname: 'index.html', slashes: true })
       : url.format({ protocol: 'file:', pathname: path.join(app.getAppPath(), 'dist', 'index.html'), slashes: true })
 
+    const title = await windowTitle(projectOptions.path)
+
     const window = new BrowserWindow({
       ...projectOptions,
-      title: windowTitle(projectOptions),
+      title: title,
       show: false,
       webPreferences: {
         nodeIntegration: true
@@ -61,8 +68,9 @@ const createProjectWindow = async (options) => {
       settings.delete(windowKey(window.id))
     }
 
-    window.viewport = projectOptions.viewport
+    /** the path property is required to identify the project */
     window.path = projectOptions.path
+    window.viewport = projectOptions.viewport
     window.once('ready-to-show', () => window.show())
     window.once('close', deleteWindow)
     window.on('page-title-updated', event => event.preventDefault())
@@ -84,8 +92,10 @@ const createProjectWindow = async (options) => {
     dialog.showErrorBox('Error creating project folder', error.message)
   }
 }
-// listeners =>
 
+/**
+ * registers all app listeners and loads either the last project used or creates a new one
+ */
 const bootstrap = () => {
   app.on('before-quit', () => (shuttingDown = true))
   app.on('ready', () => {
@@ -105,6 +115,7 @@ const bootstrap = () => {
     merge(windowKey(id))(props => ({ ...props, viewport }), {})
   })
 
+  /* emitted by the renderer process in order to change projects */
   ipcMain.on('IPC_COMMAND_OPEN_PROJECT', (event, projectPath) => {
     const sender = event.sender.getOwnerBrowserWindow()
     if (sender.path === projectPath) return
