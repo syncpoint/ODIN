@@ -1,6 +1,6 @@
 import { Menu } from 'electron'
 import applicationMenu from './application-menu'
-import fileMenu from './file-menu'
+// import fileMenu from './file-menu'
 import viewMenu from './view-menu'
 import windowMenu from './window-menu'
 // import editMenu from './edit-menu'
@@ -10,7 +10,7 @@ import windowMenu from './window-menu'
 const template = settings => ([
   // darwin only (must be filtered for other platforms)
   applicationMenu,
-  fileMenu(),
+  // fileMenu(),
   // editMenu,
   viewMenu(settings),
   // goMenu,

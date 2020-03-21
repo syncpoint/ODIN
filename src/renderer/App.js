@@ -5,12 +5,22 @@ import OSD from './components/OSD'
 import Map from './map/Map'
 import Management from './components/Management'
 import Sidebar from './components/Sidebar'
+import { ipcRenderer } from 'electron'
 
 const App = (props) => {
   const { classes } = props
   const appProps = { ...props, ...{ id: 'map' } }
 
   const [showManagement, setManagement] = React.useState(false)
+
+  React.useEffect(() => {
+    const subscribeToProjects = () => {
+      ipcRenderer.on('IPC_PROJECTS', (projects) => {
+        console.dir(projects)
+      })
+    }
+    return () => ipcRenderer.removeListener('IPC_PROJECTS', subscribeToProjects)
+  })
 
   const toggleManagementUI = event => {
     setManagement(showManagement => !showManagement)
