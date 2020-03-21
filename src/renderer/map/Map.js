@@ -46,7 +46,7 @@ const projectEventHandler = (view, map) => event => {
     }
   }
 
-    ; (handlers[event] || (() => { }))()
+  ;(handlers[event] || (() => {}))()
 }
 
 
@@ -59,7 +59,8 @@ const effect = props => () => {
   const { id } = props
   const { center, zoom } = { center: [16.363449, 48.210033], zoom: 8 }
   const view = new ol.View({ center: fromLonLat(center), zoom })
-  const scaleBar = new ScaleLine({
+
+  const scaleLine = new ScaleLine({
     units: 'metric',
     bar: true,
     steps: 4,
@@ -71,7 +72,7 @@ const effect = props => () => {
     view,
     layers: [tileLayer()],
     target: id,
-    controls: [scaleBar]
+    controls: [scaleLine]
   })
 
   map.on('moveend', viewportChanged(view))
