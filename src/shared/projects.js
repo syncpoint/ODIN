@@ -27,6 +27,16 @@ const createProject = async (name = uuid()) => {
   return projectPath
 }
 
+const deleteProject = async (projectPath) => {
+  if (!exists(projectPath)) return
+  try {
+    /* TODO: option recursive is flagged as EXPERIMENTAL in v12 LTS */
+    return fs.promises.rmdir(projectPath, { recursive: true })
+  } catch (error) {
+    console.dir(error)
+  }
+}
+
 const enumerateProjects = async () => {
   const enumerateDirectoryEntries = fs.promises.readdir(ODIN_PROJECTS, { withFileTypes: true })
   const foldersOnly = dirEntries => dirEntries.filter(dirEntry => dirEntry.isDirectory())
@@ -54,6 +64,7 @@ const readMetadata = async (projectPath) => {
 export default {
   exists,
   createProject,
+  deleteProject,
   enumerateProjects,
   readMetadata
 }
