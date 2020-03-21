@@ -11,6 +11,7 @@ import { feature as featureLayer } from './layer/feature'
 import { tile as tileLayer } from './layer/tile'
 import project from '../project'
 import coordinateFormat from '../../shared/coord-format'
+import disposable from '../../shared/disposable'
 import './style/scalebar.css'
 
 const zoom = view => view.getZoom()
@@ -24,29 +25,40 @@ const viewportChanged = view => () => {
 
 
 /** Handle project open/close. */
-const projectEventHandler = (view, map) => event => {
-  const handlers = {
-    open: () => {
-      // Set feature vector layers.
-      project.layers()
-        .map(filename => featureSource(filename))
-        .map(source => featureLayer(source))
-        .forEach(layer => map.addLayer(layer))
+const projectEventHandler = (view, map) => {
 
-      // Set center/zoom.
-      const { center, zoom } = project.preferences().viewport
-      view.setCenter(fromLonLat(center))
-      view.setZoom(zoom)
-    },
+  // Layers are disposed on project close:
+  let layers = disposable.of()
 
-    close: () => {
-      // Clear feature layers.
-      map.getLayers().clear()
-      map.addLayer(tileLayer())
-    }
+  const addLayer = layer => {
+    map.addLayer(layer)
+    layers.addDisposable(() => map.removeLayer(layer))
   }
 
-  ;(handlers[event] || (() => {}))()
+  const open = () => {
+
+    // Set feature vector layers.
+    project.layers()
+      .map(filename => featureSource(filename))
+      .map(source => featureLayer(source))
+      .forEach(addLayer)
+
+    // Set center/zoom.
+    const { center, zoom } = project.preferences().viewport
+    view.setCenter(fromLonLat(center))
+    view.setZoom(zoom)
+  }
+
+  const close = () => {
+    // Clear feature layers.
+    layers.dispose()
+    layers = disposable.of()
+  }
+
+  return {
+    open,
+    close
+  }
 }
 
 
@@ -83,7 +95,8 @@ const effect = props => () => {
     evented.emit('OSD_MESSAGE', { message: currentCoordinate, slot: 'C2' })
   })
 
-  project.register(projectEventHandler(view, map))
+  const handlers = projectEventHandler(view, map)
+  project.register(event => (handlers[event] || (() => {}))(event))
 }
 
 /**
