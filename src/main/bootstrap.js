@@ -104,6 +104,14 @@ const bootstrap = () => {
     const { id } = event.sender.getOwnerBrowserWindow()
     merge(windowKey(id))(props => ({ ...props, viewport }), {})
   })
+
+  ipcMain.on('IPC_COMMAND_OPEN_PROJECT', (event, projectPath) => {
+    const sender = event.sender.getOwnerBrowserWindow()
+    if (sender.path === projectPath) return
+
+    sender.close()
+    createProjectWindow({ path: projectPath })
+  })
 }
 
 export default bootstrap

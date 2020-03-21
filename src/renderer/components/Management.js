@@ -5,6 +5,7 @@ import { IconButton, List, ListItem, ListItemText, TextField, Typography } from 
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 
+import { ipcRenderer } from 'electron'
 import projects from '../../shared/projects'
 
 
@@ -48,6 +49,7 @@ const Management = props => {
 
   const handleProjectSelected = (event, project) => {
     console.log(`selected project ${project.metadata.name}`)
+    ipcRenderer.send('IPC_COMMAND_OPEN_PROJECT', project.path)
   }
 
   const handleProjectFocus = (event, project) => {
