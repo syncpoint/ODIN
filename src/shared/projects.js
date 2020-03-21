@@ -13,7 +13,7 @@ const ODIN_PROJECTS = path.join(ODIN_HOME, 'projects')
 const ODIN_LAYERS = 'layers'
 const ODIN_METADATA = 'metadata.json'
 const ODIN_DEFAULT_METADATA = {
-  name: 'untiteled project'
+  name: 'untitled project'
 }
 
 const exists = projectPath => fs.existsSync(projectPath)
