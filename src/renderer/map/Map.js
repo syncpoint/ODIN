@@ -6,12 +6,10 @@ import 'ol/ol.css'
 import * as ol from 'ol'
 import { fromLonLat, toLonLat } from 'ol/proj'
 import { ScaleLine } from 'ol/control'
-import { feature as featureSource } from './source/feature'
-import { feature as featureLayer } from './layer/feature'
 import { tile as tileLayer } from './layer/tile'
 import project from '../project'
 import coordinateFormat from '../../shared/coord-format'
-import disposable from '../../shared/disposable'
+import layersControl from './control/layers'
 import './style/scalebar.css'
 
 const zoom = view => view.getZoom()
@@ -23,43 +21,6 @@ const viewportChanged = view => () => {
   project.updatePreferences({ viewport })
 }
 
-
-/** Handle project open/close. */
-const projectEventHandler = (view, map) => {
-
-  // Layers are disposed on project close:
-  let layers = disposable.of()
-
-  const addLayer = layer => {
-    map.addLayer(layer)
-    layers.addDisposable(() => map.removeLayer(layer))
-  }
-
-  const open = () => {
-
-    // Set feature vector layers.
-    project.layers()
-      .map(filename => featureSource(filename))
-      .map(source => featureLayer(source))
-      .forEach(addLayer)
-
-    // Set center/zoom.
-    const { center, zoom } = project.preferences().viewport
-    view.setCenter(fromLonLat(center))
-    view.setZoom(zoom)
-  }
-
-  const close = () => {
-    // Clear feature layers.
-    layers.dispose()
-    layers = disposable.of()
-  }
-
-  return {
-    open,
-    close
-  }
-}
 
 
 /**
@@ -95,8 +56,12 @@ const effect = props => () => {
     evented.emit('OSD_MESSAGE', { message: currentCoordinate, slot: 'C2' })
   })
 
-  const handlers = projectEventHandler(view, map)
-  project.register(event => (handlers[event] || (() => {}))(event))
+  layersControl({
+    setCenter: view.setCenter.bind(view),
+    setZoom: view.setZoom.bind(view),
+    addLayer: map.addLayer.bind(map),
+    removeLayer: map.removeLayer.bind(map)
+  })
 }
 
 /**
