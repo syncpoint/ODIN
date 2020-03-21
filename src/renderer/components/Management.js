@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
-import { IconButton, List, ListItem, ListItemText, TextField, Typography } from '@material-ui/core'
+import { IconButton, List, ListItem, ListItemText, TextField, Typography, Tooltip } from '@material-ui/core'
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 
@@ -14,9 +14,11 @@ const Projects = props => {
   return currentProjects.map(project => (
     <ListItem alignItems="flex-start" key={project.path} button>
       <ListItemText primary={project.metadata.name} secondary="some other text" onClick={ event => onProjectFocus(event, project) }/>
-      <IconButton color="primary" size="medium" onClick={ event => onProjectSelected(event, project)}>
-        <PlayCircleOutlineIcon />
-      </IconButton>
+      <Tooltip title="change project" arrow>
+        <IconButton color="primary" size="medium" onClick={ event => onProjectSelected(event, project)}>
+          <PlayCircleOutlineIcon />
+        </IconButton>
+      </Tooltip>
     </ListItem>
   ))
 }
@@ -36,29 +38,31 @@ const Management = props => {
   const { classes } = props
 
   const [focusedProject, setFocusedProject] = React.useState(undefined)
+  /* holds an array of all projects metadata */
   const [currentProjects, setCurrentProjects] = React.useState([])
 
   React.useEffect(() => {
     projects.enumerateProjects().then(allProjects => {
       /* read all metadata */
-      Promise.all(allProjects.map(projectPath => projects.readMetadata(projectPath))).then(augmentedProjects => {
-        setCurrentProjects(augmentedProjects)
-      })
+      Promise.all(
+        allProjects.map(projectPath => projects.readMetadata(projectPath)))
+        .then(augmentedProjects => setCurrentProjects(augmentedProjects)
+        )
     })
   }, [])
 
   const handleProjectSelected = (event, project) => {
-    console.log(`selected project ${project.metadata.name}`)
     ipcRenderer.send('IPC_COMMAND_OPEN_PROJECT', project.path)
   }
 
   const handleProjectFocus = (event, project) => {
-    console.log(`focused project ${project.metadata.name}`)
     setFocusedProject(project)
+    /* TODO: lazy load last screenshot (if exists) */
   }
 
   const handleNewProject = event => {
     console.dir(event)
+    /* TODO: show edit form and go for a project name */
   }
 
   return (
