@@ -34,14 +34,27 @@ const useStyles = makeStyles(theme => ({
   },
 
   actions: {
-    display: 'flex',
-    width: '100%',
-    objectFit: 'contain'
+    marginBottom: '3em'
   },
 
-  input: {
-    flex: 1
+  dangerZone: {
+    borderColor: 'red',
+    borderWidth: '1px',
+    borderRadius: '1px',
+    borderStyle: 'solid'
+  },
+
+  dangerActionList: {
+    listStyleType: 'none',
+    paddingLeft: 0,
+    margin: '5px'
+  },
+
+  preview: {
+    marginBottom: '3em',
+    objectFit: 'contain'
   }
+
 }))
 
 const Management = props => {
@@ -93,20 +106,14 @@ const Management = props => {
 
   const Details = () => {
     if (!focusedProject) return null
-    const classes = useStyles()
     return (
       <React.Fragment>
         <Typography variant="h4">{focusedProject.metadata.name}</Typography>
         <Paper elevation={0} component="form" className={classes.actions}>
           <TextField id="editProjectName" value={focusedProject.metadata.name} />
-          <IconButton aria-label="delete" color="secondary" align="right"
-            onClick={() => handleDeleteProject(focusedProject)}
-            disabled={currentProjectPath === focusedProject.path}
-          >
-            <DeleteForeverIcon />
-          </IconButton>
         </Paper>
-        <Preview project={focusedProject} />
+        <Preview className={classes.preview} />
+        <DangerousActions />
       </React.Fragment>
     )
   }
@@ -116,13 +123,37 @@ const Management = props => {
     return (<img src='' style={{ width: '100%', objectFit: 'contain' }} />)
   }
 
+  const DangerousActions = () => {
+    if (!focusedProject) return null
+    if (currentProjectPath === focusedProject.path) return null
+    return (
+      <div>
+        <Typography variant="h5">Danger Zone</Typography>
+        <div className={classes.dangerZone}>
+          <ul className={classes.dangerActionList}>
+            <li>
+              <IconButton aria-label="delete" color="secondary" style={{ float: 'right' }}
+                onClick={() => handleDeleteProject(focusedProject)}
+              >
+                <DeleteForeverIcon />
+              </IconButton>
+
+              <Typography variant="h6">Delete this project</Typography>
+              <Typography variant="body1">Once a project is deleted, there is no going back!</Typography>
+            </li>
+          </ul>
+        </div>
+      </div>
+    )
+  }
+
   const Projects = () => {
 
     return currentProjects.map(project => (
       <ListItem alignItems="flex-start" key={project.path} button>
         <ListItemText primary={project.metadata.name} secondary="some other text" onClick={ () => handleProjectFocus(project) }/>
         <Tooltip title="change project" arrow>
-          <IconButton color="primary" onClick={ () => handleProjectSelected(project)}>
+          <IconButton color="primary" onClick={ () => handleProjectSelected(project)} disabled={currentProjectPath === project.path}>
             <PlayCircleOutlineIcon />
           </IconButton>
         </Tooltip>
