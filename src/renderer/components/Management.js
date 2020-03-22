@@ -172,8 +172,13 @@ const Management = props => {
             inputProps={{ maxLength: 100 }} fullWidth={true}
           />
         </FormControl>
-        <Button aria-label="save" variant="outlined" color="primary"
-          style={{ float: 'right' }} disabled={formHasError}
+        <Button aria-label="export" variant="outlined" color="primary"
+          style={{ float: 'right', margin: '2px' }} disabled={formHasError}
+          startIcon={<SaveIcon />}>
+          Export
+        </Button>
+        <Button aria-label="save" variant="contained" color="primary"
+          style={{ float: 'right', margin: '2px' }} disabled={formHasError}
           onClick={() => handleSaveProject(edit)} startIcon={<SaveIcon />}>
           Save
         </Button>
@@ -232,8 +237,7 @@ const Management = props => {
     <div className={classes.management}>
       <div className={classes.projects}>
         <div>
-          <Input id="searchProjects" variant="outlined" fullWidth={false}/>
-          <Button variant="outlined" color="primary" style={{ float: 'right', marginRight: '1em' }}
+          <Button variant="contained" color="primary" style={{ float: 'right', marginRight: '1em' }}
             startIcon={<AddCircleOutlineIcon />}
             onClick={ event => handleNewProject(event) }>
             New
