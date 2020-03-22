@@ -20,7 +20,7 @@ const App = (props) => {
     setCurrentProjectPath(currentProjectPath)
   }, [])
 
-  const toggleManagementUI = event => {
+  const toggleManagementUI = () => {
     setManagement(showManagement => !showManagement)
   }
 
