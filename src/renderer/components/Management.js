@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme => ({
   preview: {
     margin: '1.5em',
     objectFit: 'contain',
-    border: '1px solid black'
+    boxShadow: '0 1px 0 rgba(255,255,255,.6), 0 11px 35px 2px rgba(0,0,0,0.56), 0 0 0 1px rgba(0, 0, 0, 0.0)'
   }
 
 }))
