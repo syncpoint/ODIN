@@ -1,15 +1,18 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { ipcRenderer } from 'electron'
-import evented from '../evented'
-import 'ol/ol.css'
+
 import * as ol from 'ol'
+import 'ol/ol.css'
 import { fromLonLat, toLonLat } from 'ol/proj'
 import { ScaleLine } from 'ol/control'
-import { tile as tileLayer } from './layer/tile'
+import { Tile as TileLayer } from 'ol/layer'
+import { OSM } from 'ol/source'
+
+import evented from '../evented'
 import project from '../project'
 import coordinateFormat from '../../shared/coord-format'
-import layersControl from './control/layers'
+import layersControl from './layers'
 import './style/scalebar.css'
 
 const zoom = view => view.getZoom()
@@ -43,7 +46,7 @@ const effect = props => () => {
 
   const map = new ol.Map({
     view,
-    layers: [tileLayer()],
+    layers: [new TileLayer({ source: new OSM() })],
     target: id,
     controls: [scaleLine]
   })
