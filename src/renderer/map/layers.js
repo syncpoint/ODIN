@@ -3,6 +3,7 @@ import { fromLonLat } from 'ol/proj'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
 import { GeoJSON } from 'ol/format'
+import * as R from 'ramda'
 import disposable from '../../shared/disposable'
 import project from '../project'
 import style from './style/style'
@@ -15,13 +16,6 @@ const geoJSON = new GeoJSON({
   dataProjection: 'EPSG:4326', // WGS84
   featureProjection: 'EPSG:3857' // Web-Mercator
 })
-
-
-// TODO: I/O could be asynchronous
-const readGeoJSONFeatures = filename => {
-  const file = fs.readFileSync(filename).toString()
-  return geoJSON.readFeatures(file)
-}
 
 
 /**
@@ -48,24 +42,15 @@ const projectEventHandler = callbacks => {
     layers.addDisposable(() => callbacks.removeLayer(layer))
   }
 
-  const open = () => {
-
-    // TODO: use ramda to group features
-
-    const featureSets = {
-      Polygon: [],
-      LineString: [],
-      Point: []
-    }
+  const open = async () => {
 
     // Read features of all GeoJSON layer files,
     // then distribute features to sets depending on their geometry:
-    project.layerFiles()
-      .flatMap(readGeoJSONFeatures)
-      .reduce((acc, feature) => {
-        acc[geometryType(feature)].push(feature)
-        return acc
-      }, featureSets)
+    const readFile = filename => fs.promises.readFile(filename, 'utf8')
+    const readFeatures = file => geoJSON.readFeatures(file)
+    const files = await Promise.all(project.layerFiles().map(readFile))
+    const features = files.flatMap(readFeatures)
+    const featureSets = R.groupBy(geometryType)(features)
 
     // Layer order: polygons first, points last:
     ;['Polygon', 'LineString', 'Point'].forEach(type => {
