@@ -180,7 +180,7 @@ const Management = props => {
       </div>
     )
   }
-  Settings.propTypes = { project: PropTypes.class }
+  Settings.propTypes = { project: PropTypes.object }
 
   const Preview = () => {
     if (!focusedProject || !previewImageData) return null
@@ -225,7 +225,7 @@ const Management = props => {
       </ListItem>
     ))
   }
-  Projects.propTypes = { projects: PropTypes.object }
+  Projects.propTypes = { projects: PropTypes.array }
 
   /* main screen */
   return (
