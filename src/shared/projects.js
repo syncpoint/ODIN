@@ -83,7 +83,7 @@ const readPreview = async (projectPath, options = { encoding: 'base64' }) => {
   try {
     return await fs.promises.readFile(path.join(projectPath, ODIN_PREVIEW), options)
   } catch (error) {
-    console.error(error)
+    if (error.code !== 'ENOENT') console.error(error)
   }
 }
 

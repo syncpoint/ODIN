@@ -34,12 +34,12 @@ const useStyles = makeStyles(theme => ({
     gridArea: 'details'
   },
 
-  actions: {
+  caption: {
     marginTop: '1.5em',
     marginBottom: '1.5em'
   },
 
-  settigs: {
+  settings: {
     marginTop: '1.5em',
     marginBottom: '1.5em'
   },
@@ -70,13 +70,10 @@ const Management = props => {
   const { currentProjectPath } = props
   const classes = useStyles()
 
-  const [focusedProject, setFocusedProject] = React.useState(undefined)
-  const [editingMetadata, setEditingMetadata] = React.useState(undefined)
-  const [previewImageData, setPreviewImageData] = React.useState(undefined)
-
   /* currentProjects holds an array of all projects metadata */
   const [currentProjects, setCurrentProjects] = React.useState([])
-
+  const [focusedProject, setFocusedProject] = React.useState(undefined)
+  const [previewImageData, setPreviewImageData] = React.useState(undefined)
   /* reloadProject forces the enumerateProjects to re-run */
   const [reloadProjects, setReloadProjects] = React.useState(true)
 
@@ -99,7 +96,6 @@ const Management = props => {
 
   const handleProjectFocus = project => {
     setFocusedProject(project)
-    setEditingMetadata({ ...project.metadata })
     /* the default readPreview options are { encoding: 'base64' } */
     projects.readPreview(project.path).then(encodedPreview => {
       setPreviewImageData(encodedPreview)
@@ -116,53 +112,75 @@ const Management = props => {
     projects.deleteProject(project.path).then(() => {
       setReloadProjects(true)
       setFocusedProject(undefined)
-      setEditingMetadata(undefined)
     })
   }
 
-  const handleNameChanged = name => {
-    const metadata = { ...editingMetadata, ...{ name: name } }
-    setEditingMetadata(metadata)
-  }
+  const handleSaveProject = (metadata) => {
+    /* optimistic update of UI */
+    const updatedFocusedProject = { ...focusedProject, ...{ metadata: metadata } }
+    setFocusedProject(updatedFocusedProject)
 
-  const handleSaveProject = () => {
-    projects.writeMetadata(focusedProject.path, editingMetadata).then(setReloadProjects(true))
+    projects.writeMetadata(focusedProject.path, metadata).then(() => {
+      setReloadProjects(true)
+    })
   }
 
   /* sub components */
 
-  const Details = () => {
-    if (!focusedProject) return null
+  const Details = (props) => {
+    const { project } = props
+    if (!project) return null
     return (
       <React.Fragment>
-        <Typography variant="h4">{focusedProject.metadata.name}</Typography>
-        <Settings />
-        <Preview className={classes.preview} />
+        <Caption project={project} />
+        <Settings project={project}/>
+        <Preview />
         <DangerousActions />
       </React.Fragment>
     )
   }
+  Details.propTypes = { project: PropTypes.class }
 
-  const Settings = () => {
-    if (!focusedProject) return null
+  const Caption = props => {
+    const { project } = props
+    return (
+      <div className={classes.caption}>
+        <Typography variant="h4">{project.metadata.name}</Typography>
+      </div>
+    )
+  }
+  Caption.propTypes = { project: PropTypes.class }
 
-    const formHasError = editingMetadata.name.length === 0
+  const Settings = (props) => {
+    const { project } = props
+    if (!project) return null
+
+    const [edit, setEdit] = React.useState(project.metadata)
+    const formHasError = edit.name.length === 0
+
+    const handleNameChanged = name => {
+      const metadata = { ...edit, ...{ name: name } }
+      setEdit(metadata)
+    }
 
     return (
       <div className={classes.settings}>
         <FormControl error={formHasError}>
-          <InputLabel htmlFor="projectName"></InputLabel>
-          <Input id="projectName" value={editingMetadata.name} autoFocus={true}
-            onChange={ event => handleNameChanged(event.target.value)}/>
+          <InputLabel htmlFor="projectName">Project Name</InputLabel>
+          <Input id="projectName" name="projectName" defaultValue={edit.name}
+            onChange={ event => handleNameChanged(event.target.value)}
+            inputProps={{ maxLength: 100 }} fullWidth={true}
+          />
         </FormControl>
         <Button aria-label="save" variant="outlined" color="primary"
           style={{ float: 'right' }} disabled={formHasError}
-          onClick={() => handleSaveProject(editingMetadata)} startIcon={<SaveIcon />}>
+          onClick={() => handleSaveProject(edit)} startIcon={<SaveIcon />}>
           Save
         </Button>
       </div>
     )
   }
+  Settings.propTypes = { project: PropTypes.class }
 
   const Preview = () => {
     if (!focusedProject || !previewImageData) return null
@@ -195,8 +213,9 @@ const Management = props => {
     )
   }
 
-  const Projects = () => {
-    return currentProjects.map(project => (
+  const Projects = (props) => {
+    const { projects } = props
+    return projects.map(project => (
       <ListItem alignItems="flex-start" key={project.path} button>
         <ListItemText primary={project.metadata.name} onClick={ () => handleProjectFocus(project) }/>
         <Button color="primary" variant="outlined" disabled={currentProjectPath === project.path}
@@ -206,7 +225,7 @@ const Management = props => {
       </ListItem>
     ))
   }
-
+  Projects.propTypes = { projects: PropTypes.object }
 
   /* main screen */
   return (
@@ -220,9 +239,9 @@ const Management = props => {
             New
           </Button>
         </div>
-        <List><Projects /></List>
+        <List><Projects projects={currentProjects}/></List>
       </div>
-      <div className={classes.details}><Details /></div>
+      <div className={classes.details}><Details project={focusedProject}/></div>
     </div>
   )
 }
