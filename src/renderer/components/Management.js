@@ -35,18 +35,21 @@ const useStyles = makeStyles(theme => ({
   },
 
   actions: {
-    marginBottom: '3em'
+    marginTop: '1.5em',
+    marginBottom: '1.5em'
   },
 
   settigs: {
-    marginBottom: '3em'
+    marginTop: '1.5em',
+    marginBottom: '1.5em'
   },
 
   dangerZone: {
     borderColor: 'red',
     borderWidth: '1px',
     borderRadius: '1px',
-    borderStyle: 'solid'
+    borderStyle: 'solid',
+    padding: '1em'
   },
 
   dangerActionList: {
@@ -56,8 +59,9 @@ const useStyles = makeStyles(theme => ({
   },
 
   preview: {
-    marginBottom: '3em',
-    objectFit: 'contain'
+    margin: '1.5em',
+    objectFit: 'contain',
+    border: '1px solid black'
   }
 
 }))
@@ -68,6 +72,7 @@ const Management = props => {
 
   const [focusedProject, setFocusedProject] = React.useState(undefined)
   const [editingMetadata, setEditingMetadata] = React.useState(undefined)
+  const [previewImageData, setPreviewImageData] = React.useState(undefined)
 
   /* currentProjects holds an array of all projects metadata */
   const [currentProjects, setCurrentProjects] = React.useState([])
@@ -95,7 +100,10 @@ const Management = props => {
   const handleProjectFocus = project => {
     setFocusedProject(project)
     setEditingMetadata({ ...project.metadata })
-    /* TODO: lazy load last screenshot (if exists) */
+    /* the default readPreview options are { encoding: 'base64' } */
+    projects.readPreview(project.path).then(encodedPreview => {
+      setPreviewImageData(encodedPreview)
+    })
   }
 
   const handleNewProject = () => {
@@ -157,8 +165,12 @@ const Management = props => {
   }
 
   const Preview = () => {
-    if (!focusedProject) return null
-    return (<img src='' style={{ width: '100%', objectFit: 'contain' }} />)
+    if (!focusedProject || !previewImageData) return null
+    return (
+      <div className={classes.preview}>
+        <img src={`data:image/jpeg;base64,${previewImageData}`} style={{ width: '100%', objectFit: 'contain' }} />
+      </div>
+    )
   }
 
   const DangerousActions = () => {

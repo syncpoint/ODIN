@@ -75,6 +75,18 @@ const writeMetadata = async (projectPath, metadata) => {
   }
 }
 
+const readPreview = async (projectPath, options = { encoding: 'base64' }) => {
+  if (!exists(projectPath)) {
+    console.error(`project path does not exist ${projectPath}`)
+    return
+  }
+  try {
+    return await fs.promises.readFile(path.join(projectPath, ODIN_PREVIEW), options)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 const writePreview = async (projectPath, jpgImageBuffer) => {
   if (!exists(projectPath)) {
     console.error(`project path does not exist ${projectPath}`)
@@ -94,5 +106,6 @@ export default {
   enumerateProjects,
   readMetadata,
   writeMetadata,
+  readPreview,
   writePreview
 }
