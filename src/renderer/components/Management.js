@@ -5,6 +5,7 @@ import { Button, FormControl, InputLabel, Input, List, ListItem, ListItemText, T
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
+import SaveIcon from '@material-ui/icons/Save'
 
 import { ipcRenderer } from 'electron'
 import projects from '../../shared/projects'
@@ -148,7 +149,7 @@ const Management = props => {
         </FormControl>
         <Button aria-label="save" variant="outlined" color="primary"
           style={{ float: 'right' }} disabled={formHasError}
-          onClick={() => handleSaveProject(editingMetadata)} startIcon={<DeleteForeverIcon />}>
+          onClick={() => handleSaveProject(editingMetadata)} startIcon={<SaveIcon />}>
           Save
         </Button>
       </div>
@@ -183,7 +184,6 @@ const Management = props => {
   }
 
   const Projects = () => {
-
     return currentProjects.map(project => (
       <ListItem alignItems="flex-start" key={project.path} button>
         <ListItemText primary={project.metadata.name} onClick={ () => handleProjectFocus(project) }/>
@@ -195,12 +195,14 @@ const Management = props => {
     ))
   }
 
+
+  /* main screen */
   return (
     <div className={classes.management}>
       <div className={classes.projects}>
         <div>
           <Input id="searchProjects" variant="outlined" fullWidth={false}/>
-          <Button variant="outlined" color="primary" style={{ float: 'right' }}
+          <Button variant="outlined" color="primary" style={{ float: 'right', marginRight: '1em' }}
             startIcon={<AddCircleOutlineIcon />}
             onClick={ event => handleNewProject(event) }>
             New

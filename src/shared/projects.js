@@ -12,6 +12,7 @@ const ODIN_HOME = path.join(HOME, 'ODIN')
 const ODIN_PROJECTS = path.join(ODIN_HOME, 'projects')
 const ODIN_LAYERS = 'layers'
 const ODIN_METADATA = 'metadata.json'
+const ODIN_PREVIEW = 'preview.jpg'
 const ODIN_DEFAULT_METADATA = {
   name: 'untitled project'
 }
@@ -62,8 +63,6 @@ const readMetadata = async (projectPath) => {
 }
 
 const writeMetadata = async (projectPath, metadata) => {
-  console.log(`writeing metadata for project path ${projectPath}`)
-  console.dir(metadata)
   if (!exists(projectPath)) {
     console.error(`project path does not exist ${projectPath}`)
     return
@@ -76,11 +75,24 @@ const writeMetadata = async (projectPath, metadata) => {
   }
 }
 
+const writePreview = async (projectPath, jpgImageBuffer) => {
+  if (!exists(projectPath)) {
+    console.error(`project path does not exist ${projectPath}`)
+    return
+  }
+  try {
+    await fs.promises.writeFile(path.join(projectPath, ODIN_PREVIEW), jpgImageBuffer)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   exists,
   createProject,
   deleteProject,
   enumerateProjects,
   readMetadata,
-  writeMetadata
+  writeMetadata,
+  writePreview
 }

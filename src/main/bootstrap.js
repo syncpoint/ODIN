@@ -71,7 +71,18 @@ const createProjectWindow = async (options) => {
     /** the path property is required to identify the project */
     window.path = projectOptions.path
     window.viewport = projectOptions.viewport
-    window.once('ready-to-show', () => window.show())
+    window.once('ready-to-show', () => {
+      window.show()
+      /* create a screenshot and save the image that will be used as a preview */
+      setTimeout(async () => {
+        try {
+          const nativeImage = await window.webContents.capturePage()
+          projects.writePreview(projectOptions.path, nativeImage.toJPEG(75))
+        } catch (error) {
+          console.dir(error)
+        }
+      }, 5000)
+    })
     window.once('close', deleteWindow)
     window.on('page-title-updated', event => event.preventDefault())
     window.on('move', updateBounds)
@@ -119,7 +130,6 @@ const bootstrap = () => {
   ipcMain.on('IPC_COMMAND_OPEN_PROJECT', (event, projectPath) => {
     const sender = event.sender.getOwnerBrowserWindow()
     if (sender.path === projectPath) return
-
     sender.close()
     createProjectWindow({ path: projectPath })
   })
