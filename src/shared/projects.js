@@ -61,10 +61,26 @@ const readMetadata = async (projectPath) => {
   }
 }
 
+const writeMetadata = async (projectPath, metadata) => {
+  console.log(`writeing metadata for project path ${projectPath}`)
+  console.dir(metadata)
+  if (!exists(projectPath)) {
+    console.error(`project path does not exist ${projectPath}`)
+    return
+  }
+  try {
+    const content = JSON.stringify(metadata)
+    await fs.promises.writeFile(path.join(projectPath, ODIN_METADATA), content)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   exists,
   createProject,
   deleteProject,
   enumerateProjects,
-  readMetadata
+  readMetadata,
+  writeMetadata
 }

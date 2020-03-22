@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
-import { Fab, IconButton, List, ListItem, ListItemText, Paper, TextField, Tooltip, Typography } from '@material-ui/core'
+import { Button, FormControl, InputLabel, Input, List, ListItem, ListItemText, Typography } from '@material-ui/core'
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
@@ -37,6 +37,10 @@ const useStyles = makeStyles(theme => ({
     marginBottom: '3em'
   },
 
+  settigs: {
+    marginBottom: '3em'
+  },
+
   dangerZone: {
     borderColor: 'red',
     borderWidth: '1px',
@@ -62,8 +66,11 @@ const Management = props => {
   const classes = useStyles()
 
   const [focusedProject, setFocusedProject] = React.useState(undefined)
+  const [editingMetadata, setEditingMetadata] = React.useState(undefined)
+
   /* currentProjects holds an array of all projects metadata */
   const [currentProjects, setCurrentProjects] = React.useState([])
+
   /* reloadProject forces the enumerateProjects to re-run */
   const [reloadProjects, setReloadProjects] = React.useState(true)
 
@@ -86,6 +93,7 @@ const Management = props => {
 
   const handleProjectFocus = project => {
     setFocusedProject(project)
+    setEditingMetadata({ ...project.metadata })
     /* TODO: lazy load last screenshot (if exists) */
   }
 
@@ -95,11 +103,21 @@ const Management = props => {
     })
   }
 
-  const handleDeleteProject = (project) => {
+  const handleDeleteProject = project => {
     projects.deleteProject(project.path).then(() => {
       setReloadProjects(true)
       setFocusedProject(undefined)
+      setEditingMetadata(undefined)
     })
+  }
+
+  const handleNameChanged = name => {
+    const metadata = { ...editingMetadata, ...{ name: name } }
+    setEditingMetadata(metadata)
+  }
+
+  const handleSaveProject = () => {
+    projects.writeMetadata(focusedProject.path, editingMetadata).then(setReloadProjects(true))
   }
 
   /* sub components */
@@ -109,12 +127,31 @@ const Management = props => {
     return (
       <React.Fragment>
         <Typography variant="h4">{focusedProject.metadata.name}</Typography>
-        <Paper elevation={0} component="form" className={classes.actions}>
-          <TextField id="editProjectName" value={focusedProject.metadata.name} />
-        </Paper>
+        <Settings />
         <Preview className={classes.preview} />
         <DangerousActions />
       </React.Fragment>
+    )
+  }
+
+  const Settings = () => {
+    if (!focusedProject) return null
+
+    const formHasError = editingMetadata.name.length === 0
+
+    return (
+      <div className={classes.settings}>
+        <FormControl error={formHasError}>
+          <InputLabel htmlFor="projectName"></InputLabel>
+          <Input id="projectName" value={editingMetadata.name} autoFocus={true}
+            onChange={ event => handleNameChanged(event.target.value)}/>
+        </FormControl>
+        <Button aria-label="save" variant="outlined" color="primary"
+          style={{ float: 'right' }} disabled={formHasError}
+          onClick={() => handleSaveProject(editingMetadata)} startIcon={<DeleteForeverIcon />}>
+          Save
+        </Button>
+      </div>
     )
   }
 
@@ -132,12 +169,10 @@ const Management = props => {
         <div className={classes.dangerZone}>
           <ul className={classes.dangerActionList}>
             <li>
-              <IconButton aria-label="delete" color="secondary" style={{ float: 'right' }}
-                onClick={() => handleDeleteProject(focusedProject)}
-              >
-                <DeleteForeverIcon />
-              </IconButton>
-
+              <Button aria-label="delete" variant="outlined" color="secondary" style={{ float: 'right' }}
+                onClick={() => handleDeleteProject(focusedProject)} startIcon={<DeleteForeverIcon />}>
+                Delete
+              </Button>
               <Typography variant="h6">Delete this project</Typography>
               <Typography variant="body1">Once a project is deleted, there is no going back!</Typography>
             </li>
@@ -151,12 +186,11 @@ const Management = props => {
 
     return currentProjects.map(project => (
       <ListItem alignItems="flex-start" key={project.path} button>
-        <ListItemText primary={project.metadata.name} secondary="some other text" onClick={ () => handleProjectFocus(project) }/>
-        <Tooltip title="change project" arrow>
-          <IconButton color="primary" onClick={ () => handleProjectSelected(project)} disabled={currentProjectPath === project.path}>
-            <PlayCircleOutlineIcon />
-          </IconButton>
-        </Tooltip>
+        <ListItemText primary={project.metadata.name} onClick={ () => handleProjectFocus(project) }/>
+        <Button color="primary" variant="outlined" disabled={currentProjectPath === project.path}
+          onClick={ () => handleProjectSelected(project)} startIcon={<PlayCircleOutlineIcon />} >
+          Switch to
+        </Button>
       </ListItem>
     ))
   }
@@ -165,10 +199,12 @@ const Management = props => {
     <div className={classes.management}>
       <div className={classes.projects}>
         <div>
-          <TextField id="searchProjects" variant="outlined" fullWidth={true}/>
-          <Fab color="primary" size="medium" align="right" onClick={ event => handleNewProject(event) }>
-            <AddCircleOutlineIcon />
-          </Fab>
+          <Input id="searchProjects" variant="outlined" fullWidth={false}/>
+          <Button variant="outlined" color="primary" style={{ float: 'right' }}
+            startIcon={<AddCircleOutlineIcon />}
+            onClick={ event => handleNewProject(event) }>
+            New
+          </Button>
         </div>
         <List><Projects /></List>
       </div>
