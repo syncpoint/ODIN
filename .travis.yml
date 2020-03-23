@@ -7,7 +7,6 @@ addons:
 
 services:
   - xvfb
-
 script:
   - xvfb run -e /dev/stdout -a npm run test  
 
