@@ -3,4 +3,4 @@ node_js:
   - "10"
 services:
   - xvfb
-script: xvfb-run npm test
+script: xvfb-run
