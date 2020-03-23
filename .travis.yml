@@ -12,3 +12,6 @@ install:
 
 before_install:
   - npm install
+
+services:
+  - xvfb
