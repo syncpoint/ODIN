@@ -3,4 +3,4 @@ node_js:
   - "10"
 services:
   - xvfb
-script: xvfb-run -e make test
+script: xvfb-run -a make test
