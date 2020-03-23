@@ -127,7 +127,7 @@ const bootstrap = () => {
   })
 
   /* emitted by the renderer process in order to change projects */
-  ipcMain.on('IPC_COMMAND_OPEN_PROJECT', (event, projectPath) => {
+  ipcMain.on('IPC_SWITCH_PROJECT', (event, projectPath) => {
     const sender = event.sender.getOwnerBrowserWindow()
     if (sender.path === projectPath) return
     sender.close()

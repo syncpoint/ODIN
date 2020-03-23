@@ -7,7 +7,8 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import SaveIcon from '@material-ui/icons/Save'
 import ExportIcon from '@material-ui/icons/SaveAlt'
-import LibraryAddIcon from '@material-ui/icons/LibraryAdd'
+import ImportProjectIcon from '@material-ui/icons/LibraryAdd'
+import BackToMapIcon from '@material-ui/icons/ExitToApp'
 
 import { ipcRenderer } from 'electron'
 import projects from '../../shared/projects'
@@ -25,6 +26,16 @@ const useStyles = makeStyles(theme => ({
     gridTemplateRows: 'auto',
     gridGap: '1em',
     gridTemplateAreas: '"projects details"'
+  },
+
+  sidebar: {
+    position: 'fixed',
+    display: 'grid',
+    gridTemplateColumns: '3em',
+    gridTemplateRows: 'auto',
+    top: '1em',
+    left: '0.5em',
+    zIndex: 21
   },
 
   projects: {
@@ -69,7 +80,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Management = props => {
-  const { currentProjectPath } = props
+  const { currentProjectPath, onCloseClicked } = props
   const classes = useStyles()
 
   /* currentProjects holds an array of all projects metadata */
@@ -98,7 +109,7 @@ const Management = props => {
       renderer process to this project
   */
   const handleProjectSelected = project => {
-    ipcRenderer.send('IPC_COMMAND_OPEN_PROJECT', project.path)
+    ipcRenderer.send('IPC_SWITCH_PROJECT', project.path)
   }
 
   const handleProjectFocus = project => {
@@ -249,24 +260,29 @@ const Management = props => {
 
   /* main screen */
   return (
-    <div className={classes.management}>
-      <div className={classes.projects}>
-        <div style={{ marginBottom: '3em' }}>
-          <Button variant="outlined" color="primary" style={{ float: 'right', marginRight: '1em', marginLeft: '2px' }}
-            startIcon={<LibraryAddIcon />} disabled={true}
-          >
-            Import
-          </Button>
-          <Button variant="contained" color="primary" style={{ float: 'right', marginRight: '2px' }}
-            startIcon={<AddCircleOutlineIcon />}
-            onClick={ event => handleNewProject(event) }>
-            New
-          </Button>
-        </div>
-        <List><Projects projects={currentProjects}/></List>
+    <div>
+      <div className={classes.sidebar}>
+        <BackToMapIcon id="backToMap" onClick={onCloseClicked}/>
       </div>
-      <div className={classes.details}>
-        <Details project={focusedProject}/>
+      <div className={classes.management}>
+        <div className={classes.projects}>
+          <div style={{ marginBottom: '3em' }}>
+            <Button variant="outlined" color="primary" style={{ float: 'right', marginRight: '1em', marginLeft: '2px' }}
+              startIcon={<ImportProjectIcon />} disabled={true}
+            >
+            Import
+            </Button>
+            <Button variant="contained" color="primary" style={{ float: 'right', marginRight: '2px' }}
+              startIcon={<AddCircleOutlineIcon />}
+              onClick={ event => handleNewProject(event) }>
+            New
+            </Button>
+          </div>
+          <List><Projects projects={currentProjects}/></List>
+        </div>
+        <div className={classes.details}>
+          <Details project={focusedProject}/>
+        </div>
       </div>
     </div>
   )
@@ -275,7 +291,8 @@ const Management = props => {
 /* validating component property types */
 Management.propTypes = {
   classes: PropTypes.object,
-  currentProjectPath: PropTypes.string.isRequired
+  currentProjectPath: PropTypes.string.isRequired,
+  onCloseClicked: PropTypes.func
 }
 
 export default Management

@@ -4,9 +4,8 @@ import { withStyles } from '@material-ui/core/styles'
 import OSD from './components/OSD'
 import Map from './map/Map'
 import Management from './components/Management'
-import Sidebar from './components/Sidebar'
 
-import { remote } from 'electron'
+import { ipcRenderer, remote } from 'electron'
 
 const App = (props) => {
   const { classes } = props
@@ -20,6 +19,14 @@ const App = (props) => {
     setCurrentProjectPath(currentProjectPath)
   }, [])
 
+  React.useEffect(() => {
+    const handleShowManagementComand = () => {
+      setManagement(true)
+    }
+    ipcRenderer.on('IPC_SHOW_PROJECT_MANAGEMENT', handleShowManagementComand)
+    return () => { ipcRenderer.removeListener(handleShowManagementComand) }
+  }, [])
+
   const toggleManagementUI = () => {
     setManagement(showManagement => !showManagement)
   }
@@ -27,8 +34,7 @@ const App = (props) => {
   if (showManagement) {
     return (
       <React.Fragment>
-        <Sidebar clickAction={toggleManagementUI}/>
-        <Management currentProjectPath={currentProjectPath}/>
+        <Management currentProjectPath={currentProjectPath} onCloseClicked={toggleManagementUI}/>
       </React.Fragment>
     )
   }
@@ -36,7 +42,6 @@ const App = (props) => {
   return (
     <React.Fragment>
       <Map { ...appProps }/>
-      <Sidebar clickAction={toggleManagementUI}/>
       <div className={classes.overlay}>
         <OSD />
       </div>
