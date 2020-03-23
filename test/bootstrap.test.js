@@ -13,7 +13,7 @@ describe('Bootstrap', function () {
     await hooks.stopApp(app)
   })
 
-  it('opens a window', async function () {
+  it('starts the application', async function () {
     const count = await app.client.waitUntilWindowLoaded()
       .getWindowCount()
     assert.equal(count, 1)

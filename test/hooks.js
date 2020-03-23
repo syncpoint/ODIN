@@ -9,7 +9,7 @@ module.exports = {
   async startApp () {
     const app = await new Application({
       path: electron,
-      args: [path.join(__dirname, '..'), '--noDevServer', `projectPath=${projectPath}`]
+      args: [path.join(__dirname, '..'), '--noDevServer', `--projectPath=${projectPath}`]
     }).start()
     return app
   },
