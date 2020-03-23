@@ -6,9 +6,16 @@ addons:
     packages:
       - xvfb
 
+install:
+  - export DISPLAY=':99.0'
+  - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+
 before_install:
   - npm install
 
-dist: xenial
-services:
-  - xvfb
+before_script:
+  # start XVFB to test the extension (headless does not install extensions fully)
+  # https://docs.travis-ci.com/user/gui-and-headless-browsers/#using-xvfb-to-run-tests-that-require-a-gui
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
