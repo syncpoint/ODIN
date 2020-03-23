@@ -100,10 +100,22 @@ const Management = props => {
           setReloadProjects(false)
           setCurrentProjects(augmentedProjects)
           /* choose a project for startup */
-          if (!focusedProject && augmentedProjects.length > 0) setFocusedProject(augmentedProjects[0])
+          if (!focusedProject && augmentedProjects.length > 0) setFocusAndLoadPreview(augmentedProjects[0])
         })
     })
   }, [reloadProjects])
+
+  const setFocusAndLoadPreview = project => {
+    setFocusedProject(project)
+    if (project) {
+      /* the default readPreview options are { encoding: 'base64' } */
+      projects.readPreview(project.path).then(encodedPreview => {
+        setPreviewImageData(encodedPreview)
+      })
+    } else {
+      setPreviewImageData(undefined)
+    }
+  }
 
   /*  if a project is selected the main process will switch the
       renderer process to this project
@@ -113,11 +125,7 @@ const Management = props => {
   }
 
   const handleProjectFocus = project => {
-    setFocusedProject(project)
-    /* the default readPreview options are { encoding: 'base64' } */
-    projects.readPreview(project.path).then(encodedPreview => {
-      setPreviewImageData(encodedPreview)
-    })
+    setFocusAndLoadPreview(project)
   }
 
   const handleNewProject = () => {
@@ -129,7 +137,7 @@ const Management = props => {
   const handleDeleteProject = project => {
     projects.deleteProject(project.path).then(() => {
       setReloadProjects(true)
-      setFocusedProject(undefined)
+      setFocusAndLoadPreview(undefined)
     })
   }
 
