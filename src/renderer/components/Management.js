@@ -6,6 +6,7 @@ import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import SaveIcon from '@material-ui/icons/Save'
+import ExportIcon from '@material-ui/icons/SaveAlt'
 
 import { ipcRenderer } from 'electron'
 import projects from '../../shared/projects'
@@ -86,10 +87,15 @@ const Management = props => {
         .then(augmentedProjects => {
           setReloadProjects(false)
           setCurrentProjects(augmentedProjects)
+          /* choose a project for startup */
+          if (!focusedProject && augmentedProjects.length > 0) setFocusedProject(augmentedProjects[0])
         })
     })
   }, [reloadProjects])
 
+  /*  if a project is selected the main process will switch the
+      renderer process to tis project
+  */
   const handleProjectSelected = project => {
     ipcRenderer.send('IPC_COMMAND_OPEN_PROJECT', project.path)
   }
@@ -103,6 +109,7 @@ const Management = props => {
   }
 
   const handleNewProject = () => {
+    console.log('create new project')
     projects.createProject().then((_) => {
       setReloadProjects(true)
     })
@@ -139,7 +146,7 @@ const Management = props => {
       </React.Fragment>
     )
   }
-  Details.propTypes = { project: PropTypes.class }
+  Details.propTypes = { project: PropTypes.object }
 
   const Caption = props => {
     const { project } = props
@@ -149,7 +156,7 @@ const Management = props => {
       </div>
     )
   }
-  Caption.propTypes = { project: PropTypes.class }
+  Caption.propTypes = { project: PropTypes.object }
 
   const Settings = (props) => {
     const { project } = props
@@ -173,8 +180,8 @@ const Management = props => {
           />
         </FormControl>
         <Button aria-label="export" variant="outlined" color="primary"
-          style={{ float: 'right', margin: '2px' }} disabled={formHasError}
-          startIcon={<SaveIcon />}>
+          style={{ float: 'right', margin: '2px' }} disabled={true}
+          startIcon={<ExportIcon />}>
           Export
         </Button>
         <Button aria-label="save" variant="contained" color="primary"
@@ -220,7 +227,7 @@ const Management = props => {
 
   const Projects = (props) => {
     const { projects } = props
-    return projects.map(project => (
+    const items = projects.map(project => (
       <ListItem alignItems="flex-start" key={project.path} button>
         <ListItemText primary={project.metadata.name} onClick={ () => handleProjectFocus(project) }/>
         <Button color="primary" variant="outlined" disabled={currentProjectPath === project.path}
@@ -229,20 +236,24 @@ const Management = props => {
         </Button>
       </ListItem>
     ))
+    return (<React.Fragment>{items}</React.Fragment>)
   }
-  Projects.propTypes = { projects: PropTypes.array }
+  Projects.propTypes = {
+    projects: PropTypes.array,
+    project: PropTypes.object
+  }
 
   /* main screen */
   return (
     <div className={classes.management}>
-      <div className={classes.projects}>
-        <div>
-          <Button variant="contained" color="primary" style={{ float: 'right', marginRight: '1em' }}
-            startIcon={<AddCircleOutlineIcon />}
-            onClick={ event => handleNewProject(event) }>
+      <div>
+        <Button variant="contained" color="primary" style={{ float: 'right', marginRight: '1em' }}
+          startIcon={<AddCircleOutlineIcon />}
+          onClick={ event => handleNewProject(event) }>
             New
-          </Button>
-        </div>
+        </Button>
+      </div>
+      <div className={classes.projects}>
         <List><Projects projects={currentProjects}/></List>
       </div>
       <div className={classes.details}><Details project={focusedProject}/></div>
