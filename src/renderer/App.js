@@ -3,11 +3,38 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import OSD from './components/OSD'
 import Map from './map/Map'
+import Management from './components/Management'
+
+import { ipcRenderer, remote } from 'electron'
 
 const App = (props) => {
   const { classes } = props
-
   const appProps = { ...props, ...{ id: 'map' } }
+
+  const [showManagement, setManagement] = React.useState(false)
+  const [currentProjectPath, setCurrentProjectPath] = React.useState(undefined)
+
+  React.useEffect(() => {
+    const currentProjectPath = remote.getCurrentWindow().path
+    setCurrentProjectPath(currentProjectPath)
+  }, [])
+
+  React.useEffect(() => {
+    ipcRenderer.on('IPC_SHOW_PROJECT_MANAGEMENT', toggleManagementUI)
+    return () => { ipcRenderer.removeListener(toggleManagementUI) }
+  }, [])
+
+  const toggleManagementUI = () => {
+    setManagement(showManagement => !showManagement)
+  }
+
+  if (showManagement) {
+    return (
+      <React.Fragment>
+        <Management currentProjectPath={currentProjectPath} onCloseClicked={toggleManagementUI}/>
+      </React.Fragment>
+    )
+  }
 
   return (
     <React.Fragment>

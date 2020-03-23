@@ -22,11 +22,11 @@ const RULES = {
   },
 
   image: {
-    test: /\.(png|svg|jpg|gif)$/,
+    test: /\.(png|svg|jpe?g|gif)$/i,
     use: [{
       loader: 'file-loader',
       options: {
-        name: `img/[name]__[${hash}].[ext]`
+        name: 'img/[name].[ext]'
       }
     }]
   },
