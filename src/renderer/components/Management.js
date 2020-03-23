@@ -7,6 +7,7 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import SaveIcon from '@material-ui/icons/Save'
 import ExportIcon from '@material-ui/icons/SaveAlt'
+import LibraryAddIcon from '@material-ui/icons/LibraryAdd'
 
 import { ipcRenderer } from 'electron'
 import projects from '../../shared/projects'
@@ -94,7 +95,7 @@ const Management = props => {
   }, [reloadProjects])
 
   /*  if a project is selected the main process will switch the
-      renderer process to tis project
+      renderer process to this project
   */
   const handleProjectSelected = project => {
     ipcRenderer.send('IPC_COMMAND_OPEN_PROJECT', project.path)
@@ -109,7 +110,6 @@ const Management = props => {
   }
 
   const handleNewProject = () => {
-    console.log('create new project')
     projects.createProject().then((_) => {
       setReloadProjects(true)
     })
@@ -141,8 +141,8 @@ const Management = props => {
       <React.Fragment>
         <Caption project={project} />
         <Settings project={project}/>
-        <Preview />
-        <DangerousActions />
+        <Preview project={project}/>
+        <DangerousActions project={project}/>
       </React.Fragment>
     )
   }
@@ -176,7 +176,7 @@ const Management = props => {
           <InputLabel htmlFor="projectName">Project Name</InputLabel>
           <Input id="projectName" name="projectName" defaultValue={edit.name}
             onChange={ event => handleNameChanged(event.target.value)}
-            inputProps={{ maxLength: 100 }} fullWidth={true}
+            style={{ minWidth: '20em' }}
           />
         </FormControl>
         <Button aria-label="export" variant="outlined" color="primary"
@@ -194,18 +194,21 @@ const Management = props => {
   }
   Settings.propTypes = { project: PropTypes.object }
 
-  const Preview = () => {
-    if (!focusedProject || !previewImageData) return null
+  const Preview = (props) => {
+    const { project } = props
+    /* previewImageData gets lazy loaded whenever the focused project changes */
+    if (!project || !previewImageData) return null
     return (
       <div className={classes.preview}>
         <img src={`data:image/jpeg;base64,${previewImageData}`} style={{ width: '100%', objectFit: 'contain' }} />
       </div>
     )
   }
+  Preview.propTypes = { project: PropTypes.object }
 
-  const DangerousActions = () => {
-    if (!focusedProject) return null
-    if (currentProjectPath === focusedProject.path) return null
+  const DangerousActions = (props) => {
+    const { project } = props
+    if (currentProjectPath === project.path) return null
     return (
       <div>
         <Typography variant="h5">Danger Zone</Typography>
@@ -213,7 +216,7 @@ const Management = props => {
           <ul className={classes.dangerActionList}>
             <li>
               <Button aria-label="delete" variant="outlined" color="secondary" style={{ float: 'right' }}
-                onClick={() => handleDeleteProject(focusedProject)} startIcon={<DeleteForeverIcon />}>
+                onClick={() => handleDeleteProject(project)} startIcon={<DeleteForeverIcon />}>
                 Delete
               </Button>
               <Typography variant="h6">Delete this project</Typography>
@@ -224,6 +227,7 @@ const Management = props => {
       </div>
     )
   }
+  DangerousActions.propTypes = { project: PropTypes.object }
 
   const Projects = (props) => {
     const { projects } = props
@@ -246,17 +250,24 @@ const Management = props => {
   /* main screen */
   return (
     <div className={classes.management}>
-      <div>
-        <Button variant="contained" color="primary" style={{ float: 'right', marginRight: '1em' }}
-          startIcon={<AddCircleOutlineIcon />}
-          onClick={ event => handleNewProject(event) }>
-            New
-        </Button>
-      </div>
       <div className={classes.projects}>
+        <div style={{ marginBottom: '3em' }}>
+          <Button variant="outlined" color="primary" style={{ float: 'right', marginRight: '1em', marginLeft: '2px' }}
+            startIcon={<LibraryAddIcon />} disabled={true}
+          >
+            Import
+          </Button>
+          <Button variant="contained" color="primary" style={{ float: 'right', marginRight: '2px' }}
+            startIcon={<AddCircleOutlineIcon />}
+            onClick={ event => handleNewProject(event) }>
+            New
+          </Button>
+        </div>
         <List><Projects projects={currentProjects}/></List>
       </div>
-      <div className={classes.details}><Details project={focusedProject}/></div>
+      <div className={classes.details}>
+        <Details project={focusedProject}/>
+      </div>
     </div>
   )
 }
