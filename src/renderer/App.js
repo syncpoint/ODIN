@@ -54,7 +54,7 @@ const styles = {
   overlay: {
     position: 'fixed',
     top: '1em',
-    left: '3em',
+    left: '1em',
     bottom: '1.5em',
     right: '1em',
     zIndex: 20,
