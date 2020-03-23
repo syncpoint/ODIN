@@ -85,7 +85,7 @@ const openProject = project => {
 /**
  * Read (absolute) layer file names from open project.
  */
-const layers = () => {
+const layerFiles = () => {
   if (!currentProject) return []
 
   const dir = path.join(currentProject, 'layers')
@@ -94,6 +94,8 @@ const layers = () => {
     .filter(filename => filename.endsWith('.json'))
     .map(filename => path.join(dir, filename))
 }
+
+
 
 window.addEventListener('beforeunload', () => closeProject())
 ipcRenderer.on('IPC_OPEN_PROJECT', (_, [project]) => openProject(project))
@@ -106,7 +108,7 @@ setTimeout(() => {
 
 export default {
   register,
-  layers,
+  layerFiles,
   preferences: () => preferences,
   updatePreferences
 }

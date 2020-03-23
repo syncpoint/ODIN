@@ -1,15 +1,19 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { ipcRenderer } from 'electron'
-import evented from '../evented'
-import 'ol/ol.css'
+
 import * as ol from 'ol'
+import 'ol/ol.css'
 import { fromLonLat, toLonLat } from 'ol/proj'
-import { feature as featureSource } from './source/feature'
-import { feature as featureLayer } from './layer/feature'
-import { tile as tileLayer } from './layer/tile'
+import { ScaleLine } from 'ol/control'
+import { Tile as TileLayer } from 'ol/layer'
+import { OSM } from 'ol/source'
+
+import evented from '../evented'
 import project from '../project'
 import coordinateFormat from '../../shared/coord-format'
+import layersControl from './layers'
+import './style/scalebar.css'
 
 const zoom = view => view.getZoom()
 const center = view => toLonLat(view.getCenter())
@@ -20,32 +24,6 @@ const viewportChanged = view => () => {
   project.updatePreferences({ viewport })
 }
 
-
-/** Handle project open/close. */
-const projectEventHandler = (view, map) => event => {
-  const handlers = {
-    open: () => {
-      // Set feature vector layers.
-      project.layers()
-        .map(filename => featureSource(filename))
-        .map(source => featureLayer(source))
-        .forEach(layer => map.addLayer(layer))
-
-      // Set center/zoom.
-      const { center, zoom } = project.preferences().viewport
-      view.setCenter(fromLonLat(center))
-      view.setZoom(zoom)
-    },
-
-    close: () => {
-      // Clear feature layers.
-      map.getLayers().clear()
-      map.addLayer(tileLayer())
-    }
-  }
-
-  ;(handlers[event] || (() => {}))()
-}
 
 
 /**
@@ -58,11 +36,19 @@ const effect = props => () => {
   const { center, zoom } = { center: [16.363449, 48.210033], zoom: 8 }
   const view = new ol.View({ center: fromLonLat(center), zoom })
 
+  const scaleLine = new ScaleLine({
+    units: 'metric',
+    bar: true,
+    steps: 4,
+    text: true,
+    minWidth: 140
+  })
+
   const map = new ol.Map({
     view,
-    layers: [tileLayer()],
+    layers: [new TileLayer({ source: new OSM() })],
     target: id,
-    controls: []
+    controls: [scaleLine]
   })
 
   map.on('moveend', viewportChanged(view))
@@ -73,7 +59,12 @@ const effect = props => () => {
     evented.emit('OSD_MESSAGE', { message: currentCoordinate, slot: 'C2' })
   })
 
-  project.register(projectEventHandler(view, map))
+  layersControl({
+    setCenter: view.setCenter.bind(view),
+    setZoom: view.setZoom.bind(view),
+    addLayer: map.addLayer.bind(map),
+    removeLayer: map.removeLayer.bind(map)
+  })
 }
 
 /**
