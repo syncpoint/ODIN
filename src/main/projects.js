@@ -4,6 +4,10 @@ import url from 'url'
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import settings from 'electron-settings'
 import * as R from 'ramda'
+import minimist from 'minimist'
+
+// Parse command line arguments:
+const argv = minimist(process.argv.slice(2))
 
 
 /**
@@ -51,7 +55,7 @@ const createProject = async (options = {}) => {
 
   // Request project path from user, if not given.
   const create = (projectOptions) => {
-    const devServer = process.argv.indexOf('--noDevServer') === -1
+    const devServer = !argv.noDevServer
     const hotDeployment = process.defaultApp ||
       /[\\/]electron-prebuilt[\\/]/.test(process.execPath) ||
       /[\\/]electron[\\/]/.test(process.execPath)
@@ -159,9 +163,13 @@ app.on('ready', () => {
   // we clear state now and recreate it with current ids.
   const state = Object.values(settings.get(WINDOWS_KEY, {}))
   settings.delete(WINDOWS_KEY)
-
   if (state.length) state.forEach(createProject)
-  else createProject({ /* empty project */ })
+  else {
+    // No windows to restore from last session.
+    // See if project path was provided as command line argument:
+    const options = argv.projectPath ? { path: argv.projectPath } : {}
+    createProject(options)
+  }
 })
 
 ipcMain.on('IPC_VIEWPORT_CHANGED', (event, viewport) => {
