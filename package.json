@@ -13,7 +13,7 @@
     "builder:mac": "electron-builder --mac",
     "builder:win": "electron-builder --win",
     "eslint": "eslint src/",
-    "test": "xvfb-maybe mocha --noDevServer --require @babel/register --recursive"
+    "test": "xvfb-maybe mocha --noDevServer --require @babel/register --recursive && standard"
   },
   "repository": {
     "type": "git",
