@@ -191,12 +191,19 @@ const Management = props => {
       setEdit(metadata)
     }
 
+    const handleDetectEnter = keyCode => {
+      if (keyCode === 13) {
+        handleSaveProject(edit)
+      }
+    }
+
     return (
       <div className={classes.settings}>
         <FormControl error={formHasError}>
           <InputLabel htmlFor="projectName">Project Name</InputLabel>
           <Input id="projectName" name="projectName" defaultValue={edit.name}
             onChange={ event => handleNameChanged(event.target.value)}
+            onKeyDown={ event => handleDetectEnter(event.keyCode)}
             style={{ minWidth: '20em' }}
           />
         </FormControl>
