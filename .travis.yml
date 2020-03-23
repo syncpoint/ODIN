@@ -1,13 +1,7 @@
 
-os: linux
 language: node_js
 node_js: '12'
 cache: npm
 
 services:
   - xvfb
-
-notifications:
-  email:
-    on_success: never
-    on_failure: change
