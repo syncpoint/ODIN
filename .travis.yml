@@ -3,4 +3,3 @@ node_js:
   - "10"
 services:
   - xvfb
-script: xvfb-run
