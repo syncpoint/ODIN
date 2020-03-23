@@ -8,7 +8,7 @@ addons:
 services:
   - xvfb
 script:
-  - xvfb-run -e /dev/stdout -a npm run test  
+  - xvfb run -e /dev/stdout -a npm run test  
 
 notifications:
   email:
