@@ -1,21 +1,15 @@
 language: node_js
 node_js:
   - "10"
-addons:
-  apt:
-    packages:
-      - xvfb
 
-install:
-  - export DISPLAY=':99.0'
-  - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+dist: xenial
+services:
+  - xvfb
+
+script: xvfb-run make test
+
+script: xvfb-run --server-args="-screen 0 1024x768x24" make test
+
 
 before_install:
   - npm install
-
-before_script:
-  # start XVFB to test the extension (headless does not install extensions fully)
-  # https://docs.travis-ci.com/user/gui-and-headless-browsers/#using-xvfb-to-run-tests-that-require-a-gui
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
