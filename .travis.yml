@@ -1,13 +1,17 @@
-language: node_js
-node_js:
-  - "10"
 
-dist: xenial
+os: linux
+language: node_js
+node_js: '12'
+cache: npm
+
+branches:
+  only:
+    - master
+
 services:
   - xvfb
 
-script: xvfb-run make test
-
-
-before_install:
-  - npm install
+notifications:
+  email:
+    on_success: never
+    on_failure: change
