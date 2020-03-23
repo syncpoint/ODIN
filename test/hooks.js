@@ -8,6 +8,7 @@ const projectPath = os.homedir()
 module.exports = {
   async startApp () {
     const app = await new Application({
+      startTimeout: 30000,
       path: electron,
       args: [path.join(__dirname, '..'), '--noDevServer', `--projectPath=${projectPath}`]
     }).start()
