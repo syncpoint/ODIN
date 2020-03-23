@@ -20,11 +20,8 @@ const App = (props) => {
   }, [])
 
   React.useEffect(() => {
-    const handleShowManagementComand = () => {
-      setManagement(true)
-    }
-    ipcRenderer.on('IPC_SHOW_PROJECT_MANAGEMENT', handleShowManagementComand)
-    return () => { ipcRenderer.removeListener(handleShowManagementComand) }
+    ipcRenderer.on('IPC_SHOW_PROJECT_MANAGEMENT', toggleManagementUI)
+    return () => { ipcRenderer.removeListener(toggleManagementUI) }
   }, [])
 
   const toggleManagementUI = () => {

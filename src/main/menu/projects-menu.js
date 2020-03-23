@@ -4,7 +4,7 @@ const menu = {
   submenu: [
     {
       label: 'Manage Projects...',
-      accelerator: 'CmdOrCtrl+M',
+      accelerator: 'CmdOrCtrl+Alt+M',
       click: (menuItem, browserWindow) => browserWindow.send('IPC_SHOW_PROJECT_MANAGEMENT')
     }
   ]
