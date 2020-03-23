@@ -3,7 +3,7 @@ import assert from 'assert'
 
 describe('Bootstrap', function () {
   let app
-  this.timeout(10000)
+  this.timeout(30000)
 
   before(async () => {
     app = await hooks.startApp()
