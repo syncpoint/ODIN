@@ -10,7 +10,7 @@ import ExportIcon from '@material-ui/icons/SaveAlt'
 import ImportProjectIcon from '@material-ui/icons/LibraryAdd'
 import BackToMapIcon from '@material-ui/icons/ExitToApp'
 
-import { ipcRenderer } from 'electron'
+import { ipcRenderer, remote } from 'electron'
 import projects from '../../shared/projects'
 
 
@@ -135,6 +135,8 @@ const Management = props => {
 
   const handleSaveProject = (metadata) => {
     /* optimistic update of UI */
+    remote.getCurrentWindow().setTitle(metadata.name)
+    /* tell react to re-render */
     const updatedFocusedProject = { ...focusedProject, ...{ metadata: metadata } }
     setFocusedProject(updatedFocusedProject)
 
