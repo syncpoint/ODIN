@@ -7,7 +7,7 @@ module.exports = {
     const app = await new Application({
       startTimeout: 30000,
       path: electron,
-      args: [path.join(__dirname, '..'), '--noDevServer']
+      args: [path.join(__dirname, '../..'), '--noDevServer']
     }).start()
     return app
   },
