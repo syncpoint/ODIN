@@ -12,15 +12,17 @@ const APP_KEY = 'app'
 const STATE_KEY = `${APP_KEY}.state`
 const WINDOWS_KEY = `${STATE_KEY}.windows`
 const windowKey = id => `${WINDOWS_KEY}.${id}`
+const RECENT_WINDOW_KEY = `${STATE_KEY}.recentWindow`
 
 /**
  * Merge current value (object) with supplied (map) function.
  */
 const merge = keyPath => (fn, defaultvalue) => settings.set(keyPath, fn(settings.get(keyPath, defaultvalue)))
 
-// TODO: unit test
-
-let shuttingDown = false
+/**
+ * the project id corresponds with the project folder name (which is a UUID)
+ */
+const projectId = projectPath => path.basename(projectPath)
 
 /**
  * @param {*} projectPath the fully qualified filesystem path to the project folder
@@ -58,15 +60,12 @@ const createProjectWindow = async (options) => {
       }
     })
 
-    const key = windowKey(window.id)
+    /* remember the window settings per project, so the key is the project folder name (which is a UUID) */
+    const id = projectId(projectOptions.path)
+    const key = windowKey(id)
     merge(key)(props => ({ ...props, ...projectOptions }), {})
 
     const updateBounds = () => merge(key)(props => ({ ...props, ...window.getBounds() }))
-    const deleteWindow = () => {
-      // don't delete when shutting down the application.
-      if (shuttingDown) return
-      settings.delete(windowKey(window.id))
-    }
 
     /** the path property is required to identify the project */
     window.path = projectOptions.path
@@ -74,6 +73,10 @@ const createProjectWindow = async (options) => {
     window.once('ready-to-show', () => {
       window.show()
       /* create a screenshot and save the image that will be used as a preview */
+      /*
+        TODO: choose a more appropriate point in time to create the screenshot
+        if we close the window within the 5s this will throw an error
+      */
       setTimeout(async () => {
         try {
           const nativeImage = await window.webContents.capturePage()
@@ -82,8 +85,17 @@ const createProjectWindow = async (options) => {
           console.dir(error)
         }
       }, 5000)
+
+      /*  Remember this window/project to be the most recent.
+          We will use this key to identify the recent project and
+          use it on startup ('app-ready') and when we switch projects ('IPC_SWITCH_PROJECT').
+      */
+      merge(RECENT_WINDOW_KEY)(() => projectOptions.path)
     })
-    window.once('close', deleteWindow)
+    /*
+      TODO: decide if the app should quit if we close the window
+    */
+    // window.once('close', deleteWindow)
     window.on('page-title-updated', event => event.preventDefault())
     window.on('move', updateBounds)
     window.on('resize', updateBounds)
@@ -108,21 +120,24 @@ const createProjectWindow = async (options) => {
  * registers all app listeners and loads either the last project used or creates a new one
  */
 const bootstrap = () => {
-  app.on('before-quit', () => (shuttingDown = true))
+  // app.on('before-quit', () => (shuttingDown = true))
   app.on('ready', () => {
-
-    // Since window ids are not stable between sessions,
-    // we clear state now and recreate it with current ids.
+    /* try to restore persisted window state */
     const state = Object.values(settings.get(WINDOWS_KEY, {}))
-    settings.delete(WINDOWS_KEY)
 
-    // state contains the recently used project(s)
-    if (state.length) state.forEach(createProjectWindow)
-    else createProjectWindow(/* will create a new untiteled project */)
+    if (!state || state.length === 0) {
+      return createProjectWindow(/* will create a new untiteled project */)
+    }
+
+    const mostRecentProject = settings.get(RECENT_WINDOW_KEY)
+    const recentProject = state.find(setting => setting.path === mostRecentProject)
+
+    if (!recentProject) return createProjectWindow(/* will create a new untiteled project */)
+    createProjectWindow(recentProject)
   })
 
   ipcMain.on('IPC_VIEWPORT_CHANGED', (event, viewport) => {
-    const { id } = event.sender.getOwnerBrowserWindow()
+    const id = projectId(event.sender.getOwnerBrowserWindow().path)
     merge(windowKey(id))(props => ({ ...props, viewport }), {})
   })
 
@@ -131,7 +146,13 @@ const bootstrap = () => {
     const sender = event.sender.getOwnerBrowserWindow()
     if (sender.path === projectPath) return
     sender.close()
-    createProjectWindow({ path: projectPath })
+    /*
+      restore the window settings
+      if no settings exist we create a default window
+    */
+    const id = projectId(projectPath)
+    const persistedSettings = settings.get(windowKey(id), { path: projectPath })
+    createProjectWindow(persistedSettings)
   })
 }
 
