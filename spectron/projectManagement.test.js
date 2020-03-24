@@ -1,5 +1,5 @@
 import hooks from './hooks'
-
+import { clickElementById } from './UiHelper'
 
 describe('menu test', function () {
   let app
@@ -15,6 +15,7 @@ describe('menu test', function () {
 
   it('opens project manager', async function () {
     app.browserWindow.send('IPC_SHOW_PROJECT_MANAGEMENT')
+    await clickElementById(app, '#backToMap')
   })
 
 })
