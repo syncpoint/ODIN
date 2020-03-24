@@ -262,7 +262,7 @@ const Management = props => {
     const items = projects.map(project => (
       <ListItem alignItems="flex-start" key={project.path} button onClick={ () => handleProjectFocus(project) }>
         <ListItemText primary={project.metadata.name}/>
-        <Button color="primary" variant="outlined" disabled={currentProjectPath === project.path}
+        <Button id={'switchTo' + project.metadata.name} color="primary" variant="outlined" disabled={currentProjectPath === project.path}
           onClick={ () => handleProjectSelected(project)} startIcon={<PlayCircleOutlineIcon />} >
           Switch to
         </Button>
