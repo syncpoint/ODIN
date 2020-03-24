@@ -212,7 +212,7 @@ const Management = props => {
           startIcon={<ExportIcon />}>
           Export
         </Button>
-        <Button aria-label="save" variant="contained" color="primary"
+        <Button id="saveProject" aria-label="save" variant="contained" color="primary"
           style={{ float: 'right', margin: '2px' }} disabled={formHasError}
           onClick={() => handleSaveProject(edit)} startIcon={<SaveIcon />}>
           Save
@@ -243,7 +243,7 @@ const Management = props => {
         <div className={classes.dangerZone}>
           <ul className={classes.dangerActionList}>
             <li>
-              <Button aria-label="delete" variant="outlined" color="secondary" style={{ float: 'right' }}
+              <Button id="deleteProject" aria-label="delete" variant="outlined" color="secondary" style={{ float: 'right' }}
                 onClick={() => handleDeleteProject(project)} startIcon={<DeleteForeverIcon />}>
                 Delete
               </Button>
@@ -262,7 +262,7 @@ const Management = props => {
     const items = projects.map(project => (
       <ListItem alignItems="flex-start" key={project.path} button onClick={ () => handleProjectFocus(project) }>
         <ListItemText primary={project.metadata.name}/>
-        <Button color="primary" variant="outlined" disabled={currentProjectPath === project.path}
+        <Button id={'switchTo' + project.metadata.name} color="primary" variant="outlined" disabled={currentProjectPath === project.path}
           onClick={ () => handleProjectSelected(project)} startIcon={<PlayCircleOutlineIcon />} >
           Switch to
         </Button>
@@ -284,12 +284,12 @@ const Management = props => {
       <div className={classes.management}>
         <div className={classes.projects}>
           <div style={{ marginBottom: '3em' }}>
-            <Button variant="outlined" color="primary" style={{ float: 'right', marginRight: '1em', marginLeft: '2px' }}
+            <Button id="importProject" variant="outlined" color="primary" style={{ float: 'right', marginRight: '1em', marginLeft: '2px' }}
               startIcon={<ImportProjectIcon />} disabled={true}
             >
             Import
             </Button>
-            <Button variant="contained" color="primary" style={{ float: 'right', marginRight: '2px' }}
+            <Button id="newProject" variant="contained" color="primary" style={{ float: 'right', marginRight: '2px' }}
               startIcon={<AddCircleOutlineIcon />}
               onClick={ event => handleNewProject(event) }>
             New
