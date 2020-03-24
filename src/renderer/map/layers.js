@@ -3,14 +3,12 @@ import { fromLonLat } from 'ol/proj'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
 import { GeoJSON } from 'ol/format'
-import { Modify, Select } from 'ol/interaction'
-import { click } from 'ol/events/condition'
 import * as R from 'ramda'
 import disposable from '../../shared/disposable'
+import { selectInteraction, modifyInteraction, translateInteraction } from './interactions'
 import project from '../project'
 import style from './style/style'
 
-const hitTolerance = 3
 
 /**
  * GeoJSON, by definitions, comes in WGS84.
@@ -35,6 +33,15 @@ const geometryType = feature => {
 }
 
 
+/**
+ * Move feature between sources.
+ * move :: Source -> Source -> Feature -> Unit
+ */
+const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
+const source = features => new VectorSource({ features })
+const layer = source => new VectorLayer({ source, style })
+
+
 /** Handle project open/close. */
 const projectEventHandler = map => {
 
@@ -54,9 +61,9 @@ const projectEventHandler = map => {
     return interaction
   }
 
+
   // Handle project open event.
   const open = async () => {
-
 
     // Read features of all GeoJSON layer files,
     // then distribute features to sets depending on their geometry type:
@@ -70,21 +77,19 @@ const projectEventHandler = map => {
 
     // Layer order: polygons first, points last:
     const order = ['Polygon', 'LineString', 'Point']
-    const source = features => new VectorSource({ features })
+
+    // Geometry#type -> VectorSource
     const sources = order.reduce((acc, type) => {
       acc[type] = source(featureSets[type])
       return acc
     }, {})
 
-    const layer = source => new VectorLayer({ source, style })
     const layers = ['Polygon', 'LineString', 'Point']
       .map(type => layer(sources[type]))
       .map(addLayer)
 
 
-    // 'Modify' interaction on dedicated selection source/layer.
-
-    // Bind writer functions to features:
+    // Bind writer functions 'sync' to features:
     R.zip(filenames, features).map(([filename, features]) => {
       // TODO: filter feature properties which should not be written
       const sync = () => fs.writeFileSync(filename, geoJSON.writeFeatures(features))
@@ -92,59 +97,31 @@ const projectEventHandler = map => {
       features.forEach(bind)
     })
 
-    // For modify interaction we either need a single source or
-    // a feature __COLLECTION__, feature array won't do.
 
-    const sync = feature => feature.get('sync')
-    const uniqSync = features => R.uniq(features.getArray().map(sync))
-    const modifyend = ({ features }) => uniqSync(features).forEach(fn => fn())
+    // Dedicated layer for selected features:
+    const selectionSource = new VectorSource()
+    const select = addInteraction(selectInteraction(layers))
+    addLayer(new VectorLayer({ style, source: selectionSource }))
 
-    const modify = source => {
-      const modify = new Modify({ source })
-      // NOTE: modifystart/end report ALL features of underlying source.
-      modify.on('modifyend', modifyend)
-      return modify
+    const selectFeature = feature => {
+      const from = sources[geometryType(feature)]
+      move(from, selectionSource)(feature)
     }
 
-    const selectionSource = new VectorSource()
-    addLayer(new VectorLayer({ style, source: selectionSource }))
-    addInteraction(modify(selectionSource))
-
-
-    // 'Select' interaction.
-    // Note: Default condition is changed to ignore alt/option-click, because
-    // alt/option conflicts with modify interaction (delete point).
-    const noAltKey = ({ originalEvent }) => originalEvent.altKey !== true
-    const conjunction = (...ps) => v => ps.reduce((a, b) => a(v) && b(v))
-    const condition = conjunction(click, noAltKey)
-    const select = addInteraction(new Select({
-      hitTolerance,
-      layers,
-      style,
-      condition
-    }))
-
-    /**
-     * Move feature between sources.
-     * move :: Source -> Source -> Feature -> Unit
-     */
-    const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
+    const deselectFeature = feature => {
+      const to = sources[geometryType(feature)]
+      move(selectionSource, to)(feature)
+    }
 
     select.on('select', ({ selected, deselected }) => {
       // Dim feature layers except selection layer:
       layers.forEach(layer => layer.setOpacity(selected.length ? 0.35 : 1))
-
-      selected.forEach(feature => {
-        const from = sources[geometryType(feature)]
-        move(from, selectionSource)(feature)
-      })
-
-      deselected.forEach(feature => {
-        const to = sources[geometryType(feature)]
-        move(selectionSource, to)(feature)
-      })
+      selected.forEach(selectFeature)
+      deselected.forEach(deselectFeature)
     })
 
+    addInteraction(translateInteraction(select.getFeatures()))
+    addInteraction(modifyInteraction(select.getFeatures()))
 
     // Set center/zoom.
     const { center, zoom } = project.preferences().viewport
@@ -153,8 +130,8 @@ const projectEventHandler = map => {
   }
 
   // Handle project close event.
+  // Clear feature layers and interactions.
   const close = () => {
-    // Clear feature layers and interactions.
     layers.dispose()
     layers = disposable.of()
     interactions.dispose()
