@@ -5,7 +5,10 @@ const menu = {
     {
       label: 'Manage Projects...',
       accelerator: 'CmdOrCtrl+Alt+M',
-      click: (menuItem, browserWindow) => browserWindow.send('IPC_SHOW_PROJECT_MANAGEMENT')
+      click: (menuItem, browserWindow) => {
+        /* browserWindow is undefined if minimized or closed */
+        if (browserWindow) browserWindow.send('IPC_SHOW_PROJECT_MANAGEMENT')
+      }
     }
   ]
 }
