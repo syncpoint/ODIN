@@ -54,10 +54,12 @@ const projectEventHandler = map => {
     return interaction
   }
 
+  // Handle project open event.
   const open = async () => {
 
+
     // Read features of all GeoJSON layer files,
-    // then distribute features to sets depending on their geometry:
+    // then distribute features to sets depending on their geometry type:
     const readFile = filename => fs.promises.readFile(filename, 'utf8')
     const readFeatures = file => geoJSON.readFeatures(file)
     const filenames = project.layerFiles()
@@ -67,8 +69,8 @@ const projectEventHandler = map => {
 
 
     // Layer order: polygons first, points last:
-    const source = features => new VectorSource({ features })
     const order = ['Polygon', 'LineString', 'Point']
+    const source = features => new VectorSource({ features })
     const sources = order.reduce((acc, type) => {
       acc[type] = source(featureSets[type])
       return acc
@@ -79,56 +81,65 @@ const projectEventHandler = map => {
       .map(type => layer(sources[type]))
       .map(addLayer)
 
-    const selectionSource = new VectorSource()
-    addLayer(new VectorLayer({ style, source: selectionSource }))
 
+    // 'Modify' interaction on dedicated selection source/layer.
+
+    // Bind writer functions to features:
     R.zip(filenames, features).map(([filename, features]) => {
-      const sync = () => console.log('writing layer', filename)
-      features.forEach(feature => feature.set('sync', sync))
+      // TODO: filter feature properties which should not be written
+      const sync = () => fs.writeFileSync(filename, geoJSON.writeFeatures(features))
+      const bind = feature => feature.set('sync', sync)
+      features.forEach(bind)
     })
 
     // For modify interaction we either need a single source or
     // a feature __COLLECTION__, feature array won't do.
-    // So for now, create a modify interaction for each source.
+
+    const sync = feature => feature.get('sync')
+    const uniqSync = features => R.uniq(features.getArray().map(sync))
+    const modifyend = ({ features }) => uniqSync(features).forEach(fn => fn())
+
     const modify = source => {
       const modify = new Modify({ source })
       // NOTE: modifystart/end report ALL features of underlying source.
-      modify.on('modifyend', ({ features }) => {
-        console.log('features', features)
-        R.uniq(features.getArray().map(feature => feature.get('sync'))).forEach(fn => fn())
-      })
-
+      modify.on('modifyend', modifyend)
       return modify
     }
 
+    const selectionSource = new VectorSource()
+    addLayer(new VectorLayer({ style, source: selectionSource }))
     addInteraction(modify(selectionSource))
 
-    // alt/option is reserved for modify interaction (delete point).
+
+    // 'Select' interaction.
+    // Note: Default condition is changed to ignore alt/option-click, because
+    // alt/option conflicts with modify interaction (delete point).
     const noAltKey = ({ originalEvent }) => originalEvent.altKey !== true
-    const conjunction = (...xs) => event => xs.reduce((acc, x) => acc && x(event), true)
+    const conjunction = (...ps) => v => ps.reduce((a, b) => a(v) && b(v))
+    const condition = conjunction(click, noAltKey)
     const select = addInteraction(new Select({
       hitTolerance,
       layers,
       style,
-      condition: conjunction(click, noAltKey)
+      condition
     }))
 
     /**
      * Move feature between sources.
+     * move :: Source -> Source -> Feature -> Unit
      */
     const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
 
     select.on('select', ({ selected, deselected }) => {
+      // Dim feature layers except selection layer:
       layers.forEach(layer => layer.setOpacity(selected.length ? 0.35 : 1))
 
       selected.forEach(feature => {
-        feature.set('selected', true)
         const from = sources[geometryType(feature)]
         move(from, selectionSource)(feature)
       })
 
       deselected.forEach(feature => {
-        feature.unset('selected')
         const to = sources[geometryType(feature)]
         move(selectionSource, to)(feature)
       })
@@ -141,6 +152,7 @@ const projectEventHandler = map => {
     map.setZoom(zoom)
   }
 
+  // Handle project close event.
   const close = () => {
     // Clear feature layers and interactions.
     layers.dispose()
