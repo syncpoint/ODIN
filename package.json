@@ -13,8 +13,8 @@
     "builder:mac": "electron-builder --mac",
     "builder:win": "electron-builder --win",
     "eslint": "eslint src/",
-    "test": "mocha --require @babel/register",
-    "itest": "mocha --require @babel/register --recursive test/integrationtest"
+    "test": "mocha --require @babel/register --recursive",
+    "spectron": "mocha --require @babel/register --recursive spectron"
   },
   "repository": {
     "type": "git",
