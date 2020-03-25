@@ -1,4 +1,4 @@
-import { ipcRenderer, remote } from 'electron'
+import { remote } from 'electron'
 import fs from 'fs'
 import path from 'path'
 import { List } from 'immutable'
@@ -72,11 +72,11 @@ const openProject = project => {
   if (currentProject) closeProject()
   currentProject = project
 
+  const projectName = remote.getCurrentWindow().getTitle()
+  const updateProject = () => evented.emit('OSD_MESSAGE', { message: projectName, slot: 'A1' })
   // NOTE: Defer message, so OSD has a chance to register event handler:
-  const updateProject = () =>
-    evented.emit('OSD_MESSAGE', { message: path.basename(project), slot: 'A1' })
-
   setTimeout(updateProject, 0)
+
   loadPreferences()
   listeners.forEach(listener => listener('open'))
 }
@@ -95,10 +95,7 @@ const layerFiles = () => {
     .map(filename => path.join(dir, filename))
 }
 
-
-
 window.addEventListener('beforeunload', () => closeProject())
-ipcRenderer.on('IPC_OPEN_PROJECT', (_, [project]) => openProject(project))
 
 // Wait until next tick for other components to be ready:
 setTimeout(() => {
