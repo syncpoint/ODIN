@@ -63,5 +63,5 @@ export const selectInteraction = layers => new Select({
   layers,
   style,
   condition: conjunction(click, noAltKey),
-  multi: true
+  multi: false
 })
