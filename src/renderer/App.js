@@ -24,6 +24,19 @@ const App = (props) => {
     return () => { ipcRenderer.removeListener(toggleManagementUI) }
   }, [])
 
+  React.useEffect(() => {
+    if (!showManagement && currentProjectPath) {
+      /*
+        loading map tiles and features takes some time, so we
+        create the preview of the map after 1s
+      */
+      const appLoadedTimer = setTimeout(() => {
+        ipcRenderer.send('IPC_CREATE_PREVIEW', currentProjectPath)
+      }, 1000)
+      return () => clearTimeout(appLoadedTimer)
+    }
+  }, [showManagement, currentProjectPath])
+
   const toggleManagementUI = () => {
     setManagement(showManagement => !showManagement)
   }
