@@ -5,6 +5,7 @@ import { Vector as VectorLayer } from 'ol/layer'
 import { GeoJSON } from 'ol/format'
 import * as R from 'ramda'
 import disposable from '../../shared/disposable'
+import { selectInteraction, modifyInteraction, translateInteraction } from './interactions'
 import project from '../project'
 import style from './style/style'
 
@@ -31,43 +32,110 @@ const geometryType = feature => {
   }
 }
 
-/** Handle project open/close. */
-const projectEventHandler = callbacks => {
 
-  // Layers are disposed on project close:
+/**
+ * Move feature between sources.
+ * move :: Source -> Source -> Feature -> Unit
+ */
+const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
+const source = features => new VectorSource({ features })
+const layer = source => new VectorLayer({ source, style })
+
+
+/** Handle project open/close. */
+const projectEventHandler = map => {
+
+  // Layers/interactions are disposed on project close:
   let layers = disposable.of()
+  let interactions = disposable.of()
 
   const addLayer = layer => {
-    callbacks.addLayer(layer)
-    layers.addDisposable(() => callbacks.removeLayer(layer))
+    map.addLayer(layer)
+    layers.addDisposable(() => map.removeLayer(layer))
+    return layer
   }
 
+  const addInteraction = interaction => {
+    map.addInteraction(interaction)
+    interactions.addDisposable(() => map.removeInteraction(R.intersection))
+    return interaction
+  }
+
+
+  // Handle project open event.
   const open = async () => {
 
     // Read features of all GeoJSON layer files,
-    // then distribute features to sets depending on their geometry:
+    // then distribute features to sets depending on their geometry type:
     const readFile = filename => fs.promises.readFile(filename, 'utf8')
     const readFeatures = file => geoJSON.readFeatures(file)
-    const files = await Promise.all(project.layerFiles().map(readFile))
-    const features = files.flatMap(readFeatures)
-    const featureSets = R.groupBy(geometryType)(features)
+    const filenames = project.layerFiles()
+    const files = await Promise.all(filenames.map(readFile))
+    const features = files.map(readFeatures)
+    const featureSets = R.groupBy(geometryType)(features.flat())
+
 
     // Layer order: polygons first, points last:
-    ;['Polygon', 'LineString', 'Point'].forEach(type => {
-      const source = new VectorSource({ features: featureSets[type] })
-      addLayer(new VectorLayer({ source, style }))
+    const order = ['Polygon', 'LineString', 'Point']
+
+    // Geometry#type -> VectorSource
+    const sources = order.reduce((acc, type) => {
+      acc[type] = source(featureSets[type])
+      return acc
+    }, {})
+
+    const layers = ['Polygon', 'LineString', 'Point']
+      .map(type => layer(sources[type]))
+      .map(addLayer)
+
+
+    // Bind writer functions 'sync' to features:
+    R.zip(filenames, features).map(([filename, features]) => {
+      // TODO: filter feature properties which should not be written
+      const sync = () => fs.writeFileSync(filename, geoJSON.writeFeatures(features))
+      const bind = feature => feature.set('sync', sync)
+      features.forEach(bind)
     })
+
+
+    // Dedicated layer for selected features:
+    const selectionSource = new VectorSource()
+    const select = addInteraction(selectInteraction(layers))
+    addLayer(new VectorLayer({ style, source: selectionSource }))
+
+    const selectFeature = feature => {
+      const from = sources[geometryType(feature)]
+      move(from, selectionSource)(feature)
+    }
+
+    const deselectFeature = feature => {
+      const to = sources[geometryType(feature)]
+      move(selectionSource, to)(feature)
+    }
+
+    select.on('select', ({ selected, deselected }) => {
+      // Dim feature layers except selection layer:
+      layers.forEach(layer => layer.setOpacity(selected.length ? 0.35 : 1))
+      selected.forEach(selectFeature)
+      deselected.forEach(deselectFeature)
+    })
+
+    addInteraction(translateInteraction(select.getFeatures()))
+    addInteraction(modifyInteraction(select.getFeatures()))
 
     // Set center/zoom.
     const { center, zoom } = project.preferences().viewport
-    callbacks.setCenter(fromLonLat(center))
-    callbacks.setZoom(zoom)
+    map.setCenter(fromLonLat(center))
+    map.setZoom(zoom)
   }
 
+  // Handle project close event.
+  // Clear feature layers and interactions.
   const close = () => {
-    // Clear feature layers.
     layers.dispose()
     layers = disposable.of()
+    interactions.dispose()
+    interactions = disposable.of()
   }
 
   return {
@@ -76,7 +144,7 @@ const projectEventHandler = callbacks => {
   }
 }
 
-export default callbacks => {
-  const handlers = projectEventHandler(callbacks)
+export default map => {
+  const handlers = projectEventHandler(map)
   project.register(event => (handlers[event] || (() => {}))(event))
 }
