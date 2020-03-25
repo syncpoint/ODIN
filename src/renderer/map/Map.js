@@ -12,7 +12,7 @@ import { OSM } from 'ol/source'
 import evented from '../evented'
 import project from '../project'
 import coordinateFormat from '../../shared/coord-format'
-import layersControl from './layers'
+import layers from './layers'
 import './style/scalebar.css'
 
 const zoom = view => view.getZoom()
@@ -59,11 +59,16 @@ const effect = props => () => {
     evented.emit('OSD_MESSAGE', { message: currentCoordinate, slot: 'C2' })
   })
 
-  layersControl({
+  // Delegate layer management.
+  // Note: We don't directly expose complete Map API,
+  // but only essential operations.
+  layers({
     setCenter: view.setCenter.bind(view),
     setZoom: view.setZoom.bind(view),
     addLayer: map.addLayer.bind(map),
-    removeLayer: map.removeLayer.bind(map)
+    removeLayer: map.removeLayer.bind(map),
+    addInteraction: map.addInteraction.bind(map),
+    removeInteraction: map.removeInteraction.bind(map)
   })
 }
 
