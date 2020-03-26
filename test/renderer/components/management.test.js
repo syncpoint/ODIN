@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 /* eslint-disable no-undef */
 import Management from '../../../src/renderer/components/Management'
 import { Button } from '@material-ui/core'
@@ -13,5 +14,14 @@ describe('Management', () => {
                                       startIcon={<ImportProjectIcon />} disabled={true} >
                                       Import
                                       </Button>), true, 'Verify import button')
+  })
+  it('verify new project button', () => {
+    const button = wrapper.find('#newProject')
+    console.log(Object.keys(button.props()))
+  })
+
+  it('verify project list', () => {
+    const list = wrapper.find('#projectList')
+    console.log(list.debug())
   })
 })

@@ -295,7 +295,7 @@ const Management = props => {
             New
             </Button>
           </div>
-          <List><Projects projects={currentProjects}/></List>
+          <List id="projectList"><Projects projects={currentProjects}/></List>
         </div>
         <div className={classes.details}>
           <Details project={focusedProject}/>
