@@ -65,16 +65,27 @@ const createProjectWindow = async (options) => {
       }
     })
 
+    /** the path property is required to identify the project */
+    window.path = projectOptions.path
+
     /* remember the window settings per project, so the key is the project folder name (which is a UUID) */
     const id = projectId(projectOptions.path)
     const key = windowKey(id)
     merge(key)(props => ({ ...props, ...projectOptions }), {})
 
     const updateBounds = () => merge(key)(props => ({ ...props, ...window.getBounds() }))
+    window.on('page-title-updated', event => event.preventDefault())
+    window.on('move', updateBounds)
+    window.on('resize', updateBounds)
+    // TODO: support fullscreen
 
-    /** the path property is required to identify the project */
-    window.path = projectOptions.path
-    window.viewport = projectOptions.viewport
+    /* restore the existing viewport if exists or maximize the window */
+    if (projectOptions.viewport) {
+      window.viewport = projectOptions.viewport
+    } else {
+      window.maximize()
+    }
+
     window.once('ready-to-show', () => {
       window.show()
       /*  Remember this window/project to be the most recent.
@@ -83,11 +94,6 @@ const createProjectWindow = async (options) => {
       */
       merge(RECENT_WINDOW_KEY)(() => projectOptions.path)
     })
-
-    window.on('page-title-updated', event => event.preventDefault())
-    window.on('move', updateBounds)
-    window.on('resize', updateBounds)
-    // TODO: support fullscreen
 
     /* (re)establish electron's normal "quit the app if no more windows are open" behavior */
     appShallQuit = true
