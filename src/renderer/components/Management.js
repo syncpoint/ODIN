@@ -25,7 +25,14 @@ const useStyles = makeStyles(theme => ({
     gridTemplateColumns: '1fr 2fr',
     gridTemplateRows: 'auto',
     gridGap: '1em',
-    gridTemplateAreas: '"projects details"'
+    gridTemplateAreas: '"projects details"',
+    '@media (max-width:1024px)': {
+      gridTemplateColumns: '1fr',
+      gridTemplateRows: 'auto auto',
+      gridTemplateAreas: `
+      "projects"
+      "details"`
+    }
   },
 
   sidebar: {
