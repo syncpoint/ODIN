@@ -12,6 +12,7 @@ import BackToMapIcon from '@material-ui/icons/ExitToApp'
 
 import { ipcRenderer, remote } from 'electron'
 import projects from '../../shared/projects'
+import { fromISO } from '../../shared/militaryTime'
 
 
 const useStyles = makeStyles(theme => ({
@@ -97,12 +98,20 @@ const Management = props => {
   /* reloadProject forces the enumerateProjects to re-run */
   const [reloadProjects, setReloadProjects] = React.useState(true)
 
+  const byName = (one, other) => {
+    if (one.metadata.lastAccess < other.metadata.lastAccess) return -1
+    if (one.metadata.lastAccess > other.metadata.lastAccess) return 1
+    return 0
+  }
+
 
   React.useEffect(() => {
     projects.enumerateProjects().then(allProjects => {
       /* read all metadata */
       Promise.all(
         allProjects.map(projectPath => projects.readMetadata(projectPath)))
+        .then(projects => projects.sort(byName))
+        .then(projects => projects.reverse())
         .then(augmentedProjects => {
           setReloadProjects(false)
           setCurrentProjects(augmentedProjects)
@@ -137,6 +146,11 @@ const Management = props => {
 
   const handleNewProject = () => {
     projects.createProject().then((_) => {
+      /*
+        an undefined focused project will select the first
+        project in the list
+      */
+      setFocusAndLoadPreview(undefined)
       setReloadProjects(true)
     })
   }
@@ -268,7 +282,7 @@ const Management = props => {
     const { projects } = props
     const items = projects.map(project => (
       <ListItem alignItems="flex-start" key={project.path} button onClick={ () => handleProjectFocus(project) }>
-        <ListItemText primary={project.metadata.name}/>
+        <ListItemText primary={project.metadata.name} secondary={`last access ${fromISO(project.metadata.lastAccess)}`}/>
         <Button id={'switchTo' + project.metadata.name} color="primary" variant="outlined" disabled={currentProjectPath === project.path}
           onClick={ () => handleProjectSelected(project)} startIcon={<PlayCircleOutlineIcon />} >
           Switch to

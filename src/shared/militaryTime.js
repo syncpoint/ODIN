@@ -30,11 +30,28 @@ const milTimeZones = {
 
 const MIL_DATE_FORMAT = 'ddHHmm--LLLyy'
 
-const getCurrentDateTime = () => {
-  const currentTime = DateTime.local()
-  const offset = Math.floor(currentTime.offset / 60)
+/**
+ *
+ * @param {*} date a Luxon DateTime object
+ */
+const toMilitaryTime = date => {
+  const offset = Math.floor(date.offset / 60)
   const offsetAsString = (offset >= 0) ? `+${offset}` : `-${offset}`
-  return currentTime.toFormat(MIL_DATE_FORMAT).toLowerCase().replace('--', milTimeZones[offsetAsString])
+  return date.toFormat(MIL_DATE_FORMAT).toLowerCase().replace('--', milTimeZones[offsetAsString])
+}
+
+const getCurrentDateTime = () => {
+  return toMilitaryTime(DateTime.local())
+}
+
+/**
+ *
+ * @param {*} isoDateString Military DateTime from an ISO 8601 string
+ * @returns the military date format
+ */
+export const fromISO = isoDateString => {
+  const date = DateTime.fromISO(isoDateString)
+  return toMilitaryTime(date)
 }
 
 export default getCurrentDateTime

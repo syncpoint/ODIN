@@ -97,7 +97,8 @@ const createProjectWindow = async (options) => {
 
     /* (re)establish electron's normal "quit the app if no more windows are open" behavior */
     appShallQuit = true
-
+    /* allow users to find their recently used projects access by data/time */
+    projects.mergeMetadata(projectOptions.path, { lastAccess: new Date() })
     window.loadURL(windowUrl)
   }
 
