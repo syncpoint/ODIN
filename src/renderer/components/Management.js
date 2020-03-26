@@ -161,9 +161,9 @@ const Management = props => {
     return (
       <React.Fragment>
         <Caption project={project} />
-        <Settings project={project} />
-        <Preview project={project} />
-        <DangerousActions project={project} />
+        <Settings project={project}/>
+        <Preview project={project}/>
+        <DangerousActions project={project}/>
       </React.Fragment>
     )
   }
@@ -202,8 +202,8 @@ const Management = props => {
         <FormControl error={formHasError}>
           <InputLabel htmlFor="projectName">Project Name</InputLabel>
           <Input id="projectName" name="projectName" defaultValue={edit.name}
-            onChange={event => handleNameChanged(event.target.value)}
-            onKeyDown={event => handleDetectEnter(event.keyCode)}
+            onChange={ event => handleNameChanged(event.target.value)}
+            onKeyDown={ event => handleDetectEnter(event.keyCode)}
             style={{ minWidth: '20em' }}
           />
         </FormControl>
@@ -260,10 +260,10 @@ const Management = props => {
   const Projects = (props) => {
     const { projects } = props
     const items = projects.map(project => (
-      <ListItem alignItems="flex-start" key={project.path} button onClick={() => handleProjectFocus(project)}>
-        <ListItemText primary={project.metadata.name} />
+      <ListItem alignItems="flex-start" key={project.path} button onClick={ () => handleProjectFocus(project) }>
+        <ListItemText primary={project.metadata.name}/>
         <Button id={'switchTo' + project.metadata.name} color="primary" variant="outlined" disabled={currentProjectPath === project.path}
-          onClick={() => handleProjectSelected(project)} startIcon={<PlayCircleOutlineIcon />} >
+          onClick={ () => handleProjectSelected(project)} startIcon={<PlayCircleOutlineIcon />} >
           Switch to
         </Button>
       </ListItem>
@@ -279,7 +279,7 @@ const Management = props => {
   return (
     <div>
       <div className={classes.sidebar}>
-        <BackToMapIcon id="backToMap" onClick={onCloseClicked} />
+        <BackToMapIcon id="backToMap" onClick={onCloseClicked}/>
       </div>
       <div className={classes.management}>
         <div className={classes.projects}>
@@ -287,18 +287,18 @@ const Management = props => {
             <Button id="importProject" variant="outlined" color="primary" style={{ float: 'right', marginRight: '1em', marginLeft: '2px' }}
               startIcon={<ImportProjectIcon />} disabled={true}
             >
-              Import
+            Import
             </Button>
             <Button id="newProject" variant="contained" color="primary" style={{ float: 'right', marginRight: '2px' }}
               startIcon={<AddCircleOutlineIcon />}
-              onClick={event => handleNewProject(event)}>
-              New
+              onClick={ event => handleNewProject(event) }>
+            New
             </Button>
           </div>
-          <List><Projects projects={currentProjects} /></List>
+          <List><Projects projects={currentProjects}/></List>
         </div>
         <div className={classes.details}>
-          <Details project={focusedProject} />
+          <Details project={focusedProject}/>
         </div>
       </div>
     </div>
