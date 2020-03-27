@@ -2,6 +2,7 @@ import { Select, Modify, Translate } from 'ol/interaction'
 import { click, primaryAction } from 'ol/events/condition'
 import * as R from 'ramda'
 import style from './style/style'
+import undo from '../undo'
 
 const hitTolerance = 3
 
@@ -19,35 +20,68 @@ const noAltKey = ({ originalEvent }) => originalEvent.altKey !== true
 const noShiftKey = ({ originalEvent }) => originalEvent.shiftKey !== true
 const conjunction = (...ps) => v => ps.reduce((a, b) => a(v) && b(v))
 
+const cloneGeometries = features => features.getArray().reduce((acc, feature) => {
+  acc[feature.ol_uid] = feature.getGeometry().clone()
+  return acc
+}, {})
+
 
 /**
  * Modify interaction.
  * @param {Collection<Feature>} features selected features collection
  */
-export const modifyInteraction = features => {
+export const modifyInteraction = context => features => {
+  let initial = {}
+
   const interaction = new Modify({
     hitTolerance,
     features,
     condition: conjunction(primaryAction, noShiftKey)
   })
 
-  interaction.on('modifyend', syncFeatures)
+  interaction.on('modifystart', event => {
+    const { features } = event
+    initial = cloneGeometries(features)
+  })
+
+  interaction.on('modifyend', event => {
+    const { features } = event
+    const current = cloneGeometries(features)
+    const command = context.updateFeatureGeometry(initial, current)
+    undo.push(command)
+    syncFeatures(event)
+  })
+
   return interaction
 }
 
 
 /**
- * Translate, i.e. Move interaction.
+ * Translate, i.e. move feature(s) interaction.
  * @param {Collection<Feature>} features selected features collection
  * @param {*} syncFeatures layer writer
  */
-export const translateInteraction = features => {
+export const translateInteraction = context => features => {
+  let initial = {}
+
   const interaction = new Translate({
     hitTolerance,
     features
   })
 
-  interaction.on('translateend', syncFeatures)
+  interaction.on('translatestart', event => {
+    const { features } = event
+    initial = cloneGeometries(features)
+  })
+
+  interaction.on('translateend', event => {
+    const { features } = event
+    const current = cloneGeometries(features)
+    const command = context.updateFeatureGeometry(initial, current)
+    undo.push(command)
+    syncFeatures(event)
+  })
+
   return interaction
 }
 
