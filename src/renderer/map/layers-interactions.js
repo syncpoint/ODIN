@@ -1,19 +1,12 @@
 import { Select, Modify, Translate } from 'ol/interaction'
 import { click, primaryAction } from 'ol/events/condition'
-import * as R from 'ramda'
 import style from './style/style'
 import undo from '../undo'
+import { updateFeatureGeometry } from './layers-commands'
+import { syncFeatures } from './layers-util'
 
 const hitTolerance = 3
 
-// Syncing, i.e. writing, feature layer back to fs.
-// Shared by Modify and Translate interactions.
-// NOTE: Features are expected to supply a 'sync' function,
-// which writes the feature along with its originating layer
-// back to disk.
-const sync = feature => feature.get('sync')
-const uniqSync = features => R.uniq(features.getArray().map(sync))
-const syncFeatures = ({ features }) => uniqSync(features).forEach(fn => fn())
 
 // Non-standard conditions for Select/Modify interactions.
 const noAltKey = ({ originalEvent }) => originalEvent.altKey !== true
@@ -21,6 +14,7 @@ const noShiftKey = ({ originalEvent }) => originalEvent.shiftKey !== true
 const conjunction = (...ps) => v => ps.reduce((a, b) => a(v) && b(v))
 
 const cloneGeometries = features => features.getArray().reduce((acc, feature) => {
+  // TODO: use application-specific URI
   acc[feature.ol_uid] = feature.getGeometry().clone()
   return acc
 }, {})
@@ -28,28 +22,26 @@ const cloneGeometries = features => features.getArray().reduce((acc, feature) =>
 
 /**
  * Modify interaction.
- * @param {Collection<Feature>} features selected features collection
  */
-export const modifyInteraction = context => features => {
+export const modify = context => {
+  const { select } = context
   let initial = {}
 
   const interaction = new Modify({
     hitTolerance,
-    features,
+    features: select.getFeatures(),
     condition: conjunction(primaryAction, noShiftKey)
   })
 
-  interaction.on('modifystart', event => {
-    const { features } = event
+  interaction.on('modifystart', ({ features }) => {
     initial = cloneGeometries(features)
   })
 
-  interaction.on('modifyend', event => {
-    const { features } = event
+  interaction.on('modifyend', ({ features }) => {
     const current = cloneGeometries(features)
-    const command = context.updateFeatureGeometry(initial, current)
+    const command = updateFeatureGeometry(context, initial, current)
     undo.push(command)
-    syncFeatures(event)
+    syncFeatures(features)
   })
 
   return interaction
@@ -58,28 +50,25 @@ export const modifyInteraction = context => features => {
 
 /**
  * Translate, i.e. move feature(s) interaction.
- * @param {Collection<Feature>} features selected features collection
- * @param {*} syncFeatures layer writer
  */
-export const translateInteraction = context => features => {
+export const translate = context => {
+  const { select } = context
   let initial = {}
 
   const interaction = new Translate({
     hitTolerance,
-    features
+    features: select.getFeatures()
   })
 
-  interaction.on('translatestart', event => {
-    const { features } = event
+  interaction.on('translatestart', ({ features }) => {
     initial = cloneGeometries(features)
   })
 
-  interaction.on('translateend', event => {
-    const { features } = event
+  interaction.on('translateend', ({ features }) => {
     const current = cloneGeometries(features)
-    const command = context.updateFeatureGeometry(initial, current)
+    const command = updateFeatureGeometry(context, initial, current)
     undo.push(command)
-    syncFeatures(event)
+    syncFeatures(features)
   })
 
   return interaction
@@ -92,7 +81,7 @@ export const translateInteraction = context => features => {
  * alt/option conflicts with modify interaction (delete point).
  * @param {[Feature]]} layers feature layer array
  */
-export const selectInteraction = layers => new Select({
+export const select = ({ layers }) => new Select({
   hitTolerance,
   layers,
   style,

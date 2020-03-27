@@ -3,11 +3,11 @@ import { fromLonLat } from 'ol/proj'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
 import { GeoJSON } from 'ol/format'
-import Feature from 'ol/Feature'
 import * as R from 'ramda'
-import { selectInteraction, modifyInteraction, translateInteraction } from './interactions'
+import { select, modify, translate } from './layers-interactions'
 import project from '../project'
 import style from './style/style'
+import { geometryType } from './layers-util'
 
 
 /**
@@ -19,22 +19,6 @@ const geoJSON = new GeoJSON({
 })
 
 
-/**
- * Map feature geometry to polygon, line or point layer.
- */
-const geometryType = object => {
-  const type = object instanceof Feature
-    ? object.getGeometry().getType()
-    : object.getType()
-
-  switch (type) {
-    case 'Point':
-    case 'LineString':
-    case 'Polygon': return type
-    default: return 'Polygon'
-  }
-}
-
 
 /**
  * Move feature between sources.
@@ -45,7 +29,10 @@ const source = features => new VectorSource({ features })
 const layer = source => new VectorLayer({ source, style })
 
 
-const loadLayers = async filenames => {
+const loadLayers = async (context, filenames) => {
+
+  // TODO: set layer/feature URIs/IDs
+
   // Read features of all GeoJSON layer files,
   // then distribute features to sets depending on their geometry type:
   const readFile = filename => fs.promises.readFile(filename, 'utf8')
@@ -58,13 +45,13 @@ const loadLayers = async filenames => {
   const order = ['Polygon', 'LineString', 'Point']
 
   // Geometry#type -> VectorSource
-  const sources = order.reduce((acc, type) => {
+  context.sources = order.reduce((acc, type) => {
     acc[type] = source(featureSets[type])
     return acc
   }, {})
 
-  const layers = ['Polygon', 'LineString', 'Point']
-    .map(type => layer(sources[type]))
+  context.layers = ['Polygon', 'LineString', 'Point']
+    .map(type => layer(context.sources[type]))
 
   // Bind writer functions 'sync' to features:
   R.zip(filenames, features).map(([filename, features]) => {
@@ -73,107 +60,76 @@ const loadLayers = async filenames => {
     const bind = feature => feature.set('sync', sync)
     features.forEach(bind)
   })
-
-  return {
-    sources,
-    layers
-  }
 }
 
 
+const initialize = async (context, project) => {
+  await loadLayers(context, project.layerFiles())
+  context.layers.forEach(context.map.addLayer)
+
+  // Dedicated layer for selected features:
+  context.selectionSource = new VectorSource()
+  context.selectionLayer = new VectorLayer({ style, source: context.selectionSource })
+  context.map.addLayer(context.selectionLayer)
+  context.select = select(context)
+  context.map.addInteraction(context.select)
+
+  context.select.on('select', ({ selected, deselected }) => {
+    // Dim feature layers except selection layer:
+    context.layers.forEach(layer => layer.setOpacity(selected.length ? 0.35 : 1))
+
+    selected.forEach(feature => {
+      const from = context.sources[geometryType(feature)]
+      move(from, context.selectionSource)(feature)
+    })
+
+    deselected.forEach(feature => {
+      const to = context.sources[geometryType(feature)]
+      move(context.selectionSource, to)(feature)
+    })
+  })
+
+  context.translate = translate(context)
+  context.modify = modify(context)
+  context.map.addInteraction(context.translate)
+  context.map.addInteraction(context.modify)
+}
+
+
+const dispose = context => {
+  context.layers.forEach(context.map.removeLayer)
+  context.map.removeInteraction(context.modify)
+  context.map.removeInteraction(context.translate)
+  context.map.removeInteraction(context.select)
+  context.map.removeLayer(context.selectionLayer)
+
+  delete context.layers
+  delete context.modify
+  delete context.translate
+  delete context.select
+  delete context.selectionLayer
+  delete context.sources
+}
+
+
+const updateViewport = (context, project) => {
+  const { center, zoom } = project.preferences().viewport
+  context.map.setCenter(fromLonLat(center))
+  context.map.setZoom(zoom)
+}
+
 
 export default map => {
-  let sources = {}
-  let layers = []
-  let selectionSource
-  let selectionLayer
-  let select
-  let translate
-  let modify
-
-  const commands = {}
-
-  commands.initialize = project => ({
-    apply: async () => {
-      const result = await loadLayers(project.layerFiles())
-      sources = result.sources
-      layers = result.layers
-      layers.forEach(map.addLayer)
-
-      // Dedicated layer for selected features:
-      selectionSource = new VectorSource()
-      selectionLayer = new VectorLayer({ style, source: selectionSource })
-      map.addLayer(selectionLayer)
-      select = selectInteraction(layers)
-      map.addInteraction(select)
-
-      select.on('select', ({ selected, deselected }) => {
-        // Dim feature layers except selection layer:
-        layers.forEach(layer => layer.setOpacity(selected.length ? 0.35 : 1))
-
-        selected.forEach(feature => {
-          const from = sources[geometryType(feature)]
-          move(from, selectionSource)(feature)
-        })
-
-        deselected.forEach(feature => {
-          const to = sources[geometryType(feature)]
-          move(selectionSource, to)(feature)
-        })
-      })
-
-      translate = translateInteraction(commands)(select.getFeatures())
-      modify = modifyInteraction(commands)(select.getFeatures())
-      map.addInteraction(translate)
-      map.addInteraction(modify)
-    }
-  })
-
-  commands.dispose = () => ({
-    apply: () => {
-      layers.forEach(map.removeLayer)
-      map.removeInteraction(modify)
-      map.removeInteraction(translate)
-      map.removeInteraction(select)
-      map.removeLayer(selectionLayer)
-
-      layers = []
-      modify = null
-      translate = null
-      select = null
-      selectionLayer = null
-      sources = {}
-    }
-  })
-
-  commands.updateFeatureGeometry = (initial, current) => ({
-    inverse: () => commands.updateFeatureGeometry(current, initial),
-    apply: () => {
-      Object.entries(initial).forEach(([id, geometry]) => {
-        // TODO: also check selection layer
-        const source = sources[geometryType(geometry)]
-        source.uidIndex_[id].setGeometry(geometry)
-      })
-    }
-  })
-
-  commands.updateViewport = project => ({
-    apply: () => {
-      const { center, zoom } = project.preferences().viewport
-      map.setCenter(fromLonLat(center))
-      map.setZoom(zoom)
-    }
-  })
-
+  const context = { map }
 
   project.register(event => {
     switch (event) {
       case 'open':
-        commands.initialize(project).apply()
-        commands.updateViewport(project).apply()
+        initialize(context, project)
+        updateViewport(context, project)
         break
       case 'close':
-        commands.dispose().apply()
+        dispose(context)
         break
     }
   })
