@@ -1,5 +1,7 @@
 import Mousetrap from 'mousetrap'
 
+// TODO: reset buffers on project close/open
+
 let undo = []
 let redo = []
 

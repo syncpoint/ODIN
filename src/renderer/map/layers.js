@@ -10,6 +10,7 @@ import { select, modify, translate } from './layers-interactions'
 import project from '../project'
 import style from './style/style'
 import { geometryType } from './layers-util'
+import disposable from '../../shared/disposable'
 
 
 /**
@@ -20,10 +21,6 @@ const geoJSON = new GeoJSON({
   featureProjection: 'EPSG:3857' // Web-Mercator
 })
 
-
-
-const source = features => new VectorSource({ features })
-const layer = source => new VectorLayer({ source, style })
 
 
 const loadLayers = async (context, filenames) => {
@@ -55,48 +52,32 @@ const loadLayers = async (context, filenames) => {
 
   // context.sources :: Geometry#type -> VectorSource
   context.sources = order.reduce((acc, type) => {
-    acc[type] = source(featureSets[type])
+    acc[type] = new VectorSource({ features: featureSets[type] })
     return acc
   }, {})
 
   context.layers = ['Polygon', 'LineString', 'Point']
-    .map(type => layer(context.sources[type]))
+    .map(type => new VectorLayer({ source: context.sources[type], style }))
 }
 
 
 const initialize = async (context, project) => {
   await loadLayers(context, project.layerFiles())
-  context.layers.forEach(context.map.addLayer)
+  context.layers.forEach(context.addLayer)
 
   // Dedicated layer for selected features:
   context.selectionSource = new VectorSource()
-  context.selectionLayer = new VectorLayer({ style, source: context.selectionSource })
-  context.map.addLayer(context.selectionLayer)
+  context.addLayer(new VectorLayer({
+    style,
+    source: context.selectionSource
+  }))
 
-  context.select = select(context)
-  context.translate = translate(context)
-  context.modify = modify(context)
-  context.map.addInteraction(context.translate)
-  context.map.addInteraction(context.modify)
-  context.map.addInteraction(context.select)
+  const selectInteraction = context.addInteraction(select(context))
+  // CAUTION: selectedFeatures - shared/mutable feature collection
+  const selectedFeatures = selectInteraction.getFeatures()
+  context.addInteraction(translate(context, selectedFeatures))
+  context.addInteraction(modify(context, selectedFeatures))
 }
-
-
-const dispose = context => {
-  context.layers.forEach(context.map.removeLayer)
-  context.map.removeInteraction(context.modify)
-  context.map.removeInteraction(context.translate)
-  context.map.removeInteraction(context.select)
-  context.map.removeLayer(context.selectionLayer)
-
-  delete context.layers
-  delete context.modify
-  delete context.translate
-  delete context.select
-  delete context.selectionLayer
-  delete context.sources
-}
-
 
 const updateViewport = (context, project) => {
   const { center, zoom } = project.preferences().viewport
@@ -106,7 +87,34 @@ const updateViewport = (context, project) => {
 
 
 export default map => {
-  const context = { map }
+
+  // This baby carries a ton of mutable state:
+  // - map - interface to map
+  // - sources :: String -> VectorSource - feature source per geometry type
+  // - layers :: [VectorLayer] - ordered list of feature layers per geometry type
+  // - selectionSource :: VectorSource - dedicated source for selected features
+
+  let disposables = disposable.of()
+  const dispose = () => {
+    disposables.dispose()
+    disposables = disposable.of()
+  }
+
+  const context = {
+    map,
+
+    addInteraction: interaction => {
+      map.addInteraction(interaction)
+      disposables.addDisposable(() => map.removeInteraction(interaction))
+      return interaction
+    },
+
+    addLayer: layer => {
+      map.addLayer(layer)
+      disposables.addDisposable(() => map.removeLayer(layer))
+      return layer
+    }
+  }
 
   project.register(event => {
     switch (event) {
@@ -115,7 +123,7 @@ export default map => {
         updateViewport(context, project)
         break
       case 'close':
-        dispose(context)
+        dispose()
         break
     }
   })

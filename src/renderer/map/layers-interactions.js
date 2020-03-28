@@ -22,13 +22,12 @@ const cloneGeometries = features => features.getArray().reduce((acc, feature) =>
 /**
  * Modify interaction.
  */
-export const modify = context => {
-  const { select } = context
+export const modify = (context, features) => {
   let initial = {}
 
   const interaction = new Modify({
     hitTolerance,
-    features: select.getFeatures(),
+    features,
     condition: conjunction(primaryAction, noShiftKey)
   })
 
@@ -50,13 +49,12 @@ export const modify = context => {
 /**
  * Translate, i.e. move feature(s) interaction.
  */
-export const translate = context => {
-  const { select } = context
+export const translate = (context, features) => {
   let initial = {}
 
   const interaction = new Translate({
     hitTolerance,
-    features: select.getFeatures()
+    features
   })
 
   interaction.on('translatestart', ({ features }) => {
@@ -81,7 +79,7 @@ export const translate = context => {
  * @param {[Feature]]} layers feature layer array
  */
 export const select = context => {
-  const { layers } = context
+  const { layers, sources, selectionSource } = context
   const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
 
   const interaction = new Select({
@@ -94,16 +92,16 @@ export const select = context => {
 
   interaction.on('select', ({ selected, deselected }) => {
     // Dim feature layers except selection layer:
-    context.layers.forEach(layer => layer.setOpacity(selected.length ? 0.35 : 1))
+    layers.forEach(layer => layer.setOpacity(selected.length ? 0.35 : 1))
 
     selected.forEach(feature => {
-      const from = context.sources[geometryType(feature)]
-      move(from, context.selectionSource)(feature)
+      const from = sources[geometryType(feature)]
+      move(from, selectionSource)(feature)
     })
 
     deselected.forEach(feature => {
-      const to = context.sources[geometryType(feature)]
-      move(context.selectionSource, to)(feature)
+      const to = sources[geometryType(feature)]
+      move(selectionSource, to)(feature)
     })
   })
 
