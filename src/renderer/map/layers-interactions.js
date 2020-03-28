@@ -3,7 +3,7 @@ import { click, primaryAction } from 'ol/events/condition'
 import style from './style/style'
 import undo from '../undo'
 import { updateFeatureGeometry } from './layers-commands'
-import { syncFeatures } from './layers-util'
+import { syncFeatures, geometryType } from './layers-util'
 
 const hitTolerance = 3
 
@@ -14,8 +14,7 @@ const noShiftKey = ({ originalEvent }) => originalEvent.shiftKey !== true
 const conjunction = (...ps) => v => ps.reduce((a, b) => a(v) && b(v))
 
 const cloneGeometries = features => features.getArray().reduce((acc, feature) => {
-  // TODO: use application-specific URI
-  acc[feature.ol_uid] = feature.getGeometry().clone()
+  acc[feature.getId()] = feature.getGeometry().clone()
   return acc
 }, {})
 
@@ -81,10 +80,32 @@ export const translate = context => {
  * alt/option conflicts with modify interaction (delete point).
  * @param {[Feature]]} layers feature layer array
  */
-export const select = ({ layers }) => new Select({
-  hitTolerance,
-  layers,
-  style,
-  condition: conjunction(click, noAltKey),
-  multi: false
-})
+export const select = context => {
+  const { layers } = context
+  const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
+
+  const interaction = new Select({
+    hitTolerance,
+    layers,
+    style,
+    condition: conjunction(click, noAltKey),
+    multi: false
+  })
+
+  interaction.on('select', ({ selected, deselected }) => {
+    // Dim feature layers except selection layer:
+    context.layers.forEach(layer => layer.setOpacity(selected.length ? 0.35 : 1))
+
+    selected.forEach(feature => {
+      const from = context.sources[geometryType(feature)]
+      move(from, context.selectionSource)(feature)
+    })
+
+    deselected.forEach(feature => {
+      const to = context.sources[geometryType(feature)]
+      move(context.selectionSource, to)(feature)
+    })
+  })
+
+  return interaction
+}

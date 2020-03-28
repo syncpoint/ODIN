@@ -10,15 +10,12 @@ import Collection from 'ol/Collection'
 
 const sync = feature => feature.get('sync')
 const uniqSync = features => R.uniq(features.map(sync))
+const featureArray = features => features instanceof Collection
+  ? features.getArray()
+  : features
 
-export const syncFeatures = features => {
-  // Feature collection or array:
-  const xs = features instanceof Collection
-    ? features.getArray()
-    : features
-
-  uniqSync(xs).forEach(fn => fn())
-}
+export const syncFeatures = features =>
+  uniqSync(featureArray(features)).forEach(fn => fn())
 
 
 /**

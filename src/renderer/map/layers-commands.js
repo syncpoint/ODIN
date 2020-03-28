@@ -8,8 +8,7 @@ export const updateFeatureGeometry = (context, initial, current) => {
     apply: () => {
       const features = Object.entries(initial).reduce((acc, [id, geometry]) => {
         const source = sources[geometryType(geometry)]
-        // TODO: use application-specific URIs
-        const feature = selectionSource.uidIndex_[id] || source.uidIndex_[id]
+        const feature = selectionSource.getFeatureById(id) || source.getFeatureById(id)
         feature.setGeometry(geometry)
         return acc.concat(feature)
       }, [])
