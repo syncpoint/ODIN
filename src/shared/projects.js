@@ -13,9 +13,10 @@ const ODIN_PROJECTS = path.join(ODIN_HOME, 'projects')
 const ODIN_LAYERS = 'layers'
 const ODIN_METADATA = 'metadata.json'
 const ODIN_PREVIEW = 'preview.jpg'
-const ODIN_DEFAULT_METADATA = {
-  name: 'untitled project'
-}
+const ODIN_DEFAULT_METADATA = () => ({
+  name: 'untitled project',
+  lastAccess: new Date()
+})
 
 const exists = projectPath => fs.existsSync(projectPath)
 
@@ -24,7 +25,7 @@ const createProject = async (name = uuid()) => {
   if (exists(projectPath)) return
   /* create subfolder structure, too */
   await fs.promises.mkdir(path.join(projectPath, ODIN_LAYERS), { recursive: true })
-  await fs.promises.writeFile(path.join(projectPath, ODIN_METADATA), JSON.stringify(ODIN_DEFAULT_METADATA))
+  await fs.promises.writeFile(path.join(projectPath, ODIN_METADATA), JSON.stringify(ODIN_DEFAULT_METADATA()))
   return projectPath
 }
 
@@ -75,6 +76,14 @@ const writeMetadata = async (projectPath, metadata) => {
   }
 }
 
+const mergeMetadata = async (projectPath, kv) => {
+  const { metadata } = await readMetadata(projectPath)
+  if (!metadata) return
+
+  const newMetadata = { ...metadata, ...kv }
+  await writeMetadata(projectPath, newMetadata)
+}
+
 const readPreview = async (projectPath, options = { encoding: 'base64' }) => {
   if (!exists(projectPath)) {
     console.error(`project path does not exist ${projectPath}`)
@@ -106,6 +115,7 @@ export default {
   enumerateProjects,
   readMetadata,
   writeMetadata,
+  mergeMetadata,
   readPreview,
   writePreview
 }
