@@ -13,7 +13,7 @@ const menu = {
       label: 'Redo',
       accelerator: 'CmdOrCtrl+Shift+Z',
       click: (_, browserWindow) => {
-        browserWindow.webContents.undo()
+        browserWindow.webContents.redo()
         if (browserWindow) browserWindow.send('IPC_EDIT_REDO')
       }
     },
