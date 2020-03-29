@@ -33,8 +33,18 @@ const loadLayers = async (context, filenames) => {
     features.set('uri', `layer:${layerId}`)
     features.set('filename', filename)
 
-    // TODO: filter feature properties not to be written
-    const sync = () => fs.writeFileSync(filename, geoJSON.writeFeatures(features.getArray()))
+    const sync = () => {
+      // Filter feature properties not to be written:
+      // Feature id is excluded from clone by default.
+      const clones = features.getArray().map(feature => {
+        const clone = feature.clone()
+        clone.unset('selected')
+        return clone
+      })
+
+      fs.writeFileSync(filename, geoJSON.writeFeatures(clones))
+    }
+
     features.forEach(feature => {
       feature.setId(`feature:${layerId}/${uuid()}`)
       feature.set('sync', sync)
