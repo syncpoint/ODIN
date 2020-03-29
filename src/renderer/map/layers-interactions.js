@@ -1,7 +1,7 @@
 import { Select, Modify, Translate } from 'ol/interaction'
 import { click, primaryAction } from 'ol/events/condition'
 import style from './style/style'
-import undo from '../undo'
+import * as undo from '../undo'
 import { updateFeatureGeometry } from './layers-commands'
 import { syncFeatures, geometryType } from './layers-util'
 

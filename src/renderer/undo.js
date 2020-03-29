@@ -1,26 +1,26 @@
-import Mousetrap from 'mousetrap'
-
 // TODO: reset buffers on project close/open
 
-let undo = []
-let redo = []
+let undoStack = []
+let redoStack = []
 
-Mousetrap.bind('mod+z', _ => {
-  const [head, ...tail] = undo
+export const undo = () => {
+  const [head, ...tail] = undoStack
   if (!head) return
   head.apply()
-  undo = tail
-  redo.unshift(head.inverse())
-})
-
-Mousetrap.bind('mod+shift+z', _ => {
-  const [head, ...tail] = redo
-  if (!head) return
-  head.apply()
-  redo = tail
-  undo.unshift(head.inverse())
-})
-
-export default {
-  push: command => undo.unshift(command)
+  undoStack = tail
+  redoStack.unshift(head.inverse())
 }
+
+export const redo = () => {
+  const [head, ...tail] = redoStack
+  if (!head) return
+  head.apply()
+  redoStack = tail
+  undoStack.unshift(head.inverse())
+}
+
+/**
+ * NOTE: Command#apply() is expected to undo last change.
+ * @param {object} command inversable command
+ */
+export const push = command => undoStack.unshift(command)
