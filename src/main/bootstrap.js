@@ -4,6 +4,7 @@ import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import settings from 'electron-settings'
 import projects from '../shared/projects'
 import handleExportProject from './ipc/export-project'
+import handleCreatePreview from './ipc/create-preview'
 
 import packageJSON from '../../package.json'
 
@@ -151,18 +152,6 @@ const bootstrap = () => {
     merge(windowKey(id))(props => ({ ...props, viewport }), {})
   })
 
-  /*  Emitted by the renderer process in order to save a preview
-      image of the map. This image is used in the project management view. */
-  ipcMain.on('IPC_CREATE_PREVIEW', async (event, projectPath) => {
-    const sender = event.sender.getOwnerBrowserWindow()
-    try {
-      const nativeImage = await sender.webContents.capturePage()
-      projects.writePreview(projectPath, nativeImage.toJPEG(75))
-    } catch (error) {
-      console.dir(error)
-    }
-  })
-
   /* emitted by the renderer process in order to change projects */
   ipcMain.on('IPC_SWITCH_PROJECT', (event, projectPath) => {
     const sender = event.sender.getOwnerBrowserWindow()
@@ -182,7 +171,13 @@ const bootstrap = () => {
     createProjectWindow(persistedSettings)
   })
 
-  /* signal is emitted by renderer/components/Management.js */
+  /*
+    Emitted by the renderer process in order to save a preview
+    image of the map. This image is used in the project management view.
+  */
+  ipcMain.on('IPC_CREATE_PREVIEW', handleCreatePreview)
+
+  /* emitted by renderer/components/Management.js */
   ipcMain.on('IPC_EXPORT_PROJECT', handleExportProject)
 }
 
