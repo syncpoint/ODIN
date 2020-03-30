@@ -1,9 +1,10 @@
-/* eslint-disable */
 import * as R from 'ramda'
 import { Style, Icon } from 'ol/style'
 import ms from 'milsymbol'
 import { K } from '../../../shared/combinators'
 import defaultStyle from './style-default'
+
+
 
 /**
  * normalizeSIDC :: String -> String
@@ -98,11 +99,17 @@ const geometryType = feature => {
 }
 
 export default (feature, resolution) => {
-
   const provider = R.cond([
     [R.equals('Point'), R.always(symbolStyle)],
     [R.T, R.always(defaultStyle)]
   ])
 
-  return provider(geometryType(feature))(feature, resolution)
+  // Only cache style when not selected.
+  const type = geometryType(feature)
+  const style = provider(type)(feature, resolution)
+  if (!feature.get('selected')) {
+    feature.setStyle(style)
+  }
+
+  return style
 }

@@ -95,11 +95,15 @@ export const select = context => {
     layers.forEach(layer => layer.setOpacity(selected.length ? 0.35 : 1))
 
     selected.forEach(feature => {
+      feature.set('selected', true)
       const from = sources[geometryType(feature)]
       move(from, selectionSource)(feature)
     })
 
     deselected.forEach(feature => {
+      feature.unset('selected')
+      // Clear style cache: invoke style function on next render.
+      feature.setStyle(null)
       const to = sources[geometryType(feature)]
       move(selectionSource, to)(feature)
     })
