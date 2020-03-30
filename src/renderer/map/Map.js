@@ -14,7 +14,7 @@ import project from '../project'
 import coordinateFormat from '../../shared/coord-format'
 import layers from './layers'
 import './style/scalebar.css'
-import { undo, redo } from '../undo'
+import undo from '../undo'
 
 const zoom = view => view.getZoom()
 const center = view => toLonLat(view.getCenter())
@@ -75,13 +75,13 @@ const effect = props => () => {
 }
 
 const onFocus = () => {
-  ipcRenderer.on('IPC_EDIT_UNDO', undo)
-  ipcRenderer.on('IPC_EDIT_REDO', redo)
+  ipcRenderer.on('IPC_EDIT_UNDO', undo.undo)
+  ipcRenderer.on('IPC_EDIT_REDO', undo.redo)
 }
 
 const onBlur = () => {
-  ipcRenderer.off('IPC_EDIT_UNDO', undo)
-  ipcRenderer.off('IPC_EDIT_REDO', redo)
+  ipcRenderer.off('IPC_EDIT_UNDO', undo.undo)
+  ipcRenderer.off('IPC_EDIT_REDO', undo.redo)
 }
 
 /**
