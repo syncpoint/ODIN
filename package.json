@@ -28,6 +28,9 @@
   "engines": {
     "node": ">=12.0.0"
   },
+  "build": {
+    "appId": "io.syncpoint.odin"
+  },
   "devDependencies": {
     "@babel/core": "^7.8.7",
     "@babel/preset-env": "^7.8.7",

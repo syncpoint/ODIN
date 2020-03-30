@@ -1,9 +1,11 @@
 import path from 'path'
 import url from 'url'
-import { app, BrowserWindow, ipcMain, dialog, Notification, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import settings from 'electron-settings'
 import projects from '../shared/projects'
-import sanitizeFilename from 'sanitize-filename'
+import handleExportProject from './ipc/export-project'
+
+import packageJSON from '../../package.json'
 
 /**
  * Facade for application windows/project state.
@@ -121,6 +123,11 @@ const createProjectWindow = async (options) => {
 const bootstrap = () => {
   // app.on('before-quit', () => (shuttingDown = true))
   app.on('ready', () => {
+    /*
+      Setting the appId is required to allow desktop notifications on the Windows platform.
+    */
+    app.setAppUserModelId(packageJSON.build.appId)
+
     /* try to restore persisted window state */
     const state = Object.values(settings.get(WINDOWS_KEY, {}))
 
@@ -176,37 +183,7 @@ const bootstrap = () => {
   })
 
   /* signal is emitted by renderer/components/Management.js */
-  ipcMain.on('IPC_EXPORT_PROJECT', async (event, projectPath) => {
-    const project = await projects.readMetadata(projectPath)
-    const filenameSuggestion = sanitizeFilename(`${project.metadata.name}.odin`)
-    const dialogOptions = {
-      title: `Export Project ${project.metadata.name}`,
-      defaultPath: filenameSuggestion
-    }
-    /* providing getOwnerBrowserWindow creates a modal dialog */
-    dialog.showSaveDialog(event.sender.getOwnerBrowserWindow(), dialogOptions)
-      .then(async result => {
-        if (result.canceled) return
-        try {
-          await projects.exportProject(projectPath, result.filePath)
-          if (!Notification.isSupported()) return
-          const n = new Notification({
-            title: `Export of ${project.metadata.name} succeeded`,
-            body: `Click to open ${result.filePath}`
-          })
-          n.on('click', () => {
-            shell.showItemInFolder(result.filePath)
-          })
-          n.show()
-        } catch (error) {
-          const n = new Notification({
-            title: `Export of ${project.metadata.name} failed`,
-            body: error.message
-          })
-          n.show()
-        }
-      })
-  })
+  ipcMain.on('IPC_EXPORT_PROJECT', handleExportProject)
 }
 
 export default bootstrap
