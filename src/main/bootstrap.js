@@ -1,8 +1,9 @@
 import path from 'path'
 import url from 'url'
-import { app, BrowserWindow, ipcMain, dialog } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, Notification, shell } from 'electron'
 import settings from 'electron-settings'
 import projects from '../shared/projects'
+import sanitizeFilename from 'sanitize-filename'
 
 /**
  * Facade for application windows/project state.
@@ -172,6 +173,39 @@ const bootstrap = () => {
     const id = projectId(projectPath)
     const persistedSettings = settings.get(windowKey(id), { path: projectPath })
     createProjectWindow(persistedSettings)
+  })
+
+  /* signal is emitted by renderer/components/Management.js */
+  ipcMain.on('IPC_EXPORT_PROJECT', async (event, projectPath) => {
+    const project = await projects.readMetadata(projectPath)
+    const filenameSuggestion = sanitizeFilename(`${project.metadata.name}.odin`)
+    const dialogOptions = {
+      title: `Export Project ${project.metadata.name}`,
+      defaultPath: filenameSuggestion
+    }
+    /* providing getOwnerBrowserWindow creates a modal dialog */
+    dialog.showSaveDialog(event.sender.getOwnerBrowserWindow(), dialogOptions)
+      .then(async result => {
+        if (result.canceled) return
+        try {
+          await projects.exportProject(projectPath, result.filePath)
+          if (!Notification.isSupported()) return
+          const n = new Notification({
+            title: `Export of ${project.metadata.name} succeeded`,
+            body: `Click to open ${result.filePath}`
+          })
+          n.on('click', () => {
+            shell.showItemInFolder(result.filePath)
+          })
+          n.show()
+        } catch (error) {
+          const n = new Notification({
+            title: `Export of ${project.metadata.name} failed`,
+            body: error.message
+          })
+          n.show()
+        }
+      })
   })
 }
 

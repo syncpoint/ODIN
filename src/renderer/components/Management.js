@@ -174,6 +174,15 @@ const Management = props => {
     })
   }
 
+  /**
+   *
+   * @param {*} projectPath the absolute filesystem path of the project
+   */
+  const handleExportProject = projectPath => {
+    console.log(`exporting ${projectPath}`)
+    ipcRenderer.send('IPC_EXPORT_PROJECT', projectPath)
+  }
+
   /* sub components */
 
   const Details = (props) => {
@@ -229,8 +238,9 @@ const Management = props => {
           />
         </FormControl>
         <Button aria-label="export" variant="outlined" color="primary"
-          style={{ float: 'right', margin: '2px' }} disabled={true}
-          startIcon={<ExportIcon />}>
+          style={{ float: 'right', margin: '2px' }} startIcon={<ExportIcon />}
+          onClick={() => handleExportProject(project.path) }
+        >
           Export
         </Button>
         <Button id="saveProject" aria-label="save" variant="contained" color="primary"

@@ -63,6 +63,7 @@
   "dependencies": {
     "@material-ui/core": "^4.9.5",
     "@material-ui/icons": "^4.9.1",
+    "archiver": "^3.1.1",
     "electron-settings": "^3.2.0",
     "geodesy": "^2.2.0",
     "geographiclib": "^1.50.0",
@@ -78,6 +79,7 @@
     "ramda": "^0.27.0",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
+    "sanitize-filename": "^1.6.3",
     "uuid-random": "^1.3.0"
   }
 }

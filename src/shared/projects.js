@@ -1,5 +1,6 @@
 import path from 'path'
 import fs from 'fs'
+import archiver from 'archiver'
 import uuid from 'uuid-random'
 
 /*  since this module is shared and may be uses both in the main and in the
@@ -37,6 +38,18 @@ const deleteProject = async (projectPath) => {
   } catch (error) {
     console.dir(error)
   }
+}
+
+const exportProject = async (projectPath, targetFilePath) => {
+  if (!exists(projectPath)) return
+  const output = fs.createWriteStream(targetFilePath)
+  const odinArchive = archiver('zip', { zlib: { level: 7 } })
+  odinArchive.on('error', error => {
+    throw error
+  })
+  odinArchive.pipe(output)
+  odinArchive.directory(projectPath, path.basename(projectPath))
+  return odinArchive.finalize().then(() => odinArchive.removeAllListeners())
 }
 
 const enumerateProjects = async () => {
@@ -112,6 +125,7 @@ export default {
   exists,
   createProject,
   deleteProject,
+  exportProject,
   enumerateProjects,
   readMetadata,
   writeMetadata,
