@@ -3,7 +3,7 @@ import url from 'url'
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import settings from 'electron-settings'
 import projects from '../shared/projects'
-import handleExportProject from './ipc/export-project'
+import { exportProject, importProject } from './ipc/share-project'
 import handleCreatePreview from './ipc/create-preview'
 
 import packageJSON from '../../package.json'
@@ -178,7 +178,9 @@ const bootstrap = () => {
   ipcMain.on('IPC_CREATE_PREVIEW', handleCreatePreview)
 
   /* emitted by renderer/components/Management.js */
-  ipcMain.on('IPC_EXPORT_PROJECT', handleExportProject)
+  ipcMain.on('IPC_EXPORT_PROJECT', exportProject)
+  ipcMain.on('IPC_IMPORT_PROJECT', importProject)
+
 }
 
 export default bootstrap

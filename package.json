@@ -76,6 +76,7 @@
     "milsymbol": "^2.0.0",
     "minimist": "^1.2.5",
     "mousetrap": "^1.6.5",
+    "node-stream-zip": "^1.9.1",
     "ol": "^6.2.1",
     "proj4": "^2.6.0",
     "prop-types": "^15.7.2",

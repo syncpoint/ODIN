@@ -1,6 +1,7 @@
 import path from 'path'
 import fs from 'fs'
 import archiver from 'archiver'
+import StreamZip from 'node-stream-zip'
 import uuid from 'uuid-random'
 
 /*  since this module is shared and may be uses both in the main and in the
@@ -50,6 +51,20 @@ const exportProject = async (projectPath, targetFilePath) => {
   odinArchive.pipe(output)
   odinArchive.directory(projectPath, path.basename(projectPath))
   return odinArchive.finalize().then(() => odinArchive.removeAllListeners())
+}
+
+const importProject = async (sourceFilePath) => {
+  if (!exists(sourceFilePath)) return
+  return new Promise((resolve, reject) => {
+    const zip = new StreamZip({ file: sourceFilePath })
+    zip.on('ready', () => {
+      zip.extract(null, ODIN_PROJECTS, (error, count) => {
+        zip.close()
+        if (error) return reject(error)
+        return resolve(count)
+      })
+    })
+  })
 }
 
 const enumerateProjects = async () => {
@@ -126,6 +141,7 @@ export default {
   createProject,
   deleteProject,
   exportProject,
+  importProject,
   enumerateProjects,
   readMetadata,
   writeMetadata,
