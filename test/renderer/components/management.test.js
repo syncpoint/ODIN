@@ -12,7 +12,7 @@ describe('Management', () => {
   it('verify import button', () => {
     assert(wrapper.containsMatchingElement(<Button id="importProject" variant="outlined" color="primary"
       style={{ float: 'right', marginRight: '1em', marginLeft: '2px' }}
-      startIcon={<ImportProjectIcon />} disabled={true} >
+      startIcon={<ImportProjectIcon />} >
       Import
     </Button>), true, 'Verify import button')
   })
