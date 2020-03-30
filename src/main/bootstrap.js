@@ -3,6 +3,10 @@ import url from 'url'
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import settings from 'electron-settings'
 import projects from '../shared/projects'
+import { exportProject, importProject } from './ipc/share-project'
+import handleCreatePreview from './ipc/create-preview'
+
+import packageJSON from '../../package.json'
 
 /**
  * Facade for application windows/project state.
@@ -120,6 +124,11 @@ const createProjectWindow = async (options) => {
 const bootstrap = () => {
   // app.on('before-quit', () => (shuttingDown = true))
   app.on('ready', () => {
+    /*
+      Setting the appId is required to allow desktop notifications on the Windows platform.
+    */
+    app.setAppUserModelId(packageJSON.build.appId)
+
     /* try to restore persisted window state */
     const state = Object.values(settings.get(WINDOWS_KEY, {}))
 
@@ -143,18 +152,6 @@ const bootstrap = () => {
     merge(windowKey(id))(props => ({ ...props, viewport }), {})
   })
 
-  /*  Emitted by the renderer process in order to save a preview
-      image of the map. This image is used in the project management view. */
-  ipcMain.on('IPC_CREATE_PREVIEW', async (event, projectPath) => {
-    const sender = event.sender.getOwnerBrowserWindow()
-    try {
-      const nativeImage = await sender.webContents.capturePage()
-      projects.writePreview(projectPath, nativeImage.toJPEG(75))
-    } catch (error) {
-      console.dir(error)
-    }
-  })
-
   /* emitted by the renderer process in order to change projects */
   ipcMain.on('IPC_SWITCH_PROJECT', (event, projectPath) => {
     const sender = event.sender.getOwnerBrowserWindow()
@@ -173,6 +170,17 @@ const bootstrap = () => {
     const persistedSettings = settings.get(windowKey(id), { path: projectPath })
     createProjectWindow(persistedSettings)
   })
+
+  /*
+    Emitted by the renderer process in order to save a preview
+    image of the map. This image is used in the project management view.
+  */
+  ipcMain.on('IPC_CREATE_PREVIEW', handleCreatePreview)
+
+  /* emitted by renderer/components/Management.js */
+  ipcMain.on('IPC_EXPORT_PROJECT', exportProject)
+  ipcMain.on('IPC_IMPORT_PROJECT', importProject)
+
 }
 
 export default bootstrap
