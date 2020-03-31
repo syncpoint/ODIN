@@ -1,5 +1,5 @@
 import hooks from './hooks'
-import { clickElementById, elementsOfList } from './UiHelper'
+import { clickElementById } from './UiHelper'
 import assert from 'assert'
 import projects from '../src/shared/projects'
 import path from 'path'
