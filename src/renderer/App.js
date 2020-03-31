@@ -27,9 +27,10 @@ const App = (props) => {
 
   React.useEffect(() => {
     if (!showManagement && currentProjectPath) {
-      /*  When a project gets renamed the window title is set accordingly.
-          Since we use the current window for reading the project path
-          we can also do so for the project name.
+      /*
+        When a project gets renamed the window title is set accordingly.
+        Since we use the current window for reading the project path
+        we can also do so for the project name.
       */
       const projectName = remote.getCurrentWindow().getTitle()
       evented.emit('OSD_MESSAGE', { message: projectName, slot: 'A1' })
