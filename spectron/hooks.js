@@ -1,12 +1,11 @@
 import { Application } from 'spectron'
-import electron from 'electron'
 import path from 'path'
 
 module.exports = {
   async startApp () {
     const app = await new Application({
       startTimeout: 30000,
-      path: electron,
+      path: path.resolve(__dirname, '../node_modules/.bin/electron'),
       args: [path.join(__dirname, '..'), '--noDevServer']
     }).start()
     return app
