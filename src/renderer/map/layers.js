@@ -82,9 +82,7 @@ const initialize = async (context, project) => {
     source: context.selectionSource
   }))
 
-  const selectInteraction = context.addInteraction(select(context))
-  // CAUTION: selectedFeatures - shared/mutable feature collection
-  context.selectedFeatures = selectInteraction.getFeatures()
+  context.addInteraction(select(context))
   context.addInteraction(translate(context))
   context.addInteraction(modify(context))
   context.addInteraction(lasso(context))
