@@ -48,17 +48,25 @@ const exportProject = async (projectPath, targetFilePath) => {
   odinArchive.on('error', error => {
     throw error
   })
+  /* the content of the project folder will be put into the root of the archive */
   odinArchive.pipe(output)
-  odinArchive.directory(projectPath, path.basename(projectPath))
+  odinArchive.directory(projectPath, '.')
   return odinArchive.finalize().then(() => odinArchive.removeAllListeners())
 }
 
 const importProject = async (sourceFilePath) => {
   if (!exists(sourceFilePath)) return
+  /*
+    Since all the project related content is in the root of the archive
+    we create a uuid for the imported one
+  */
+  const targetPath = path.join(ODIN_PROJECTS, uuid())
+  await fs.promises.mkdir(targetPath)
+
   return new Promise((resolve, reject) => {
     const zip = new StreamZip({ file: sourceFilePath })
     zip.on('ready', () => {
-      zip.extract(null, ODIN_PROJECTS, (error, count) => {
+      zip.extract(null, targetPath, (error, count) => {
         zip.close()
         if (error) return reject(error)
         return resolve(count)
