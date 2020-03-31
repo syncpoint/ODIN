@@ -10,7 +10,7 @@ import evented from './evented'
 
 const App = (props) => {
   const { classes } = props
-  const appProps = { ...props, ...{ id: 'map' } }
+  const mapProps = { ...props, id: 'map' }
 
   const [showManagement, setManagement] = React.useState(false)
   const [currentProjectPath, setCurrentProjectPath] = React.useState(undefined)
@@ -59,7 +59,7 @@ const App = (props) => {
 
   return (
     <React.Fragment>
-      <Map { ...appProps }/>
+      <Map { ...mapProps }/>
       <div className={classes.overlay}>
         <OSD />
       </div>

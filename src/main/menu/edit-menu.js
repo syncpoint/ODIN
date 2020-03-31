@@ -1,8 +1,22 @@
 const menu = {
   label: 'Edit',
   submenu: [
-    { role: 'undo' },
-    { role: 'redo' },
+    {
+      label: 'Undo',
+      accelerator: 'CmdOrCtrl+Z',
+      click: (_, browserWindow) => {
+        browserWindow.webContents.undo()
+        if (browserWindow) browserWindow.send('IPC_EDIT_UNDO')
+      }
+    },
+    {
+      label: 'Redo',
+      accelerator: 'CmdOrCtrl+Shift+Z',
+      click: (_, browserWindow) => {
+        browserWindow.webContents.redo()
+        if (browserWindow) browserWindow.send('IPC_EDIT_REDO')
+      }
+    },
     { type: 'separator' },
     { role: 'cut' },
     { role: 'copy' },
