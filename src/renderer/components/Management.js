@@ -121,6 +121,14 @@ const Management = props => {
     })
   }, [reloadProjects])
 
+  React.useEffect(() => {
+    const reloadProjects = () => setReloadProjects(true)
+
+    /* emitted by share-projects.js after a projects has been imported */
+    ipcRenderer.on('IPC_PROJECT_IMPORTED', reloadProjects)
+    return () => ipcRenderer.removeListener('IPC_PROJECT_IMPORTED', reloadProjects)
+  }, [])
+
   const setFocusAndLoadPreview = project => {
     setFocusedProject(project)
     if (project) {
@@ -147,8 +155,8 @@ const Management = props => {
   const handleNewProject = () => {
     projects.createProject().then((_) => {
       /*
-        an undefined focused project will select the first
-        project in the list
+        An undefined focused project will select the first
+        project in the list. See the useEffect hook above.
       */
       setFocusAndLoadPreview(undefined)
       setReloadProjects(true)
@@ -172,6 +180,19 @@ const Management = props => {
     projects.writeMetadata(focusedProject.path, metadata).then(() => {
       setReloadProjects(true)
     })
+  }
+
+  /**
+   *
+   * @param {*} projectPath the absolute filesystem path of the project
+   */
+  const handleExportProject = projectPath => {
+    ipcRenderer.send('IPC_EXPORT_PROJECT', projectPath)
+  }
+
+  /* see the useEffect hook above how the asynchronous reply is handeled */
+  const handleImportProject = () => {
+    ipcRenderer.send('IPC_IMPORT_PROJECT')
   }
 
   /* sub components */
@@ -229,8 +250,9 @@ const Management = props => {
           />
         </FormControl>
         <Button aria-label="export" variant="outlined" color="primary"
-          style={{ float: 'right', margin: '2px' }} disabled={true}
-          startIcon={<ExportIcon />}>
+          style={{ float: 'right', margin: '2px' }} startIcon={<ExportIcon />}
+          onClick={() => handleExportProject(project.path) }
+        >
           Export
         </Button>
         <Button id="saveProject" aria-label="save" variant="contained" color="primary"
@@ -306,7 +328,8 @@ const Management = props => {
         <div className={classes.projects}>
           <div style={{ marginBottom: '3em' }}>
             <Button id="importProject" variant="outlined" color="primary" style={{ float: 'right', marginRight: '1em', marginLeft: '2px' }}
-              startIcon={<ImportProjectIcon />} disabled={true}
+              startIcon={<ImportProjectIcon />}
+              onClick={ event => handleImportProject() }
             >
             Import
             </Button>
