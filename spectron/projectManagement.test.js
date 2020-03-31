@@ -1,6 +1,8 @@
 import hooks from './hooks'
 import { clickElementById } from './UiHelper'
 import assert from 'assert'
+import projects from '../src/shared/projects'
+import path from 'path'
 
 describe('menu test', function () {
   let app
@@ -56,6 +58,11 @@ describe('menu test', function () {
     await clickElementById(app, `//*[text() = "${newProjectName}"]`)
     await clickElementById(app, '#deleteProject')
     await clickElementById(app, '#backToMap')
+  })
+
+  it.skip('imports the test project', async function () {
+    const projectPath = path.join(__dirname, '/Users/gerald/ODIN/test/projects/EmptyTestProject.odin')
+    projects.importProject(projectPath)
   })
 
 })
