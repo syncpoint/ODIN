@@ -1,5 +1,5 @@
-import { Select, Modify, Translate } from 'ol/interaction'
-import { click, primaryAction } from 'ol/events/condition'
+import { Select, Modify, Translate, DragBox } from 'ol/interaction'
+import { click, primaryAction, platformModifierKeyOnly } from 'ol/events/condition'
 import style from './style/style'
 import undo from '../undo'
 import { updateFeatureGeometry } from './layers-commands'
@@ -22,12 +22,13 @@ const cloneGeometries = features => features.getArray().reduce((acc, feature) =>
 /**
  * Modify interaction.
  */
-export const modify = (context, features) => {
+export const modify = context => {
+  const { selectedFeatures } = context
   let initial = {}
 
   const interaction = new Modify({
     hitTolerance,
-    features,
+    features: selectedFeatures,
     condition: conjunction(primaryAction, noShiftKey)
   })
 
@@ -49,12 +50,13 @@ export const modify = (context, features) => {
 /**
  * Translate, i.e. move feature(s) interaction.
  */
-export const translate = (context, features) => {
+export const translate = context => {
+  const { selectedFeatures } = context
   let initial = {}
 
   const interaction = new Translate({
     hitTolerance,
-    features
+    features: selectedFeatures
   })
 
   interaction.on('translatestart', ({ features }) => {
@@ -107,6 +109,58 @@ export const select = context => {
       const to = sources[geometryType(feature)]
       move(selectionSource, to)(feature)
     })
+  })
+
+  return interaction
+}
+
+export const lasso = context => {
+  const { selectedFeatures, map, sources } = context
+
+  const interaction = new DragBox({
+    condition: platformModifierKeyOnly
+  })
+
+  interaction.on('boxstart', () => selectedFeatures.clear())
+
+  interaction.on('boxend', () => {
+    // Features that intersect the box geometry are added to the
+    // collection of selected features.
+
+    // If the view is not obliquely rotated the box geometry and
+    // its extent are equalivalent so intersecting features can
+    // be added directly to the collection.
+    //
+    const rotation = map.rotation()
+    const oblique = rotation % (Math.PI / 2) !== 0
+    const candidates = oblique ? [] : selectedFeatures
+    const extent = interaction.getGeometry().getExtent()
+
+    Object.values(sources).forEach(source => {
+      source.forEachFeatureIntersectingExtent(extent, feature => {
+        candidates.push(feature)
+      })
+    })
+
+    // When the view is obliquely rotated the box extent will
+    // exceed its geometry so both the box and the candidate
+    // feature geometries are rotated around a common anchor
+    // to confirm that, with the box geometry aligned with its
+    // extent, the geometries intersect.
+    //
+    if (oblique) {
+      const anchor = [0, 0]
+      const geometry = interaction.getGeometry().clone()
+      geometry.rotate(-rotation, anchor)
+      const extent = geometry.getExtent()
+      candidates.forEach(feature => {
+        const geometry = feature.getGeometry().clone()
+        geometry.rotate(-rotation, anchor)
+        if (geometry.intersectsExtent(extent)) {
+          selectedFeatures.push(feature)
+        }
+      })
+    }
   })
 
   return interaction

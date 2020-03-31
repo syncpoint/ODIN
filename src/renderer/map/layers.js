@@ -6,7 +6,7 @@ import { GeoJSON } from 'ol/format'
 import Collection from 'ol/Collection'
 import * as R from 'ramda'
 import uuid from 'uuid-random'
-import { select, modify, translate } from './layers-interactions'
+import { select, modify, translate, lasso } from './layers-interactions'
 import project from '../project'
 import style from './style/style'
 import { geometryType } from './layers-util'
@@ -84,9 +84,10 @@ const initialize = async (context, project) => {
 
   const selectInteraction = context.addInteraction(select(context))
   // CAUTION: selectedFeatures - shared/mutable feature collection
-  const selectedFeatures = selectInteraction.getFeatures()
-  context.addInteraction(translate(context, selectedFeatures))
-  context.addInteraction(modify(context, selectedFeatures))
+  context.selectedFeatures = selectInteraction.getFeatures()
+  context.addInteraction(translate(context))
+  context.addInteraction(modify(context))
+  context.addInteraction(lasso(context))
 }
 
 const updateViewport = (context, project) => {
@@ -103,6 +104,7 @@ export default map => {
   // - sources :: String -> VectorSource - feature source per geometry type
   // - layers :: [VectorLayer] - ordered list of feature layers per geometry type
   // - selectionSource :: VectorSource - dedicated source for selected features
+  // - selectedFeatures - collection of selected features
 
   let disposables = disposable.of()
   const dispose = () => {
