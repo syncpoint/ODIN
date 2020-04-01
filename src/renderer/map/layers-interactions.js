@@ -92,6 +92,8 @@ export const select = context => {
     multi: false
   })
 
+  // TODO: encapsulate `context.selectedFeatures` with mutators as selection
+
   // CAUTION: selectedFeatures - shared/mutable feature collection
   context.selectedFeatures = interaction.getFeatures()
 
@@ -107,6 +109,21 @@ export const select = context => {
     const to = sources[geometryType(feature)]
     move(selectionSource, to)(feature)
   }
+
+  context.deselectAllFeatures = () => {
+    context.selectedFeatures.forEach(context.deselectFeature)
+    context.selectedFeatures.clear()
+  }
+
+  context.selectAllFeatures = () => {
+    Object.values(sources).forEach(source => {
+      source.getFeatures().forEach(feature => {
+        context.selectFeature(feature)
+        context.selectedFeatures.push(feature)
+      })
+    })
+  }
+
 
   interaction.on('select', ({ selected, deselected }) => {
     // Dim feature layers except selection layer:
@@ -129,10 +146,7 @@ export const lasso = context => {
     condition: platformModifierKeyOnly
   })
 
-  interaction.on('boxstart', () => {
-    selectedFeatures.forEach(context.deselectFeature)
-    selectedFeatures.clear()
-  })
+  interaction.on('boxstart', context.deselectAllFeatures)
 
   interaction.on('boxend', () => {
 

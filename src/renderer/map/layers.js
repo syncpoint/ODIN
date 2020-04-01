@@ -4,6 +4,7 @@ import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
 import { GeoJSON } from 'ol/format'
 import Collection from 'ol/Collection'
+import { ipcRenderer } from 'electron'
 import * as R from 'ramda'
 import uuid from 'uuid-random'
 import { select, modify, translate, lasso } from './layers-interactions'
@@ -125,6 +126,14 @@ export default map => {
       return layer
     }
   }
+
+  const selectAll = () => {
+    context.deselectAllFeatures()
+    context.selectAllFeatures()
+  }
+
+  ipcRenderer.on('IPC_EDIT_SELECT_ALL', selectAll)
+  disposables.addDisposable(() => ipcRenderer.off('IPC_EDIT_SELECT_ALL', selectAll))
 
   project.register(event => {
     switch (event) {

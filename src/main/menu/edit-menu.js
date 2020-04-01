@@ -23,7 +23,15 @@ const menu = {
     { role: 'paste' },
     { role: 'pasteandmatchstyle' },
     { role: 'delete' },
-    { role: 'selectall' }
+    {
+      label: 'Select All',
+      accelerator: 'CmdOrCtrl+A',
+      click: (_, browserWindow) => {
+        if (!browserWindow) return
+        browserWindow.webContents.selectAll()
+        browserWindow.send('IPC_EDIT_SELECT_ALL')
+      }
+    }
 
     // darwin: automatically added:
     // 1. separator (see below)
