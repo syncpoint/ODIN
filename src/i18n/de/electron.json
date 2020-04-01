@@ -1,0 +1,53 @@
+{
+  "Projects": "Projekte",
+  "Manage Projects": "Projekte verwalten...",
+  "Language": "Sprache",
+  "en": "Englisch",
+  "de": "Deutsch",
+  "app": {
+    "about":"Über {{name}}",
+    "hide": "{{name}} verbergen",
+    "hideOthers": "Andere verbergen",
+    "unhide": "{{name}} einblenden",
+    "quit": "{{name}} beenden"
+  },
+  "edit": {
+    "name": "Bearbeiten",
+    "undo": "Rückgängig",
+    "redo": "Wiederherstellen",
+    "cut": "Ausschneiden",
+    "copy": "Kopieren",
+    "paste": "Einfügen",
+    "pasteAndMatchStyle": "Einfügen und Stil anpassen",
+    "delete": "Löschen",
+    "selectAll": "Alles auswählen"
+  },
+  "view": {
+    "name": "Anzeige",
+    "reload": "Neu laden",
+    "forceReload": "Neu laden erzwingen",
+    "toggleDevTools": "Entwickler Werkzeuge ein/aus",
+    "resetZoom": "Originalgröße",
+    "zoomIn": "Heranzoomen",
+    "zoomOut": "Heruaszoomen",
+    "toggleFullscreen": "Vollbildmodus ein/aus"
+  },
+  "window": {
+    "name": "Fenster",
+    "minimize": "Minimieren",
+    "close": "Schließen",
+    "zoom": "Zoomen"
+  },
+  "exportProject": {
+    "title": "Export des Projekts {{name}}",
+    "succeeded": "Export des Projekts {{name}} war erfolgreich",
+    "failed": "Export des Projekts {{name}} ist fehlgeschlagen",
+    "clickToOpen": "Öffnen: {{path}}"
+  },
+  "importProject": {
+    "title": "Wählen Sie ein ODIN Projekt für den Import",
+    "succeeded": "Import erfolgreich",
+    "failed": "Import von {{path}} fehlgeschlagen",
+    "fileFilterName": "ODIN Projektarchiv"
+  }
+}
