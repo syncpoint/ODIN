@@ -22,6 +22,16 @@
     "delete": "Delte",
     "selectAll": "Select all"
   },
+  "view": {
+    "name": "View",
+    "reload": "Reload",
+    "forceReload": "Force reload",
+    "toggleDevTools": "Toggle Developer Tools",
+    "resetZoom": "Reset zoom",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "toggleFullscreen": "Toggle Fullscreen"
+  },
   "exportProject": {
     "title": "Export project {{name}}",
     "succeeded": "Export of project {{name}} succeeded",

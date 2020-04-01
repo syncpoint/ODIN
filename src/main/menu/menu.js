@@ -9,18 +9,18 @@ import languageMenu from './language-menu'
 // import goMenu from './go-menu'
 
 
-const template = (settings, i18n) => ([
+const template = (i18n) => ([
   // darwin only (must be filtered for other platforms)
   applicationMenu(i18n),
   projectsMenu(i18n),
   editMenu(i18n),
-  viewMenu(settings),
+  viewMenu(i18n),
   // goMenu,
   windowMenu,
   languageMenu(i18n)
   // helpMenu
 ])
 
-export const buildFromTemplate = (settings, i18n) =>
+export const buildFromTemplate = (i18n) =>
   // filter null entries (darwin only):
-  Menu.buildFromTemplate(template(settings, i18n).filter(x => x))
+  Menu.buildFromTemplate(template(i18n).filter(x => x))

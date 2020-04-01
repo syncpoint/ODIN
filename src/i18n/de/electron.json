@@ -22,6 +22,16 @@
     "delete": "Löschen",
     "selectAll": "Alles auswählen"
   },
+  "view": {
+    "name": "Anzeige",
+    "reload": "Neu laden",
+    "forceReload": "Neu laden erzwingen",
+    "toggleDevTools": "Entwickler Werkzeuge ein/aus",
+    "resetZoom": "Originalgröße",
+    "zoomIn": "Heranzoomen",
+    "zoomOut": "Heruaszoomen",
+    "toggleFullscreen": "Vollbildmodus ein/aus"
+  },
   "exportProject": {
     "title": "Export des Projekts {{name}}",
     "succeeded": "Export des Projekts {{name}} war erfolgreich",

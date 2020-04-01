@@ -22,7 +22,7 @@ app.allowRendererProcessReuse = false // `false` also removes deprecation messag
     set the application menu.
 */
 const buildApplicationMenu = () => {
-  const menu = buildFromTemplate(settings, i18n)
+  const menu = buildFromTemplate(i18n)
   Menu.setApplicationMenu(menu)
 }
 
