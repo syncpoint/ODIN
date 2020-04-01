@@ -1,9 +1,9 @@
 
-const menu = {
-  label: 'Projects',
+const menu = i18n => ({
+  label: i18n.t('Projects'),
   submenu: [
     {
-      label: 'Manage Projects...',
+      label: i18n.t('Manage Projects'),
       accelerator: 'CmdOrCtrl+Alt+M',
       click: (menuItem, browserWindow) => {
         /* browserWindow is undefined if minimized or closed */
@@ -11,6 +11,6 @@ const menu = {
       }
     }
   ]
-}
+})
 
 export default menu

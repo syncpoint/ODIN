@@ -34,6 +34,16 @@ const RULES = {
   font: {
     test: /\.(eot|svg|ttf|woff|woff2)$/,
     use: [{ loader: `file-loader?name=font/[name]__[${hash}].[ext]` }]
+  },
+
+  json: {
+    test: /\.(json)$/,
+    use: [{
+      loader: 'file-loader',
+      options: {
+        name: `data/[name]__[${hash}].[ext]`
+      }
+    }]
   }
 }
 
