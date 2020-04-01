@@ -3,7 +3,6 @@ import electronEN from './en/electron.json'
 
 const i18nextOptions = {
   debug: false,
-  lng: 'de',
   resources: {
     en: { electron: electronEN },
     de: { electron: electronDE }

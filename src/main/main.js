@@ -4,7 +4,7 @@ import { app, Menu } from 'electron'
 import { buildFromTemplate } from '../main/menu/menu'
 import settings from 'electron-settings'
 import bootstrap from './bootstrap'
-import i18n from '../i18n'
+import i18n, { languageKey } from '../i18n'
 
 // Disable for production:
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
@@ -27,15 +27,11 @@ const buildApplicationMenu = () => {
 }
 
 i18n.on('languageChanged', (lng) => {
+  settings.set(languageKey, lng)
   buildApplicationMenu()
 })
 
-if (process.env.NODE_ENV !== 'production') {
-  i18n.on('missingKey', (lng, namespace, key) => {
-    console.log(`i18n missing key for ${lng} in namespace ${namespace}: ${key}`)
-  })
-}
-
 i18n.on('initialized', () => {
+  i18n.changeLanguage(settings.get(languageKey))
   bootstrap()
 })
