@@ -6,8 +6,6 @@ import projects from '../shared/projects'
 import { exportProject, importProject } from './ipc/share-project'
 import handleCreatePreview from './ipc/create-preview'
 
-import packageJSON from '../../package.json'
-
 /**
  * Facade for application windows/project state.
  * Encapsulates settings access.
@@ -126,8 +124,9 @@ const bootstrap = () => {
   app.on('ready', () => {
     /*
       Setting the appId is required to allow desktop notifications on the Windows platform.
+      Please make sure this value is THE SAME as in 'electron-builder.yml'.
     */
-    app.setAppUserModelId(packageJSON.build.appId)
+    app.setAppUserModelId('io.syncpoint.odin')
 
     /* try to restore persisted window state */
     const state = Object.values(settings.get(WINDOWS_KEY, {}))

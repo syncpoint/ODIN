@@ -10,37 +10,35 @@ export const exportProject = async (event, projectPath) => {
     defaultPath: filenameSuggestion
   }
   /* providing getOwnerBrowserWindow creates a modal dialog */
-  dialog.showSaveDialog(event.sender.getOwnerBrowserWindow(), dialogOptions)
-    .then(async result => {
-      if (result.canceled) return
-      try {
-        await projects.exportProject(projectPath, result.filePath)
-        if (!Notification.isSupported()) return
-        const n = new Notification({
-          title: `Export of ${project.metadata.name} succeeded`,
-          body: `Click to open ${result.filePath}`
-        })
-        n.on('click', () => {
-          shell.showItemInFolder(result.filePath)
-        })
-        n.show()
-      } catch (error) {
-        const n = new Notification({
-          title: `Export of ${project.metadata.name} failed`,
-          body: error.message
-        })
-        n.show()
-      }
-    })
+  dialog.showSaveDialog(event.sender.getOwnerBrowserWindow(), dialogOptions).then(async result => {
+    if (result.canceled) return
+    try {
+      await projects.exportProject(projectPath, result.filePath)
+      if (!Notification.isSupported()) return
+      const n = new Notification({
+        title: `Export of ${project.metadata.name} succeeded`,
+        body: `Click to open ${result.filePath}`
+      })
+      n.on('click', () => {
+        shell.showItemInFolder(result.filePath)
+      })
+      n.show()
+    } catch (error) {
+      const n = new Notification({
+        title: `Export of ${project.metadata.name} failed`,
+        body: error.message
+      })
+      n.show()
+    }
+  })
 }
 
 export const importProject = async (event) => {
   const dialogOptions = {
-    title: 'Choose ODIN project to import',
+    title: 'Choose an ODIN project to import',
     filters: [{ name: 'ODIN project archives', extensions: ['odin'] }],
     properties: ['openFile']
   }
-
 
   dialog.showOpenDialog(event.sender.getOwnerBrowserWindow(), dialogOptions).then(async result => {
     if (result.canceled) return
@@ -50,12 +48,13 @@ export const importProject = async (event) => {
     */
     try {
       await projects.importProject(result.filePaths[0])
+      event.reply('IPC_PROJECT_IMPORTED')
+
       if (!Notification.isSupported()) return
       const n = new Notification({
         title: 'Import succeeded'
       })
       n.show()
-      event.reply('IPC_PROJECT_IMPORTED')
     } catch (error) {
       const n = new Notification({
         title: `Import of ${result.filePaths[0]} failed`,

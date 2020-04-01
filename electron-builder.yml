@@ -12,4 +12,4 @@ win:
         - ia32
 files:
   - 'dist'
-electronVersion: 8.1.1
+electronVersion: 8.2.0
