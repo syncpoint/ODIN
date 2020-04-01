@@ -32,6 +32,12 @@
     "zoomOut": "Zoom out",
     "toggleFullscreen": "Toggle Fullscreen"
   },
+  "window": {
+    "name": "Window",
+    "minimize": "Minimize",
+    "close": "Close",
+    "zoom": "Zoom"
+  },
   "exportProject": {
     "title": "Export project {{name}}",
     "succeeded": "Export of project {{name}} succeeded",

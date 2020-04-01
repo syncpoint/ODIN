@@ -16,7 +16,7 @@ const template = (i18n) => ([
   editMenu(i18n),
   viewMenu(i18n),
   // goMenu,
-  windowMenu,
+  windowMenu(i18n),
   languageMenu(i18n)
   // helpMenu
 ])

@@ -32,6 +32,12 @@
     "zoomOut": "Heruaszoomen",
     "toggleFullscreen": "Vollbildmodus ein/aus"
   },
+  "window": {
+    "name": "Fenster",
+    "minimize": "Minimieren",
+    "close": "Schließen",
+    "zoom": "Zoomen"
+  },
   "exportProject": {
     "title": "Export des Projekts {{name}}",
     "succeeded": "Export des Projekts {{name}} war erfolgreich",
