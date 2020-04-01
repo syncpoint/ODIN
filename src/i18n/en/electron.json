@@ -5,8 +5,15 @@
   "en": "English",
   "de": "German",
   "exportProject": {
+    "title": "Export project {{name}}",
     "succeeded": "Export of project {{name}} succeeded",
     "failed": "Export of project {{name}} failed",
     "clickToOpen": "Open: {{path}}"
+  },
+  "importProject": {
+    "title": "Choose an ODIN project to import",
+    "succeeded": "Import succeeded",
+    "failed": "Import from {{path}} failed",
+    "fileFilterName": "ODIN project archives"
   }
 }

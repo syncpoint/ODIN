@@ -7,7 +7,7 @@ export const exportProject = async (event, projectPath) => {
   const project = await projects.readMetadata(projectPath)
   const filenameSuggestion = sanitizeFilename(`${project.metadata.name}.odin`)
   const dialogOptions = {
-    title: `Export Project ${project.metadata.name}`,
+    title: i18n.t('exportProject.title', { name: project.metadata.name }),
     defaultPath: filenameSuggestion
   }
   /* providing getOwnerBrowserWindow creates a modal dialog */
@@ -36,8 +36,8 @@ export const exportProject = async (event, projectPath) => {
 
 export const importProject = async (event) => {
   const dialogOptions = {
-    title: 'Choose an ODIN project to import',
-    filters: [{ name: 'ODIN project archives', extensions: ['odin'] }],
+    title: i18n.t('importProject.title'),
+    filters: [{ name: i18n.t('importProject.fileFilterName'), extensions: ['odin'] }],
     properties: ['openFile']
   }
 
@@ -53,12 +53,12 @@ export const importProject = async (event) => {
 
       if (!Notification.isSupported()) return
       const n = new Notification({
-        title: 'Import succeeded'
+        title: i18n.t('importProject.succeeded')
       })
       n.show()
     } catch (error) {
       const n = new Notification({
-        title: `Import of ${result.filePaths[0]} failed`,
+        title: i18n.t('importProject.failed', { path: result.filePaths[0] }),
         body: error.message
       })
       n.show()
