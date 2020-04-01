@@ -35,7 +35,13 @@ const menu = i18n => {
         role: 'delete', label: i18n.t('edit.delete')
       },
       {
-        role: 'selectall', label: i18n.t('edit.selectAll')
+        label: i18n.t('edit.selectAll'),
+        accelerator: 'CmdOrCtrl+A',
+        click: (_, browserWindow) => {
+          if (!browserWindow) return
+          browserWindow.webContents.selectAll()
+          browserWindow.send('IPC_EDIT_SELECT_ALL')
+        }
       }
 
     // darwin: automatically added:

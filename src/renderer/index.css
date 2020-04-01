@@ -11,3 +11,8 @@
 #map:focus {
   border: 1px solid black;
 }
+
+.ol-dragbox {
+  background-color: rgba(255,255,255,0.4);
+  border-color: rgba(100,150,0,1);
+}

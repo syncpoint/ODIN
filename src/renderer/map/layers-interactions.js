@@ -1,5 +1,5 @@
-import { Select, Modify, Translate } from 'ol/interaction'
-import { click, primaryAction } from 'ol/events/condition'
+import { Select, Modify, Translate, DragBox } from 'ol/interaction'
+import { click, primaryAction, platformModifierKeyOnly } from 'ol/events/condition'
 import style from './style/style'
 import undo from '../undo'
 import { updateFeatureGeometry } from './layers-commands'
@@ -22,12 +22,13 @@ const cloneGeometries = features => features.getArray().reduce((acc, feature) =>
 /**
  * Modify interaction.
  */
-export const modify = (context, features) => {
+export const modify = context => {
+  const { selectedFeatures } = context
   let initial = {}
 
   const interaction = new Modify({
     hitTolerance,
-    features,
+    features: selectedFeatures,
     condition: conjunction(primaryAction, noShiftKey)
   })
 
@@ -49,12 +50,13 @@ export const modify = (context, features) => {
 /**
  * Translate, i.e. move feature(s) interaction.
  */
-export const translate = (context, features) => {
+export const translate = context => {
+  const { selectedFeatures } = context
   let initial = {}
 
   const interaction = new Translate({
     hitTolerance,
-    features
+    features: selectedFeatures
   })
 
   interaction.on('translatestart', ({ features }) => {
@@ -90,23 +92,78 @@ export const select = context => {
     multi: false
   })
 
+  // TODO: encapsulate `context.selectedFeatures` with mutators as selection
+
+  // CAUTION: selectedFeatures - shared/mutable feature collection
+  context.selectedFeatures = interaction.getFeatures()
+
+  context.selectFeature = feature => {
+    feature.set('selected', true)
+    const from = sources[geometryType(feature)]
+    move(from, selectionSource)(feature)
+  }
+
+  context.deselectFeature = feature => {
+    feature.unset('selected')
+    feature.setStyle(null)
+    const to = sources[geometryType(feature)]
+    move(selectionSource, to)(feature)
+  }
+
+  context.deselectAllFeatures = () => {
+    context.selectedFeatures.forEach(context.deselectFeature)
+    context.selectedFeatures.clear()
+  }
+
+  context.selectAllFeatures = () => {
+    Object.values(sources).forEach(source => {
+      source.getFeatures().forEach(feature => {
+        context.selectFeature(feature)
+        context.selectedFeatures.push(feature)
+      })
+    })
+  }
+
+
   interaction.on('select', ({ selected, deselected }) => {
     // Dim feature layers except selection layer:
     layers.forEach(layer => layer.setOpacity(selected.length ? 0.35 : 1))
+    selected.forEach(context.selectFeature)
+    deselected.forEach(context.deselectFeature)
+  })
 
-    selected.forEach(feature => {
-      feature.set('selected', true)
-      const from = sources[geometryType(feature)]
-      move(from, selectionSource)(feature)
+  return interaction
+}
+
+
+/**
+ * Lasso, aka box selection.
+ */
+export const lasso = context => {
+  const { selectedFeatures, sources, layers } = context
+
+  const interaction = new DragBox({
+    condition: platformModifierKeyOnly
+  })
+
+  interaction.on('boxstart', context.deselectAllFeatures)
+
+  interaction.on('boxend', () => {
+
+    // NOTE: Map rotation is not supported, yet.
+    // See original source for implementation:
+    // https://openlayers.org/en/latest/examples/box-selection.html
+
+    const extent = interaction.getGeometry().getExtent()
+    Object.values(sources).forEach(source => {
+      source.forEachFeatureIntersectingExtent(extent, feature => {
+        context.selectFeature(feature)
+        selectedFeatures.push(feature)
+      })
     })
 
-    deselected.forEach(feature => {
-      feature.unset('selected')
-      // Clear style cache: invoke style function on next render.
-      feature.setStyle(null)
-      const to = sources[geometryType(feature)]
-      move(selectionSource, to)(feature)
-    })
+    const opacity = selectedFeatures.getLength() > 0 ? 0.35 : 1
+    layers.forEach(layer => layer.setOpacity(opacity))
   })
 
   return interaction

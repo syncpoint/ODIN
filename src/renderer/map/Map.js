@@ -69,7 +69,8 @@ const effect = props => () => {
     addLayer: map.addLayer.bind(map),
     removeLayer: map.removeLayer.bind(map),
     addInteraction: map.addInteraction.bind(map),
-    removeInteraction: map.removeInteraction.bind(map)
+    removeInteraction: map.removeInteraction.bind(map),
+    rotation: view.getRotation.bind(view)
   })
 
 }
