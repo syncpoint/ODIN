@@ -4,9 +4,10 @@ import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
 import { GeoJSON } from 'ol/format'
 import Collection from 'ol/Collection'
+import { ipcRenderer } from 'electron'
 import * as R from 'ramda'
 import uuid from 'uuid-random'
-import { select, modify, translate } from './layers-interactions'
+import { select, modify, translate, lasso } from './layers-interactions'
 import project from '../project'
 import style from './style/style'
 import { geometryType } from './layers-util'
@@ -82,11 +83,10 @@ const initialize = async (context, project) => {
     source: context.selectionSource
   }))
 
-  const selectInteraction = context.addInteraction(select(context))
-  // CAUTION: selectedFeatures - shared/mutable feature collection
-  const selectedFeatures = selectInteraction.getFeatures()
-  context.addInteraction(translate(context, selectedFeatures))
-  context.addInteraction(modify(context, selectedFeatures))
+  context.addInteraction(select(context))
+  context.addInteraction(translate(context))
+  context.addInteraction(modify(context))
+  context.addInteraction(lasso(context))
 }
 
 const updateViewport = (context, project) => {
@@ -103,6 +103,7 @@ export default map => {
   // - sources :: String -> VectorSource - feature source per geometry type
   // - layers :: [VectorLayer] - ordered list of feature layers per geometry type
   // - selectionSource :: VectorSource - dedicated source for selected features
+  // - selectedFeatures - collection of selected features
 
   let disposables = disposable.of()
   const dispose = () => {
@@ -125,6 +126,14 @@ export default map => {
       return layer
     }
   }
+
+  const selectAll = () => {
+    context.deselectAllFeatures()
+    context.selectAllFeatures()
+  }
+
+  ipcRenderer.on('IPC_EDIT_SELECT_ALL', selectAll)
+  disposables.addDisposable(() => ipcRenderer.off('IPC_EDIT_SELECT_ALL', selectAll))
 
   project.register(event => {
     switch (event) {
