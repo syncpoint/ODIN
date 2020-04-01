@@ -7,13 +7,13 @@
   "exportProject": {
     "title": "Export des Projekts {{name}}",
     "succeeded": "Export des Projekts {{name}} war erfolgreich",
-    "failed": "Export des Projekts {{name}} is fehlgeschlagen",
+    "failed": "Export des Projekts {{name}} ist fehlgeschlagen",
     "clickToOpen": "Öffnen: {{path}}"
   },
   "importProject": {
     "title": "Wählen Sie ein ODIN Projekt für den Import",
     "succeeded": "Import erfolgreich",
     "failed": "Import von {{path}} fehlgeschlagen",
-    "fileFilterName": "ODIN Projektarchive"
+    "fileFilterName": "ODIN Projektarchiv"
   }
 }
