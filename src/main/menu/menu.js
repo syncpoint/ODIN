@@ -11,9 +11,9 @@ import languageMenu from './language-menu'
 
 const template = (settings, i18n) => ([
   // darwin only (must be filtered for other platforms)
-  applicationMenu,
+  applicationMenu(i18n),
   projectsMenu(i18n),
-  editMenu,
+  editMenu(i18n),
   viewMenu(settings),
   // goMenu,
   windowMenu,

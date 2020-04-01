@@ -4,6 +4,24 @@
   "Language": "Sprache",
   "en": "Englisch",
   "de": "Deutsch",
+  "app": {
+    "about":"Über {{name}}",
+    "hide": "{{name}} verbergen",
+    "hideOthers": "Andere verbergen",
+    "unhide": "{{name}} einblenden",
+    "quit": "{{name}} beenden"
+  },
+  "edit": {
+    "name": "Bearbeiten",
+    "undo": "Rückgängig",
+    "redo": "Wiederherstellen",
+    "cut": "Ausschneiden",
+    "copy": "Kopieren",
+    "paste": "Einfügen",
+    "pasteAndMatchStyle": "Einfügen und Stil anpassen",
+    "delete": "Löschen",
+    "selectAll": "Alles auswählen"
+  },
   "exportProject": {
     "title": "Export des Projekts {{name}}",
     "succeeded": "Export des Projekts {{name}} war erfolgreich",

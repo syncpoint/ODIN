@@ -4,6 +4,24 @@
   "Language": "Language",
   "en": "English",
   "de": "German",
+  "app": {
+    "about":"About {{name}}",
+    "hide": "Hide {{name}}",
+    "hideOthers": "Hide others",
+    "unhide": "Unhide {{name}}",
+    "quit": "Quit {{name}}"
+  },
+  "edit": {
+    "name": "Edit",
+    "undo": "Undo",
+    "redo": "Redo",
+    "cut": "Cut",
+    "copy": "Copy",
+    "paste": "Paste",
+    "pasteAndMatchStyle": "Paste and match style",
+    "delete": "Delte",
+    "selectAll": "Select all"
+  },
   "exportProject": {
     "title": "Export project {{name}}",
     "succeeded": "Export of project {{name}} succeeded",
