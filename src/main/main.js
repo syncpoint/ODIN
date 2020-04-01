@@ -32,6 +32,6 @@ i18n.on('languageChanged', (lng) => {
 })
 
 i18n.on('initialized', () => {
-  i18n.changeLanguage(settings.get(languageKey))
+  i18n.changeLanguage(settings.get(languageKey, 'en'))
   bootstrap()
 })
