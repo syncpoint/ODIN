@@ -4,8 +4,7 @@ import { app, Menu } from 'electron'
 import { buildFromTemplate } from '../main/menu/menu'
 import settings from 'electron-settings'
 import bootstrap from './bootstrap'
-import i18next from 'i18next'
-import i18nConfig from '../i18n/i18next.config'
+import i18n from '../i18n'
 
 // Disable for production:
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
@@ -23,25 +22,20 @@ app.allowRendererProcessReuse = false // `false` also removes deprecation messag
     set the application menu.
 */
 const buildApplicationMenu = () => {
-  console.log('buildApplicationMenu::::::')
-  const menu = buildFromTemplate(settings, i18next)
+  const menu = buildFromTemplate(settings, i18n)
   Menu.setApplicationMenu(menu)
 }
 
-i18next.on('languageChanged', (lng) => {
-  console.log('changed language')
-  console.dir(lng)
+i18n.on('languageChanged', (lng) => {
   buildApplicationMenu()
 })
 
-i18next.on('missingKey', (lngs, namespace, key, res) => {
-  console.dir(namespace)
-  console.dir(key)
-  console.dir(res)
-})
+if (process.env.NODE_ENV !== 'production') {
+  i18n.on('missingKey', (lng, namespace, key) => {
+    console.log(`i18n missing key for ${lng} in namespace ${namespace}: ${key}`)
+  })
+}
 
-i18next.init(i18nConfig).then(() => {
+i18n.on('initialized', () => {
   bootstrap()
 })
-
-

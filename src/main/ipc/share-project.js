@@ -1,6 +1,7 @@
 import { dialog, Notification, shell } from 'electron'
 import sanitizeFilename from 'sanitize-filename'
 import projects from '../../shared/projects'
+import i18n from '../../i18n'
 
 export const exportProject = async (event, projectPath) => {
   const project = await projects.readMetadata(projectPath)
@@ -16,8 +17,8 @@ export const exportProject = async (event, projectPath) => {
       await projects.exportProject(projectPath, result.filePath)
       if (!Notification.isSupported()) return
       const n = new Notification({
-        title: `Export of ${project.metadata.name} succeeded`,
-        body: `Click to open ${result.filePath}`
+        title: i18n.t('exportProject.succeeded', { name: project.metadata.name }),
+        body: i18n.t('exportProject.clickToOpen', { path: result.filePath })
       })
       n.on('click', () => {
         shell.showItemInFolder(result.filePath)
@@ -25,7 +26,7 @@ export const exportProject = async (event, projectPath) => {
       n.show()
     } catch (error) {
       const n = new Notification({
-        title: `Export of ${project.metadata.name} failed`,
+        title: i18n.t('exportProject.failed', { name: project.metadata.title }),
         body: error.message
       })
       n.show()

@@ -3,5 +3,10 @@
   "Manage Projects": "Projekte verwalten...",
   "Language": "Sprache",
   "en": "Englisch",
-  "de": "Deutsch"
+  "de": "Deutsch",
+  "exportProject": {
+    "succeeded": "Export des Projekts {{name}} war erfolgreich",
+    "failed": "Export des Projekts {{name}} is fehlgeschlagen",
+    "clickToOpen": "Öffnen: {{path}}"
+  }
 }

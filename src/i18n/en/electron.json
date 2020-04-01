@@ -3,5 +3,10 @@
   "Manage Projects": "Manage Projects...",
   "Language": "Language",
   "en": "English",
-  "de": "German"
+  "de": "German",
+  "exportProject": {
+    "succeeded": "Export of project {{name}} succeeded",
+    "failed": "Export of project {{name}} failed",
+    "clickToOpen": "Open: {{path}}"
+  }
 }
