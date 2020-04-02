@@ -9,6 +9,7 @@ import { ScaleLine } from 'ol/control'
 import { Tile as TileLayer } from 'ol/layer'
 import { OSM } from 'ol/source'
 
+import { MgrsGrid } from './grids/mgrs'
 import evented from '../evented'
 import project from '../project'
 import coordinateFormat from '../../shared/coord-format'
@@ -43,10 +44,12 @@ const effect = props => () => {
     text: true,
     minWidth: 140
   })
-
   const map = new ol.Map({
     view,
-    layers: [new TileLayer({ source: new OSM() })],
+    layers: [
+      new TileLayer({ source: new OSM() }),
+      ...MgrsGrid()
+    ],
     target: id,
     controls: [scaleLine]
   })
@@ -55,6 +58,7 @@ const effect = props => () => {
   map.on('pointermove', event => {
     const lonLatCooridinate = toLonLat(event.coordinate)
     const currentCoordinate = coordinateFormat.format({ lng: lonLatCooridinate[0], lat: lonLatCooridinate[1] })
+
     // TODO: throttle?
     evented.emit('OSD_MESSAGE', { message: currentCoordinate, slot: 'C2' })
   })
