@@ -1,5 +1,3 @@
-name: Odin Continous Integratoin
-
 on:
   push:
     branches:
