@@ -1,3 +1,4 @@
+name: Odin Continous Integration
 on:
   push:
     branches:
@@ -11,13 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
       - name: Setup node
-      - uses: actions/setup-node@v1
+        uses: actions/setup-node@v1
         with:
           node-version: 12
       - name: Install 
-      - run: npm ci
+        run: npm ci
       - name: Test
         uses: GabrielBB/xvfb-action@v1.0
         with:
