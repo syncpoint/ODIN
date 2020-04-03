@@ -23,5 +23,8 @@ jobs:
         uses: GabrielBB/xvfb-action@v1.0
         with:
           run: npm test
-          run: npm spectron
+      - name: Test Spectron
+        uses: GabrielBB/xvfb-action@v1.0
+        with:
+          run: npm run spectron
     
