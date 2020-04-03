@@ -57,7 +57,7 @@ describe('menu test', function () {
 
   it('imports the test project and switches to it', async function () {
     app.browserWindow.send('IPC_SHOW_PROJECT_MANAGEMENT')
-    const projectPath = path.join(__dirname, '/test projects/EmptyProject.odin')
+    const projectPath = path.join(__dirname, '/test_projects/EmptyProject.odin')
     await projects.importProject(projectPath)
     await clickElementById(app, '#switchTo' + emptyTestProject)
   })
