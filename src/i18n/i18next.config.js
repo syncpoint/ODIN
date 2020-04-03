@@ -1,11 +1,11 @@
-import electronDE from './de/electron.json'
-import electronEN from './en/electron.json'
+import german from './de'
+import english from './en'
 
 const i18nextOptions = {
   debug: false,
   resources: {
-    en: { electron: electronEN },
-    de: { electron: electronDE }
+    en: english,
+    de: german
   },
   interpolation: {
     escapeValue: false

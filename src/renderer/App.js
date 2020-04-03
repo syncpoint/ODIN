@@ -8,6 +8,10 @@ import Management from './components/Management'
 import { ipcRenderer, remote } from 'electron'
 import evented from './evented'
 
+import i18n from './i18n'
+
+const DEFAULT_I18N_NAMESPACE = 'web'
+
 const App = (props) => {
   const { classes } = props
   const mapProps = { ...props, id: 'map' }
@@ -16,13 +20,31 @@ const App = (props) => {
   const [currentProjectPath, setCurrentProjectPath] = React.useState(undefined)
 
   React.useEffect(() => {
+    i18n.init({ defaultNS: DEFAULT_I18N_NAMESPACE }).then(t => {
+
+      /*  Changes thi i18n settings whenever the user switches between supported languages */
+      const handleLanguageChanged = (_, i18nInfo) => {
+        if (!i18n.hasResourceBundle(i18nInfo.lng, DEFAULT_I18N_NAMESPACE)) {
+          i18n.addResourceBundle(i18nInfo.lng, DEFAULT_I18N_NAMESPACE, i18nInfo.resourceBundle)
+        }
+        i18n.changeLanguage(i18nInfo.lng)
+      }
+
+      ipcRenderer.on('IPC_LANGUAGE_CHANGED', handleLanguageChanged)
+      return () => ipcRenderer.removeListener('IPC_LANGUAGE_CHANGED', handleLanguageChanged)
+    })
+  }, [])
+
+  React.useEffect(() => {
     const currentProjectPath = remote.getCurrentWindow().path
     setCurrentProjectPath(currentProjectPath)
+    /*  Tell the main process that React has finished rendering of the App */
+    setTimeout(() => ipcRenderer.send('IPC_APP_RENDERING_COMPLETED'), 0)
   }, [])
 
   React.useEffect(() => {
     ipcRenderer.on('IPC_SHOW_PROJECT_MANAGEMENT', toggleManagementUI)
-    return () => { ipcRenderer.removeListener(toggleManagementUI) }
+    return () => { ipcRenderer.removeListener('IPC_SHOW_PROJECT_MANAGEMENT', toggleManagementUI) }
   }, [])
 
   React.useEffect(() => {
