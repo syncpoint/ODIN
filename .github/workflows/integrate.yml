@@ -8,13 +8,13 @@ on:
       - '0.6.0/**'
 
 jobs:
-  install_and_test:
+  checkout_install_test:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout
+      - name: Checkout the source into the VM
         uses: actions/checkout@v2
       - name: Setup node
         uses: actions/setup-node@v1
