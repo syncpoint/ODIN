@@ -243,7 +243,7 @@ const Management = props => {
     }
 
     return (
-      <div className={classes.settings}>
+      <div className={classes.settings} id="projectSettings">
         <FormControl error={formHasError}>
           <InputLabel htmlFor="projectName">{t('projectManagement.name')}</InputLabel>
           <Input id="projectName" name="projectName" defaultValue={edit.name}
@@ -252,7 +252,7 @@ const Management = props => {
             style={{ minWidth: '20em' }}
           />
         </FormControl>
-        <Button aria-label="export" variant="outlined" color="primary"
+        <Button id="exportProject" aria-label="export" variant="outlined" color="primary"
           style={{ float: 'right', margin: '2px' }} startIcon={<ExportIcon />}
           onClick={() => handleExportProject(project.path) }
         >
@@ -273,7 +273,7 @@ const Management = props => {
     /* previewImageData gets lazy loaded whenever the focused project changes */
     if (!project || !previewImageData) return null
     return (
-      <div className={classes.preview}>
+      <div className={classes.preview} id="preview">
         <img src={`data:image/jpeg;base64,${previewImageData}`} style={{ width: '100%', objectFit: 'contain' }} />
       </div>
     )
@@ -284,7 +284,7 @@ const Management = props => {
     const { project } = props
     if (currentProjectPath === project.path) return null
     return (
-      <div>
+      <div id="dangerousActions">
         <Typography variant="h5">{t('projectManagement.dangerZone')}</Typography>
         <div className={classes.dangerZone}>
           <ul className={classes.dangerActionList}>
@@ -328,8 +328,8 @@ const Management = props => {
         <BackToMapIcon id="backToMap" onClick={onCloseClicked}/>
       </div>
       <div className={classes.management}>
-        <div className={classes.projects}>
-          <div style={{ marginBottom: '3em' }}>
+        <div className={classes.projects} id="projects">
+          <div style={{ marginBottom: '3em' }} id="projectActions">
             <Button id="importProject" variant="outlined" color="primary" style={{ float: 'right', marginRight: '1em', marginLeft: '2px' }}
               startIcon={<ImportProjectIcon />}
               onClick={ event => handleImportProject() }
