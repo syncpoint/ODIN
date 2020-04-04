@@ -32,8 +32,8 @@ const useStyles = makeStyles((theme) => ({
     gridGap: '1em',
 
     // B: buttons bar,
-    // L: left panel (tools, palette, layers, ORBAT, etc.)
-    // R: right panel (properties)
+    // L: left/tools panel (tools, palette, layers, ORBAT, etc.)
+    // R: right/properties panel (properties)
     gridTemplateAreas: `
       "B L . R"
       "B L . R"
