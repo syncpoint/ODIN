@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: 12
       - name: Install 
-        run: npm ci
+        run: npm install --no-optional
       - name: Test
         uses: GabrielBB/xvfb-action@v1.0
         with:
