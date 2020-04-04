@@ -171,8 +171,11 @@ const Management = props => {
   }
 
   const handleSaveProject = (metadata) => {
-    /* optimistic update of UI */
-    remote.getCurrentWindow().setTitle(metadata.name)
+    /* optimistic update the window title if we are saving the currently active project */
+    if (remote.getCurrentWindow().path === focusedProject.path) {
+      remote.getCurrentWindow().setTitle(metadata.name)
+    }
+
     /* tell react to re-render */
     const updatedFocusedProject = { ...focusedProject, ...{ metadata: metadata } }
     setFocusedProject(updatedFocusedProject)
