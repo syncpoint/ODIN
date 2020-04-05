@@ -2,14 +2,22 @@ import { ipcRenderer, remote } from 'electron'
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
+import LayersIcon from '@material-ui/icons/Layers'
+import Category from '@material-ui/icons/Category'
+import PermDataSettingIcon from '@material-ui/icons/PermDataSetting'
+import UndoIcon from '@material-ui/icons/Undo'
+import RedoIcon from '@material-ui/icons/Redo'
+import MapIcon from '@material-ui/icons/Map'
 
+import evented from './evented'
 import OSD from './components/OSD'
 import Map from './map/Map'
 import Management from './components/Management'
-import evented from './evented'
+import ActivityBar from './components/ActivityBar'
 
 const useStyles = makeStyles((theme) => ({
   overlay: {
+    pointerEvents: 'none',
     position: 'fixed',
     top: '1em',
     left: '1em',
@@ -19,39 +27,84 @@ const useStyles = makeStyles((theme) => ({
     display: 'grid',
     gridTemplateColumns: 'auto',
     gridTemplateRows: '5em auto',
-    gridGap: '1em',
-    pointerEvents: 'none'
+    gridGap: '1em'
   },
 
   contentPanel: {
     gridRowStart: 2,
     gridColumnStart: 1,
     display: 'grid',
-    gridTemplateColumns: '3em 20em auto 24em',
-    gridTemplateRows: '1fr 3fr',
+
+    // Activity Bar width: 56px = 24px icon + 2 x 16px padding
+    gridTemplateColumns: '56px 20em auto 24em',
     gridGap: '1em',
 
-    // B: buttons bar,
+    // A: activity bar (buttons to show specific tool panel),
     // L: left/tools panel (tools, palette, layers, ORBAT, etc.)
     // R: right/properties panel (properties)
     gridTemplateAreas: `
-      "B L . R"
-      "B L . R"
+      "A L . R"
     `
   },
 
-  buttonsPanel: {
-    gridArea: 'B'
-  },
-
   toolsPanel: {
-    gridArea: 'L'
+    gridArea: 'L',
+    pointerEvents: 'auto',
+    padding: 20
   },
 
   propertiesPanel: {
-    gridArea: 'R'
+    gridArea: 'R',
+    pointerEvents: 'auto'
   }
 }))
+
+
+// Activities for activity bar.
+// TODO: use dedicated components/panels for individual tools
+const initialActivities = classes => [
+  {
+    id: 'map',
+    type: 'activity',
+    icon: <MapIcon/>,
+    panel: () => <Paper className={classes.toolsPanel} elevation={6}>Map/Pictures</Paper>
+  },
+  {
+    id: 'layers',
+    type: 'activity',
+    icon: <LayersIcon/>,
+    panel: () => <Paper className={classes.toolsPanel} elevation={6}>Layers</Paper>,
+    selected: true
+  },
+  {
+    id: 'palette',
+    type: 'activity',
+    icon: <Category/>,
+    panel: () => <Paper className={classes.toolsPanel} elevation={6}>Palette</Paper>
+  },
+  {
+    id: 'tools',
+    type: 'activity',
+    icon: <PermDataSettingIcon/>,
+    panel: () => <Paper className={classes.toolsPanel} elevation={6}>Measurement Tools</Paper>
+  },
+  {
+    type: 'divider'
+  },
+  {
+    id: 'undo',
+    type: 'action',
+    icon: <UndoIcon/>,
+    action: () => console.log('UNDO')
+  },
+  {
+    id: 'redo',
+    type: 'action',
+    icon: <RedoIcon/>,
+    action: () => console.log('REDO')
+  }
+]
+
 
 const App = (props) => {
   const classes = useStyles()
@@ -59,6 +112,8 @@ const App = (props) => {
 
   const [showManagement, setManagement] = React.useState(false)
   const [currentProjectPath, setCurrentProjectPath] = React.useState(undefined)
+  const [activities, setActivities] = React.useState(initialActivities(classes))
+  const [activeTool, setActiveTool] = React.useState(activities[1]) // layers
 
   React.useEffect(() => {
     const currentProjectPath = remote.getCurrentWindow().path
@@ -89,19 +144,39 @@ const App = (props) => {
     return () => clearTimeout(appLoadedTimer)
   }, [showManagement, currentProjectPath])
 
+  const handleActivitySelected = id => {
+    // TODO: immutable.js?
+    const [...shadows] = activities
+    shadows.forEach(activity => {
+      if (activity.id !== id) activity.selected = false
+      else {
+        if (activity.selected && !activeTool) setActiveTool(activity)
+        else if (activity.selected && activeTool) setActiveTool(null)
+        else {
+          setActiveTool(activity)
+          activity.selected = true
+        }
+      }
+    })
+
+    setActivities(shadows)
+  }
+
   const management = () => <Management
     currentProjectPath={currentProjectPath}
     onCloseClicked={() => setManagement(false)}
   />
+
+  const toolPanel = () => activeTool ? activeTool.panel() : null
 
   const map = () => <>
     <Map { ...mapProps }/>
     <div className={classes.overlay}>
       <OSD />
       <div className={classes.contentPanel}>
-        <Paper className={classes.buttonsPanel} elevation={6}/>
-        <Paper className={classes.toolsPanel} elevation={6}/>
-        <Paper className={classes.propertiesPanel} elevation={6}/>
+        <ActivityBar activities={activities} onActivitySelected={handleActivitySelected}/>
+        { toolPanel() }
+        {/* <Paper className={classes.propertiesPanel} elevation={6}/> */}
       </div>
     </div>
   </>
