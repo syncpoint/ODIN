@@ -93,7 +93,7 @@ const Management = props => {
 
   /* currentProjects holds an array of all projects metadata */
   const [currentProjects, setCurrentProjects] = React.useState([])
-  const [focusedProject, setFocusedProject] = React.useState(undefined)
+  const [selectedProject, setSelectedProject] = React.useState(undefined)
   const [previewImageData, setPreviewImageData] = React.useState(undefined)
   /* reloadProject forces the enumerateProjects to re-run */
   const [reloadProjects, setReloadProjects] = React.useState(true)
@@ -118,7 +118,7 @@ const Management = props => {
           setReloadProjects(false)
           setCurrentProjects(augmentedProjects)
           /* choose a project for startup */
-          if (!focusedProject && augmentedProjects.length > 0) setFocusAndLoadPreview(augmentedProjects[0])
+          if (!selectedProject && augmentedProjects.length > 0) setSelectionAndLoadPreview(augmentedProjects[0])
         })
     })
   }, [reloadProjects])
@@ -131,8 +131,8 @@ const Management = props => {
     return () => ipcRenderer.removeListener('IPC_PROJECT_IMPORTED', reloadProjects)
   }, [])
 
-  const setFocusAndLoadPreview = project => {
-    setFocusedProject(project)
+  const setSelectionAndLoadPreview = project => {
+    setSelectedProject(project)
     if (project) {
       /* the default readPreview options are { encoding: 'base64' } */
       projects.readPreview(project.path).then(encodedPreview => {
@@ -146,21 +146,21 @@ const Management = props => {
   /*  if a project is selected the main process will switch the
       renderer process to this project
   */
-  const handleProjectSelected = project => {
+  const handleSwitchProject = project => {
     ipcRenderer.send('IPC_SWITCH_PROJECT', project.path)
   }
 
-  const handleProjectFocus = project => {
-    setFocusAndLoadPreview(project)
+  const handleProjectSelected = project => {
+    setSelectionAndLoadPreview(project)
   }
 
   const handleNewProject = () => {
     projects.createProject().then((_) => {
       /*
-        An undefined focused project will select the first
+        An undefined selected project will select the first
         project in the list. See the useEffect hook above.
       */
-      setFocusAndLoadPreview(undefined)
+      setSelectionAndLoadPreview(undefined)
       setReloadProjects(true)
     })
   }
@@ -168,21 +168,21 @@ const Management = props => {
   const handleDeleteProject = project => {
     projects.deleteProject(project.path).then(() => {
       setReloadProjects(true)
-      setFocusAndLoadPreview(undefined)
+      setSelectionAndLoadPreview(undefined)
     })
   }
 
   const handleSaveProject = (metadata) => {
     /* optimistic update the window title if we are saving the currently active project */
-    if (remote.getCurrentWindow().path === focusedProject.path) {
+    if (remote.getCurrentWindow().path === selectedProject.path) {
       remote.getCurrentWindow().setTitle(metadata.name)
     }
 
     /* tell react to re-render */
-    const updatedFocusedProject = { ...focusedProject, ...{ metadata: metadata } }
-    setFocusedProject(updatedFocusedProject)
+    const updatedSelectedProject = { ...selectedProject, ...{ metadata: metadata } }
+    setSelectedProject(updatedSelectedProject)
 
-    projects.writeMetadata(focusedProject.path, metadata).then(() => {
+    projects.writeMetadata(selectedProject.path, metadata).then(() => {
       setReloadProjects(true)
     })
   }
@@ -272,7 +272,7 @@ const Management = props => {
 
   const Preview = (props) => {
     const { project } = props
-    /* previewImageData gets lazy loaded whenever the focused project changes */
+    /* previewImageData gets lazy loaded whenever the selected project changes */
     if (!project || !previewImageData) return null
     return (
       <div className={classes.preview} id="preview">
@@ -308,11 +308,11 @@ const Management = props => {
   const Projects = ({ projects }) => {
     const items = projects.map(project => (
       <ListItem key={project.path}
-        selected={focusedProject && (focusedProject.path === project.path)}
-        button onClick={ () => handleProjectFocus(project) }>
+        selected={selectedProject && (selectedProject.path === project.path)}
+        button onClick={ () => handleProjectSelected(project) }>
         <ListItemText primary={project.metadata.name} secondary={t('projectManagement.lastAccess', { date: fromISO(project.metadata.lastAccess) })}/>
         <Button id={'switchTo' + project.metadata.name} color="primary" variant="outlined" disabled={currentProjectPath === project.path}
-          onClick={ () => handleProjectSelected(project)} startIcon={<PlayCircleOutlineIcon />} >
+          onClick={ () => handleSwitchProject(project)} startIcon={<PlayCircleOutlineIcon />} >
           {t('projectManagement.switch')}
         </Button>
       </ListItem>
@@ -348,7 +348,7 @@ const Management = props => {
           <List id="projectList"><Projects projects={currentProjects}/></List>
         </div>
         <div className={classes.details}>
-          <Details project={focusedProject}/>
+          <Details project={selectedProject}/>
         </div>
       </div>
     </div>
