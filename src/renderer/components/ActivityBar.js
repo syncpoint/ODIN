@@ -17,6 +17,10 @@ const useStyles = makeStyles((theme) => ({
   },
   selectedIcon: {
     color: 'black'
+  },
+  listItem: {
+    paddingLeft: 8,
+    paddingRight: 8
   }
 }))
 
@@ -28,8 +32,9 @@ const ActivityBar = props => {
   const activityItem = (activity, index) => {
     const iconClass = activity.selected ? classes.selectedIcon : classes.icon
     return (
-      // ListItem has 16px left/right padding by default
+      // ListItem has 16px default left/right padding by default
       <ListItem
+        className={classes.listItem}
         key={index}
         onClick={() => onActivitySelected(activity.id)}
         button
@@ -44,6 +49,7 @@ const ActivityBar = props => {
   const actionItem = (activity, index) => {
     return (
       <ListItem
+        className={classes.listItem}
         key={index}
         onClick={activity.action}
         button

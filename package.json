@@ -71,6 +71,7 @@
     "immutable": "^4.0.0-rc.12",
     "luxon": "^1.22.2",
     "mathjs": "^6.6.2",
+    "mdi-material-ui": "^6.13.0",
     "milsymbol": "^2.0.0",
     "minimist": "^1.2.5",
     "mousetrap": "^1.6.5",
@@ -82,6 +83,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "sanitize-filename": "^1.6.3",
+    "typeface-roboto": "0.0.75",
     "uuid-random": "^1.3.0"
   }
 }

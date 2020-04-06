@@ -1,28 +1,28 @@
 import { ipcRenderer, remote } from 'electron'
 import React from 'react'
+import 'typeface-roboto'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
-import LayersIcon from '@material-ui/icons/Layers'
 import Category from '@material-ui/icons/Category'
 import PermDataSettingIcon from '@material-ui/icons/PermDataSetting'
-import UndoIcon from '@material-ui/icons/Undo'
-import RedoIcon from '@material-ui/icons/Redo'
 import MapIcon from '@material-ui/icons/Map'
+import { LayersTriple, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 'mdi-material-ui'
 
 import evented from './evented'
 import OSD from './components/OSD'
 import Map from './map/Map'
 import Management from './components/Management'
 import ActivityBar from './components/ActivityBar'
+import LayerList from './components/LayerList'
 
 const useStyles = makeStyles((theme) => ({
   overlay: {
     pointerEvents: 'none',
     position: 'fixed',
-    top: '1em',
-    left: '1em',
+    top: '0.5em',
+    left: '0.5em',
     bottom: '5em',
-    right: '1em',
+    right: '0.5em',
     zIndex: 20,
     display: 'grid',
     gridTemplateColumns: 'auto',
@@ -35,9 +35,9 @@ const useStyles = makeStyles((theme) => ({
     gridColumnStart: 1,
     display: 'grid',
 
-    // Activity Bar width: 56px = 24px icon + 2 x 16px padding
-    gridTemplateColumns: '56px 20em auto 24em',
-    gridGap: '1em',
+    // Activity Bar width: 40px = 24px icon + 2 x 8px padding
+    gridTemplateColumns: '40px 20em auto 20em',
+    gridGap: '0.5em',
 
     // A: activity bar (buttons to show specific tool panel),
     // L: left/tools panel (tools, palette, layers, ORBAT, etc.)
@@ -62,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
 
 // Activities for activity bar.
 // TODO: use dedicated components/panels for individual tools
+// TODO: see what icons MDI has to offer
 const initialActivities = classes => [
   {
     id: 'map',
@@ -72,8 +73,8 @@ const initialActivities = classes => [
   {
     id: 'layers',
     type: 'activity',
-    icon: <LayersIcon/>,
-    panel: () => <Paper className={classes.toolsPanel} elevation={6}>Layers</Paper>,
+    icon: <LayersTriple/>,
+    panel: () => <LayerList/>,
     selected: true
   },
   {
@@ -94,14 +95,35 @@ const initialActivities = classes => [
   {
     id: 'undo',
     type: 'action',
-    icon: <UndoIcon/>,
+    icon: <Undo/>,
     action: () => console.log('UNDO')
   },
   {
     id: 'redo',
     type: 'action',
-    icon: <RedoIcon/>,
+    icon: <Redo/>,
     action: () => console.log('REDO')
+  },
+  {
+    type: 'divider'
+  },
+  {
+    id: 'cut',
+    type: 'action',
+    icon: <ContentCut/>,
+    action: () => console.log('CUT')
+  },
+  {
+    id: 'copy',
+    type: 'action',
+    icon: <ContentCopy/>,
+    action: () => console.log('COPY')
+  },
+  {
+    id: 'paste',
+    type: 'action',
+    icon: <ContentPaste/>,
+    action: () => console.log('PASTE')
   }
 ]
 
