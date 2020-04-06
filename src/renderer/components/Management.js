@@ -85,7 +85,6 @@ const useStyles = makeStyles(theme => ({
     objectFit: 'contain',
     boxShadow: '0 1px 0 rgba(255,255,255,.6), 0 11px 35px 2px rgba(0,0,0,0.56), 0 0 0 1px rgba(0, 0, 0, 0.0)'
   }
-
 }))
 
 const Management = props => {
@@ -306,10 +305,11 @@ const Management = props => {
   }
   DangerousActions.propTypes = { project: PropTypes.object }
 
-  const Projects = (props) => {
-    const { projects } = props
+  const Projects = ({ projects }) => {
     const items = projects.map(project => (
-      <ListItem alignItems="flex-start" key={project.path} button onClick={ () => handleProjectFocus(project) }>
+      <ListItem key={project.path}
+        selected={focusedProject && (focusedProject.path === project.path)}
+        button onClick={ () => handleProjectFocus(project) }>
         <ListItemText primary={project.metadata.name} secondary={t('projectManagement.lastAccess', { date: fromISO(project.metadata.lastAccess) })}/>
         <Button id={'switchTo' + project.metadata.name} color="primary" variant="outlined" disabled={currentProjectPath === project.path}
           onClick={ () => handleProjectSelected(project)} startIcon={<PlayCircleOutlineIcon />} >
