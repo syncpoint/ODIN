@@ -14,6 +14,7 @@ import { ipcRenderer, remote } from 'electron'
 import projects from '../../shared/projects'
 import { fromISO } from '../../shared/militaryTime'
 
+import { useTranslation } from 'react-i18next'
 
 const useStyles = makeStyles(theme => ({
   management: {
@@ -97,6 +98,8 @@ const Management = props => {
   const [previewImageData, setPreviewImageData] = React.useState(undefined)
   /* reloadProject forces the enumerateProjects to re-run */
   const [reloadProjects, setReloadProjects] = React.useState(true)
+
+  const { t } = useTranslation()
 
   const byName = (one, other) => {
     if (one.metadata.lastAccess < other.metadata.lastAccess) return -1
@@ -243,25 +246,25 @@ const Management = props => {
     }
 
     return (
-      <div className={classes.settings}>
+      <div className={classes.settings} id="projectSettings">
         <FormControl error={formHasError}>
-          <InputLabel htmlFor="projectName">Project Name</InputLabel>
+          <InputLabel htmlFor="projectName">{t('projectManagement.name')}</InputLabel>
           <Input id="projectName" name="projectName" defaultValue={edit.name}
             onChange={ event => handleNameChanged(event.target.value)}
             onKeyDown={ event => handleDetectEnter(event.keyCode)}
             style={{ minWidth: '20em' }}
           />
         </FormControl>
-        <Button aria-label="export" variant="outlined" color="primary"
+        <Button id="exportProject" aria-label="export" variant="outlined" color="primary"
           style={{ float: 'right', margin: '2px' }} startIcon={<ExportIcon />}
           onClick={() => handleExportProject(project.path) }
         >
-          Export
+          {t('projectManagement.export')}
         </Button>
         <Button id="saveProject" aria-label="save" variant="contained" color="primary"
           style={{ float: 'right', margin: '2px' }} disabled={formHasError}
           onClick={() => handleSaveProject(edit)} startIcon={<SaveIcon />}>
-          Save
+          {t('projectManagement.save')}
         </Button>
       </div>
     )
@@ -273,7 +276,7 @@ const Management = props => {
     /* previewImageData gets lazy loaded whenever the focused project changes */
     if (!project || !previewImageData) return null
     return (
-      <div className={classes.preview}>
+      <div className={classes.preview} id="preview">
         <img src={`data:image/jpeg;base64,${previewImageData}`} style={{ width: '100%', objectFit: 'contain' }} />
       </div>
     )
@@ -284,17 +287,17 @@ const Management = props => {
     const { project } = props
     if (currentProjectPath === project.path) return null
     return (
-      <div>
-        <Typography variant="h5">Danger Zone</Typography>
+      <div id="dangerousActions">
+        <Typography variant="h5">{t('projectManagement.dangerZone')}</Typography>
         <div className={classes.dangerZone}>
           <ul className={classes.dangerActionList}>
             <li>
               <Button id="deleteProject" aria-label="delete" variant="outlined" color="secondary" style={{ float: 'right' }}
                 onClick={() => handleDeleteProject(project)} startIcon={<DeleteForeverIcon />}>
-                Delete
+                {t('projectManagement.delete')}
               </Button>
-              <Typography variant="h6">Delete this project</Typography>
-              <Typography variant="body1">Once a project is deleted, there is no going back!</Typography>
+              <Typography variant="h6">{t('projectManagement.deleteThisProject')}</Typography>
+              <Typography variant="body1">{t('projectManagement.deleteThisProjectDescription')}</Typography>
             </li>
           </ul>
         </div>
@@ -307,10 +310,10 @@ const Management = props => {
     const { projects } = props
     const items = projects.map(project => (
       <ListItem alignItems="flex-start" key={project.path} button onClick={ () => handleProjectFocus(project) }>
-        <ListItemText primary={project.metadata.name} secondary={`last access ${fromISO(project.metadata.lastAccess)}`}/>
+        <ListItemText primary={project.metadata.name} secondary={t('projectManagement.lastAccess', { date: fromISO(project.metadata.lastAccess) })}/>
         <Button id={'switchTo' + project.metadata.name} color="primary" variant="outlined" disabled={currentProjectPath === project.path}
           onClick={ () => handleProjectSelected(project)} startIcon={<PlayCircleOutlineIcon />} >
-          Switch to
+          {t('projectManagement.switch')}
         </Button>
       </ListItem>
     ))
@@ -328,18 +331,18 @@ const Management = props => {
         <BackToMapIcon id="backToMap" onClick={onCloseClicked}/>
       </div>
       <div className={classes.management}>
-        <div className={classes.projects}>
-          <div style={{ marginBottom: '3em' }}>
+        <div className={classes.projects} id="projects">
+          <div style={{ marginBottom: '3em' }} id="projectActions">
             <Button id="importProject" variant="outlined" color="primary" style={{ float: 'right', marginRight: '1em', marginLeft: '2px' }}
               startIcon={<ImportProjectIcon />}
               onClick={ event => handleImportProject() }
             >
-            Import
+              {t('projectManagement.import')}
             </Button>
             <Button id="newProject" variant="contained" color="primary" style={{ float: 'right', marginRight: '2px' }}
               startIcon={<AddCircleOutlineIcon />}
               onClick={ event => handleNewProject(event) }>
-            New
+              {t('projectManagement.new')}
             </Button>
           </div>
           <List id="projectList"><Projects projects={currentProjects}/></List>
