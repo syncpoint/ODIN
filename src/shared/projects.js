@@ -50,7 +50,7 @@ const exportProject = async (projectPath, targetFilePath) => {
   })
   /* the content of the project folder will be put into the root of the archive */
   odinArchive.pipe(output)
-  odinArchive.directory(projectPath, '.')
+  odinArchive.directory(projectPath, false)
   return odinArchive.finalize().then(() => odinArchive.removeAllListeners())
 }
 

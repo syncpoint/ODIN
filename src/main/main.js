@@ -26,7 +26,7 @@ const buildApplicationMenu = () => {
   Menu.setApplicationMenu(menu)
 }
 
-i18n.on('languageChanged', (lng) => {
+i18n.on('languageChanged', lng => {
   settings.set(languageKey, lng)
   buildApplicationMenu()
 })

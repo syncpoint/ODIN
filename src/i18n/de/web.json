@@ -1,0 +1,16 @@
+{
+  "projectManagement": {
+    "name": "Projekt",
+    "untitled": "neues Projekt",
+    "new": "Neu",
+    "import": "Importieren",
+    "switch": "Wechseln",
+    "export": "Exportieren",
+    "save": "Sichern",
+    "delete": "Löschen",
+    "lastAccess": "zuletzt verwendet: {{date}}",
+    "dangerZone": "Vorsicht",
+    "deleteThisProject": "Dieses Projekt löschen",
+    "deleteThisProjectDescription": "Ein gelöschtes Projekt kann nicht wiederhergestellt werden!"
+  }
+}
