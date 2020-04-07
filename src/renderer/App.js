@@ -19,10 +19,12 @@ const App = (props) => {
   const [showManagement, setManagement] = React.useState(false)
   const [currentProjectPath, setCurrentProjectPath] = React.useState(undefined)
 
+  // FIXME: strictly speaking, this does not have to be an react effect
+  // TODO: maybe move to i18n.js?
   React.useEffect(() => {
-    i18n.init({ defaultNS: DEFAULT_I18N_NAMESPACE }).then(t => {
+    i18n.init({ defaultNS: DEFAULT_I18N_NAMESPACE }).then((/* t */) => {
 
-      /*  Changes thi i18n settings whenever the user switches between supported languages */
+      /*  Changes the i18n settings whenever the user switches between supported languages */
       const handleLanguageChanged = (_, i18nInfo) => {
         if (!i18n.hasResourceBundle(i18nInfo.lng, DEFAULT_I18N_NAMESPACE)) {
           i18n.addResourceBundle(i18nInfo.lng, DEFAULT_I18N_NAMESPACE, i18nInfo.resourceBundle)
@@ -31,62 +33,56 @@ const App = (props) => {
       }
 
       ipcRenderer.on('IPC_LANGUAGE_CHANGED', handleLanguageChanged)
+      // FIXME: is clean-up necessary in one-shot effects?
       return () => ipcRenderer.removeListener('IPC_LANGUAGE_CHANGED', handleLanguageChanged)
     })
   }, [])
 
   React.useEffect(() => {
-    const currentProjectPath = remote.getCurrentWindow().path
-    setCurrentProjectPath(currentProjectPath)
+    setCurrentProjectPath(remote.getCurrentWindow().path)
+
     /*  Tell the main process that React has finished rendering of the App */
     setTimeout(() => ipcRenderer.send('IPC_APP_RENDERING_COMPLETED'), 0)
+    ipcRenderer.on('IPC_SHOW_PROJECT_MANAGEMENT', () => setManagement(true))
   }, [])
 
   React.useEffect(() => {
-    ipcRenderer.on('IPC_SHOW_PROJECT_MANAGEMENT', toggleManagementUI)
-    return () => { ipcRenderer.removeListener('IPC_SHOW_PROJECT_MANAGEMENT', toggleManagementUI) }
-  }, [])
+    if (showManagement) return
+    if (!currentProjectPath) return
 
-  React.useEffect(() => {
-    if (!showManagement && currentProjectPath) {
-      /*
-        When a project gets renamed the window title is set accordingly.
-        Since we use the current window for reading the project path
-        we can also do so for the project name.
-      */
-      const projectName = remote.getCurrentWindow().getTitle()
-      evented.emit('OSD_MESSAGE', { message: projectName, slot: 'A1' })
-      /*
-        loading map tiles and features takes some time, so we
-        create the preview of the map after 1s
-      */
-      const appLoadedTimer = setTimeout(() => {
-        ipcRenderer.send('IPC_CREATE_PREVIEW', currentProjectPath)
-      }, 1000)
-      return () => clearTimeout(appLoadedTimer)
-    }
+    /*
+      When a project gets renamed the window title is set accordingly.
+      Since we use the current window for reading the project path
+      we can also do so for the project name.
+    */
+    const projectName = remote.getCurrentWindow().getTitle()
+    evented.emit('OSD_MESSAGE', { message: projectName, slot: 'A1' })
+
+    /*
+      loading map tiles and features takes some time, so we
+      create the preview of the map after 1s
+    */
+    const appLoadedTimer = setTimeout(() => {
+      ipcRenderer.send('IPC_CREATE_PREVIEW', currentProjectPath)
+    }, 1000)
+
+    return () => clearTimeout(appLoadedTimer)
   }, [showManagement, currentProjectPath])
 
-  const toggleManagementUI = () => {
-    setManagement(showManagement => !showManagement)
-  }
+  const management = () => <Management
+    currentProjectPath={currentProjectPath}
+    onCloseClicked={() => setManagement(false)}
+  />
 
-  if (showManagement) {
-    return (
-      <React.Fragment>
-        <Management currentProjectPath={currentProjectPath} onCloseClicked={toggleManagementUI}/>
-      </React.Fragment>
-    )
-  }
+  const map = () => <>
+    <Map { ...mapProps }/>
+    <div className={classes.overlay}>
+      <OSD />
+    </div>
+  </>
 
-  return (
-    <React.Fragment>
-      <Map { ...mapProps }/>
-      <div className={classes.overlay}>
-        <OSD />
-      </div>
-    </React.Fragment>
-  )
+  // Either show project management or map:
+  return showManagement ? management() : map()
 }
 
 App.propTypes = {
