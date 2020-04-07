@@ -1,6 +1,5 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import OSD from './components/OSD'
 import Map from './map/Map'
 import Management from './components/Management'
@@ -10,10 +9,40 @@ import evented from './evented'
 
 import i18n from './i18n'
 
+const useStyles = makeStyles((/* theme */) => ({
+  overlay: {
+    position: 'fixed',
+    top: '1em',
+    left: '1em',
+    bottom: '1.5em',
+    right: '1em',
+    zIndex: 20,
+    display: 'grid',
+    gridTemplateColumns: 'auto',
+    gridTemplateRows: '5em auto',
+    gridGap: '1em',
+    pointerEvents: 'none'
+  },
+
+  contentPanel: {
+    gridRowStart: 2,
+    gridColumnStart: 1,
+    display: 'grid',
+    gridTemplateColumns: '25em auto 25em',
+    gridTemplateRows: '1fr 3fr',
+    gridGap: '1em',
+    gridTemplateAreas: `
+      "L . R"
+      "L B R"
+    `
+  }
+}))
+
+
 const DEFAULT_I18N_NAMESPACE = 'web'
 
 const App = (props) => {
-  const { classes } = props
+  const classes = useStyles()
   const mapProps = { ...props, id: 'map' }
 
   const [showManagement, setManagement] = React.useState(false)
@@ -85,37 +114,4 @@ const App = (props) => {
   return showManagement ? management() : map()
 }
 
-App.propTypes = {
-  classes: PropTypes.object
-}
-
-const styles = {
-  overlay: {
-    position: 'fixed',
-    top: '1em',
-    left: '1em',
-    bottom: '1.5em',
-    right: '1em',
-    zIndex: 20,
-    display: 'grid',
-    gridTemplateColumns: 'auto',
-    gridTemplateRows: '5em auto',
-    gridGap: '1em',
-    pointerEvents: 'none'
-  },
-
-  contentPanel: {
-    gridRowStart: 2,
-    gridColumnStart: 1,
-    display: 'grid',
-    gridTemplateColumns: '25em auto 25em',
-    gridTemplateRows: '1fr 3fr',
-    gridGap: '1em',
-    gridTemplateAreas: `
-      "L . R"
-      "L B R"
-    `
-  }
-}
-
-export default withStyles(styles)(App)
+export default App
