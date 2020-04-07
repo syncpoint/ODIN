@@ -6,6 +6,7 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import Divider from '@material-ui/core/Divider'
+import Tooltip from './Tooltip.js'
 
 const useStyles = makeStyles((theme) => ({
   activityBar: {
@@ -39,9 +40,11 @@ const ActivityBar = props => {
         onClick={() => onActivitySelected(activity.id)}
         button
       >
-        <ListItemIcon className={iconClass}>
-          {activity.icon}
-        </ListItemIcon>
+        <Tooltip title={activity.tooltip} >
+          <ListItemIcon className={iconClass}>
+            {activity.icon}
+          </ListItemIcon>
+        </Tooltip>
       </ListItem>
     )
   }
@@ -54,9 +57,11 @@ const ActivityBar = props => {
         onClick={activity.action}
         button
       >
-        <ListItemIcon>
-          {activity.icon}
-        </ListItemIcon>
+        <Tooltip title={activity.tooltip} >
+          <ListItemIcon>
+            {activity.icon}
+          </ListItemIcon>
+        </Tooltip>
       </ListItem>
     )
   }

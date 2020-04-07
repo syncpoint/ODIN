@@ -4,6 +4,8 @@ import { makeStyles } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
 import Paper from '@material-ui/core/Paper'
 import IconButton from '@material-ui/core/IconButton'
+import Tooltip from './Tooltip.js'
+
 import {
   LockOutline,
   LockOpenVariantOutline,
@@ -67,6 +69,8 @@ const Body = props => {
 }
 
 const actions = [<LayersPlus/>, <LayersMinus/>, <ContentDuplicate/>, <ExportVariant/>]
+const tooltips = ["Add Layer","Delete Layer","Duplicat Layer","Share layer"]
+
 const layers = [
   {
     name: 'EST Force Laydown',
@@ -100,9 +104,11 @@ const LayerList = props => {
   const classes = useStyles()
 
   const buttons = () => actions.map((action, index) => (
-    <IconButton key={index} size='small'>
-      { action }
-    </IconButton>
+    <Tooltip title={tooltips[index]} > 
+      <IconButton key={index} size='small'>
+        { action }
+      </IconButton>
+    </Tooltip>
   ))
 
   const layer = (layer, index) => {
@@ -114,8 +120,12 @@ const LayerList = props => {
       <div key={index} className={classes.item}>
         <Body key={index}>{body}</Body>
         <div className={classes.itemRight}>
-          <IconButton size='small'>{lockIcon}</IconButton>
-          <IconButton size='small'>{visibleIcon}</IconButton>
+          <Tooltip title="Lock Layer" >
+            <IconButton size='small'>{lockIcon}</IconButton>
+          </Tooltip>
+          <Tooltip title="Toggle Visibility" >
+            <IconButton size='small'>{visibleIcon}</IconButton>
+          </Tooltip>
         </div>
       </div>
     )

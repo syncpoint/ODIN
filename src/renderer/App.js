@@ -68,6 +68,7 @@ const initialActivities = classes => [
     id: 'map',
     type: 'activity',
     icon: <MapIcon/>,
+    tooltip: 'Show Map/Pictures',
     panel: () => <Paper className={classes.toolsPanel} elevation={6}>Map/Pictures</Paper>
   },
   {
@@ -75,18 +76,21 @@ const initialActivities = classes => [
     type: 'activity',
     icon: <LayersTriple/>,
     panel: () => <LayerList/>,
+    tooltip: 'Show Layers',
     selected: true
   },
   {
     id: 'palette',
     type: 'activity',
     icon: <Category/>,
+    tooltip: 'Show Symbol Palette',
     panel: () => <Paper className={classes.toolsPanel} elevation={6}>Palette</Paper>
   },
   {
     id: 'tools',
     type: 'activity',
     icon: <PermDataSettingIcon/>,
+    tooltip: 'Show Tools',
     panel: () => <Paper className={classes.toolsPanel} elevation={6}>Measurement Tools</Paper>
   },
   {
@@ -96,12 +100,14 @@ const initialActivities = classes => [
     id: 'undo',
     type: 'action',
     icon: <Undo/>,
+    tooltip: 'Undo',
     action: () => console.log('UNDO')
   },
   {
     id: 'redo',
     type: 'action',
     icon: <Redo/>,
+    tooltip: 'Redo',
     action: () => console.log('REDO')
   },
   {
@@ -111,18 +117,21 @@ const initialActivities = classes => [
     id: 'cut',
     type: 'action',
     icon: <ContentCut/>,
+    tooltip: 'Cut',
     action: () => console.log('CUT')
   },
   {
     id: 'copy',
     type: 'action',
     icon: <ContentCopy/>,
+    tooltip: 'Copy',
     action: () => console.log('COPY')
   },
   {
     id: 'paste',
     type: 'action',
     icon: <ContentPaste/>,
+    tooltip: 'Paste',
     action: () => console.log('PASTE')
   }
 ]
