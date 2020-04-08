@@ -6,8 +6,7 @@ import Management from './components/Management'
 
 import { ipcRenderer, remote } from 'electron'
 import evented from './evented'
-
-import { applyLanguageSelection } from './i18n'
+import './i18n'
 
 const useStyles = makeStyles((/* theme */) => ({
   overlay: {
@@ -51,12 +50,6 @@ const App = (props) => {
     /*  Tell the main process that React has finished rendering of the App */
     setTimeout(() => ipcRenderer.send('IPC_APP_RENDERING_COMPLETED'), 0)
     ipcRenderer.on('IPC_SHOW_PROJECT_MANAGEMENT', () => setManagement(true))
-
-    /*  Changes the i18n settings whenever the user switches between supported languages */
-    const handleLanguageChanged = (_, i18nInfo) => {
-      applyLanguageSelection(i18nInfo)
-    }
-    ipcRenderer.on('IPC_LANGUAGE_CHANGED', handleLanguageChanged)
 
     /*
       Normally we need to return a cleanup function in order to remove listeners. Since
