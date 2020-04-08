@@ -12,6 +12,7 @@
     "builder:dir": "electron-builder --dir",
     "builder:mac": "electron-builder --mac",
     "builder:win": "electron-builder --win",
+    "builder:linux": "electron-builder --linux",
     "eslint": "eslint src/",
     "test": "electron-mocha --require @babel/register --require ./test/helpers.js --require ./test/dom.js --require ignore-styles --recursive",
     "spectron": "electron-mocha --require @babel/register --recursive spectron"
@@ -23,7 +24,10 @@
   "keywords": [
     "c2is"
   ],
-  "author": "Syncpoint GmbH",
+  "author": {
+    "name": "Syncpoint GmbH",
+    "email": "office@syncpoint.io"
+  },
   "license": "MIT",
   "engines": {
     "node": ">=12.0.0"
