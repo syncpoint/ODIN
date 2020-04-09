@@ -112,6 +112,7 @@ export const select = context => {
 
       // Explicitly add to selected feature collection if not already included.
       // This is necessary for box selection or any other interaction except select.
+      //
       if (!selectedFeatures.getArray().includes(feature)) selectedFeatures.push(feature)
     })
 
@@ -141,7 +142,7 @@ export const select = context => {
 
 /**
  * Lasso, aka box selection.
- * // TODO: should support adding selections (SHIFT+COMMAND+DRAG)
+ * TODO: should support adding to current selections (SHIFT+COMMAND+DRAG)
  */
 export const lasso = context => {
   const { sources } = context
@@ -159,7 +160,7 @@ export const lasso = context => {
 
     // Collect features intersecting extent.
     // Note: VectorSource.getFeaturesInExtent(extent) yields unexpected results.
-
+    //
     const features = []
     const extent = interaction.getGeometry().getExtent()
     Object.values(sources).forEach(source => {

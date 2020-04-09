@@ -131,9 +131,9 @@ export default map => {
   const selectAll = () => {
     const features = Object.values(context.sources)
       .reduce((acc, source) => acc.concat(source.getFeatures()), [])
+      .map(featureId)
 
-    selection.deselect()
-    selection.select(features.map(featureId))
+    selection.select(features)
   }
 
   ipcRenderer.on('IPC_EDIT_SELECT_ALL', selectAll)
