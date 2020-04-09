@@ -6,13 +6,13 @@ import * as ol from 'ol'
 import 'ol/ol.css'
 import { fromLonLat, toLonLat } from 'ol/proj'
 import { ScaleLine } from 'ol/control'
-import { Tile as TileLayer } from 'ol/layer'
-import { OSM } from 'ol/source'
+
 
 import evented from '../evented'
 import project from '../project'
 import coordinateFormat from '../../shared/coord-format'
 import layers from './layers'
+import basemap from './basemap'
 import './style/scalebar.css'
 import undo from '../undo'
 
@@ -47,7 +47,6 @@ const effect = props => () => {
 
   const map = new ol.Map({
     view,
-    layers: [new TileLayer({ source: new OSM() })],
     target: id,
     controls: [scaleLine]
   })
@@ -59,6 +58,11 @@ const effect = props => () => {
     // TODO: throttle?
     evented.emit('OSD_MESSAGE', { message: currentCoordinate, slot: 'C2' })
   })
+
+  /*
+    Handling the basemap layer is done using the basemap module.
+  */
+  basemap(map)
 
   // Delegate layer management.
   // Note: We don't directly expose complete Map API,
