@@ -3,7 +3,8 @@ import { click, primaryAction, platformModifierKeyOnly } from 'ol/events/conditi
 import style from './style/style'
 import undo from '../undo'
 import { updateFeatureGeometry } from './layers-commands'
-import { syncFeatures, geometryType } from './layers-util'
+import { syncFeatures, geometryType, featureId, featureById } from './layers-util'
+import selection from '../selection'
 
 const hitTolerance = 3
 
@@ -92,44 +93,46 @@ export const select = context => {
     multi: false
   })
 
-  // TODO: encapsulate `context.selectedFeatures` with mutators as selection
-
   // CAUTION: selectedFeatures - shared/mutable feature collection
   context.selectedFeatures = interaction.getFeatures()
 
-  context.selectFeature = feature => {
-    feature.set('selected', true)
-    const from = sources[geometryType(feature)]
-    move(from, selectionSource)(feature)
+  const updateOpacity = () => {
+    // Dim feature layers except selection layer:
+    const hasSelection = interaction.getFeatures().getLength() > 0
+    layers.forEach(layer => layer.setOpacity(hasSelection ? 0.35 : 1))
   }
 
-  context.deselectFeature = feature => {
-    feature.unset('selected')
-    feature.setStyle(null)
-    const to = sources[geometryType(feature)]
-    move(selectionSource, to)(feature)
-  }
+  selection.on('selected', uris => {
+    const selectedFeatures = interaction.getFeatures()
+    const lookup = featureById(Object.values(sources))
+    uris.map(lookup).forEach(feature => {
+      feature.set('selected', true)
+      const from = sources[geometryType(feature)]
+      move(from, selectionSource)(feature)
 
-  context.deselectAllFeatures = () => {
-    context.selectedFeatures.forEach(context.deselectFeature)
-    context.selectedFeatures.clear()
-  }
-
-  context.selectAllFeatures = () => {
-    Object.values(sources).forEach(source => {
-      source.getFeatures().forEach(feature => {
-        context.selectFeature(feature)
-        context.selectedFeatures.push(feature)
-      })
+      // Explicitly add to selected feature collection if not already included.
+      // This is necessary for box selection or any other interaction except select.
+      if (!selectedFeatures.getArray().includes(feature)) selectedFeatures.push(feature)
     })
-  }
 
+    updateOpacity()
+  })
+
+  selection.on('deselected', uris => {
+    const lookup = featureById([selectionSource])
+    uris.map(lookup).forEach(feature => {
+      feature.unset('selected')
+      feature.setStyle(null)
+      const to = sources[geometryType(feature)]
+      move(selectionSource, to)(feature)
+    })
+
+    updateOpacity()
+  })
 
   interaction.on('select', ({ selected, deselected }) => {
-    // Dim feature layers except selection layer:
-    layers.forEach(layer => layer.setOpacity(selected.length ? 0.35 : 1))
-    selected.forEach(context.selectFeature)
-    deselected.forEach(context.deselectFeature)
+    selection.select(selected.map(featureId))
+    selection.deselect(deselected.map(featureId))
   })
 
   return interaction
@@ -138,32 +141,34 @@ export const select = context => {
 
 /**
  * Lasso, aka box selection.
+ * // TODO: should support adding selections (SHIFT+COMMAND+DRAG)
  */
 export const lasso = context => {
-  const { selectedFeatures, sources, layers } = context
+  const { sources } = context
 
   const interaction = new DragBox({
     condition: platformModifierKeyOnly
   })
 
-  interaction.on('boxstart', context.deselectAllFeatures)
-
+  interaction.on('boxstart', () => selection.deselect())
   interaction.on('boxend', () => {
 
     // NOTE: Map rotation is not supported, yet.
     // See original source for implementation:
     // https://openlayers.org/en/latest/examples/box-selection.html
 
+    // Collect features intersecting extent.
+    // Note: VectorSource.getFeaturesInExtent(extent) yields unexpected results.
+
+    const features = []
     const extent = interaction.getGeometry().getExtent()
     Object.values(sources).forEach(source => {
       source.forEachFeatureIntersectingExtent(extent, feature => {
-        context.selectFeature(feature)
-        selectedFeatures.push(feature)
+        features.push(feature)
       })
     })
 
-    const opacity = selectedFeatures.getLength() > 0 ? 0.35 : 1
-    layers.forEach(layer => layer.setOpacity(opacity))
+    selection.select(features.map(featureId))
   })
 
   return interaction

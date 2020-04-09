@@ -10,8 +10,9 @@ import uuid from 'uuid-random'
 import { select, modify, translate, lasso } from './layers-interactions'
 import project from '../project'
 import style from './style/style'
-import { geometryType } from './layers-util'
+import { geometryType, featureId } from './layers-util'
 import disposable from '../../shared/disposable'
+import selection from '../selection'
 
 
 /**
@@ -128,8 +129,11 @@ export default map => {
   }
 
   const selectAll = () => {
-    context.deselectAllFeatures()
-    context.selectAllFeatures()
+    const features = Object.values(context.sources)
+      .reduce((acc, source) => acc.concat(source.getFeatures()), [])
+
+    selection.deselect()
+    selection.select(features.map(featureId))
   }
 
   ipcRenderer.on('IPC_EDIT_SELECT_ALL', selectAll)

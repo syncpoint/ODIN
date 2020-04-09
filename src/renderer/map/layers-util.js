@@ -33,3 +33,10 @@ export const geometryType = object => {
     default: return 'Polygon'
   }
 }
+
+export const featureById = ([head, ...tail]) => id => {
+  if (!head) return /* undefined */
+  return head.getFeatureById(id) || featureById(tail)(id)
+}
+
+export const featureId = feature => feature.getId()
