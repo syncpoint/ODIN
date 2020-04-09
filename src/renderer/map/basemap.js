@@ -11,7 +11,6 @@ let olMap = null
 const setBasemap = source => {
 
   const baseLayer = new TileLayer({ source: source })
-  const layers = olMap.getLayers()
 
   /*
     We need to verify if the basemap layer is already
@@ -22,13 +21,20 @@ const setBasemap = source => {
 
     Due to the lifecycle of the map and the project
     this may be done twice:
-      * at creation time (1)
-      * mount/unmout the map component (2)
+
+    When the map react component gets mounted for the first
+    time the constructor is called AND the project fires the
+    'OPEN' event.
+    We need to call 'fromPreferences()' in the constructor AND
+    on the project's 'open' event because when the map component
+    gets unmounted/remounted, the project stays open and will
+    not fire again.
 
     TODO: Verify if this affects performance and we need to
           add an additional check in order to skip this step
           if the source has not changed.
   */
+  const layers = olMap.getLayers()
   const rootLayer = layers.item(0)
   if (rootLayer && rootLayer instanceof TileLayer) {
     return olMap.getLayers().setAt(0, baseLayer)
