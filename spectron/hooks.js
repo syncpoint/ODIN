@@ -1,13 +1,16 @@
 import { Application } from 'spectron'
+import electron from 'electron'
 import path from 'path'
 
 module.exports = {
   async startApp () {
     const app = await new Application({
       startTimeout: 30000,
-      path: path.resolve(__dirname, '../node_modules/.bin/electron'),
+      path: electron,
       args: [path.join(__dirname, '..'), '--noDevServer']
     }).start()
+    //await app.browserWindow.focus();
+    await app.browserWindow.setAlwaysOnTop(true);
     return app
   },
 
