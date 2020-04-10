@@ -93,7 +93,8 @@ export const select = context => {
     multi: false
   })
 
-  // CAUTION: selectedFeatures - shared/mutable feature collection
+  // CAUTION: selectedFeatures - mutable feature collection,
+  // shared with modify and box select interactions.
   context.selectedFeatures = interaction.getFeatures()
 
   const updateOpacity = () => {
@@ -103,17 +104,11 @@ export const select = context => {
   }
 
   selection.on('selected', uris => {
-    const selectedFeatures = interaction.getFeatures()
     const lookup = featureById(Object.values(sources))
     uris.map(lookup).forEach(feature => {
       feature.set('selected', true)
       const from = sources[geometryType(feature)]
       move(from, selectionSource)(feature)
-
-      // Explicitly add to selected feature collection if not already included.
-      // This is necessary for box selection or any other interaction except select.
-      //
-      if (!selectedFeatures.getArray().includes(feature)) selectedFeatures.push(feature)
     })
 
     updateOpacity()
@@ -123,7 +118,7 @@ export const select = context => {
     const lookup = featureById([selectionSource])
     uris.map(lookup).forEach(feature => {
       feature.unset('selected')
-      feature.setStyle(null)
+      feature.setStyle(null) // release cached style, if any
       const to = sources[geometryType(feature)]
       move(selectionSource, to)(feature)
     })
@@ -141,19 +136,24 @@ export const select = context => {
 
 
 /**
- * Lasso, aka box selection.
+ * Box selection interaction.
  * TODO: should support adding to current selections (SHIFT+COMMAND+DRAG)
  */
-export const lasso = context => {
-  const { sources } = context
+export const boxSelect = context => {
+  const { sources, selectedFeatures } = context
 
+  // Note: DragBox is not a selecttion interaction per se.
+  // I.e. it does not manage selected features automatically.
   const interaction = new DragBox({
     condition: platformModifierKeyOnly
   })
 
-  interaction.on('boxstart', () => selection.deselect())
-  interaction.on('boxend', () => {
+  const boxstart = () => {
+    selectedFeatures.clear()
+    selection.deselect()
+  }
 
+  const boxend = () => {
     // NOTE: Map rotation is not supported, yet.
     // See original source for implementation:
     // https://openlayers.org/en/latest/examples/box-selection.html
@@ -165,12 +165,16 @@ export const lasso = context => {
     const extent = interaction.getGeometry().getExtent()
     Object.values(sources).forEach(source => {
       source.forEachFeatureIntersectingExtent(extent, feature => {
+        selectedFeatures.push(feature)
         features.push(feature)
       })
     })
 
     selection.select(features.map(featureId))
-  })
+  }
+
+  interaction.on('boxstart', boxstart)
+  interaction.on('boxend', boxend)
 
   return interaction
 }

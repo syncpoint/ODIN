@@ -7,7 +7,7 @@ import Collection from 'ol/Collection'
 import { ipcRenderer } from 'electron'
 import * as R from 'ramda'
 import uuid from 'uuid-random'
-import { select, modify, translate, lasso } from './layers-interactions'
+import { select, modify, translate, boxSelect } from './layers-interactions'
 import project from '../project'
 import style from './style/style'
 import { geometryType, featureId } from './layers-util'
@@ -87,7 +87,7 @@ const initialize = async (context, project) => {
   context.addInteraction(select(context))
   context.addInteraction(translate(context))
   context.addInteraction(modify(context))
-  context.addInteraction(lasso(context))
+  context.addInteraction(boxSelect(context))
 }
 
 const updateViewport = (context, project) => {
@@ -129,11 +129,13 @@ export default map => {
   }
 
   const selectAll = () => {
-    const features = Object.values(context.sources)
+    const { sources, selectedFeatures } = context
+    const features = Object.values(sources)
       .reduce((acc, source) => acc.concat(source.getFeatures()), [])
-      .map(featureId)
 
-    selection.select(features)
+    selectedFeatures.clear()
+    features.forEach(feature => selectedFeatures.push(feature))
+    selection.select(features.map(featureId))
   }
 
   ipcRenderer.on('IPC_EDIT_SELECT_ALL', selectAll)
