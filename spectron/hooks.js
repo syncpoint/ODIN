@@ -9,8 +9,7 @@ module.exports = {
       path: electron,
       args: [path.join(__dirname, '..'), '--noDevServer']
     }).start()
-    //await app.browserWindow.focus();
-    await app.browserWindow.setAlwaysOnTop(true);
+    await app.browserWindow.setAlwaysOnTop(true)
     return app
   },
 
