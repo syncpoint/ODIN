@@ -4,3 +4,4 @@ tile-providers.json
 dist/
 binaries/
 .idea/
+.env
