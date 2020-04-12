@@ -1,7 +1,8 @@
 import Management from '../../../src/renderer/components/Management'
 import React from 'react'
-import assert from 'assert'
 import sinon from 'sinon'
+import { expect } from 'chai'
+
 
 /* eslint-disable no-undef */
 describe('Management', () => {
@@ -9,13 +10,11 @@ describe('Management', () => {
   const wrapper = shallow(<Management currentProjectPath={''} onCloseClicked={clickCallback} />)
 
   it('verify project management components', () => {
-    assert(wrapper.find('projects'), true, 'no projects area')
-    assert(wrapper.find('projectList'), true, 'no project list')
-    assert(wrapper.find('projectActions'), true, 'no project actions')
-    assert(wrapper.find('details'), true, 'no project details')
-    assert(wrapper.find('preview'), true, 'no project preview')
-    assert(wrapper.find('projectSettings'), true, 'no projectSettings')
-    assert(wrapper.find('dangerousActions'), true, 'no project dangerousActions')
+    expect(wrapper.find('#projects')).to.have.lengthOf(1)
+    expect(wrapper.find('#importProject')).to.have.lengthOf(1)
+    expect(wrapper.find('#projectList')).to.have.lengthOf(1)
+    expect(wrapper.find('#projectActions')).to.have.lengthOf(1)
+    expect(wrapper.find('Details'), 'details').to.have.lengthOf(1)
   })
 
   it('verify back to map button is clicked', () => {
