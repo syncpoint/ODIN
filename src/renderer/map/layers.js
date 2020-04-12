@@ -1,19 +1,77 @@
 import fs from 'fs'
-import { fromLonLat } from 'ol/proj'
+import uuid from 'uuid-random'
+import * as R from 'ramda'
+import { ipcRenderer } from 'electron'
+
+import Collection from 'ol/Collection'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
 import { GeoJSON } from 'ol/format'
-import Collection from 'ol/Collection'
-import { ipcRenderer } from 'electron'
-import * as R from 'ramda'
-import uuid from 'uuid-random'
-import { select, modify, translate, boxSelect } from './layers-interactions'
-import project from '../project'
+import Feature from 'ol/Feature'
+import { fromLonLat } from 'ol/proj'
+import { Select, Modify, Translate, DragBox } from 'ol/interaction'
+import { click, primaryAction, platformModifierKeyOnly } from 'ol/events/condition'
+
+import { noop } from '../../shared/combinators'
 import style from './style/style'
-import { geometryType, featureId } from './layers-util'
-import disposable from '../../shared/disposable'
+import project from '../project'
+import undo from '../undo'
 import selection from '../selection'
 
+
+// --
+// SECTION: Module-global resources maintained for open project.
+
+/**
+ * layers :: string ~> ol/layer/Vector
+ * Geometry-specific feature vector layers with underlying sources.
+ */
+let layers = {}
+
+/**
+ * features :: [ol/Collection<ol/Feature>]
+ * Feature collections per input layer.
+ */
+let features = []
+
+/**
+ * Vector source for dedicated selection layer.
+ * NOTE: Created once; re-used throughout renderer lifetime.
+ */
+const selectionSource = new VectorSource()
+
+/**
+ * geometryType :: (ol/Feature | ol/geom/Geometry) -> string
+ * Map feature or feature geometry to rendered layer type.
+ */
+const geometryType = object => {
+  const type = object instanceof Feature
+    ? object.getGeometry().getType()
+    : object.getType()
+
+  switch (type) {
+    case 'Point':
+    case 'LineString':
+    case 'Polygon': return type
+    default: return 'Polygon'
+  }
+}
+
+/**
+ * sources :: () -> [ol/source/Vector]
+ * Underlying layer sources.
+ */
+const sources = () => Object.values(layers).map(layer => layer.getSource())
+
+/**
+ * geometrySource :: (ol/Feature | ol/geom/Geometry) -> ol/source/Vector
+ * Source for given feature or feature geometry.
+ */
+const geometrySource = object => layers[geometryType(object)].getSource()
+
+
+// --
+// SECTION: Setup layers from project.
 
 /**
  * GeoJSON, by definitions, comes in WGS84.
@@ -23,133 +81,363 @@ const geoJSON = new GeoJSON({
   featureProjection: 'EPSG:3857' // Web-Mercator
 })
 
+/**
+ * Write feature layer back to fs.
+ * NOTE: Features are expected to supply a 'writeLayer' function,
+ * which writes the feature along with its originating input layer
+ * back to disk.
+ */
+const writeFeatures = features => {
+  const writeLayer = feature => feature.get('writeLayer')
+  const asArray = features => features instanceof Collection
+    ? features.getArray()
+    : features
+
+  const fns = asArray(features).map(writeLayer)
+  R.uniq(fns).forEach(fn => fn())
+}
 
 
-const loadLayers = async (context, filenames) => {
+/**
+ * loadFeatures :: string -> Promise(ol/Collection)
+ * Load input layers as feature collection.
+ */
+const loadFeatures = async filename => {
+  const layerId = uuid()
+  const contents = await fs.promises.readFile(filename, 'utf8')
 
-  // inputLayers :: [Collection<Feature>]
-  const inputLayers = await Promise.all(filenames.map(async filename => {
-    const layerId = uuid()
-    const contents = await fs.promises.readFile(filename, 'utf8')
-    const features = new Collection(geoJSON.readFeatures(contents))
-    features.set('uri', `layer:${layerId}`)
-    features.set('filename', filename)
+  // Use mutable ol/Collection to write current layer snapshot to file.
+  const features = new Collection(geoJSON.readFeatures(contents))
+  features.set('uri', `layer:${layerId}`)
+  features.set('filename', filename)
 
-    const sync = () => {
-      // Filter feature properties not to be written:
-      // Feature id is excluded from clone by default.
-      const clones = features.getArray().map(feature => {
-        const clone = feature.clone()
-        clone.unset('selected')
-        return clone
-      })
+  // Write current feature collection snapshot to disk.
+  const writeLayer = () => {
 
-      fs.writeFileSync(filename, geoJSON.writeFeatures(clones))
-    }
-
-    features.forEach(feature => {
-      feature.setId(`feature:${layerId}/${uuid()}`)
-      feature.set('sync', sync)
+    // Filter internal feature properties.
+    // Feature id is excluded from clone by default.
+    const clones = features.getArray().map(feature => {
+      const clone = feature.clone()
+      clone.unset('selected')
+      return clone
     })
 
-    return features
-  }))
-
-
-  // Distribute features to sets depending on feature geometry type:
-  // Layer order: polygons first, points last:
-  const order = ['Polygon', 'LineString', 'Point']
-  const features = inputLayers.map(xs => xs.getArray()).flat()
-  const featureSets = R.groupBy(geometryType)(features)
-
-  // context.sources :: Geometry#type -> VectorSource
-  context.sources = order.reduce((acc, type) => {
-    acc[type] = new VectorSource({ features: featureSets[type] })
-    return acc
-  }, {})
-
-  context.layers = ['Polygon', 'LineString', 'Point']
-    .map(type => new VectorLayer({ source: context.sources[type], style }))
-}
-
-
-const initialize = async (context, project) => {
-  await loadLayers(context, project.layerFiles())
-  context.layers.forEach(context.addLayer)
-
-  // Dedicated layer for selected features:
-  context.selectionSource = new VectorSource()
-  context.addLayer(new VectorLayer({
-    style,
-    source: context.selectionSource
-  }))
-
-  context.addInteraction(select(context))
-  context.addInteraction(translate(context))
-  context.addInteraction(modify(context))
-  context.addInteraction(boxSelect(context))
-}
-
-const updateViewport = (context, project) => {
-  const { center, zoom } = project.preferences().viewport
-  context.map.setCenter(fromLonLat(center))
-  context.map.setZoom(zoom)
-}
-
-
-export default map => {
-
-  // This baby carries a ton of mutable state:
-  // - map - interface to map
-  // - sources :: String -> VectorSource - feature source per geometry type
-  // - layers :: [VectorLayer] - ordered list of feature layers per geometry type
-  // - selectionSource :: VectorSource - dedicated source for selected features
-  // - selectedFeatures - collection of selected features
-
-  let disposables = disposable.of()
-  const dispose = () => {
-    disposables.dispose()
-    disposables = disposable.of()
+    fs.writeFileSync(filename, geoJSON.writeFeatures(clones))
   }
 
-  const context = {
-    map,
-
-    addInteraction: interaction => {
-      map.addInteraction(interaction)
-      disposables.addDisposable(() => map.removeInteraction(interaction))
-      return interaction
-    },
-
-    addLayer: layer => {
-      map.addLayer(layer)
-      disposables.addDisposable(() => map.removeLayer(layer))
-      return layer
-    }
-  }
-
-  const selectAll = () => {
-    const { sources, selectedFeatures } = context
-    const features = Object.values(sources)
-      .reduce((acc, source) => acc.concat(source.getFeatures()), [])
-
-    selectedFeatures.clear()
-    features.forEach(feature => selectedFeatures.push(feature))
-    selection.select(features.map(featureId))
-  }
-
-  ipcRenderer.on('IPC_EDIT_SELECT_ALL', selectAll)
-  disposables.addDisposable(() => ipcRenderer.off('IPC_EDIT_SELECT_ALL', selectAll))
-
-  project.register(event => {
-    switch (event) {
-      case 'open':
-        initialize(context, project)
-        updateViewport(context, project)
-        break
-      case 'close':
-        dispose()
-        break
-    }
+  features.forEach(feature => {
+    feature.setId(`feature:${layerId}/${uuid()}`)
+    feature.set('writeLayer', writeLayer)
   })
+
+  return features
 }
+
+
+/**
+ * createLayers :: () -> (string ~> ol/layer/Vector)
+ *
+ * Setup geometry-specific layers.
+ * Layer sources are downstream to input feature collections
+ * and are automatically synced whenever input collection is updated.
+ */
+const createLayers = () => {
+  const entries = ['Polygon', 'LineString', 'Point']
+    .map(type => [type, new VectorSource({})])
+    .map(([type, source]) => [type, new VectorLayer({ source, style })])
+
+
+  // Update layer opacity depending on selection.
+
+  const updateOpacity = () => {
+    const hasSelection = selection.selected().length
+    entries.forEach(([_, layer]) => layer.setOpacity(hasSelection ? 0.35 : 1))
+  }
+
+  selection.on('selected', updateOpacity)
+  selection.on('deselected', updateOpacity)
+
+  return Object.fromEntries(entries)
+}
+
+
+/**
+ * Populate layers and setup sync feature collection -> layer source.
+ */
+const linkLayers = features => {
+  const onremove = ({ element }) => geometrySource(element).removeFeature(element)
+  const onadd = ({ element }) => geometrySource(element).addFeature(element)
+
+  features.forEach(feature => geometrySource(feature).addFeature(feature))
+  features.on('add', onadd)
+  features.on('remove', onremove)
+}
+
+// --
+// SECTION: Selection handling.
+// Manage collection of selected features and feature selection state.
+// It is necessary to manage two levels independently, because some
+// interactions have to update selected feature collection explicitly
+// (contrary to select interaction).
+
+const selectedFeatures = new Collection()
+
+/**
+ * select :: [ol/Feature] => unit
+ * Update selection without updating collection.
+ */
+const select = features => selection.select(features.map(featureId))
+
+/**
+ * deselect :: [Feature] => unit
+ * Update selection without updating collection.
+ */
+const deselect = features => selection.deselect(features.map(featureId))
+
+/**
+ * addSelection :: [Feature] => unit
+ * Update selection and add features to collection.
+ */
+const addSelection = features => {
+  select(features)
+  features.forEach(selectedFeatures.push.bind(selectedFeatures))
+}
+
+/**
+ * clearSelection :: () => unit
+ * Update selection and add clear collection.
+ */
+const clearSelection = () => {
+  selection.deselect()
+  selectedFeatures.clear()
+}
+
+/**
+ * Move selected features between feature layer and selection layer.
+ */
+;(() => {
+  const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
+
+  selection.on('selected', uris => {
+    const lookup = featureById(sources())
+    uris.map(lookup).forEach(feature => {
+      feature.set('selected', true)
+      move(geometrySource(feature), selectionSource)(feature)
+    })
+  })
+
+  selection.on('deselected', uris => {
+    const lookup = featureById([selectionSource])
+    uris.map(lookup).forEach(feature => {
+      feature.unset('selected')
+      feature.setStyle(null) // release cached style, if any
+      move(selectionSource, geometrySource(feature))(feature)
+    })
+  })
+})()
+
+
+// --
+// SECTION: Commands (with undo/redo support).
+
+const updateFeatureGeometry = (initial, current) => {
+
+  return {
+    inverse: () => updateFeatureGeometry(current, initial),
+    apply: () => {
+      const features = Object.entries(initial).reduce((acc, [id, geometry]) => {
+        const source = geometrySource(geometry)
+        const feature = selectionSource.getFeatureById(id) || source.getFeatureById(id)
+        feature.setGeometry(geometry)
+        return acc.concat(feature)
+      }, [])
+
+      // Write features/layers back to disk:
+      writeFeatures(features)
+    }
+  }
+}
+
+
+// --
+// SECTION: Interactions.
+
+const hitTolerance = 3
+const noAltKey = ({ originalEvent }) => originalEvent.altKey !== true
+const noShiftKey = ({ originalEvent }) => originalEvent.shiftKey !== true
+const conjunction = (...ps) => v => ps.reduce((a, b) => a(v) && b(v))
+const featureId = feature => feature.getId()
+
+const featureById = ([head, ...tail]) => id => head
+  ? head.getFeatureById(id) || featureById(tail)(id)
+  : null
+
+const cloneGeometries = features => features.getArray().reduce((acc, feature) => {
+  acc[feature.getId()] = feature.getGeometry().clone()
+  return acc
+}, {})
+
+
+/**
+ *
+ */
+const createSelect = () => {
+
+  const interaction = new Select({
+    hitTolerance,
+    layers: Object.values(layers),
+    features: selectedFeatures,
+    style,
+    condition: conjunction(click, noAltKey),
+    multi: false // don't select all features under cursor at once.
+  })
+
+  interaction.on('select', ({ selected, deselected }) => {
+    select(selected)
+    deselect(deselected)
+  })
+
+  return interaction
+}
+
+
+/**
+ * Modify interaction.
+ */
+const createModify = () => {
+  let initial = {}
+
+  const interaction = new Modify({
+    hitTolerance,
+    features: selectedFeatures,
+    condition: conjunction(primaryAction, noShiftKey)
+  })
+
+  interaction.on('modifystart', ({ features }) => {
+    initial = cloneGeometries(features)
+  })
+
+  interaction.on('modifyend', ({ features }) => {
+    const current = cloneGeometries(features)
+    const command = updateFeatureGeometry(initial, current)
+    undo.push(command)
+    writeFeatures(features)
+  })
+
+  return interaction
+}
+
+
+/**
+ * Translate, i.e. move feature(s) interaction.
+ */
+const createTranslate = () => {
+  let initial = {}
+
+  const interaction = new Translate({
+    hitTolerance,
+    features: selectedFeatures
+  })
+
+  interaction.on('translatestart', ({ features }) => {
+    initial = cloneGeometries(features)
+  })
+
+  interaction.on('translateend', ({ features }) => {
+    const current = cloneGeometries(features)
+    const command = updateFeatureGeometry(initial, current)
+    undo.push(command)
+    writeFeatures(features)
+  })
+
+  return interaction
+}
+
+
+/**
+ * Box select interaction.
+ */
+const createBoxSelect = () => {
+
+  // Note: DragBox is not a selecttion interaction per se.
+  // I.e. it does not manage selected features automatically.
+  const interaction = new DragBox({
+    condition: platformModifierKeyOnly
+  })
+
+  interaction.on('boxend', () => {
+
+    // NOTE: Map rotation is not supported, yet.
+    // See original source for implementation:
+    // https://openlayers.org/en/latest/examples/box-selection.html
+
+    // Collect features intersecting extent.
+    // Note: VectorSource.getFeaturesInExtent(extent) yields unexpected results.
+
+    const features = []
+    const extent = interaction.getGeometry().getExtent()
+    sources().forEach(source => {
+      source.forEachFeatureIntersectingExtent(extent, feature => {
+        features.push(feature)
+      })
+    })
+
+    addSelection(features)
+  })
+
+  return interaction
+}
+
+
+// --
+// SECTION: IPC hooks.
+
+ipcRenderer.on('IPC_EDIT_SELECT_ALL', () => {
+  clearSelection()
+  const features = sources().reduce((acc, source) => acc.concat(source.getFeatures()), [])
+  addSelection(features)
+})
+
+
+// --
+// SECTION: Handle project events.
+
+const projectOpened = async map => {
+
+  // Set viewport.
+  const { center, zoom } = project.preferences().viewport
+  map.setCenter(fromLonLat(center))
+  map.setZoom(zoom)
+
+  layers = createLayers()
+  const filenames = project.layerFiles()
+  features = await Promise.all(filenames.map(loadFeatures))
+  features.forEach(linkLayers)
+
+  Object.values(layers).forEach(map.addLayer)
+
+  // Selection source and layer.
+  const selectionLayer = new VectorLayer({ style, source: selectionSource })
+  map.addLayer(selectionLayer)
+
+  map.addInteraction(createSelect())
+  map.addInteraction(createModify())
+  map.addInteraction(createTranslate())
+  map.addInteraction(createBoxSelect())
+}
+
+const projectClosed = map => {
+  clearSelection()
+  undo.clear()
+  map.dispose()
+  layers = {}
+  features = []
+}
+
+const projectEventHandlers = {
+  open: projectOpened,
+  close: projectClosed
+}
+
+export default map =>
+  project.register(event => (projectEventHandlers[event] || noop)(map))
