@@ -1,3 +1,8 @@
+
+const onclick = fn => (_, browserWindow) => {
+  if (browserWindow) fn(browserWindow)
+}
+
 const menu = i18n => {
   const m = {
     label: i18n.t('edit.name'),
@@ -5,18 +10,18 @@ const menu = i18n => {
       {
         label: i18n.t('edit.undo'),
         accelerator: 'CmdOrCtrl+Z',
-        click: (_, browserWindow) => {
+        click: onclick(browserWindow => {
           browserWindow.webContents.undo()
-          if (browserWindow) browserWindow.send('IPC_EDIT_UNDO')
-        }
+          browserWindow.send('IPC_EDIT_UNDO')
+        })
       },
       {
         label: i18n.t('edit.redo'),
         accelerator: 'CmdOrCtrl+Shift+Z',
-        click: (_, browserWindow) => {
+        click: onclick(browserWindow => {
           browserWindow.webContents.redo()
-          if (browserWindow) browserWindow.send('IPC_EDIT_REDO')
-        }
+          browserWindow.send('IPC_EDIT_REDO')
+        })
       },
       { type: 'separator' },
       {
@@ -37,11 +42,10 @@ const menu = i18n => {
       {
         label: i18n.t('edit.selectAll'),
         accelerator: 'CmdOrCtrl+A',
-        click: (_, browserWindow) => {
-          if (!browserWindow) return
+        click: onclick(browserWindow => {
           browserWindow.webContents.selectAll()
           browserWindow.send('IPC_EDIT_SELECT_ALL')
-        }
+        })
       }
 
     // darwin: automatically added:
