@@ -12,7 +12,7 @@ import { fromLonLat } from 'ol/proj'
 import { Select, Modify, Translate, DragBox } from 'ol/interaction'
 import { click, primaryAction, platformModifierKeyOnly } from 'ol/events/condition'
 
-import { noop } from '../../shared/combinators'
+import { noop, uniq, K } from '../../shared/combinators'
 import style from './style/style'
 import project from '../project'
 import undo from '../undo'
@@ -107,12 +107,6 @@ const writeFeatures = features => {
   const asArray = features => features instanceof Collection
     ? features.getArray()
     : features
-
-  const layerUri = feature => {
-    const featureId = feature.getId()
-    const layerId = featureId.match(/feature:(.*)\/.*/)[1]
-    return `layer:${layerId}`
-  }
 
   R.uniq(asArray(features).map(layerUri))
     .map(uri => featureCollections[uri])
@@ -246,20 +240,61 @@ const clearSelection = () => {
 // --
 // SECTION: Commands (with undo/redo support).
 
-const updateFeatureGeometry = (initial, current) => {
+const updateGeometryCommand = (initial, current) => ({
+  inverse: () => updateGeometryCommand(current, initial),
+  apply: () => {
+    const features = Object.entries(initial).reduce((acc, [id, geometry]) => {
+      const source = geometrySource(geometry)
+      const feature = selectionSource.getFeatureById(id) || source.getFeatureById(id)
+      feature.setGeometry(geometry)
+      return acc.concat(feature)
+    }, [])
+
+    // Write features/layers back to disk:
+    writeFeatures(features)
+  }
+})
+
+const insertFeaturesCommand = features => {
 
   return {
-    inverse: () => updateFeatureGeometry(current, initial),
+    inverse: () => deleteFeaturesCommand(Object.keys(features)),
     apply: () => {
-      const features = Object.entries(initial).reduce((acc, [id, geometry]) => {
-        const source = geometrySource(geometry)
-        const feature = selectionSource.getFeatureById(id) || source.getFeatureById(id)
-        feature.setGeometry(geometry)
-        return acc.concat(feature)
-      }, [])
+      const setFeatureId = ([id, feature]) => K(feature)(feature => feature.setId(id))
+      const pushFeature = feature => featureCollections[layerUri(feature)].push(feature)
+      Object.entries(features).map(setFeatureId).forEach(pushFeature)
 
-      // Write features/layers back to disk:
-      writeFeatures(features)
+      Object.keys(features)
+        .map(featureId => featureId.match(/feature:(.*)\/.*/)[1])
+        .map(layerId => `layer:${layerId}`)
+        .filter(uniq)
+        .map(layerUri => featureCollections[layerUri])
+        .forEach(features => writeLayer(features))
+    }
+  }
+}
+
+const deleteFeaturesCommand = featureIds => {
+
+  // Collect state to revert effect.
+  const setClone = feature => acc => (acc[feature.getId()] = feature.clone())
+  const clones = featureIds
+    .map(featureById(sources()))
+    .reduce((acc, feature) => K(acc)(setClone(feature)), {})
+
+  return {
+    inverse: () => insertFeaturesCommand(clones),
+    apply: () => {
+      const removeFeature = feature => featureCollections[layerUri(feature)].remove(feature)
+      featureIds.map(featureById(sources())).forEach(removeFeature)
+
+      // FIXME: redundant (insertFeaturesCommand.apply)
+      featureIds
+        .map(featureId => featureId.match(/feature:(.*)\/.*/)[1])
+        .map(layerId => `layer:${layerId}`)
+        .filter(uniq)
+        .map(layerUri => featureCollections[layerUri])
+        .forEach(features => writeLayer(features))
     }
   }
 }
@@ -277,6 +312,12 @@ const featureId = feature => feature.getId()
 const featureById = ([head, ...tail]) => id => head
   ? head.getFeatureById(id) || featureById(tail)(id)
   : null
+
+const layerUri = feature => {
+  const featureId = feature.getId()
+  const layerId = featureId.match(/feature:(.*)\/.*/)[1]
+  return `layer:${layerId}`
+}
 
 const cloneGeometries = features => features.getArray().reduce((acc, feature) => {
   acc[feature.getId()] = feature.getGeometry().clone()
@@ -325,7 +366,7 @@ const createModify = () => {
 
   interaction.on('modifyend', ({ features }) => {
     const current = cloneGeometries(features)
-    const command = updateFeatureGeometry(initial, current)
+    const command = updateGeometryCommand(initial, current)
     undo.push(command)
     writeFeatures(features)
   })
@@ -351,7 +392,7 @@ const createTranslate = () => {
 
   interaction.on('translateend', ({ features }) => {
     const current = cloneGeometries(features)
-    const command = updateFeatureGeometry(initial, current)
+    const command = updateGeometryCommand(initial, current)
     undo.push(command)
     writeFeatures(features)
   })
@@ -404,6 +445,14 @@ ipcRenderer.on('IPC_EDIT_SELECT_ALL', () => {
   addSelection(features)
 })
 
+ipcRenderer.on('IPC_EDIT_DELETE', () => {
+  const featureIds = selection.selected().filter(s => s.startsWith('feature:'))
+  clearSelection()
+
+  const command = deleteFeaturesCommand(featureIds)
+  command.apply()
+  undo.push(command.inverse())
+})
 
 // --
 // SECTION: Handle project events.
