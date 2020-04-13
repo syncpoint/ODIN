@@ -37,7 +37,11 @@ const menu = i18n => {
         role: 'pasteandmatchstyle', label: i18n.t('edit.pasteAndMatchStyle')
       },
       {
-        role: 'delete', label: i18n.t('edit.delete')
+        label: i18n.t('edit.delete'),
+        click: onclick(browserWindow => {
+          browserWindow.webContents.delete()
+          browserWindow.send('IPC_EDIT_DELETE')
+        })
       },
       {
         label: i18n.t('edit.selectAll'),

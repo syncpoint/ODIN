@@ -29,10 +29,10 @@ import selection from '../selection'
 let layers = {}
 
 /**
- * features :: [ol/Collection<ol/Feature>]
- * Feature collections per input layer.
+ * featureCollections :: string ~> [ol/Collection<ol/Feature>]
+ * Feature collections per input layer with layer URI as key.
  */
-let features = []
+let featureCollections = {}
 
 /**
  * Vector source for dedicated selection layer.
@@ -82,19 +82,41 @@ const geoJSON = new GeoJSON({
 })
 
 /**
- * Write feature layer back to fs.
- * NOTE: Features are expected to supply a 'writeLayer' function,
- * which writes the feature along with its originating input layer
- * back to disk.
+ * writeLayer :: ol/Collection<ol/Feature> -> unit
+ * Write originating input feature collection back to fs.
+ */
+const writeLayer = features => {
+
+  // Filter internal feature properties.
+  // Feature id is excluded from clone by default.
+  const clones = features.getArray().map(feature => {
+    const clone = feature.clone()
+    clone.unset('selected')
+    return clone
+  })
+
+  const filename = features.get('filename')
+  fs.writeFileSync(filename, geoJSON.writeFeatures(clones))
+}
+
+/**
+ * writeFeatures :: (ol/Collection<ol/Feature> | [ol/Feature]) -> unit
+ * Write feature array or colleciton back to fs.
  */
 const writeFeatures = features => {
-  const writeLayer = feature => feature.get('writeLayer')
   const asArray = features => features instanceof Collection
     ? features.getArray()
     : features
 
-  const fns = asArray(features).map(writeLayer)
-  R.uniq(fns).forEach(fn => fn())
+  const layerUri = feature => {
+    const featureId = feature.getId()
+    const layerId = featureId.match(/feature:(.*)\/.*/)[1]
+    return `layer:${layerId}`
+  }
+
+  R.uniq(asArray(features).map(layerUri))
+    .map(uri => featureCollections[uri])
+    .forEach(writeLayer)
 }
 
 
@@ -108,29 +130,13 @@ const loadFeatures = async filename => {
 
   // Use mutable ol/Collection to write current layer snapshot to file.
   const features = new Collection(geoJSON.readFeatures(contents))
-  features.set('uri', `layer:${layerId}`)
   features.set('filename', filename)
-
-  // Write current feature collection snapshot to disk.
-  const writeLayer = () => {
-
-    // Filter internal feature properties.
-    // Feature id is excluded from clone by default.
-    const clones = features.getArray().map(feature => {
-      const clone = feature.clone()
-      clone.unset('selected')
-      return clone
-    })
-
-    fs.writeFileSync(filename, geoJSON.writeFeatures(clones))
-  }
 
   features.forEach(feature => {
     feature.setId(`feature:${layerId}/${uuid()}`)
-    feature.set('writeLayer', writeLayer)
   })
 
-  return features
+  return [`layer:${layerId}`, features]
 }
 
 
@@ -411,8 +417,9 @@ const projectOpened = async map => {
 
   layers = createLayers()
   const filenames = project.layerFiles()
-  features = await Promise.all(filenames.map(loadFeatures))
-  features.forEach(linkLayers)
+  const featureCollectionEntries = await Promise.all(filenames.map(loadFeatures))
+  featureCollections = Object.fromEntries(featureCollectionEntries)
+  Object.values(featureCollections).forEach(linkLayers)
 
   Object.values(layers).forEach(map.addLayer)
 
@@ -421,8 +428,8 @@ const projectOpened = async map => {
   map.addLayer(selectionLayer)
 
   map.addInteraction(createSelect())
-  map.addInteraction(createModify())
   map.addInteraction(createTranslate())
+  map.addInteraction(createModify())
   map.addInteraction(createBoxSelect())
 }
 
@@ -431,7 +438,7 @@ const projectClosed = map => {
   undo.clear()
   map.dispose()
   layers = {}
-  features = []
+  featureCollections = {}
 }
 
 const projectEventHandlers = {
