@@ -2,6 +2,46 @@ import Feature from 'ol/Feature'
 import LineString from 'ol/geom/LineString'
 import { getCenter, getWidth } from 'ol/extent'
 
+const min = '00000'
+
+/**
+ * creates a MGRS String
+ * @param {String} xGZD xGZD Zone 01-60
+ * @param {String} ySegment band A-Z
+ * @param {String} e100k easting for 100km segments A-Z omitting I and O
+ * @param {String} n100k Northing for 100km segments A-V omitting I and O
+ * @param {Number} x 0-100000 100000 changes 100km segment
+ * @param {Number} y 0-100000 100000 changes 100km segment
+ */
+export const buildMgrsString = (xGZD, ySegment, e100k, n100k, x = 0, y = 0) => {
+  if (x < 100000 && y < 100000) {
+    return `${xGZD}${ySegment}${e100k}${n100k}${fromatDetailLevel(x)}${fromatDetailLevel(y)}`
+  } else if (x >= 100000) {
+    const newE100k = n100k === 'Z' ? 'A' : getNext(e100k)
+    return `${xGZD}${ySegment}${newE100k}${n100k}${fromatDetailLevel(0)}${fromatDetailLevel(y)}`
+  } else if (y >= 100000) {
+    const newN100k = n100k === 'V' ? 'A' : getNext(n100k)
+    return `${xGZD}${ySegment}${e100k}${newN100k}${fromatDetailLevel(x)}${fromatDetailLevel(0)}`
+  }
+}
+
+const getNext = (band) => {
+  let segment = band
+  if (isNaN(segment)) {
+    segment = Number(band.charCodeAt(0))
+  }
+  let newBand = String.fromCharCode(segment + 1)
+  if (newBand === 'O' || newBand === 'I') {
+    newBand = String.fromCharCode(segment + 2)
+  }
+  return newBand
+}
+
+export const fromatDetailLevel = (number) => {
+  if (min.length >= number.toString().length) {
+    return min.substring(0, min.length - number.toString().length) + number.toString()
+  }
+}
 export const createLine = (startPoint, endPoint, zIndex, text, wrapBack) => {
   if (wrapBack) {
     startPoint[0] = wrapBack(startPoint[0])
