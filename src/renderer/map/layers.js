@@ -39,6 +39,18 @@ const geometryType = object => {
   }
 }
 
+/**
+ * layerUri :: (ol/Feature | string) -> string
+ * Map feature id (from feature or feature URI) to URI of containing layer.
+ */
+const layerUri = featureOrUri => {
+  const id = (featureOrUri instanceof Feature)
+    ? featureOrUri.getId()
+    : featureOrUri
+
+  const layerId = id.match(/feature:(.*)\/.*/)[1]
+  return `layer:${layerId}`
+}
 
 
 // --
@@ -71,12 +83,17 @@ const sources = () => Object.values(layers).map(layer => layer.getSource())
 const geometrySource = object => layers[geometryType(object)].getSource()
 
 /**
- * featureById :: [ol/VectorSource] -> string -> ol/Feature
+ * featureById :: string -> ol/Feature
  */
-const featureById = ([head, ...tail]) => id => head
-  ? head.getFeatureById(id) || featureById(tail)(id)
-  : null
+const featureById = id => {
+  // lookup :: [ol/VectorSource] -> ol/Feature
+  const lookup = ([head, ...tail]) => head
+    ? head.getFeatureById(id) || lookup(tail)
+    : null
+  return lookup([...sources(), selectionSource])
+}
 
+const featuresById = ids => ids.map(featureById)
 
 // TODO: EXTRACT. DEPENDS ON sources/layers
 
@@ -117,11 +134,11 @@ const writeFeatureCollection = layerUri => {
 }
 
 /**
- * writeFeatureCollections :: (ol/Collection<ol/Feature> | [ol/Feature]) -> unit
+ * writeFeatureCollections :: (ol/Collection<ol/Feature> | [ol/Feature] | [string]) -> unit
  * Write underlying collections for features to fs.
  */
-const writeFeatures = features =>
-  collectionArray(features)
+const writeFeatures = featuresOrUris =>
+  collectionArray(featuresOrUris)
     .map(layerUri)
     .filter(uniq)
     .forEach(writeFeatureCollection)
@@ -235,17 +252,15 @@ const clearSelection = () => {
 ;(() => {
   const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
 
-  selection.on('selected', uris => {
-    const lookup = featureById(sources())
-    uris.map(lookup).forEach(feature => {
+  selection.on('selected', ids => {
+    featuresById(ids).forEach(feature => {
       feature.set('selected', true)
       move(geometrySource(feature), selectionSource)(feature)
     })
   })
 
-  selection.on('deselected', uris => {
-    const lookup = featureById([selectionSource])
-    uris.map(lookup).forEach(feature => {
+  selection.on('deselected', ids => {
+    featuresById(ids).forEach(feature => {
       feature.unset('selected')
       feature.setStyle(null) // release cached style, if any
       move(selectionSource, geometrySource(feature))(feature)
@@ -260,12 +275,14 @@ const clearSelection = () => {
 const updateGeometryCommand = (initial, current) => ({
   inverse: () => updateGeometryCommand(current, initial),
   apply: () => {
-    const features = Object.entries(initial).reduce((acc, [id, geometry]) => {
-      const source = geometrySource(geometry)
-      const feature = selectionSource.getFeatureById(id) || source.getFeatureById(id)
+    const updateGeometry = ([feature, geometry]) => {
       feature.setGeometry(geometry)
-      return acc.concat(feature)
-    }, [])
+      return feature
+    }
+
+    const features = Object.entries(initial)
+      .map(([id, geometry]) => [featureById(id), geometry])
+      .map(updateGeometry)
 
     // Write features/layers back to disk:
     writeFeatures(features)
@@ -277,12 +294,7 @@ const insertFeaturesCommand = features => ({
   apply: () => {
     const setFeatureId = ([id, feature]) => K(feature)(feature => feature.setId(id))
     Object.entries(features).map(setFeatureId).forEach(pushFeature)
-
-    Object.keys(features)
-      .map(featureId => featureId.match(/feature:(.*)\/.*/)[1])
-      .map(layerId => `layer:${layerId}`)
-      .filter(uniq)
-      .forEach(writeFeatureCollection)
+    writeFeatures(Object.keys(features))
   }
 })
 
@@ -290,21 +302,14 @@ const deleteFeaturesCommand = featureIds => {
 
   // Collect state to revert effect.
   const setClone = feature => acc => (acc[feature.getId()] = feature.clone())
-  const clones = featureIds
-    .map(featureById(sources()))
+  const clones = featuresById(featureIds)
     .reduce((acc, feature) => K(acc)(setClone(feature)), {})
 
   return {
     inverse: () => insertFeaturesCommand(clones),
     apply: () => {
-      featureIds.map(featureById(sources())).forEach(removeFeature)
-
-      // FIXME: redundant (insertFeaturesCommand.apply)
-      featureIds
-        .map(featureId => featureId.match(/feature:(.*)\/.*/)[1])
-        .map(layerId => `layer:${layerId}`)
-        .filter(uniq)
-        .forEach(writeFeatureCollection)
+      featuresById(featureIds).forEach(removeFeature)
+      writeFeatures(featureIds)
     }
   }
 }
@@ -318,12 +323,6 @@ const noAltKey = ({ originalEvent }) => originalEvent.altKey !== true
 const noShiftKey = ({ originalEvent }) => originalEvent.shiftKey !== true
 const conjunction = (...ps) => v => ps.reduce((a, b) => a(v) && b(v))
 const featureId = feature => feature.getId()
-
-const layerUri = feature => {
-  const featureId = feature.getId()
-  const layerId = featureId.match(/feature:(.*)\/.*/)[1]
-  return `layer:${layerId}`
-}
 
 const cloneGeometries = features => features.getArray().reduce((acc, feature) => {
   acc[feature.getId()] = feature.getGeometry().clone()
