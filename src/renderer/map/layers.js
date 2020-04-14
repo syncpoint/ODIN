@@ -1,6 +1,5 @@
 import fs from 'fs'
 import uuid from 'uuid-random'
-import * as R from 'ramda'
 import { ipcRenderer } from 'electron'
 
 import Collection from 'ol/Collection'
@@ -18,27 +17,10 @@ import project from '../project'
 import undo from '../undo'
 import selection from '../selection'
 
-
-// --
-// SECTION: Module-global resources maintained for open project.
-
-/**
- * layers :: string ~> ol/layer/Vector
- * Geometry-specific feature vector layers with underlying sources.
- */
-let layers = {}
-
-/**
- * featureCollections :: string ~> [ol/Collection<ol/Feature>]
- * Feature collections per input layer with layer URI as key.
- */
-let featureCollections = {}
-
-/**
- * Vector source for dedicated selection layer.
- * NOTE: Created once; re-used throughout renderer lifetime.
- */
-const selectionSource = new VectorSource()
+const collectionArray = iterable =>
+  iterable instanceof Collection
+    ? iterable.getArray()
+    : iterable
 
 /**
  * geometryType :: (ol/Feature | ol/geom/Geometry) -> string
@@ -57,6 +39,25 @@ const geometryType = object => {
   }
 }
 
+
+
+// --
+// SECTION: Module-global resources maintained for open project.
+
+// TODO: EXTRACT,
+
+/**
+ * layers :: string ~> ol/layer/Vector
+ * Geometry-specific feature vector layers with underlying sources.
+ */
+let layers = {}
+
+/**
+ * Vector source for dedicated selection layer.
+ * NOTE: Created once; re-used throughout renderer lifetime.
+ */
+const selectionSource = new VectorSource()
+
 /**
  * sources :: () -> [ol/source/Vector]
  * Underlying layer sources.
@@ -69,23 +70,39 @@ const sources = () => Object.values(layers).map(layer => layer.getSource())
  */
 const geometrySource = object => layers[geometryType(object)].getSource()
 
-
-// --
-// SECTION: Setup layers from project.
-
 /**
- * GeoJSON, by definitions, comes in WGS84.
+ * featureById :: [ol/VectorSource] -> string -> ol/Feature
  */
-const geoJSON = new GeoJSON({
-  dataProjection: 'EPSG:4326', // WGS84
-  featureProjection: 'EPSG:3857' // Web-Mercator
-})
+const featureById = ([head, ...tail]) => id => head
+  ? head.getFeatureById(id) || featureById(tail)(id)
+  : null
+
+
+// TODO: EXTRACT. DEPENDS ON sources/layers
 
 /**
- * writeLayer :: ol/Collection<ol/Feature> -> unit
+ * featureCollections :: string ~> [ol/Collection<ol/Feature>]
+ * Feature collections per input layer with layer URI as key.
+ */
+let featureCollections = {}
+
+const addFeatureCollection = ([layerUri, features]) => {
+  featureCollections[layerUri] = features
+
+  // Add features to corresponding source and
+  // propagate feature collection updates to sources.
+
+  features.forEach(feature => geometrySource(feature).addFeature(feature))
+  features.on('add', ({ element }) => geometrySource(element).addFeature(element))
+  features.on('remove', ({ element }) => geometrySource(element).removeFeature(element))
+}
+
+/**
+ * writeFeatureCollection :: string -> unit
  * Write originating input feature collection back to fs.
  */
-const writeLayer = features => {
+const writeFeatureCollection = layerUri => {
+  const features = featureCollections[layerUri]
 
   // Filter internal feature properties.
   // Feature id is excluded from clone by default.
@@ -100,18 +117,29 @@ const writeLayer = features => {
 }
 
 /**
- * writeFeatures :: (ol/Collection<ol/Feature> | [ol/Feature]) -> unit
- * Write feature array or colleciton back to fs.
+ * writeFeatureCollections :: (ol/Collection<ol/Feature> | [ol/Feature]) -> unit
+ * Write underlying collections for features to fs.
  */
-const writeFeatures = features => {
-  const asArray = features => features instanceof Collection
-    ? features.getArray()
-    : features
+const writeFeatures = features =>
+  collectionArray(features)
+    .map(layerUri)
+    .filter(uniq)
+    .forEach(writeFeatureCollection)
 
-  R.uniq(asArray(features).map(layerUri))
-    .map(uri => featureCollections[uri])
-    .forEach(writeLayer)
-}
+const pushFeature = feature => featureCollections[layerUri(feature)].push(feature)
+const removeFeature = feature => featureCollections[layerUri(feature)].remove(feature)
+
+
+// --
+// SECTION: Setup layers from project.
+
+/**
+ * GeoJSON, by definitions, comes in WGS84.
+ */
+const geoJSON = new GeoJSON({
+  dataProjection: 'EPSG:4326', // WGS84
+  featureProjection: 'EPSG:3857' // Web-Mercator
+})
 
 
 /**
@@ -161,18 +189,6 @@ const createLayers = () => {
 }
 
 
-/**
- * Populate layers and setup sync feature collection -> layer source.
- */
-const linkLayers = features => {
-  const onremove = ({ element }) => geometrySource(element).removeFeature(element)
-  const onadd = ({ element }) => geometrySource(element).addFeature(element)
-
-  features.forEach(feature => geometrySource(feature).addFeature(feature))
-  features.on('add', onadd)
-  features.on('remove', onremove)
-}
-
 // --
 // SECTION: Selection handling.
 // Manage collection of selected features and feature selection state.
@@ -214,6 +230,7 @@ const clearSelection = () => {
 
 /**
  * Move selected features between feature layer and selection layer.
+ * // TODO: move to layers
  */
 ;(() => {
   const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
@@ -255,24 +272,19 @@ const updateGeometryCommand = (initial, current) => ({
   }
 })
 
-const insertFeaturesCommand = features => {
+const insertFeaturesCommand = features => ({
+  inverse: () => deleteFeaturesCommand(Object.keys(features)),
+  apply: () => {
+    const setFeatureId = ([id, feature]) => K(feature)(feature => feature.setId(id))
+    Object.entries(features).map(setFeatureId).forEach(pushFeature)
 
-  return {
-    inverse: () => deleteFeaturesCommand(Object.keys(features)),
-    apply: () => {
-      const setFeatureId = ([id, feature]) => K(feature)(feature => feature.setId(id))
-      const pushFeature = feature => featureCollections[layerUri(feature)].push(feature)
-      Object.entries(features).map(setFeatureId).forEach(pushFeature)
-
-      Object.keys(features)
-        .map(featureId => featureId.match(/feature:(.*)\/.*/)[1])
-        .map(layerId => `layer:${layerId}`)
-        .filter(uniq)
-        .map(layerUri => featureCollections[layerUri])
-        .forEach(features => writeLayer(features))
-    }
+    Object.keys(features)
+      .map(featureId => featureId.match(/feature:(.*)\/.*/)[1])
+      .map(layerId => `layer:${layerId}`)
+      .filter(uniq)
+      .forEach(writeFeatureCollection)
   }
-}
+})
 
 const deleteFeaturesCommand = featureIds => {
 
@@ -285,7 +297,6 @@ const deleteFeaturesCommand = featureIds => {
   return {
     inverse: () => insertFeaturesCommand(clones),
     apply: () => {
-      const removeFeature = feature => featureCollections[layerUri(feature)].remove(feature)
       featureIds.map(featureById(sources())).forEach(removeFeature)
 
       // FIXME: redundant (insertFeaturesCommand.apply)
@@ -293,8 +304,7 @@ const deleteFeaturesCommand = featureIds => {
         .map(featureId => featureId.match(/feature:(.*)\/.*/)[1])
         .map(layerId => `layer:${layerId}`)
         .filter(uniq)
-        .map(layerUri => featureCollections[layerUri])
-        .forEach(features => writeLayer(features))
+        .forEach(writeFeatureCollection)
     }
   }
 }
@@ -308,10 +318,6 @@ const noAltKey = ({ originalEvent }) => originalEvent.altKey !== true
 const noShiftKey = ({ originalEvent }) => originalEvent.shiftKey !== true
 const conjunction = (...ps) => v => ps.reduce((a, b) => a(v) && b(v))
 const featureId = feature => feature.getId()
-
-const featureById = ([head, ...tail]) => id => head
-  ? head.getFeatureById(id) || featureById(tail)(id)
-  : null
 
 const layerUri = feature => {
   const featureId = feature.getId()
@@ -467,8 +473,7 @@ const projectOpened = async map => {
   layers = createLayers()
   const filenames = project.layerFiles()
   const featureCollectionEntries = await Promise.all(filenames.map(loadFeatures))
-  featureCollections = Object.fromEntries(featureCollectionEntries)
-  Object.values(featureCollections).forEach(linkLayers)
+  featureCollectionEntries.forEach(addFeatureCollection)
 
   Object.values(layers).forEach(map.addLayer)
 
