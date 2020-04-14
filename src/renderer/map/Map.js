@@ -9,7 +9,7 @@ import { ScaleLine } from 'ol/control'
 import { Tile as TileLayer } from 'ol/layer'
 import { OSM } from 'ol/source'
 
-import { MgrsGrid } from './grids/mgrs'
+import MgrsGrid from './grids/mgrs'
 import evented from '../evented'
 import project from '../project'
 import coordinateFormat from '../../shared/coord-format'
