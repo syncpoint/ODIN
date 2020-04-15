@@ -17,6 +17,13 @@ import project from '../project'
 import undo from '../undo'
 import selection from '../selection'
 
+
+// --
+// SECTION: Module-global (utility) functions.
+
+/**
+ * collectionArray :: (ol/Collection<a> | [a]) -> [a]
+ */
 const collectionArray = iterable =>
   iterable instanceof Collection
     ? iterable.getArray()
@@ -40,6 +47,15 @@ const geometryType = object => {
 }
 
 /**
+ * cloneGeometries :: ol/Collection<ol/Feature> -> (string ~> ol/Geometry)
+ * Map feature collection to cloned featue geometries identified by feature ids.
+ */
+const cloneGeometries = features =>
+  collectionArray(features)
+    .map(feature => [feature.getId(), feature.getGeometry().clone()])
+    .reduce((acc, [id, geometry]) => K(acc)(acc => (acc[id] = geometry)), {})
+
+/**
  * layerUri :: (ol/Feature | string) -> string
  * Map feature id (from feature or feature URI) to URI of containing layer.
  */
@@ -52,11 +68,13 @@ const layerUri = featureOrUri => {
   return `layer:${layerId}`
 }
 
+/**
+ * featureId :: ol/Feature -> string
+ */
+const featureId = feature => feature.getId()
 
 // --
-// SECTION: Module-global resources maintained for open project.
-
-// TODO: EXTRACT,
+// SECTION: Geometry-specific vector sources and layers.
 
 /**
  * layers :: string ~> ol/layer/Vector
@@ -95,7 +113,9 @@ const featureById = id => {
 
 const featuresById = ids => ids.map(featureById)
 
-// TODO: EXTRACT. DEPENDS ON sources/layers
+
+// --
+// SECTION: Input layers as feature collections.
 
 /**
  * featureCollections :: string ~> [ol/Collection<ol/Feature>]
@@ -134,7 +154,7 @@ const writeFeatureCollection = layerUri => {
 }
 
 /**
- * writeFeatureCollections :: (ol/Collection<ol/Feature> | [ol/Feature] | [string]) -> unit
+ * writeFeatures :: (ol/Collection<ol/Feature> | [ol/Feature] | [string]) -> unit
  * Write underlying collections for features to fs.
  */
 const writeFeatures = featuresOrUris =>
@@ -209,9 +229,6 @@ const createLayers = () => {
 // --
 // SECTION: Selection handling.
 // Manage collection of selected features and feature selection state.
-// It is necessary to manage two levels independently, because some
-// interactions have to update selected feature collection explicitly
-// (contrary to select interaction).
 
 const selectedFeatures = new Collection()
 
@@ -247,31 +264,33 @@ const clearSelection = () => {
 
 /**
  * Move selected features between feature layer and selection layer.
- * // TODO: move to layers
  */
-;(() => {
-  const move = (from, to) => f => { from.removeFeature(f); to.addFeature(f) }
 
-  selection.on('selected', ids => {
-    featuresById(ids).forEach(feature => {
-      feature.set('selected', true)
-      move(geometrySource(feature), selectionSource)(feature)
-    })
+selection.on('selected', ids => {
+  featuresById(ids).forEach(feature => {
+    feature.set('selected', true)
+    geometrySource(feature).removeFeature(feature)
+    selectionSource.addFeature(feature)
   })
+})
 
-  selection.on('deselected', ids => {
-    featuresById(ids).forEach(feature => {
-      feature.unset('selected')
-      feature.setStyle(null) // release cached style, if any
-      move(selectionSource, geometrySource(feature))(feature)
-    })
+selection.on('deselected', ids => {
+  featuresById(ids).forEach(feature => {
+    feature.unset('selected')
+    feature.setStyle(null) // release cached style, if any
+    selectionSource.removeFeature(feature)
+    geometrySource(feature).addFeature(feature)
   })
-})()
+})
 
 
 // --
 // SECTION: Commands (with undo/redo support).
 
+/**
+ * updateGeometryCommand
+ *   :: (string ~> ol/Geometry) -> (string ~> ol/Geometry) -> command
+ */
 const updateGeometryCommand = (initial, current) => ({
   inverse: () => updateGeometryCommand(current, initial),
   apply: () => {
@@ -289,6 +308,11 @@ const updateGeometryCommand = (initial, current) => ({
   }
 })
 
+/**
+ * insertFeaturesCommand :: (string ~> ol/feature) -> command
+ * Add given features to corresponding input layer collections.
+ * NOTE: Input layers are identified by feature id (feature map keys).
+ */
 const insertFeaturesCommand = features => ({
   inverse: () => deleteFeaturesCommand(Object.keys(features)),
   apply: () => {
@@ -298,12 +322,16 @@ const insertFeaturesCommand = features => ({
   }
 })
 
+/**
+ * deleteFeaturesCommand :: [string] -> command
+ * Delete features with given ids.
+ */
 const deleteFeaturesCommand = featureIds => {
 
-  // Collect state to revert effect.
-  const setClone = feature => acc => (acc[feature.getId()] = feature.clone())
+  // Collect state to revert command effect.
+  const putClone = feature => acc => (acc[feature.getId()] = feature.clone())
   const clones = featuresById(featureIds)
-    .reduce((acc, feature) => K(acc)(setClone(feature)), {})
+    .reduce((acc, feature) => K(acc)(putClone(feature)), {})
 
   return {
     inverse: () => insertFeaturesCommand(clones),
@@ -322,16 +350,9 @@ const hitTolerance = 3
 const noAltKey = ({ originalEvent }) => originalEvent.altKey !== true
 const noShiftKey = ({ originalEvent }) => originalEvent.shiftKey !== true
 const conjunction = (...ps) => v => ps.reduce((a, b) => a(v) && b(v))
-const featureId = feature => feature.getId()
-
-const cloneGeometries = features => features.getArray().reduce((acc, feature) => {
-  acc[feature.getId()] = feature.getGeometry().clone()
-  return acc
-}, {})
-
 
 /**
- *
+ * Select interaction.
  */
 const createSelect = () => {
 
@@ -357,7 +378,7 @@ const createSelect = () => {
  * Modify interaction.
  */
 const createModify = () => {
-  let initial = {}
+  let initial = {} // Cloned geometries BEFORE modify.
 
   const interaction = new Modify({
     hitTolerance,
@@ -411,7 +432,7 @@ const createTranslate = () => {
  */
 const createBoxSelect = () => {
 
-  // Note: DragBox is not a selecttion interaction per se.
+  // Note: DragBox is not a selection interaction per se.
   // I.e. it does not manage selected features automatically.
   const interaction = new DragBox({
     condition: platformModifierKeyOnly
@@ -458,6 +479,7 @@ ipcRenderer.on('IPC_EDIT_DELETE', () => {
   command.apply()
   undo.push(command.inverse())
 })
+
 
 // --
 // SECTION: Handle project events.
