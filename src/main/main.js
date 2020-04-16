@@ -3,7 +3,8 @@
 import { app, Menu } from 'electron'
 import { buildFromTemplate } from '../main/menu/menu'
 import settings from 'electron-settings'
-import projects from './projects'
+import bootstrap from './bootstrap'
+import i18n, { languageKey } from '../i18n'
 
 // Disable for production:
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
@@ -16,14 +17,21 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 // NOTE: Must be currently false to not crash renderer because of GEOSJS.
 app.allowRendererProcessReuse = false // `false` also removes deprecation message
 
-/*  As of version 8.1 electron does not support adding/removing menu items dynamically.
+/*  As of version 8.2 electron does not support adding/removing menu items dynamically.
     In order to add/remove recently used projects we need to rebuild and
     set the application menu.
 */
-const buildApplicationMenu = () => Menu.setApplicationMenu(buildFromTemplate(settings))
-buildApplicationMenu()
-projects.watchRecentProjects(buildApplicationMenu)
+const buildApplicationMenu = () => {
+  const menu = buildFromTemplate(i18n)
+  Menu.setApplicationMenu(menu)
+}
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit()
+i18n.on('languageChanged', lng => {
+  settings.set(languageKey, lng)
+  buildApplicationMenu()
+})
+
+i18n.on('initialized', () => {
+  i18n.changeLanguage(settings.get(languageKey, 'en'))
+  bootstrap()
 })

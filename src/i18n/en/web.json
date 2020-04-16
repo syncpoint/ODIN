@@ -1,0 +1,16 @@
+{
+  "projectManagement": {
+    "name": "Project name",
+    "untitled": "new project",
+    "new": "New",
+    "import": "Import",
+    "switch": "Switch To",
+    "export": "Export",
+    "save": "Save",
+    "delete": "Delete",
+    "lastAccess": "last access: {{date}}",
+    "dangerZone": "Danger Zone",
+    "deleteThisProject": "Delete this project",
+    "deleteThisProjectDescription": "Once a project is deleted, there is no going back!"
+  }
+}

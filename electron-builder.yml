@@ -10,6 +10,17 @@ win:
       arch:
         - x64
         - ia32
-files:
+  icon: 'build/icon.ico'      
+mac:
+   target: dmg
+   icon: 'build/icon.icns'
+linux:
+  target:
+    - target: deb
+    - target: snap
+    - target: tar.gz
+    - target: Appimage
+  icon: 'build/icons'
+  category: 'Office'files:
   - 'dist'
-electronVersion: 8.1.1
+electronVersion: 8.2.0
