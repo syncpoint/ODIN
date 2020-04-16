@@ -1,6 +1,7 @@
 import fs from 'fs'
 import uuid from 'uuid-random'
 import { ipcRenderer } from 'electron'
+import Mousetrap from 'mousetrap'
 
 import Collection from 'ol/Collection'
 import { Vector as VectorSource } from 'ol/source'
@@ -475,7 +476,16 @@ const createBoxSelect = () => {
 
 
 // --
-// SECTION: IPC hooks.
+// SECTION: IPC/mousetrap hooks.
+
+const deleteSelection = () => {
+  const featureIds = selection.selected('feature:')
+  clearSelection()
+
+  const command = deleteFeaturesCommand(featureIds)
+  command.apply()
+  undo.push(command.inverse())
+}
 
 ipcRenderer.on('IPC_EDIT_SELECT_ALL', () => {
   clearSelection()
@@ -483,15 +493,9 @@ ipcRenderer.on('IPC_EDIT_SELECT_ALL', () => {
   addSelection(features)
 })
 
-ipcRenderer.on('IPC_EDIT_DELETE', () => {
-  const featureIds = selection.selected('feature:')
-  clearSelection()
-
-  const command = deleteFeaturesCommand(featureIds)
-  command.apply()
-  undo.push(command.inverse())
-})
-
+ipcRenderer.on('IPC_EDIT_DELETE', deleteSelection)
+Mousetrap.bind('del', deleteSelection) // macOS: fn+backspace
+Mousetrap.bind('command+backspace', deleteSelection)
 
 // --
 // SECTION: Handle project events.
