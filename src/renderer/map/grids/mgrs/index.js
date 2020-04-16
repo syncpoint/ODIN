@@ -6,8 +6,7 @@ import coordinateFormat from '../../../../shared/coord-format'
 // import LatLon from 'geodesy/latlon-ellipsoidal-vincenty'
 import { bbox, all } from 'ol/loadingstrategy'
 import { getGzdGrid } from './gzdZones'
-import { getSquareGrid } from './detailZones'
-import { boundingExtent } from 'ol/extent'
+import { getDetailGrid } from './detailZones'
 
 export default (maxResolutions = [10000, 1200, 250, 20], minResolutions = [0, 250, 20, 0]) => {
   const Grids = []
@@ -30,7 +29,7 @@ export default (maxResolutions = [10000, 1200, 250, 20], minResolutions = [0, 25
   for (let i = 0; i < 3; i++) {
     const vectorSourceDetailSquares = new VectorSource({
       loader: async (extent, resolution, projection) => {
-        getSquareGrid(extent, projection, i, (features) => {
+        getDetailGrid(extent, projection, i, (features) => {
           vectorSourceDetailSquares.clear()
           vectorSourceDetailSquares.addFeatures(features)
         })
@@ -41,7 +40,6 @@ export default (maxResolutions = [10000, 1200, 250, 20], minResolutions = [0, 25
     })
     Grids.push(
       new VectorLayer({
-        extent: boundingExtent([-Infinity, -Infinity, Infinity, Infinity]),
         maxResolution: maxResolutions[i + 1],
         minResolution: minResolutions[i + 1],
         source: vectorSourceDetailSquares,

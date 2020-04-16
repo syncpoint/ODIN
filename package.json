@@ -58,6 +58,7 @@
     "immutable": "^4.0.0-rc.12",
     "luxon": "^1.22.0",
     "mathjs": "^6.6.1",
+    "mgrs": "^1.0.0",
     "milsymbol": "^2.0.0",
     "minimist": "^1.2.5",
     "mousetrap": "^1.6.5",

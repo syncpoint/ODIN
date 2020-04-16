@@ -1,18 +1,28 @@
 import { fromLonLat, toLonLat } from 'ol/proj'
 import coordinateFormat from '../../../../shared/coord-format'
-import { forward as toMgrs, inverse as fromMgrs } from 'mgrs'
-import { buildMgrsString, fromatDetailLevel, createLine, wrapX } from '../utils'
+import { fromMgrs, toMgrs, buildMgrsString, fromatDetailLevel, createLine, wrapX, splitWorlds } from '../utils'
 import { getGzdPoint } from './gzdZones'
 import { boundingExtent, intersects, equals } from 'ol/extent'
 
 const SQUAREIDENTIEFERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+
 var loadedExtent
 var loadedWrapBack
-export const getSquareGrid = async (extent, projection, depth, callback) => {
+export const getDetailGrid = async (extent, projection, depth, callback) => {
   if (loadedExtent && equals(extent, loadedExtent)) {
     return
   }
   loadedExtent = extent
+  const extents = splitWorlds(extent, projection)
+  const lines = []
+  for (let i = 0; i < extents.length; i++) {
+    const newLines = await buildLines(extents[i], projection, depth)
+    lines.push(...newLines)
+  }
+  callback(lines)
+}
+
+const buildLines = async (extent, projection, depth) => {
   let newExtent
   try {
     const { e, f } = wrapX([...extent], projection)
@@ -21,7 +31,6 @@ export const getSquareGrid = async (extent, projection, depth, callback) => {
   } catch (error) {
     console.error('error with wrapping extent' + error)
   }
-
   const lines = []
   const startPoint = toLonLat([newExtent[0], newExtent[1]])
   const endPoint = toLonLat([newExtent[2], newExtent[3]])
@@ -49,7 +58,7 @@ export const getSquareGrid = async (extent, projection, depth, callback) => {
                   lines.push(...horizontalLines, ...verticalLines)
                 }
               } catch (error) {
-                // likely out of segment
+                // Out of segment
                 continue
               }
             }
@@ -60,8 +69,9 @@ export const getSquareGrid = async (extent, projection, depth, callback) => {
     }
 
   }
-  callback(lines)
+  return lines
 }
+
 const draw100kLines = (xGZD, ySegment, extent, lines) => {
   const firsts = {}
   for (let second = 0; second < SQUAREIDENTIEFERS.length; second++) {
@@ -75,7 +85,7 @@ const draw100kLines = (xGZD, ySegment, extent, lines) => {
       } catch (err) {
         if (lastValidPosition) {
           const endPoint = getGzdPoint([lastValidPosition.lon, lastValidPosition.lat], true)
-          const n100kChar = toMgrs([lastValidPosition.lat, lastValidPosition.lon], 5).substr(3, 1)
+          const n100kChar = toMgrs([lastValidPosition.lat, lastValidPosition.lon]).substr(3, 1)
           lines.push(createLine(fromLonLat([endPoint[0], lastValidPosition.lat]), fromLonLat([lastValidPosition.lon, lastValidPosition.lat]), 2, n100kChar, loadedWrapBack))
           shouldBreak = true
         }
@@ -93,17 +103,17 @@ const vertical100kLines = (xGZD, ySegment, first, second, firsts, extent, lines)
     // new Grid segment and rounding error
     if (controllMGRS.substr(3, 1) === SQUAREIDENTIEFERS[first] || controllMGRS.substr(10, 5) > 99999) {
       const target = buildMgrsString(xGZD, String.fromCharCode(ySegment), SQUAREIDENTIEFERS[first], second, 0, 0)
-      drawLineGrid(target, firsts[first], lines, 0, SQUAREIDENTIEFERS[first], false, 100000)
+      drawGridLine(target, firsts[first], lines, 0, SQUAREIDENTIEFERS[first], false, 100000)
     }
   } else {
     const target = buildMgrsString(xGZD, String.fromCharCode(ySegment), SQUAREIDENTIEFERS[first], second, 0, 0)
-    drawLineGrid(target, undefined, lines, 0, SQUAREIDENTIEFERS[first], false, 100000)
+    drawGridLine(target, undefined, lines, 0, SQUAREIDENTIEFERS[first], false, 100000)
   }
 }
 
 const horizontal100kLines = (xGZD, ySegment, first, second, lastValidPosition, extent, lines) => {
   const target = buildMgrsString(xGZD, String.fromCharCode(ySegment), SQUAREIDENTIEFERS[first], second, 0, 0)
-  const newValidPosition = drawLineGrid(target, lastValidPosition, lines, 0, second, true, 100000) || lastValidPosition
+  const newValidPosition = drawGridLine(target, lastValidPosition, lines, 0, second, true, 100000) || lastValidPosition
   if (first === SQUAREIDENTIEFERS.length - 1) {
     const startPoint = getGzdPoint(newValidPosition, true)
     lines.push(createLine(fromLonLat([startPoint[0], newValidPosition[1]]), fromLonLat(newValidPosition), 2, second, loadedWrapBack))
@@ -124,13 +134,13 @@ const drawVertical = async (xGZD, band, first, second, depth, currentDepth, sour
         if (currentDepth === depth) {
           const target = buildMgrsString(xGZD, band, SQUAREIDENTIEFERS[first], second, newX, newY)
           const text = getDetailText(newX, SQUAREIDENTIEFERS[first], depth)
-          lastValidPosition = drawLineGrid(target, lastValidPosition, lines, depth, text, false, step) || lastValidPosition
+          lastValidPosition = drawGridLine(target, lastValidPosition, lines, depth, text, false, step) || lastValidPosition
         } else if (calcMinRenderArea(xGZD, band, SQUAREIDENTIEFERS[first], second, newX, newY, step, extent)) {
           const newLines = await drawVertical(xGZD, band, first, second, depth, currentDepth + 1, newX, newY, lines, extent)
           lines.push(...newLines)
         }
       } catch (error) {
-        // likely out of segment
+        // Out of segment
         break
       }
     }
@@ -150,13 +160,13 @@ const drawHorizontal = async (xGZD, band, first, second, depth, currentDepth, so
         if (currentDepth === depth) {
           const target = buildMgrsString(xGZD, band, SQUAREIDENTIEFERS[first], second, newX, newY)
           const text = getDetailText(newY, second, depth)
-          lastValidPosition = drawLineGrid(target, lastValidPosition, lines, depth, text, true, step) || lastValidPosition
+          lastValidPosition = drawGridLine(target, lastValidPosition, lines, depth, text, true, step) || lastValidPosition
         } else if (calcMinRenderArea(xGZD, band, SQUAREIDENTIEFERS[first], second, newX, newY, step, extent)) {
           const newLines = await drawHorizontal(xGZD, band, first, second, depth, currentDepth + 1, newX, newY, lines, extent)
           lines.push(...newLines)
         }
       } catch (error) {
-        // likely out of segment
+        // Out of segment
         break
       }
     }
@@ -208,28 +218,27 @@ const getDetailText = (number, parentBorderText, depth) => {
   return text.substr(0, depth)
 
 }
-const drawLineGrid = (mgrs, lastPosition, lines, depth, text, isHorizontal, step) => {
-  const latlon = fromMgrs(mgrs)
-  const controllMGRS = toMgrs([latlon[0], latlon[1]], 5)
+
+const drawGridLine = (mgrs, lastPosition, lines, depth, text, isHorizontal, step) => {
+  const lonlat = fromMgrs(mgrs)
+  const controllMGRS = toMgrs([lonlat[0], lonlat[1]], 5)
   let newDepth = depth + 2
   if (depth > 0 && ((isHorizontal && mgrs.substr(10, 5) === '00000') || (!isHorizontal && mgrs.substr(5, 5) === '00000'))) {
     newDepth = depth
   }
   if (controllMGRS.substr(0, 3) === mgrs.substr(0, 3)) {
     if (lastPosition) {
-      lines.push(createLine(fromLonLat(lastPosition), fromLonLat(latlon), newDepth, text, loadedWrapBack))
+      lines.push(createLine(fromLonLat(lastPosition), fromLonLat(lonlat), newDepth, text, loadedWrapBack))
     } else if (isHorizontal) {
       leftGzdConnection(mgrs, step, newDepth, depth, lines, text)
     } else {
-      bottomGZDConnection(mgrs, step, newDepth, depth, lines, text)
+      bottomGzdConnection(mgrs, step, newDepth, depth, lines, text)
     }
-    return latlon
+    return lonlat
   } else if (!isHorizontal && lastPosition) {
-    topGZDConnection(mgrs, lastPosition, newDepth, depth, lines, text)
-  } else if (isHorizontal && lastPosition) {
-    if (controllMGRS.substr(2, 1) === mgrs.substr(2, 1) && depth > 0) {
-      rightGZDConnection(latlon, lastPosition, newDepth, lines, text)
-    }
+    topGzdConnection(mgrs, lastPosition, newDepth, depth, lines, text)
+  } else if (isHorizontal && lastPosition && controllMGRS.substr(2, 1) === mgrs.substr(2, 1) && depth > 0) {
+    rightGzdConnection(lonlat, lastPosition, newDepth, lines, text)
   }
 
 }
@@ -246,24 +255,21 @@ const getPreviousBand = (band) => {
   return newBand
 }
 
-const bottomGZDConnection = (mgrs, step, newDepth, depth, lines, text) => {
+const bottomGzdConnection = (mgrs, step, newDepth, depth, lines, text) => {
   try {
-    const latlon = fromMgrs(mgrs)
-    const startPoint = getGzdPoint([latlon[0], latlon[1]], false)
+    const lonlat = fromMgrs(mgrs)
+    const startPoint = getGzdPoint([lonlat[0], lonlat[1]], false)
     if (depth > 0) {
-      // if (mgrs.substr(5, 5) !== '00000' && mgrs.substr(10, 5) === '00000') {
-      //   newDepth = depth + 2
-      // }
-      // // connction between 31 W and 32 V... is wrong.
-      // const nextNorthing = fromatDetailLevel(Number(mgrs.substr(10, 5)) + step)
-      // const assumedNextPoint = fromMgrs(mgrs.substr(0, 10) + nextNorthing)
-      // const controllMgrs = toMgrs([assumedNextPoint[0], assumedNextPoint[1]], 5)
-      // if ((controllMgrs.substr(0, 2) !== mgrs.substr(0, 2)) && (controllMgrs.substr(2, 1) !== mgrs.substr(2, 1))) {
-      //   const startPoint = getGzdPoint([latlon[0], latlon[1]], false)
-      //   const diff = assumedNextPoint[0] - latlon[0]
-      //   const newLon = (diff * (startPoint[1] - latlon[1]) / (assumedNextPoint[1] - latlon[1])) + latlon[0]
-      //   lines.push(createLine(fromLonLat([newLon, startPoint[1]]), fromLonLat([latlon[0], latlon[1]]), newDepth, text, loadedWrapBack))
-      // }
+      // thanks norway
+      if (mgrs.substr(5, 5) !== '00000' && mgrs.substr(10, 5) === '00000') {
+        newDepth = depth + 2
+      }
+      const nextNorthing = fromatDetailLevel(Number(mgrs.substr(10, 5)) + step)
+      const assumedNextPoint = fromMgrs(mgrs.substr(0, 10) + nextNorthing)
+      const controllMGRS = toMgrs([assumedNextPoint[0], lonlat[1] - (assumedNextPoint[1] - lonlat[1])], 5)
+      if (!isNaN(assumedNextPoint[0]) && controllMGRS.substr(0, 2) !== mgrs.substr(0, 2) && controllMGRS.substr(2, 1) !== mgrs.substr(2, 1)) {
+        borderConnection(lonlat, assumedNextPoint, lines, newDepth, text, false, false)
+      }
     } else {
       const newBand = getPreviousBand(mgrs.substr(2, 1))
       const newN100k = mgrs.substr(4, 1) === 'A' ? 'V' : getPreviousBand(mgrs.substr(4, 1))
@@ -271,12 +277,12 @@ const bottomGZDConnection = (mgrs, step, newDepth, depth, lines, text) => {
       const source = fromMgrs(newMGRS)
       const controllMGRS = toMgrs([source[0], source[1]], 5)
       if (controllMGRS.substr(0, 2) === mgrs.substr(0, 2)) {
-        drawLineGrid(mgrs, source, lines, 0, mgrs.substr(3, 1), false)
+        drawGridLine(mgrs, source, lines, 0, mgrs.substr(3, 1), false)
       } else {
         // thanks norway
-        const diff = source[0] - latlon[0]
-        const newLon = (diff * (startPoint[1] - latlon[1]) / (source[1] - latlon[1])) + latlon[0]
-        drawLineGrid(mgrs, [newLon, startPoint[1]], lines, 0, mgrs.e100k, false)
+        const diff = source[0] - lonlat[0]
+        const newLon = (diff * (startPoint[1] - lonlat[1]) / (source[1] - lonlat[1])) + lonlat[0]
+        drawGridLine(mgrs, [newLon, startPoint[1]], lines, 0, mgrs.e100k, false)
       }
     }
   } catch (error) {
@@ -286,68 +292,61 @@ const bottomGZDConnection = (mgrs, step, newDepth, depth, lines, text) => {
 
 const leftGzdConnection = (mgrs, step, newDepth, depth, lines, text) => {
   try {
-    const latlon = fromMgrs(mgrs)
+    const lonlat = fromMgrs(mgrs)
     if (depth > 0) {
       const nextEasting = fromatDetailLevel(Number(mgrs.substr(5, 5)) + step)
       const assumedNextPoint = fromMgrs(mgrs.substr(0, 5) + nextEasting + mgrs.substr(10, 5))
-      const endPoint = getGzdPoint([latlon[0], latlon[1]], false)
-      const diff = assumedNextPoint[1] - latlon[1]
-      const newLat = diff * (endPoint[0] - latlon[0]) / (assumedNextPoint[0] - latlon[0]) + latlon[1]
-      if (mgrs.substr(5, 5) === '00000' && mgrs.substr(10, 5) !== '00000') {
-        newDepth = depth + 2
+      const startPoint = getGzdPoint([lonlat[0], lonlat[1]], false)
+      if ((!isNaN(assumedNextPoint[0]) && lonlat[0] - (assumedNextPoint[0] - lonlat[0]) < startPoint[0])) {
+        borderConnection(lonlat, assumedNextPoint, lines, newDepth, text, false, true)
       }
-      const controllEasting = fromatDetailLevel(Number(mgrs.substr(5, 5)) - step)
-      const controllLatLon = fromMgrs(mgrs.substr(0, 5) + controllEasting + mgrs.substr(10, 5))
-      if (!isNaN(controllLatLon[0])) {
-        lines.push(createLine(fromLonLat([endPoint[0], newLat]), fromLonLat([latlon[0], latlon[1]]), newDepth, text, loadedWrapBack))
-      }
+
     } else {
-      const startPoint = getGzdPoint([latlon[0], latlon[1]], false)
-      lines.push(createLine(fromLonLat([startPoint[0], latlon[1]]), fromLonLat([latlon[0], latlon[1]]), newDepth, text, loadedWrapBack))
+      const startPoint = getGzdPoint([lonlat[0], lonlat[1]], false)
+      lines.push(createLine(fromLonLat([startPoint[0], lonlat[1]]), fromLonLat([lonlat[0], lonlat[1]]), newDepth, text, loadedWrapBack))
     }
   } catch (error) {
     console.error('Left GZD Connection shouldnt throw:' + error)
   }
 }
 
-const rightGZDConnection = (latlon, lastPosition, newDepth, lines, text) => {
-  borderConnection(lastPosition, latlon, lines, newDepth, text, true, true)
+const rightGzdConnection = (lonlat, lastPosition, newDepth, lines, text) => {
+  borderConnection(lastPosition, lonlat, lines, newDepth, text, true, true)
   throw new Error('Out of Segment')
 }
 
-const topGZDConnection = (mgrs, lastPosition, newDepth, depth, lines, text) => {
-  const latlon = fromMgrs(mgrs)
-  const controllMGRS = toMgrs([latlon[0], latlon[1]], 5)
+const topGzdConnection = (mgrs, lastPosition, newDepth, depth, lines, text) => {
+  const lonlat = fromMgrs(mgrs)
+  const controllMGRS = toMgrs([lonlat[0], lonlat[1]], 5)
   if (mgrs.substr(5, 5) !== '00000' && mgrs.substr(10, 5) === '00000') {
     newDepth = depth + 2
   }
   if (depth > 0 && lastPosition && controllMGRS.substr(0, 2) === mgrs.substr(0, 2)) {
-    // const latlon = mgrs.toUtm().toLatLon() //use?
-    lines.push(createLine(fromLonLat(lastPosition), fromLonLat([latlon[0], latlon[1]]), newDepth, text, loadedWrapBack))
+    lines.push(createLine(fromLonLat(lastPosition), fromLonLat([lonlat[0], lonlat[1]]), newDepth, text, loadedWrapBack))
     throw new Error('Out of Segment')
   } else if (lastPosition && controllMGRS.substr(0, 2) !== mgrs.substr(0, 2) && controllMGRS.substr(2, 1) !== mgrs.substr(2, 1)) {
     // thanks norway
-    borderConnection(lastPosition, latlon, lines, newDepth, text, true, false)
+    borderConnection(lastPosition, lonlat, lines, newDepth, text, true, false)
     if (depth > 0) {
       throw new Error('Out of Segment')
     }
   }
 }
 
-const borderConnection = (sourceLatLon, nextPointLatLon, lines, depth, text, isEndPoint, isHorizontal) => {
+const borderConnection = (sourceLonLat, nextPointLonLat, lines, depth, text, isEndPoint, isHorizontal) => {
   try {
-    const endPoint = getGzdPoint([sourceLatLon[0], sourceLatLon[1]], isEndPoint)
+    const endPoint = getGzdPoint([sourceLonLat[0], sourceLonLat[1]], isEndPoint)
     if (isHorizontal) {
-      const diff = nextPointLatLon[1] - sourceLatLon[1]
-      const newLat = diff * (endPoint[0] - sourceLatLon[0]) / (nextPointLatLon[0] - sourceLatLon[0]) + sourceLatLon[1]
-      lines.push(createLine(fromLonLat([endPoint[0], newLat]), fromLonLat([sourceLatLon[0], sourceLatLon[1]]), depth, text, loadedWrapBack))
+      const diff = nextPointLonLat[1] - sourceLonLat[1]
+      const newLat = diff * (endPoint[0] - sourceLonLat[0]) / (nextPointLonLat[0] - sourceLonLat[0]) + sourceLonLat[1]
+      lines.push(createLine(fromLonLat([endPoint[0], newLat]), fromLonLat([sourceLonLat[0], sourceLonLat[1]]), depth, text, loadedWrapBack))
     } else {
-      const diff = nextPointLatLon[0] - sourceLatLon[0]
-      const newLon = (diff * (endPoint[1] - sourceLatLon[1]) / (nextPointLatLon[1] - sourceLatLon[1])) + sourceLatLon[0]
-      lines.push(createLine(fromLonLat([newLon, endPoint[1]]), fromLonLat([sourceLatLon[0], sourceLatLon[1]]), depth, text, loadedWrapBack))
+      const diff = nextPointLonLat[0] - sourceLonLat[0]
+      const newLon = (diff * (endPoint[1] - sourceLonLat[1]) / (nextPointLonLat[1] - sourceLonLat[1])) + sourceLonLat[0]
+      lines.push(createLine(fromLonLat([newLon, endPoint[1]]), fromLonLat([sourceLonLat[0], sourceLonLat[1]]), depth, text, loadedWrapBack))
     }
 
   } catch (error) {
-    console.log('couldnt connect GZD Segments:' + error)
+    console.error('couldnt connect GZD Segments:' + error)
   }
 }

@@ -1,8 +1,36 @@
 import Feature from 'ol/Feature'
 import LineString from 'ol/geom/LineString'
 import { getCenter, getWidth } from 'ol/extent'
+import { forward, inverse } from 'mgrs'
 
-const min = '00000'
+
+/**
+ * Conversion of lat/lon to MGRS.
+ * @param {[number]} Array for lon lat coords [lon,lat]
+ * @returns {string} MGRS string
+ * */
+export const toMgrs = (lonlat) => {
+  let mgrs = forward(lonlat, 5)
+  if (mgrs.length === 14) {
+    mgrs = `0${mgrs}`
+  }
+  return mgrs
+}
+
+/**
+ * Conversion of MGRS string to lat/lon
+ * @param {string} MGRS string
+ * @returns {[number]} Array for lon lat coords [lon,lat]
+ * */
+export const fromMgrs = (mgrs) => {
+  let lonlat
+  if (mgrs.startsWith('0')) {
+    lonlat = inverse(mgrs.substr(1))
+  } else {
+    lonlat = inverse(mgrs)
+  }
+  return lonlat
+}
 
 /**
  * creates a MGRS String
@@ -14,6 +42,7 @@ const min = '00000'
  * @param {Number} y 0-100000 100000 changes 100km segment
  */
 export const buildMgrsString = (xGZD, ySegment, e100k, n100k, x = 0, y = 0) => {
+  xGZD = xGZD < 10 ? `0${xGZD}` : xGZD
   if (x < 100000 && y < 100000) {
     return `${xGZD}${ySegment}${e100k}${n100k}${fromatDetailLevel(x)}${fromatDetailLevel(y)}`
   } else if (x >= 100000) {
@@ -30,18 +59,27 @@ const getNext = (band) => {
   if (isNaN(segment)) {
     segment = Number(band.charCodeAt(0))
   }
-  let newBand = String.fromCharCode(segment + 1)
-  if (newBand === 'O' || newBand === 'I') {
-    newBand = String.fromCharCode(segment + 2)
+  let nextBand = String.fromCharCode(segment + 1)
+  if (nextBand === 'O' || nextBand === 'I') {
+    nextBand = String.fromCharCode(segment + 2)
   }
-  return newBand
+  return nextBand
 }
 
+/**
+ * Formats number to a MGRS easting/northing String with the accuracy of 5
+ * @param {Number} number
+ * @returns {String} MGRS easting/northing String (input=10 => returns '00010')
+ */
 export const fromatDetailLevel = (number) => {
+  const min = '00000'
   if (min.length >= number.toString().length) {
     return min.substring(0, min.length - number.toString().length) + number.toString()
   }
+  // maximum
+  return '99999'
 }
+
 export const createLine = (startPoint, endPoint, zIndex, text, wrapBack) => {
   if (wrapBack) {
     startPoint[0] = wrapBack(startPoint[0])
@@ -54,43 +92,42 @@ export const createLine = (startPoint, endPoint, zIndex, text, wrapBack) => {
   })
   return feature
 }
-/**
- * should check if point is within min/max points
- * @param {LatLon} point target point
- * @param {LatLon} min min point
- * @param {LatLon} max max point
- */
-export const isPointWithin = (point, min, max) => {
-  return (point.lat > min.lat && point.lon > min.lon && point.lat < max.lat && point.lon < max.lon)
-}
 
 /**
- * should check if targetMGRS is withing stepRange
- * only needed for detailed Grids when the Parent Grid is has a bigger angle (GZD Border for grids<100k) or Extended Norway zones
- * @param {Mgrs} targetMGRS
- * @param {Mgrs} bottomLeftMGRS
- * @param {Mgrs} bottomRightMGRS
- * @param {Mgrs} topLeftMGRS
- * @param {Mgrs} topRightMGRS
- * @param {Number} step
+ * cuts extent into max. two extents for each world the view is in
+ * @param {[Number]} extent view Extent
+ * @param {Object} projection view projection
+ * @returns {[[Number]]} array of extent
  */
-export const mgrsWithinStep = (targetMGRS, bottomLeftMGRS, bottomRightMGRS, topLeftMGRS, topRightMGRS, step) => {
-  if (bottomLeftMGRS.zone === targetMGRS.zone && bottomLeftMGRS.band === targetMGRS.band && bottomLeftMGRS.n100k === targetMGRS.n100k && bottomLeftMGRS.e100k === targetMGRS.e100k) {
-    return (bottomLeftMGRS.easting <= targetMGRS.easting && bottomLeftMGRS.northing <= targetMGRS.northing &&
-      bottomLeftMGRS.easting + step > targetMGRS.easting && bottomLeftMGRS.northing + step > targetMGRS.northing)
-  } else if (bottomRightMGRS.zone === targetMGRS.zone && bottomRightMGRS.band === targetMGRS.band && bottomRightMGRS.n100k === targetMGRS.n100k && bottomRightMGRS.e100k === targetMGRS.e100k) {
-    return (bottomRightMGRS.easting >= targetMGRS.easting && bottomRightMGRS.northing <= targetMGRS.northing &&
-      bottomRightMGRS.easting - step < targetMGRS.easting && bottomRightMGRS.northing + step > targetMGRS.northing)
-  } else if (topLeftMGRS.zone === targetMGRS.zone && topLeftMGRS.band === targetMGRS.band && topLeftMGRS.n100k === targetMGRS.n100k && topLeftMGRS.e100k === targetMGRS.e100k) {
-    return (topLeftMGRS.easting <= targetMGRS.easting && topLeftMGRS.northing > targetMGRS.northing &&
-      bottomRightMGRS.easting + step > targetMGRS.easting && bottomRightMGRS.northing - step < targetMGRS.northing)
-  } else if (topRightMGRS.zone === targetMGRS.zone && topRightMGRS.band === targetMGRS.band && topRightMGRS.n100k === targetMGRS.n100k && topRightMGRS.e100k === targetMGRS.e100k) {
-    return (topRightMGRS.easting >= targetMGRS.easting && topRightMGRS.northing >= targetMGRS.northing &&
-      topRightMGRS.easting - step < targetMGRS.easting && topRightMGRS.northing - step < targetMGRS.northing)
+export const splitWorlds = (extent, projection) => {
+  const extents = []
+  const projectionExtent = projection.getExtent()
+  if (projection.canWrapX() && (extent[0] < projectionExtent[0] || extent[2] >= projectionExtent[2])) {
+    const worldWidth = getWidth(projectionExtent)
+    const worldsAway1 = getWorldsAway(extent[0], projectionExtent[0], worldWidth)
+    const worldsAway2 = getWorldsAway(extent[2], projectionExtent[0], worldWidth)
+    if (worldsAway1 !== worldsAway2) {
+      const worldsAway = Math.max(worldsAway1, worldsAway2)
+      const extent1 = [...extent]
+      extent1[0] = projectionExtent[0] + worldsAway * worldWidth + 1
+      extents.push(extent1)
+      const extent2 = [...extent]
+      extent2[2] = projectionExtent[0] + worldsAway * worldWidth - 1
+      extents.push(extent2)
+    } else {
+      extents.push(extent)
+    }
+  } else {
+    extents.push(extent)
   }
-  return false
+  return extents
 }
-
+/**
+ * transforms the extent to World 1
+ * @param {[Number]} extent view Extent
+ * @param {Object} projection view projection
+ * @returns {{e: [Number], f: function}} e: transformed extent,  f: funbction to transform x coordinates back to the projected world
+ */
 export const wrapX = (extent, projection) => {
   const projectionExtent = projection.getExtent()
   const center = getCenter(extent)
@@ -106,7 +143,7 @@ export const wrapX = (extent, projection) => {
     }
     return { e: extent, f: wrapBack }
   }
-  return { e: extent, f: undefined }
+  return { e: extent }
 }
 
 const getWorldsAway = (x, minX, worldWith) => {
