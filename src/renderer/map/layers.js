@@ -215,7 +215,7 @@ const createLayers = () => {
   // Update layer opacity depending on selection.
 
   const updateOpacity = () => {
-    const hasSelection = selection.selected().length
+    const hasSelection = selection.selected('feature:').length
     entries.forEach(([_, layer]) => layer.setOpacity(hasSelection ? 0.35 : 1))
   }
 
@@ -349,7 +349,7 @@ const deleteFeaturesCommand = featureIds => {
 const hitTolerance = 3
 const noAltKey = ({ originalEvent }) => originalEvent.altKey !== true
 const noShiftKey = ({ originalEvent }) => originalEvent.shiftKey !== true
-const conjunction = (...ps) => v => ps.reduce((a, b) => a(v) && b(v))
+const conjunction = (...ps) => v => ps.reduce((acc, p) => acc && p(v), true)
 
 /**
  * Select interaction.
@@ -396,6 +396,12 @@ const createModify = () => {
     undo.push(command)
     writeFeatures(features)
   })
+
+  const activate = () =>
+    interaction.setActive(selection.selected('feature:').length === 1)
+
+  selection.on('selected', activate)
+  selection.on('deselected', activate)
 
   return interaction
 }
@@ -472,7 +478,7 @@ ipcRenderer.on('IPC_EDIT_SELECT_ALL', () => {
 })
 
 ipcRenderer.on('IPC_EDIT_DELETE', () => {
-  const featureIds = selection.selected().filter(s => s.startsWith('feature:'))
+  const featureIds = selection.selected('feature:')
   clearSelection()
 
   const command = deleteFeaturesCommand(featureIds)
