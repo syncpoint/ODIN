@@ -83,6 +83,12 @@ const featureId = feature => feature.getId()
 let layers = {}
 
 /**
+ * selectionLayer :: ol/layer/Vector
+ * Layer for currently selected features.
+ */
+let selectionLayer
+
+/**
  * Vector source for dedicated selection layer.
  * NOTE: Created once; re-used throughout renderer lifetime.
  */
@@ -358,7 +364,7 @@ const createSelect = () => {
 
   const interaction = new Select({
     hitTolerance,
-    layers: Object.values(layers),
+    layers: [...Object.values(layers), selectionLayer],
     features: selectedFeatures,
     style,
     condition: conjunction(click, noAltKey),
@@ -505,7 +511,7 @@ const projectOpened = async map => {
   Object.values(layers).forEach(map.addLayer)
 
   // Selection source and layer.
-  const selectionLayer = new VectorLayer({ style, source: selectionSource })
+  selectionLayer = new VectorLayer({ style, source: selectionSource })
   map.addLayer(selectionLayer)
 
   map.addInteraction(createSelect())
