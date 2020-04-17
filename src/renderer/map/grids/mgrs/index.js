@@ -51,7 +51,7 @@ export default (maxResolutions = [10000, 1200, 250, 20], minResolutions = [0, 25
   return Grids
 }
 
-const getMgrs = (coords, zIndex) => {
+const getText = (coords, zIndex) => {
   const lonLat1 = toLonLat([coords[0], coords[1]])
   const lonLat2 = toLonLat([coords[2], coords[3]])
   let mgrs = coordinateFormat.format({ lng: (lonLat1[0] + lonLat2[0]) / 2, lat: (lonLat1[1] + lonLat2[1]) / 2 }).replace(' ', '')
@@ -74,7 +74,7 @@ const styleFunction = (feature) => {
   const styles = new Style({
     stroke: new Stroke({ color: 'rgba(255,0,0,0.4)', width: 5 / feature.values_.zIndex }),
     text: new Text({
-      text: feature.values_.text || getMgrs(feature.values_.geometry.flatCoordinates, feature.values_.zIndex),
+      text: feature.values_.text || getText(feature.values_.geometry.flatCoordinates, feature.values_.zIndex),
       font: '20px serif',
       textBaseline: 'ideographic',
       rotateWithView: true,

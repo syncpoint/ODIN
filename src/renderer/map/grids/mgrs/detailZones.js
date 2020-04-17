@@ -1,6 +1,7 @@
 import { fromLonLat, toLonLat } from 'ol/proj'
 import coordinateFormat from '../../../../shared/coord-format'
-import { fromMgrs, toMgrs, buildMgrsString, fromatDetailLevel, createLine, wrapX, splitWorlds } from '../utils'
+import { createLine, wrapX, splitWorlds } from '../utils'
+import { fromMgrs, toMgrs, buildMgrsString, fromatDetailLevel, getPrevious } from './mgrs'
 import { getGzdPoint } from './gzdZones'
 import { boundingExtent, intersects, equals } from 'ol/extent'
 
@@ -77,20 +78,12 @@ const draw100kLines = (xGZD, ySegment, extent, lines) => {
   for (let second = 0; second < SQUAREIDENTIEFERS.length; second++) {
     let lastValidPosition
     for (let first = 0; first < SQUAREIDENTIEFERS.length; first++) {
-      let shouldBreak = false
       try {
         lastValidPosition = horizontal100kLines(xGZD, ySegment, first, SQUAREIDENTIEFERS[second], lastValidPosition, extent, lines)
         vertical100kLines(xGZD, ySegment, first, SQUAREIDENTIEFERS[second], firsts, extent, lines)
         firsts[first] = lastValidPosition
       } catch (err) {
-        if (lastValidPosition) {
-          const endPoint = getGzdPoint([lastValidPosition.lon, lastValidPosition.lat], true)
-          const n100kChar = toMgrs([lastValidPosition.lat, lastValidPosition.lon]).substr(3, 1)
-          lines.push(createLine(fromLonLat([endPoint[0], lastValidPosition.lat]), fromLonLat([lastValidPosition.lon, lastValidPosition.lat]), 2, n100kChar, loadedWrapBack))
-          shouldBreak = true
-        }
-      }
-      if (shouldBreak) {
+        // out of segment
         break
       }
     }
@@ -240,20 +233,8 @@ const drawGridLine = (mgrs, lastPosition, lines, depth, text, isHorizontal, step
   } else if (isHorizontal && lastPosition && controllMGRS.substr(2, 1) === mgrs.substr(2, 1) && depth > 0) {
     rightGzdConnection(lonlat, lastPosition, newDepth, lines, text)
   }
-
 }
 
-const getPreviousBand = (band) => {
-  let segment = band
-  if (isNaN(segment)) {
-    segment = Number(band.charCodeAt(0))
-  }
-  let newBand = String.fromCharCode(segment - 1)
-  if (newBand === 'O' || newBand === 'I') {
-    newBand = String.fromCharCode(segment - 2)
-  }
-  return newBand
-}
 
 const bottomGzdConnection = (mgrs, step, newDepth, depth, lines, text) => {
   try {
@@ -271,8 +252,8 @@ const bottomGzdConnection = (mgrs, step, newDepth, depth, lines, text) => {
         borderConnection(lonlat, assumedNextPoint, lines, newDepth, text, false, false)
       }
     } else {
-      const newBand = getPreviousBand(mgrs.substr(2, 1))
-      const newN100k = mgrs.substr(4, 1) === 'A' ? 'V' : getPreviousBand(mgrs.substr(4, 1))
+      const newBand = getPrevious(mgrs.substr(2, 1))
+      const newN100k = mgrs.substr(4, 1) === 'A' ? 'V' : getPrevious(mgrs.substr(4, 1))
       const newMGRS = mgrs.substr(0, 2) + newBand + mgrs.substr(3, 1) + newN100k + mgrs.substr(5, 10)
       const source = fromMgrs(newMGRS)
       const controllMGRS = toMgrs([source[0], source[1]], 5)
