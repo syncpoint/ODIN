@@ -97,9 +97,12 @@ const selectionSource = new VectorSource()
 
 /**
  * sources :: () -> [ol/source/Vector]
- * Underlying layer sources.
+ * Underlying layer sources incl. selection source.
  */
-const sources = () => Object.values(layers).map(layer => layer.getSource())
+const sources = () => [
+  ...Object.values(layers).map(layer => layer.getSource()),
+  selectionSource
+]
 
 /**
  * geometrySource :: (ol/Feature | ol/geom/Geometry) -> ol/source/Vector
@@ -115,7 +118,7 @@ const featureById = id => {
   const lookup = ([head, ...tail]) => head
     ? head.getFeatureById(id) || lookup(tail)
     : null
-  return lookup([...sources(), selectionSource])
+  return lookup(sources())
 }
 
 const featuresById = ids => ids.map(featureById)
@@ -261,6 +264,15 @@ const addSelection = features => {
 }
 
 /**
+ * removeSelection :: [Feature] => unit
+ * Update selection and remove features from collection.
+ */
+const removeSelection = features => {
+  deselect(features)
+  features.forEach(selectedFeatures.remove.bind(selectedFeatures))
+}
+
+/**
  * clearSelection :: () => unit
  * Update selection and add clear collection.
  */
@@ -354,7 +366,7 @@ const deleteFeaturesCommand = featureIds => {
 // SECTION: Interactions.
 
 const hitTolerance = 3
-const noAltKey = ({ originalEvent }) => originalEvent.altKey !== true
+const noAltKey = ({ originalEvent }) => originalEvent.altKey !== true // macOS: option key
 const noShiftKey = ({ originalEvent }) => originalEvent.shiftKey !== true
 const conjunction = (...ps) => v => ps.reduce((acc, p) => acc && p(v), true)
 
@@ -369,6 +381,7 @@ const createSelect = () => {
     features: selectedFeatures,
     style,
     condition: conjunction(click, noAltKey),
+    toggleCondition: platformModifierKeyOnly, // macOS: command
     multi: false // don't select all features under cursor at once.
   })
 
@@ -390,6 +403,7 @@ const createModify = () => {
   const interaction = new Modify({
     hitTolerance,
     features: selectedFeatures,
+    // Allow translate while editing (with shift key pressed):
     condition: conjunction(primaryAction, noShiftKey)
   })
 
@@ -468,7 +482,14 @@ const createBoxSelect = () => {
       })
     })
 
-    addSelection(features)
+    const [additions, removals] = features.reduce((acc, feature) => {
+      if (selection.isSelected(feature.getId())) acc[1].push(feature)
+      else acc[0].push(feature)
+      return acc
+    }, [[], []])
+
+    removeSelection(removals)
+    addSelection(additions)
   })
 
   return interaction
