@@ -6,8 +6,8 @@ import { boundingExtent, intersects, equals } from 'ol/extent'
 
 const SQUAREIDENTIEFERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 
-var loadedExtent
-var loadedWrapBack
+let loadedExtent
+let loadedWrapBack
 export const getDetailGrid = async (extent, projection, depth, callback) => {
   if (loadedExtent && equals(extent, loadedExtent)) {
     return

@@ -8,12 +8,12 @@ import { bbox, all } from 'ol/loadingstrategy'
 import { getGzdGrid } from './gzdZones'
 import { getDetailGrid } from './detailZones'
 
-export default (maxResolutions = [10000, 1200, 250, 20], minResolutions = [0, 250, 20, 0]) => {
+export default (maxResolutions = [10000, 1200, 250, 20], minResolutions = [0, 250, 20, 0], zIndex = 0) => {
   const Grids = []
-  const vectorSourceGZD = new VectorSource({
+  const gzdSource = new VectorSource({
     loader: (extent, resolution, projection) => getGzdGrid(projection.extent_, (features) => {
-      vectorSourceGZD.clear()
-      vectorSourceGZD.addFeatures(features)
+      gzdSource.clear()
+      gzdSource.addFeatures(features)
     }),
     strategy: all,
     wrapX: true
@@ -22,18 +22,18 @@ export default (maxResolutions = [10000, 1200, 250, 20], minResolutions = [0, 25
     new VectorLayer({
       maxResolution: maxResolutions[0],
       minResolution: minResolutions[0],
-      source: vectorSourceGZD,
+      zIndex: zIndex,
+      source: gzdSource,
       style: styleFunction
     })
   )
   for (let i = 0; i < 3; i++) {
-    const vectorSourceDetailSquares = new VectorSource({
+    const detailSource = new VectorSource({
       loader: async (extent, resolution, projection) => {
         getDetailGrid(extent, projection, i, (features) => {
-          vectorSourceDetailSquares.clear()
-          vectorSourceDetailSquares.addFeatures(features)
+          detailSource.clear()
+          detailSource.addFeatures(features)
         })
-
       },
       strategy: bbox,
       wrapX: false
@@ -42,7 +42,8 @@ export default (maxResolutions = [10000, 1200, 250, 20], minResolutions = [0, 25
       new VectorLayer({
         maxResolution: maxResolutions[i + 1],
         minResolution: minResolutions[i + 1],
-        source: vectorSourceDetailSquares,
+        zIndex: zIndex,
+        source: detailSource,
         style: styleFunction
       })
     )

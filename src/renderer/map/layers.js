@@ -76,7 +76,10 @@ const loadLayers = async (context, filenames) => {
 const initialize = async (context, project) => {
   await loadLayers(context, project.layerFiles())
   context.layers.forEach(context.addLayer)
-  getMgrsLayers().forEach(context.addLayer)
+
+  const gridtype = project.preferences().grid
+  ipcRenderer.send('grid', gridtype)
+  context.toggleGrid('init', gridtype)
 
   // Dedicated layer for selected features:
   context.selectionSource = new VectorSource()
@@ -112,6 +115,7 @@ export default map => {
     disposables.dispose()
     disposables = disposable.of()
   }
+  const gridLayers = []
 
   const context = {
     map,
@@ -126,6 +130,24 @@ export default map => {
       map.addLayer(layer)
       disposables.addDisposable(() => map.removeLayer(layer))
       return layer
+    },
+
+    toggleGrid: (event, type) => {
+      const storedType = project.preferences().grid
+      if (storedType === type && event !== 'init') {
+        return
+      }
+
+      while (gridLayers.length > 0) {
+        map.removeLayer(gridLayers.pop())
+      }
+      if (type === 'mgrs') {
+        getMgrsLayers().forEach((layer) => {
+          gridLayers.push(layer)
+          map.addLayer(layer)
+        })
+      }
+      project.updatePreferences({ grid: type })
     }
   }
 
@@ -133,6 +155,8 @@ export default map => {
     context.deselectAllFeatures()
     context.selectAllFeatures()
   }
+
+  ipcRenderer.on('grid', context.toggleGrid)
 
   ipcRenderer.on('IPC_EDIT_SELECT_ALL', selectAll)
   disposables.addDisposable(() => ipcRenderer.off('IPC_EDIT_SELECT_ALL', selectAll))

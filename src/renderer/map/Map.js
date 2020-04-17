@@ -49,7 +49,6 @@ const effect = props => () => {
     target: id,
     controls: [scaleLine]
   })
-
   map.on('moveend', viewportChanged(view))
   map.on('pointermove', event => {
     const lonLatCooridinate = toLonLat(event.coordinate)
