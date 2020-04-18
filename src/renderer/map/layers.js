@@ -283,6 +283,16 @@ const clearSelection = () => {
 }
 
 /**
+ * cloneSelection :: () -> (string ~> ol/Feature)
+ * Clone selected features.
+ */
+const cloneSelection = () =>
+  featuresById(selection.selected('feature:'))
+    .map(feature => [feature.getId(), cloneFeature(feature)])
+    .reduce((acc, [id, clone]) => K(acc)(acc => (acc[id] = clone)), {})
+
+
+/**
  * Move selected features between feature layer and selection layer.
  */
 
@@ -329,39 +339,34 @@ const updateGeometryCommand = (initial, current) => ({
 })
 
 /**
- * insertFeaturesCommand :: (string ~> ol/feature) -> command
+ * insertFeaturesCommand :: (string ~> ol/Feature) -> command
  * Add given features to corresponding input layer collections.
  * NOTE: Input layers are identified by feature id (feature map keys).
  */
 const insertFeaturesCommand = features => ({
-  inverse: () => deleteFeaturesCommand(Object.keys(features)),
+  inverse: () => deleteFeaturesCommand(features),
   apply: () => {
-    const setFeatureId = ([id, feature]) => K(feature)(feature => feature.setId(id))
-    Object.entries(features).map(setFeatureId).forEach(pushFeature)
+    const clones = Object.entries(features)
+      .map(([id, feature]) => [id, cloneFeature(feature)])
+      .map(([id, clone]) => K(clone)(clone => clone.setId(id)))
+
+    clones.forEach(pushFeature)
     writeFeatures(Object.keys(features))
   }
 })
 
 /**
- * deleteFeaturesCommand :: [string] -> command
+ * deleteFeaturesCommand :: (string ~> ol/Feature) -> command
  * Delete features with given ids.
  */
-const deleteFeaturesCommand = featureIds => {
-
-  // Collect state to revert command effect.
-  // clones :: string ~> ol/Feature
-  const clones = featuresById(featureIds)
-    .map(feature => [feature.getId(), cloneFeature(feature)])
-    .reduce((acc, [id, clone]) => K(acc)(acc => (acc[id] = clone)), {})
-
-  return {
-    inverse: () => insertFeaturesCommand(clones),
-    apply: () => {
-      featuresById(featureIds).forEach(removeFeature)
-      writeFeatures(featureIds)
-    }
+const deleteFeaturesCommand = features => ({
+  inverse: () => insertFeaturesCommand(features),
+  apply: () => {
+    const featureIds = Object.keys(features)
+    featuresById(featureIds).forEach(removeFeature)
+    writeFeatures(featureIds)
   }
-}
+})
 
 
 // --
@@ -502,10 +507,11 @@ const createBoxSelect = () => {
 // SECTION: IPC/mousetrap hooks.
 
 const deleteSelection = () => {
-  const featureIds = selection.selected('feature:')
+  const clones = cloneSelection()
+  // FIXME: should not be called explicitly
   clearSelection()
 
-  const command = deleteFeaturesCommand(featureIds)
+  const command = deleteFeaturesCommand(clones)
   command.apply()
   undo.push(command.inverse())
 }
