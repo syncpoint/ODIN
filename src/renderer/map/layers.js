@@ -514,7 +514,23 @@ ipcRenderer.on('IPC_EDIT_SELECT_ALL', () => {
   addSelection(features)
 })
 
+const editCut = () => {
+  console.log('IPC_EDIT_CUT')
+}
+
+const editCopy = () => {
+  console.log('IPC_EDIT_COPY')
+}
+
+const editPaste = () => {
+  console.log('IPC_EDIT_PASTE')
+}
+
 ipcRenderer.on('IPC_EDIT_DELETE', deleteSelection)
+ipcRenderer.on('IPC_EDIT_CUT', editCut)
+ipcRenderer.on('IPC_EDIT_COPY', editCopy)
+ipcRenderer.on('IPC_EDIT_PASTE', editPaste)
+
 Mousetrap.bind('del', deleteSelection) // macOS: fn+backspace
 Mousetrap.bind('command+backspace', deleteSelection)
 

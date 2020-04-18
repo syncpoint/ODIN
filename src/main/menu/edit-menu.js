@@ -25,13 +25,28 @@ const menu = i18n => {
       },
       { type: 'separator' },
       {
-        role: 'cut', label: i18n.t('edit.cut')
+        label: i18n.t('edit.cut'),
+        accelerator: 'CmdOrCtrl+X',
+        click: onclick(browserWindow => {
+          browserWindow.webContents.cut()
+          browserWindow.send('IPC_EDIT_CUT')
+        })
       },
       {
-        role: 'copy', label: i18n.t('edit.copy')
+        label: i18n.t('edit.copy'),
+        accelerator: 'CmdOrCtrl+C',
+        click: onclick(browserWindow => {
+          browserWindow.webContents.copy()
+          browserWindow.send('IPC_EDIT_COPY')
+        })
       },
       {
-        role: 'paste', label: i18n.t('edit.paste')
+        label: i18n.t('edit.paste'),
+        accelerator: 'CmdOrCtrl+V',
+        click: onclick(browserWindow => {
+          browserWindow.webContents.paste()
+          browserWindow.send('IPC_EDIT_PASTE')
+        })
       },
       {
         role: 'pasteandmatchstyle', label: i18n.t('edit.pasteAndMatchStyle')
