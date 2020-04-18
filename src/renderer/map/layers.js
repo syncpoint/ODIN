@@ -57,6 +57,15 @@ const cloneGeometries = features =>
     .reduce((acc, [id, geometry]) => K(acc)(acc => (acc[id] = geometry)), {})
 
 /**
+ * cloneFeature :: ol/Feature -> ol/Feature
+ * Clone feature with 'internal properties' removed.
+ * NOTE: Clone looses id from original feature.
+ */
+const cloneFeature = feature => K(feature.clone())(clone => {
+  clone.unset('selected')
+})
+
+/**
  * layerUri :: (ol/Feature | string) -> string
  * Map feature id (from feature or feature URI) to URI of containing layer.
  */
@@ -150,15 +159,7 @@ const addFeatureCollection = ([layerUri, features]) => {
  */
 const writeFeatureCollection = layerUri => {
   const features = featureCollections[layerUri]
-
-  // Filter internal feature properties.
-  // Feature id is excluded from clone by default.
-  const clones = features.getArray().map(feature => {
-    const clone = feature.clone()
-    clone.unset('selected')
-    return clone
-  })
-
+  const clones = features.getArray().map(cloneFeature)
   const filename = features.get('filename')
   fs.writeFileSync(filename, geoJSON.writeFeatures(clones))
 }
@@ -348,9 +349,10 @@ const insertFeaturesCommand = features => ({
 const deleteFeaturesCommand = featureIds => {
 
   // Collect state to revert command effect.
-  const putClone = feature => acc => (acc[feature.getId()] = feature.clone())
+  // clones :: string ~> ol/Feature
   const clones = featuresById(featureIds)
-    .reduce((acc, feature) => K(acc)(putClone(feature)), {})
+    .map(feature => [feature.getId(), cloneFeature(feature)])
+    .reduce((acc, [id, clone]) => K(acc)(acc => (acc[id] = clone)), {})
 
   return {
     inverse: () => insertFeaturesCommand(clones),
