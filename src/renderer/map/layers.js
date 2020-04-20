@@ -57,22 +57,44 @@ const cloneGeometries = features =>
     .reduce((acc, [id, geometry]) => K(acc)(acc => (acc[id] = geometry)), {})
 
 /**
+ * cloneFeature :: ol/Feature -> ol/Feature
+ * Clone feature with 'internal properties' removed.
+ * NOTE: Clone looses id from original feature.
+ */
+const cloneFeature = feature => K(feature.clone())(clone => {
+  clone.unset('selected')
+})
+
+/**
+ * layerId :: string -> string
+ */
+const layerId = uri =>
+  uri.startsWith('layer:')
+    ? uri.match(/layer:(.*)/)[1]
+    : uri.match(/feature:(.*)\/.*/)[1]
+
+/**
  * layerUri :: (ol/Feature | string) -> string
  * Map feature id (from feature or feature URI) to URI of containing layer.
  */
 const layerUri = featureOrUri => {
-  const id = (featureOrUri instanceof Feature)
+  const featureUri = (featureOrUri instanceof Feature)
     ? featureOrUri.getId()
     : featureOrUri
 
-  const layerId = id.match(/feature:(.*)\/.*/)[1]
-  return `layer:${layerId}`
+  return `layer:${layerId(featureUri)}`
 }
 
 /**
  * featureId :: ol/Feature -> string
  */
 const featureId = feature => feature.getId()
+
+/**
+ * assignFeatureId :: string -> ol/Feature -> ol/Feature
+ */
+const assignFeatureId = layerId => feature =>
+  K(feature)(feature => feature.setId(`feature:${layerId}/${uuid()}`))
 
 // --
 // SECTION: Geometry-specific vector sources and layers.
@@ -121,7 +143,7 @@ const featureById = id => {
   return lookup(sources())
 }
 
-const featuresById = ids => ids.map(featureById)
+const featuresById = ids => ids.map(featureById).filter(x => x)
 
 
 // --
@@ -141,7 +163,15 @@ const addFeatureCollection = ([layerUri, features]) => {
 
   features.forEach(feature => geometrySource(feature).addFeature(feature))
   features.on('add', ({ element }) => geometrySource(element).addFeature(element))
-  features.on('remove', ({ element }) => geometrySource(element).removeFeature(element))
+
+  features.on('remove', ({ element }) => {
+    const source = selection.isSelected(element.getId())
+      ? selectionSource
+      : geometrySource(element)
+
+    source.removeFeature(element)
+    selection.deselect([element.getId()])
+  })
 }
 
 /**
@@ -150,15 +180,7 @@ const addFeatureCollection = ([layerUri, features]) => {
  */
 const writeFeatureCollection = layerUri => {
   const features = featureCollections[layerUri]
-
-  // Filter internal feature properties.
-  // Feature id is excluded from clone by default.
-  const clones = features.getArray().map(feature => {
-    const clone = feature.clone()
-    clone.unset('selected')
-    return clone
-  })
-
+  const clones = features.getArray().map(cloneFeature)
   const filename = features.get('filename')
   fs.writeFileSync(filename, geoJSON.writeFeatures(clones))
 }
@@ -200,11 +222,7 @@ const loadFeatures = async filename => {
   // Use mutable ol/Collection to write current layer snapshot to file.
   const features = new Collection(geoJSON.readFeatures(contents))
   features.set('filename', filename)
-
-  features.forEach(feature => {
-    feature.setId(`feature:${layerId}/${uuid()}`)
-  })
-
+  features.forEach(assignFeatureId(layerId))
   return [`layer:${layerId}`, features]
 }
 
@@ -264,6 +282,14 @@ const addSelection = features => {
 }
 
 /**
+ * replaceSelection :: [ol/Feature] -> unit
+ */
+const replaceSelection = features => {
+  clearSelection()
+  addSelection(features)
+}
+
+/**
  * removeSelection :: [Feature] => unit
  * Update selection and remove features from collection.
  */
@@ -280,6 +306,7 @@ const clearSelection = () => {
   selection.deselect()
   selectedFeatures.clear()
 }
+
 
 /**
  * Move selected features between feature layer and selection layer.
@@ -328,37 +355,118 @@ const updateGeometryCommand = (initial, current) => ({
 })
 
 /**
- * insertFeaturesCommand :: (string ~> ol/feature) -> command
+ * insertFeaturesCommand :: (string ~> [ol/Feature]) -> command
  * Add given features to corresponding input layer collections.
- * NOTE: Input layers are identified by feature id (feature map keys).
  */
-const insertFeaturesCommand = features => ({
-  inverse: () => deleteFeaturesCommand(Object.keys(features)),
-  apply: () => {
-    const setFeatureId = ([id, feature]) => K(feature)(feature => feature.setId(id))
-    Object.entries(features).map(setFeatureId).forEach(pushFeature)
-    writeFeatures(Object.keys(features))
+const insertFeaturesCommand = clones => {
+  const features = clones
+    .map(([layerUri, feature]) => [layerId(layerUri), feature])
+    .map(([layerId, feature]) => K(feature)(assignFeatureId(layerId)))
+
+  const featureIds = features.map(featureId)
+
+  return {
+    inverse: () => deleteFeaturesCommand(featureIds),
+    apply: () => {
+      features.forEach(pushFeature)
+      replaceSelection(features)
+      writeFeatures(featureIds)
+    }
   }
-})
+}
 
 /**
- * deleteFeaturesCommand :: [string] -> command
+ * deleteFeaturesCommand :: (string ~> ol/Feature) -> command
  * Delete features with given ids.
  */
 const deleteFeaturesCommand = featureIds => {
-
-  // Collect state to revert command effect.
-  const putClone = feature => acc => (acc[feature.getId()] = feature.clone())
-  const clones = featuresById(featureIds)
-    .reduce((acc, feature) => K(acc)(putClone(feature)), {})
+  const features = featuresById(featureIds)
+  const clones = features.map(feature => [layerUri(feature), cloneFeature(feature)])
 
   return {
     inverse: () => insertFeaturesCommand(clones),
     apply: () => {
-      featuresById(featureIds).forEach(removeFeature)
+      features.forEach(removeFeature)
       writeFeatures(featureIds)
     }
   }
+}
+
+
+// --
+// SECTION: Clipboard
+
+/**
+ * clipboardWrite :: [string] -> unit
+ * Write serialize (JSON) features to clipboard.
+ */
+const clipboardWrite = featureIds => {
+  const writeFeatures = feature => [layerUri(feature), geoJSON.writeFeature(feature)]
+  const content = featuresById(featureIds).map(writeFeatures)
+  ipcRenderer.send('IPC_CLIPBOARD_WRITE', content)
+}
+
+/**
+ * clipboardRead :: () -> [string, string]
+ * Read serialized features from clipboard.
+ * Result list contains 2-tuples: layer URI, feature JSON.
+ */
+const clipboardRead = () =>
+  ipcRenderer.invoke('IPC_CLIPBOARD_READ')
+
+/**
+ * editSelectAll :: () -> unit
+ */
+const editSelectAll = () => {
+  const features = sources().reduce((acc, source) => acc.concat(source.getFeatures()), [])
+  replaceSelection(features)
+}
+
+/**
+ * editDelete :: () -> unit
+ * Delete selected features.
+ */
+const editDelete = () => {
+  const featureIds = selection.selected('feature:')
+  const command = deleteFeaturesCommand(featureIds)
+  command.apply()
+  undo.push(command.inverse())
+}
+
+/**
+ * editCut :: () -> unit
+ * Write current selection to clipboard and delete selected features.
+ */
+const editCut = () => {
+  const featureIds = selection.selected('feature:')
+  clipboardWrite(featureIds)
+
+  const command = deleteFeaturesCommand(featureIds)
+  command.apply()
+  undo.push(command.inverse())
+}
+
+/**
+ * editCopy :: () -> unit
+ * Write current selection to clipboard.
+ */
+const editCopy = () =>
+  clipboardWrite(selection.selected('feature:'))
+
+/**
+ * editPaste :: () -> unit
+ * Insert features from clipboard.
+ */
+const editPaste = async () => {
+  const readFeature = ([layerUri, json]) => [layerUri, geoJSON.readFeature(json)]
+
+  const content = await clipboardRead()
+  if (!content) return
+
+  const clones = content.map(readFeature)
+  const command = insertFeaturesCommand(clones)
+  command.apply()
+  undo.push(command.inverse())
 }
 
 
@@ -499,24 +607,16 @@ const createBoxSelect = () => {
 // --
 // SECTION: IPC/mousetrap hooks.
 
-const deleteSelection = () => {
-  const featureIds = selection.selected('feature:')
-  clearSelection()
+ipcRenderer.on('IPC_EDIT_SELECT_ALL', editSelectAll)
+ipcRenderer.on('IPC_EDIT_DELETE', editDelete)
+ipcRenderer.on('IPC_EDIT_CUT', editCut)
+ipcRenderer.on('IPC_EDIT_COPY', editCopy)
+ipcRenderer.on('IPC_EDIT_PASTE', editPaste)
 
-  const command = deleteFeaturesCommand(featureIds)
-  command.apply()
-  undo.push(command.inverse())
-}
+Mousetrap.bind('del', editDelete) // macOS: fn+backspace
+Mousetrap.bind('command+backspace', editDelete)
+Mousetrap.bind('esc', clearSelection)
 
-ipcRenderer.on('IPC_EDIT_SELECT_ALL', () => {
-  clearSelection()
-  const features = sources().reduce((acc, source) => acc.concat(source.getFeatures()), [])
-  addSelection(features)
-})
-
-ipcRenderer.on('IPC_EDIT_DELETE', deleteSelection)
-Mousetrap.bind('del', deleteSelection) // macOS: fn+backspace
-Mousetrap.bind('command+backspace', deleteSelection)
 
 // --
 // SECTION: Handle project events.
