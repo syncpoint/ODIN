@@ -8,9 +8,9 @@ import { forward, inverse } from 'mgrs'
  * @returns {string} MGRS string
  * */
 export const toMgrs = (lonlat) => {
-  let mgrs = forward(lonlat, 5)
+  const mgrs = forward(lonlat, 5)
   if (mgrs.length === 14) {
-    mgrs = `0${mgrs}`
+    return `0${mgrs}`
   }
   return mgrs
 }
@@ -21,18 +21,12 @@ export const toMgrs = (lonlat) => {
  * @returns {[number]} Array for lon lat coords [lon,lat]
  * */
 export const fromMgrs = (mgrs) => {
-  let lonlat
-  if (mgrs.startsWith('0')) {
-    lonlat = inverse(mgrs.substr(1))
-  } else {
-    lonlat = inverse(mgrs)
-  }
-  return lonlat
+  return mgrs.startsWith('0') ? inverse(mgrs.substr(1)) : inverse(mgrs)
 }
 
 /**
  * creates a MGRS String
- * @param {String} xGZD xGZD Zone 01-60
+ * @param {Number} xGZD xGZD Zone 01-60
  * @param {String} ySegment band A-Z
  * @param {String} e100k easting for 100km segments A-Z omitting I and O
  * @param {String} n100k Northing for 100km segments A-V omitting I and O
@@ -40,15 +34,15 @@ export const fromMgrs = (mgrs) => {
  * @param {Number} y 0-100000 100000 changes 100km segment
  */
 export const buildMgrsString = (xGZD, ySegment, e100k, n100k, x = 0, y = 0) => {
-  xGZD = xGZD < 10 ? `0${xGZD}` : xGZD
+  const stringGZD = xGZD < 10 ? `0${xGZD}` : xGZD
   if (x < 100000 && y < 100000) {
-    return `${xGZD}${ySegment}${e100k}${n100k}${fromatDetailLevel(x)}${fromatDetailLevel(y)}`
+    return `${stringGZD}${ySegment}${e100k}${n100k}${fromatDetailLevel(x)}${fromatDetailLevel(y)}`
   } else if (x >= 100000) {
-    const newE100k = n100k === 'Z' ? 'A' : getNext(e100k)
-    return `${xGZD}${ySegment}${newE100k}${n100k}${fromatDetailLevel(0)}${fromatDetailLevel(y)}`
+    const newE100k = e100k === 'Z' ? 'A' : getNext(e100k)
+    return `${stringGZD}${ySegment}${newE100k}${n100k}${fromatDetailLevel(0)}${fromatDetailLevel(y)}`
   } else if (y >= 100000) {
     const newN100k = n100k === 'V' ? 'A' : getNext(n100k)
-    return `${xGZD}${ySegment}${e100k}${newN100k}${fromatDetailLevel(x)}${fromatDetailLevel(0)}`
+    return `${stringGZD}${ySegment}${e100k}${newN100k}${fromatDetailLevel(x)}${fromatDetailLevel(0)}`
   }
 }
 
@@ -67,26 +61,26 @@ export const fromatDetailLevel = (number) => {
 }
 
 export const getNext = (band) => {
-  let segment = band
-  if (isNaN(segment)) {
-    segment = Number(band.charCodeAt(0))
-  }
-  let nextBand = String.fromCharCode(segment + 1)
+  const segment = isNaN(band) ? Number(band.charCodeAt(0)) : band
+  const nextBand = String.fromCharCode(segment + 1)
   if (nextBand === 'O' || nextBand === 'I') {
-    nextBand = String.fromCharCode(segment + 2)
+    return String.fromCharCode(segment + 2)
   }
   return nextBand
 }
 
 
 export const getPrevious = (band) => {
-  let segment = band
-  if (isNaN(segment)) {
-    segment = Number(band.charCodeAt(0))
+  const segment = isNaN(band) ? Number(band.charCodeAt(0)) : band
+  const previousBand = String.fromCharCode(segment - 1)
+  if (previousBand === 'O' || previousBand === 'I') {
+    return String.fromCharCode(segment - 2)
   }
-  let newBand = String.fromCharCode(segment - 1)
-  if (newBand === 'O' || newBand === 'I') {
-    newBand = String.fromCharCode(segment - 2)
-  }
-  return newBand
+  return previousBand
+}
+
+export const isValidSegment = (mgrs) => {
+  const lonlat = fromMgrs(mgrs)
+  const controllMGRS = toMgrs([lonlat[0], lonlat[1]], 5)
+  return controllMGRS.substr(0, 3) === mgrs.substr(0, 3)
 }

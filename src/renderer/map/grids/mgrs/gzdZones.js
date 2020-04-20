@@ -1,7 +1,7 @@
 import { createLine } from '../utils'
 import { fromLonLat, toLonLat } from 'ol/proj'
 
-export const getGzdGrid = (extent, callback) => {
+export const getGzdGrid = (extent) => {
   const lines = []
   const startPoint = getGzdPoint(toLonLat([extent[0], extent[1]]), false)
   const endPoint = getGzdPoint(toLonLat([extent[2], extent[3]]), true)
@@ -24,7 +24,8 @@ export const getGzdGrid = (extent, callback) => {
     x = x + 6
     y = -80
   }
-  const generateXSegment = (lines) => {
+  const generateXSegment = () => {
+    const lines = []
     let x = -180
     const y = 72
     while (x < 180) {
@@ -40,9 +41,11 @@ export const getGzdGrid = (extent, callback) => {
         x = x + 6
       }
     }
+    return lines
   }
-  generateXSegment(lines)
-  callback(lines)
+  const xSegment = generateXSegment()
+  lines.push(...xSegment)
+  return lines
 }
 /**
  * returns Array of [Longitude,latitude] of the GZD End/Startpoint

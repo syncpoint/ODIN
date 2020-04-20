@@ -11,10 +11,11 @@ import { getDetailGrid } from './detailZones'
 export default (maxResolutions = [10000, 1200, 250, 20], minResolutions = [0, 250, 20, 0], zIndex = 0) => {
   const Grids = []
   const gzdSource = new VectorSource({
-    loader: (extent, resolution, projection) => getGzdGrid(projection.extent_, (features) => {
+    loader: (extent, resolution, projection) => {
+      const features = getGzdGrid(projection.extent_)
       gzdSource.clear()
       gzdSource.addFeatures(features)
-    }),
+    },
     strategy: all,
     wrapX: true
   })
@@ -30,10 +31,9 @@ export default (maxResolutions = [10000, 1200, 250, 20], minResolutions = [0, 25
   for (let i = 0; i < 3; i++) {
     const detailSource = new VectorSource({
       loader: async (extent, resolution, projection) => {
-        getDetailGrid(extent, projection, i, (features) => {
-          detailSource.clear()
-          detailSource.addFeatures(features)
-        })
+        const features = getDetailGrid(extent, projection, i)
+        detailSource.clear()
+        detailSource.addFeatures(features)
       },
       strategy: bbox,
       wrapX: false
