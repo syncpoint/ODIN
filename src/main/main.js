@@ -5,6 +5,7 @@ import { buildFromTemplate } from '../main/menu/menu'
 import settings from 'electron-settings'
 import bootstrap from './bootstrap'
 import i18n, { languageKey } from '../i18n'
+import './ipc/clipboard'
 
 // Disable for production:
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
