@@ -412,7 +412,7 @@ const clipboardWrite = featureIds => {
  * Result list contains 2-tuples: layer URI, feature JSON.
  */
 const clipboardRead = () =>
-  ipcRenderer.sendSync('IPC_CLIPBOARD_READ')
+  ipcRenderer.invoke('IPC_CLIPBOARD_READ')
 
 /**
  * editSelectAll :: () -> unit
@@ -457,10 +457,13 @@ const editCopy = () =>
  * editPaste :: () -> unit
  * Insert features from clipboard.
  */
-const editPaste = () => {
+const editPaste = async () => {
   const readFeature = ([layerUri, json]) => [layerUri, geoJSON.readFeature(json)]
-  const clones = clipboardRead().map(readFeature)
 
+  const content = await clipboardRead()
+  if (!content) return
+
+  const clones = content.map(readFeature)
   const command = insertFeaturesCommand(clones)
   command.apply()
   undo.push(command.inverse())

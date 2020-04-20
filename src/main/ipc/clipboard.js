@@ -6,6 +6,5 @@ ipcMain.on('IPC_CLIPBOARD_WRITE', (_, content) => {
   buffer = content
 })
 
-ipcMain.on('IPC_CLIPBOARD_READ', (event) => {
-  event.returnValue = buffer
-})
+// NOTE: result might be undefined.
+ipcMain.handle('IPC_CLIPBOARD_READ', () => buffer)
