@@ -33,9 +33,29 @@ const createProject = async (name = uuid()) => {
 
 const deleteProject = async (projectPath) => {
   if (!exists(projectPath)) return
+
+  /*
+    The function fs.rmdir has a parameter { recursive: true }. As of NodeJs v12 this param
+    is tagged 'experimental' and should not be used in production. Thus we need to use our own
+    implementation.
+  */
+  const rmd = async dir => {
+    const entries = await fs.promises.readdir(dir, { withFileTypes: true })
+    /* process all dir entries in parallel */
+    const results = await Promise.all(entries.map(entry => {
+      const fullPath = path.join(dir, entry.name)
+      const action = entry.isDirectory() ? rmd(fullPath) : fs.promises.unlink(fullPath)
+      /* returns 'undefined' if action was successful, { error } otherwise */
+      return action.catch(error => ({ error }))
+    }))
+    results.forEach(result => {
+      if (result && result.error.code !== 'ENOENT') throw result.error
+    })
+    await fs.promises.rmdir(dir)
+  }
+
   try {
-    /* TODO: option recursive is flagged as EXPERIMENTAL in v12 LTS */
-    return fs.promises.rmdir(projectPath, { recursive: true })
+    return rmd(projectPath)
   } catch (error) {
     console.dir(error)
   }
