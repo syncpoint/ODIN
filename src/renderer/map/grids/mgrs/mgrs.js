@@ -79,8 +79,27 @@ export const getPrevious = (band) => {
   return previousBand
 }
 
-export const isValidSegment = (mgrs) => {
+export const isValidGzdZone = (mgrs, targetMgrs = mgrs) => {
+  const controllMGRS = buildContromllMGRS(mgrs)
+  return controllMGRS.substr(0, 2) === targetMgrs.substr(0, 2)
+}
+export const isValidBand = (mgrs, targetMgrs = mgrs) => {
+  const controllMGRS = buildContromllMGRS(mgrs)
+  return controllMGRS.substr(2, 1) === targetMgrs.substr(2, 1)
+}
+
+export const isValidSegment = (mgrs, targetMgrs = mgrs) => {
+  const controllMGRS = buildContromllMGRS(mgrs)
+  return controllMGRS.substr(0, 3) === targetMgrs.substr(0, 3)
+}
+
+export const isValid100kSegment = (mgrs, targetMgrs = mgrs) => {
+  const controllMGRS = buildContromllMGRS(mgrs)
+  return controllMGRS.substr(0, 5) === targetMgrs.substr(0, 5)
+}
+
+const buildContromllMGRS = (mgrs) => {
   const lonlat = fromMgrs(mgrs)
   const controllMGRS = toMgrs([lonlat[0], lonlat[1]], 5)
-  return controllMGRS.substr(0, 3) === mgrs.substr(0, 3)
+  return controllMGRS
 }

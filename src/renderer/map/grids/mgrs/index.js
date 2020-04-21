@@ -2,8 +2,7 @@ import { Vector as VectorLayer } from 'ol/layer'
 import { Vector as VectorSource } from 'ol/source'
 import { Style, Stroke, Text, Fill } from 'ol/style'
 import { toLonLat } from 'ol/proj'
-import coordinateFormat from '../../../../shared/coord-format'
-// import LatLon from 'geodesy/latlon-ellipsoidal-vincenty'
+import { toMgrs } from './mgrs'
 import { bbox, all } from 'ol/loadingstrategy'
 import { getGzdGrid } from './gzdZones'
 import { getDetailGrid } from './detailZones'
@@ -54,7 +53,7 @@ export default (maxResolutions = [10000, 1200, 250, 20], minResolutions = [0, 25
 const getText = (coords, zIndex) => {
   const lonLat1 = toLonLat([coords[0], coords[1]])
   const lonLat2 = toLonLat([coords[2], coords[3]])
-  let mgrs = coordinateFormat.format({ lng: (lonLat1[0] + lonLat2[0]) / 2, lat: (lonLat1[1] + lonLat2[1]) / 2 }).replace(' ', '')
+  let mgrs = toMgrs([(lonLat1[0] + lonLat2[0]) / 2, (lonLat1[1] + lonLat2[1]) / 2])
   if (mgrs !== '') {
     switch (zIndex) {
       case 1: {
