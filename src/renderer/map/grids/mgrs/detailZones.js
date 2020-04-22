@@ -10,7 +10,7 @@ var loadedExtent
 var loadedWrapBack
 
 /**
- * generates Mgrs grid (not including gzd Zones) for extents that overlap the view extent
+ * generates Mgrs grid (not including gzd Zones) for extents that overlap the view projection
  * @param {import('ol/extent').Extent} extent ol view extent
  * @param {import('ol/proj/Projection')} projection ol view projection
  * @param {Number} depth detail level of the Grid
