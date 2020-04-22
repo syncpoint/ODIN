@@ -2,14 +2,23 @@ import Feature from 'ol/Feature'
 import LineString from 'ol/geom/LineString'
 import { getCenter, getWidth } from 'ol/extent'
 
-export const createLine = (startPoint, endPoint, zIndex, text, wrapBack) => {
+/**
+ * creates a ol LineString
+ * @param {[Number, Number]} startPoint Line start
+ * @param {[Number, Number]} endPoint Line end
+ * @param {Number} visualDepth Number used to calculate the width of a Line
+ * @param {String} text Line text to display
+ * @param {Function} wrapBack function to use for calculating X-Coordinates back to the inital world
+ * @returns {LineString} linestrin feature
+ */
+export const createLine = (startPoint, endPoint, visualDepth, text, wrapBack) => {
   if (wrapBack) {
     startPoint[0] = wrapBack(startPoint[0])
     endPoint[0] = wrapBack(endPoint[0])
   }
   const feature = new Feature({
     geometry: new LineString([startPoint[0], startPoint[1], endPoint[0], endPoint[1]], 'XY'),
-    zIndex: zIndex,
+    detail: visualDepth,
     text: text
   })
   return feature
@@ -17,9 +26,9 @@ export const createLine = (startPoint, endPoint, zIndex, text, wrapBack) => {
 
 /**
  * cuts extent into <= two extents for each world the view is in
- * @param {[Number]} extent view Extent
+ * @param {[Number, Number, Number, Number]} extent view Extent
  * @param {Object} projection view projection
- * @returns {[[Number]]} array of extent
+ * @returns {[[Number, Number, Number, Number],[Number, Number, Number, Number]]} array of extent
  */
 export const splitWorlds = (extent, projection) => {
   const extents = []
@@ -45,10 +54,12 @@ export const splitWorlds = (extent, projection) => {
   return extents
 }
 /**
- * transforms the extent to World 1
+ * transforms the extent to the the centered world
+ * the extent can be over multiple worlds (startPoint < -180° || endPoint > 180°)
+ * since most libraries can't handle those coordinates they need to be transformed into coordinates that fit into the initial world
  * @param {[Number]} extent view Extent
  * @param {Object} projection view projection
- * @returns {{e: [Number], f: function}} e: transformed extent,  f: funbction to transform x coordinates back to the projected world
+ * @returns {{e: [Number], f: Function}} e: transformed extent,  f: function to transform x coordinates back to the initial world
  */
 export const wrapX = (extent, projection) => {
   const projectionExtent = projection.getExtent()
