@@ -2,6 +2,7 @@ import fs from 'fs'
 import uuid from 'uuid-random'
 import { ipcRenderer } from 'electron'
 import Mousetrap from 'mousetrap'
+import * as R from 'ramda'
 
 import Collection from 'ol/Collection'
 import { Vector as VectorSource } from 'ol/source'
@@ -96,6 +97,9 @@ const featureId = feature => feature.getId()
 const assignFeatureId = layerId => feature =>
   K(feature)(feature => feature.setId(`feature:${layerId}/${uuid()}`))
 
+const assignGeometry = geometry => feature =>
+  K(feature)(feature => feature.setGeometry(geometry))
+
 // --
 // SECTION: Geometry-specific vector sources and layers.
 
@@ -107,7 +111,7 @@ let layers = {}
 
 /**
  * selectionLayer :: ol/layer/Vector
- * Layer for currently selected features.
+ * Layer for currently selected features (used for highlighting).
  */
 let selectionLayer
 
@@ -143,18 +147,28 @@ const featureById = id => {
   return lookup(sources())
 }
 
-const featuresById = ids => ids.map(featureById).filter(x => x)
+/**
+ * featuresById :: [string] -> [ol/Feature]
+ * NOTE: Undefined entries are filtered from result.
+ */
+const featuresById = ids =>
+  ids
+    .map(featureById)
+    .filter(x => x)
 
 
 // --
 // SECTION: Input layers as feature collections.
 
 /**
- * featureCollections :: string ~> [ol/Collection<ol/Feature>]
+ * featureCollections :: (string ~> ol/Collection<ol/Feature>)
  * Feature collections per input layer with layer URI as key.
  */
 let featureCollections = {}
 
+/**
+ * addFeatureCollection :: [string, ol/Collection<ol/Feature>] -> unit
+ */
 const addFeatureCollection = ([layerUri, features]) => {
   featureCollections[layerUri] = features
 
@@ -203,17 +217,17 @@ const removeFeature = feature => featureCollections[layerUri(feature)].remove(fe
 // SECTION: Setup layers from project.
 
 /**
- * GeoJSON, by definitions, comes in WGS84.
+ * GeoJSON data, by definitions, comes in WGS84;
+ * OL uses Web-Mercator by default.
  */
 const geoJSON = new GeoJSON({
   dataProjection: 'EPSG:4326', // WGS84
   featureProjection: 'EPSG:3857' // Web-Mercator
 })
 
-
 /**
- * loadFeatures :: string -> Promise(ol/Collection)
- * Load input layers as feature collection.
+ * loadFeatures :: string -> Promise<[string, ol/Collection<ol/Feature>]>
+ * Load input layers as feature collection identified by (fresh) layer URI.
  */
 const loadFeatures = async filename => {
   const layerId = uuid()
@@ -225,7 +239,6 @@ const loadFeatures = async filename => {
   features.forEach(assignFeatureId(layerId))
   return [`layer:${layerId}`, features]
 }
-
 
 /**
  * createLayers :: () -> (string ~> ol/layer/Vector)
@@ -264,13 +277,15 @@ const selectedFeatures = new Collection()
  * select :: [ol/Feature] => unit
  * Update selection without updating collection.
  */
-const select = features => selection.select(features.map(featureId))
+const select = features =>
+  selection.select(features.map(featureId))
 
 /**
  * deselect :: [Feature] => unit
  * Update selection without updating collection.
  */
-const deselect = features => selection.deselect(features.map(featureId))
+const deselect = features =>
+  selection.deselect(features.map(featureId))
 
 /**
  * addSelection :: [Feature] => unit
@@ -340,14 +355,9 @@ selection.on('deselected', ids => {
 const updateGeometryCommand = (initial, current) => ({
   inverse: () => updateGeometryCommand(current, initial),
   apply: () => {
-    const updateGeometry = ([feature, geometry]) => {
-      feature.setGeometry(geometry)
-      return feature
-    }
-
     const features = Object.entries(initial)
       .map(([id, geometry]) => [featureById(id), geometry])
-      .map(updateGeometry)
+      .map(([feature, geometry]) => assignGeometry(geometry)(feature))
 
     // Write features/layers back to disk:
     writeFeatures(features)
@@ -361,7 +371,7 @@ const updateGeometryCommand = (initial, current) => ({
 const insertFeaturesCommand = clones => {
   const features = clones
     .map(([layerUri, feature]) => [layerId(layerUri), feature])
-    .map(([layerId, feature]) => K(feature)(assignFeatureId(layerId)))
+    .map(([layerId, feature]) => assignFeatureId(layerId)(feature))
 
   const featureIds = features.map(featureId)
 
@@ -376,10 +386,12 @@ const insertFeaturesCommand = clones => {
 }
 
 /**
- * deleteFeaturesCommand :: (string ~> ol/Feature) -> command
+ * deleteFeaturesCommand :: [string] -> command
  * Delete features with given ids.
  */
 const deleteFeaturesCommand = featureIds => {
+
+  // Create clones (without ids) to re-insert if necessary.
   const features = featuresById(featureIds)
   const clones = features.map(feature => [layerUri(feature), cloneFeature(feature)])
 
@@ -485,6 +497,8 @@ const createSelect = () => {
 
   const interaction = new Select({
     hitTolerance,
+
+    // Operates on all layers including selection (necessary to detect toggles).
     layers: [...Object.values(layers), selectionLayer],
     features: selectedFeatures,
     style,
@@ -526,6 +540,7 @@ const createModify = () => {
     writeFeatures(features)
   })
 
+  // Activate Modify interaction only for single-select:
   const activate = () =>
     interaction.setActive(selection.selected('feature:').length === 1)
 
@@ -540,6 +555,9 @@ const createModify = () => {
  * Translate, i.e. move feature(s) interaction.
  */
 const createTranslate = () => {
+
+  // initial :: (string ~> ol/geom/Geometry)
+  // Feature geometries before translate operation.
   let initial = {}
 
   const interaction = new Translate({
@@ -554,6 +572,8 @@ const createTranslate = () => {
   interaction.on('translateend', ({ features }) => {
     const current = cloneGeometries(features)
     const command = updateGeometryCommand(initial, current)
+
+    // NOTE: No need to apply; geometries are already up to date.
     undo.push(command)
     writeFeatures(features)
   })
@@ -590,12 +610,8 @@ const createBoxSelect = () => {
       })
     })
 
-    const [additions, removals] = features.reduce((acc, feature) => {
-      if (selection.isSelected(feature.getId())) acc[1].push(feature)
-      else acc[0].push(feature)
-      return acc
-    }, [[], []])
-
+    const isSelected = feature => selection.isSelected(feature.getId())
+    const [removals, additions] = R.partition(isSelected)(features)
     removeSelection(removals)
     addSelection(additions)
   })
