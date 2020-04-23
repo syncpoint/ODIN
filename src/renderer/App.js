@@ -38,7 +38,7 @@ const useStyles = makeStyles((/* theme */) => ({
     display: 'grid',
 
     // Activity Bar width: 40px = 24px icon + 2 x 8px padding
-    gridTemplateColumns: '40px 20em auto 20em',
+    gridTemplateColumns: '48px 20em auto 20em',
     gridGap: '0.5em',
 
     // A: activity bar (buttons to show specific tool panel),

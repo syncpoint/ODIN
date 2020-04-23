@@ -104,21 +104,20 @@ const LayerList = props => {
   const classes = useStyles()
 
   const buttons = () => actions.map((action, index) => (
-    <Tooltip title={tooltips[index]} > 
-      <IconButton key={index} size='small'>
+    <Tooltip key={index} title={tooltips[index]} >
+      <IconButton size='small'>
         { action }
       </IconButton>
     </Tooltip>
   ))
 
   const layer = (layer, index) => {
-    console.log(layer.locked)
     const lockIcon = layer.locked ? <Lock/> : <LockOpen/>
     const visibleIcon = layer.visible ? <Eye/> : <EyeOff/>
     const body = layer.selected ? <b>{layer.name}</b> : layer.name
     return (
       <div key={index} className={classes.item}>
-        <Body key={index}>{body}</Body>
+        <Body>{body}</Body>
         <div className={classes.itemRight}>
           <Tooltip title="Lock Layer" >
             <IconButton size='small'>{lockIcon}</IconButton>

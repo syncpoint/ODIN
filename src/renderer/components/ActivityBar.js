@@ -21,7 +21,13 @@ const useStyles = makeStyles((theme) => ({
   },
   listItem: {
     paddingLeft: 8,
-    paddingRight: 8
+    paddingRight: 8,
+    borderLeft: `${theme.palette.background.paper} solid thick`
+  },
+  'listItem:selected': {
+    paddingLeft: 8,
+    paddingRight: 8,
+    borderLeft: `${theme.palette.primary.light} solid thick`
   }
 }))
 
@@ -35,9 +41,13 @@ const ActivityBar = props => {
     return (
       // ListItem has 16px default left/right padding by default
       <ListItem
-        className={classes.listItem}
+        classes={{
+          root: classes.listItem,
+          selected: classes['listItem:selected']
+        }}
         key={index}
         onClick={() => onActivitySelected(activity.id)}
+        selected={activity.selected}
         button
       >
         <Tooltip title={activity.tooltip} >
