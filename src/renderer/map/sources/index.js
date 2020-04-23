@@ -4,13 +4,7 @@ import WMTS, { optionsFromCapabilities } from 'ol/source/WMTS'
 import WMTSCapabilities from 'ol/format/WMTSCapabilities'
 import { DEVICE_PIXEL_RATIO } from 'ol/has'
 
-import { app, remote } from 'electron'
-import fs from 'fs'
-import path from 'path'
-
-const HOME = remote ? remote.app.getPath('home') : app.getPath('home')
-const ODIN_HOME = path.join(HOME, 'ODIN')
-const ODIN_SOURCES = path.join(ODIN_HOME, 'sources.json')
+import { ipcRenderer } from 'electron'
 
 const DEFAULT_SOURCE = {
   name: 'Open Street Map',
@@ -19,13 +13,6 @@ const DEFAULT_SOURCE = {
 
 const highDPI = DEVICE_PIXEL_RATIO > 1
 const defaultSource = () => from(DEFAULT_SOURCE)
-
-const listSources = async () => {
-  if (!fs.existsSync(ODIN_SOURCES)) return [DEFAULT_SOURCE]
-
-  const sources = await fs.promises.readFile(ODIN_SOURCES, 'utf-8')
-  return JSON.parse(sources)
-}
 
 const fromWMTS = async (source) => {
   try {
@@ -58,7 +45,14 @@ const from = async (source) => {
   }
 }
 
-
+const listSources = async () => {
+  /*
+    Handling the resources (file) required is done by the
+    main process via the 'main/ipc/sources' module.
+  */
+  const sources = await ipcRenderer.invoke('IPC_LIST_SOURCES')
+  return [...sources, ...[DEFAULT_SOURCE]]
+}
 
 export {
   defaultSource,
