@@ -1,6 +1,7 @@
 
 import { forward, inverse } from 'mgrs'
 
+export const SEGMENTIDENTIEFERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 
 /**
  * Conversion of lat/lon to MGRS.
@@ -27,22 +28,26 @@ export const fromMgrs = (mgrs) => {
 /**
  * creates a MGRS String
  * @param {Number} xGZD xGZD Zone 01-60
- * @param {String} ySegment band A-Z
+ * @param {String} band band A-Z
  * @param {String} e100k easting for 100km segments A-Z omitting I and O
  * @param {String} n100k Northing for 100km segments A-V omitting I and O
  * @param {Number} x 0-100000 100000 changes 100km segment
  * @param {Number} y 0-100000 100000 changes 100km segment
  */
-export const buildMgrsString = (xGZD, ySegment, e100k, n100k, x = 0, y = 0) => {
-  const stringGZD = xGZD < 10 ? `0${xGZD}` : xGZD
+export const buildMgrsString = (xGZD, band, e100k, n100k, x = 0, y = 0) => {
+  const stringGZD = xGZD < 10 ? `0${xGZD}` : `${xGZD}`
   if (x < 100000 && y < 100000) {
-    return `${stringGZD}${ySegment}${e100k}${n100k}${fromatDetailLevel(x)}${fromatDetailLevel(y)}`
+    return `${stringGZD}${band}${e100k}${n100k}${fromatDetailLevel(x)}${fromatDetailLevel(y)}`
+  } else if (x >= 100000 && y >= 100000) {
+    const newE100k = e100k === 'Z' ? 'A' : getNext(e100k)
+    const newN100k = n100k === 'V' ? 'A' : getNext(n100k)
+    return `${stringGZD}${band}${newE100k}${newN100k}${fromatDetailLevel(0)}${fromatDetailLevel(0)}`
   } else if (x >= 100000) {
     const newE100k = e100k === 'Z' ? 'A' : getNext(e100k)
-    return `${stringGZD}${ySegment}${newE100k}${n100k}${fromatDetailLevel(0)}${fromatDetailLevel(y)}`
+    return `${stringGZD}${band}${newE100k}${n100k}${fromatDetailLevel(0)}${fromatDetailLevel(y)}`
   } else if (y >= 100000) {
     const newN100k = n100k === 'V' ? 'A' : getNext(n100k)
-    return `${stringGZD}${ySegment}${e100k}${newN100k}${fromatDetailLevel(x)}${fromatDetailLevel(0)}`
+    return `${stringGZD}${band}${e100k}${newN100k}${fromatDetailLevel(x)}${fromatDetailLevel(0)}`
   }
 }
 
@@ -79,27 +84,3 @@ export const getPrevious = (band) => {
   return previousBand
 }
 
-export const isValidGzdZone = (mgrs, targetMgrs = mgrs) => {
-  const controllMGRS = buildContromllMGRS(mgrs)
-  return controllMGRS.substr(0, 2) === targetMgrs.substr(0, 2)
-}
-export const isValidBand = (mgrs, targetMgrs = mgrs) => {
-  const controllMGRS = buildContromllMGRS(mgrs)
-  return controllMGRS.substr(2, 1) === targetMgrs.substr(2, 1)
-}
-
-export const isValidSegment = (mgrs, targetMgrs = mgrs) => {
-  const controllMGRS = buildContromllMGRS(mgrs)
-  return controllMGRS.substr(0, 3) === targetMgrs.substr(0, 3)
-}
-
-export const isValid100kSegment = (mgrs, targetMgrs = mgrs) => {
-  const controllMGRS = buildContromllMGRS(mgrs)
-  return controllMGRS.substr(0, 5) === targetMgrs.substr(0, 5)
-}
-
-const buildContromllMGRS = (mgrs) => {
-  const lonlat = fromMgrs(mgrs)
-  const controllMGRS = toMgrs([lonlat[0], lonlat[1]], 5)
-  return controllMGRS
-}

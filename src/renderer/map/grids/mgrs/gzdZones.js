@@ -72,8 +72,6 @@ const getLineText = (startPoint, endPoint) => {
   }
 }
 
-
-
 /**
  * returns Array of [Longitude,latitude] of the GZD End/Startpoint
  * @param {[number,number]} point [longitude,latitude]
