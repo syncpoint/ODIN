@@ -8,14 +8,11 @@ import MapIcon from '@material-ui/icons/Map'
 import { LayersTriple, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 'mdi-material-ui'
 
 import evented from './evented'
-import i18n from './i18n'
 import OSD from './components/OSD'
 import Map from './map/Map'
 import Management from './components/Management'
 import ActivityBar from './components/ActivityBar'
 import LayerList from './components/LayerList'
-
-const DEFAULT_I18N_NAMESPACE = 'web'
 
 const useStyles = makeStyles((/* theme */) => ({
   overlay: {
@@ -147,31 +144,19 @@ const App = (props) => {
   const [activities, setActivities] = React.useState(initialActivities(classes))
   const [activeTool, setActiveTool] = React.useState(activities[1]) // layers
 
-  // FIXME: strictly speaking, this does not have to be an react effect
-  // TODO: maybe move to i18n.js?
-  React.useEffect(() => {
-    i18n.init({ defaultNS: DEFAULT_I18N_NAMESPACE }).then((/* t */) => {
-
-      /*  Changes the i18n settings whenever the user switches between supported languages */
-      const handleLanguageChanged = (_, i18nInfo) => {
-        if (!i18n.hasResourceBundle(i18nInfo.lng, DEFAULT_I18N_NAMESPACE)) {
-          i18n.addResourceBundle(i18nInfo.lng, DEFAULT_I18N_NAMESPACE, i18nInfo.resourceBundle)
-        }
-        i18n.changeLanguage(i18nInfo.lng)
-      }
-
-      ipcRenderer.on('IPC_LANGUAGE_CHANGED', handleLanguageChanged)
-      // FIXME: is clean-up necessary in one-shot effects?
-      return () => ipcRenderer.removeListener('IPC_LANGUAGE_CHANGED', handleLanguageChanged)
-    })
-  }, [])
-
   React.useEffect(() => {
     setCurrentProjectPath(remote.getCurrentWindow().path)
 
     /*  Tell the main process that React has finished rendering of the App */
     setTimeout(() => ipcRenderer.send('IPC_APP_RENDERING_COMPLETED'), 0)
     ipcRenderer.on('IPC_SHOW_PROJECT_MANAGEMENT', () => setManagement(true))
+
+    /*
+      Normally we need to return a cleanup function in order to remove listeners. Since
+      this is the root of our react app, the only way to unload the component is to
+      close the window - which destroys the ipcRenderer instance. Thus we omit this good
+      practice and do not return any clean up functionality.
+    */
   }, [])
 
   React.useEffect(() => {

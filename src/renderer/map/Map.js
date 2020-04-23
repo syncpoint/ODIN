@@ -6,15 +6,16 @@ import * as ol from 'ol'
 import 'ol/ol.css'
 import { fromLonLat, toLonLat } from 'ol/proj'
 import { ScaleLine } from 'ol/control'
-import { Tile as TileLayer } from 'ol/layer'
-import { OSM } from 'ol/source'
+
 
 import evented from '../evented'
 import project from '../project'
 import coordinateFormat from '../../shared/coord-format'
 import layers from './layers'
+import basemap from './basemap'
 import './style/scalebar.css'
 import undo from '../undo'
+import disposable from '../../shared/disposable'
 
 const zoom = view => view.getZoom()
 const center = view => toLonLat(view.getCenter())
@@ -47,7 +48,6 @@ const effect = props => () => {
 
   const map = new ol.Map({
     view,
-    layers: [new TileLayer({ source: new OSM() })],
     target: id,
     controls: [scaleLine]
   })
@@ -60,19 +60,41 @@ const effect = props => () => {
     evented.emit('OSD_MESSAGE', { message: currentCoordinate, slot: 'C2' })
   })
 
+  /*
+    Handling the basemap layer is done using the basemap module.
+  */
+  basemap(map)
+
+
+  // Provide layer/interaction cleanup.
+  let disposables = disposable.of()
+
+  const addLayer = layer => {
+    map.addLayer(layer)
+    disposables.addDisposable(() => map.removeLayer(layer))
+  }
+
+  const addInteraction = interaction => {
+    map.addInteraction(interaction)
+    disposables.addDisposable(() => map.removeInteraction(interaction))
+  }
+
+  const dispose = () => {
+    disposables.dispose()
+    disposables = disposable.of()
+  }
+
   // Delegate layer management.
   // Note: We don't directly expose complete Map API,
   // but only essential operations.
   layers({
+    addLayer,
+    addInteraction,
+    dispose,
     setCenter: view.setCenter.bind(view),
     setZoom: view.setZoom.bind(view),
-    addLayer: map.addLayer.bind(map),
-    removeLayer: map.removeLayer.bind(map),
-    addInteraction: map.addInteraction.bind(map),
-    removeInteraction: map.removeInteraction.bind(map),
     rotation: view.getRotation.bind(view)
   })
-
 }
 
 const onFocus = () => {

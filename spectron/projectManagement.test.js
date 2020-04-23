@@ -1,7 +1,6 @@
 import hooks from './hooks'
 import { clickElementById } from './UiHelper'
 import assert from 'assert'
-import projects from '../src/shared/projects'
 import path from 'path'
 
 describe('menu test', function () {
@@ -55,11 +54,5 @@ describe('menu test', function () {
     await clickElementById(app, '#backToMap')
   })
 
-  it('imports the test project and switches to it', async function () {
-    app.browserWindow.send('IPC_SHOW_PROJECT_MANAGEMENT')
-    const projectPath = path.join(__dirname, '/test_projects/EmptyProject.odin')
-    await projects.importProject(projectPath)
-    await clickElementById(app, '#switchTo' + emptyTestProject)
-  })
-
 })
+
