@@ -1,15 +1,29 @@
-import project from '../project'
 import { Tile as TileLayer } from 'ol/layer'
+import OSM from 'ol/source/OSM'
+import XYZ from 'ol/source/XYZ'
+import WMTS, { optionsFromCapabilities } from 'ol/source/WMTS'
+import WMTSCapabilities from 'ol/format/WMTSCapabilities'
+import { DEVICE_PIXEL_RATIO } from 'ol/has'
 
+import { ipcRenderer } from 'electron'
+import project from '../project'
 /* extends OL's projection definitions */
 import './epsg'
-import { defaultSource, from } from './sources'
+
+const highDPI = DEVICE_PIXEL_RATIO > 1
+
+const DEFAULT_SOURCE_DESCRIPTOR = {
+  name: 'Open Street Map',
+  type: 'OSM'
+}
 
 /* set by constructor */
 let olMap = null
 
-const setBasemap = source => {
+export const setBasemap = async sourceDescriptor => {
+  if (!olMap) throw new Error('Not initialized! Call constructor with OpenLayers first!')
 
+  const source = await from(sourceDescriptor)
   const baseLayer = new TileLayer({ source: source })
 
   /*
@@ -42,20 +56,62 @@ const setBasemap = source => {
   layers.insertAt(0, baseLayer)
 }
 
-const fromPreferences = async () => {
-  const source = project.preferences().basemap
-  const tileSource = await (source ? from(source) : defaultSource())
-  setBasemap(tileSource)
+/*
+  This is a factory function that takes a source descriptor and returns
+  a OpenLayer source that can be used with OpenLayers Tile Layers.
+*/
+const from = async (sourceDescriptor) => {
+  if (!sourceDescriptor || !sourceDescriptor.type) return new OSM(DEFAULT_SOURCE_DESCRIPTOR)
+
+  const fromWMTS = async descriptor => {
+    try {
+      const response = await fetch(descriptor.url)
+      const capabilities = (new WMTSCapabilities()).read(await response.text())
+      const wmtsOptions = optionsFromCapabilities(capabilities, descriptor.options)
+      wmtsOptions.tilePixelRatio = (highDPI ? 2 : 1)
+      return new WMTS(wmtsOptions)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  switch (sourceDescriptor.type) {
+    case 'OSM': {
+      return new OSM(sourceDescriptor.options)
+    }
+    case 'WMTS': {
+      return await fromWMTS(sourceDescriptor)
+    }
+    case 'XYZ': {
+      return new XYZ(sourceDescriptor.options)
+    }
+    default: {
+      console.error(`unknown source type: ${sourceDescriptor.type}`)
+      return new OSM(DEFAULT_SOURCE_DESCRIPTOR)
+    }
+  }
+}
+
+export const listSourceDescriptors = async () => {
+  /*
+    Handling the resources (file) required is done by the
+    main process via the 'main/ipc/sources' module.
+  */
+  const sourceDescriptors = await ipcRenderer.invoke('IPC_LIST_SOURCE_DESCRIPTORS')
+  return [...sourceDescriptors, ...[DEFAULT_SOURCE_DESCRIPTOR]]
+}
+
+const descriptorFromPreferences = () => {
+  return project.preferences().basemap
 }
 
 const handleProjectLifecycle = action => {
   if (action !== 'open') return
-  fromPreferences()
+  setBasemap(descriptorFromPreferences())
 }
 
 project.register(handleProjectLifecycle)
 
 export default map => {
   olMap = map
-  fromPreferences()
 }
