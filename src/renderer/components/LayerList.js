@@ -1,5 +1,5 @@
-/* eslint-disable */
 import React from 'react'
+import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
 import Paper from '@material-ui/core/Paper'
@@ -7,13 +7,8 @@ import IconButton from '@material-ui/core/IconButton'
 import Tooltip from './Tooltip.js'
 
 import {
-  LockOutline,
-  LockOpenVariantOutline,
   LockOpen,
-  LockOpenVariant,
   Lock,
-  EyeOutline,
-  EyeOffOutline,
   Eye,
   EyeOff,
   LayersMinus,
@@ -68,8 +63,16 @@ const Body = props => {
   )
 }
 
-const actions = [<LayersPlus/>, <LayersMinus/>, <ContentDuplicate/>, <ExportVariant/>]
-const tooltips = ["Add Layer","Delete Layer","Duplicat Layer","Share layer"]
+Body.propTypes = {
+  children: PropTypes.any
+}
+
+const actions = [
+  { icon: <LayersPlus/>, tooltip: 'Add Layer' },
+  { icon: <LayersMinus/>, tooltip: 'Delete Layer' },
+  { icon: <ContentDuplicate/>, tooltip: 'Duplicat Layer' },
+  { icon: <ExportVariant/>, tooltip: 'Share layer' }
+]
 
 const layers = [
   {
@@ -103,10 +106,10 @@ const layers = [
 const LayerList = props => {
   const classes = useStyles()
 
-  const buttons = () => actions.map((action, index) => (
-    <Tooltip key={index} title={tooltips[index]} >
+  const buttons = () => actions.map(({ icon, tooltip }, index) => (
+    <Tooltip key={index} title={tooltip} >
       <IconButton size='small'>
-        { action }
+        { icon }
       </IconButton>
     </Tooltip>
   ))
