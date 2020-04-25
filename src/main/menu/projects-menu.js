@@ -9,6 +9,14 @@ const menu = i18n => ({
         /* browserWindow is undefined if minimized or closed */
         if (browserWindow) browserWindow.send('IPC_SHOW_PROJECT_MANAGEMENT')
       }
+    },
+    {
+      label: i18n.t('Manage Basemaps'),
+      accelerator: 'CmdOrCtrl+Alt+B',
+      click: (menuItem, browserWindow) => {
+        /* browserWindow is undefined if minimized or closed */
+        if (browserWindow) browserWindow.send('IPC_SHOW_BASEMAP_MANAGEMENT')
+      }
     }
   ]
 })
