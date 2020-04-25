@@ -6,6 +6,7 @@ import Category from '@material-ui/icons/Category'
 import PermDataSettingIcon from '@material-ui/icons/PermDataSetting'
 import MapIcon from '@material-ui/icons/Map'
 import { LayersTriple, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 'mdi-material-ui'
+import 'typeface-roboto'
 
 import evented from './evented'
 import OSD from './components/OSD'
