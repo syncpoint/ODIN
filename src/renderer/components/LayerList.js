@@ -20,7 +20,8 @@ import {
 const useStyles = makeStyles((theme) => ({
   panel: {
     gridArea: 'L',
-    pointerEvents: 'auto'
+    pointerEvents: 'auto',
+    fontFamily: 'Roboto'
   },
 
   buttonGroup: {
@@ -35,8 +36,7 @@ const useStyles = makeStyles((theme) => ({
     gridTemplateColumns: 'auto auto',
     gridTemplateAreas: '"L R"',
     padding: '8px 8px', // top/bottom left/right
-    // borderBottom: '1px solid #cccccc',
-    fontFamily: 'Roboto'
+    borderBottom: '1px solid #cccccc'
   },
 
   itemLeft: {

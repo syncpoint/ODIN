@@ -13,16 +13,9 @@ const useStyles = makeStyles((theme) => ({
     gridArea: 'A',
     pointerEvents: 'auto'
   },
-  icon: {
-    color: 'lightgray'
-  },
-  selectedIcon: {
-    color: 'black'
-  },
   listItem: {
-    paddingLeft: 8,
-    paddingRight: 8,
-    borderLeft: `${theme.palette.background.paper} solid thick`
+    paddingLeft: 13, // assumimg thick border is 5px (8px + 5px)
+    paddingRight: 8
   },
   'listItem:selected': {
     paddingLeft: 8,
@@ -37,7 +30,6 @@ const ActivityBar = props => {
   const classes = useStyles()
 
   const activityItem = (activity, index) => {
-    const iconClass = activity.selected ? classes.selectedIcon : classes.icon
     return (
       // ListItem has 16px default left/right padding by default
       <ListItem
@@ -51,23 +43,6 @@ const ActivityBar = props => {
         button
       >
         <Tooltip title={activity.tooltip} >
-          <ListItemIcon className={iconClass}>
-            {activity.icon}
-          </ListItemIcon>
-        </Tooltip>
-      </ListItem>
-    )
-  }
-
-  const actionItem = (activity, index) => {
-    return (
-      <ListItem
-        className={classes.listItem}
-        key={index}
-        onClick={activity.action}
-        button
-      >
-        <Tooltip title={activity.tooltip} >
           <ListItemIcon>
             {activity.icon}
           </ListItemIcon>
@@ -75,6 +50,20 @@ const ActivityBar = props => {
       </ListItem>
     )
   }
+
+  const actionItem = (activity, index) =>
+    <ListItem
+      className={classes.listItem}
+      key={index}
+      onClick={activity.action}
+      button
+    >
+      <Tooltip title={activity.tooltip} >
+        <ListItemIcon>
+          {activity.icon}
+        </ListItemIcon>
+      </Tooltip>
+    </ListItem>
 
   const listItem = (activity, index) => {
     switch (activity.type) {
@@ -84,13 +73,13 @@ const ActivityBar = props => {
     }
   }
 
-  return <Paper className={classes.activityBar} elevation={6}>
-    <List>
-      {
-        activities.map(listItem)
-      }
-    </List>
-  </Paper>
+  return (
+    <Paper className={classes.activityBar} elevation={6}>
+      <List>
+        { activities.map(listItem) }
+      </List>
+    </Paper>
+  )
 }
 
 ActivityBar.propTypes = {

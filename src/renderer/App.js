@@ -205,8 +205,10 @@ const App = (props) => {
       if (activity.id !== id) activity.selected = false
       else {
         if (activity.selected && !activeTool) setActiveTool(activity)
-        else if (activity.selected && activeTool) setActiveTool(null)
-        else {
+        else if (activity.selected && activeTool) {
+          setActiveTool(null)
+          activity.selected = false
+        } else {
           setActiveTool(activity)
           activity.selected = true
         }
