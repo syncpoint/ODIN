@@ -1,3 +1,8 @@
+
+const onclick = fn => (_, browserWindow) => {
+  if (browserWindow) fn(browserWindow)
+}
+
 const menu = i18n => {
   const m = {
     label: i18n.t('edit.name'),
@@ -5,43 +10,61 @@ const menu = i18n => {
       {
         label: i18n.t('edit.undo'),
         accelerator: 'CmdOrCtrl+Z',
-        click: (_, browserWindow) => {
+        click: onclick(browserWindow => {
           browserWindow.webContents.undo()
-          if (browserWindow) browserWindow.send('IPC_EDIT_UNDO')
-        }
+          browserWindow.send('IPC_EDIT_UNDO')
+        })
       },
       {
         label: i18n.t('edit.redo'),
         accelerator: 'CmdOrCtrl+Shift+Z',
-        click: (_, browserWindow) => {
+        click: onclick(browserWindow => {
           browserWindow.webContents.redo()
-          if (browserWindow) browserWindow.send('IPC_EDIT_REDO')
-        }
+          browserWindow.send('IPC_EDIT_REDO')
+        })
       },
       { type: 'separator' },
       {
-        role: 'cut', label: i18n.t('edit.cut')
+        label: i18n.t('edit.cut'),
+        accelerator: 'CmdOrCtrl+X',
+        click: onclick(browserWindow => {
+          browserWindow.webContents.cut()
+          browserWindow.send('IPC_EDIT_CUT')
+        })
       },
       {
-        role: 'copy', label: i18n.t('edit.copy')
+        label: i18n.t('edit.copy'),
+        accelerator: 'CmdOrCtrl+C',
+        click: onclick(browserWindow => {
+          browserWindow.webContents.copy()
+          browserWindow.send('IPC_EDIT_COPY')
+        })
       },
       {
-        role: 'paste', label: i18n.t('edit.paste')
+        label: i18n.t('edit.paste'),
+        accelerator: 'CmdOrCtrl+V',
+        click: onclick(browserWindow => {
+          browserWindow.webContents.paste()
+          browserWindow.send('IPC_EDIT_PASTE')
+        })
       },
       {
         role: 'pasteandmatchstyle', label: i18n.t('edit.pasteAndMatchStyle')
       },
       {
-        role: 'delete', label: i18n.t('edit.delete')
+        label: i18n.t('edit.delete'),
+        click: onclick(browserWindow => {
+          browserWindow.webContents.delete()
+          browserWindow.send('IPC_EDIT_DELETE')
+        })
       },
       {
         label: i18n.t('edit.selectAll'),
         accelerator: 'CmdOrCtrl+A',
-        click: (_, browserWindow) => {
-          if (!browserWindow) return
+        click: onclick(browserWindow => {
           browserWindow.webContents.selectAll()
           browserWindow.send('IPC_EDIT_SELECT_ALL')
-        }
+        })
       }
 
     // darwin: automatically added:
