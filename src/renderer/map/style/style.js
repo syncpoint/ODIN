@@ -99,15 +99,18 @@ const geometryType = feature => {
 }
 
 export default (feature, resolution) => {
+  // console.log('style', feature.get('hidden'))
+  // if (feature.get('hidden')) return null
+
   const provider = R.cond([
     [R.equals('Point'), R.always(symbolStyle)],
     [R.T, R.always(defaultStyle)]
   ])
 
-  // Only cache style when not selected.
+  // Only cache style when not selected and not hidden.
   const type = geometryType(feature)
   const style = provider(type)(feature, resolution)
-  if (!feature.get('selected')) {
+  if (!feature.get('selected') && !feature.get('hidden')) {
     feature.setStyle(style)
   }
 

@@ -103,6 +103,21 @@ const assignFeatureId = layerId => feature =>
 const assignGeometry = geometry => feature =>
   K(feature)(feature => feature.setGeometry(geometry))
 
+const hideFeature = feature => {
+  feature.set('hidden', true)
+  feature.setStyle(new Style(null))
+}
+
+const unhideFeature = feature => {
+  feature.unset('hidden')
+  feature.setStyle(null)
+}
+
+const isFeatureHidden = feature =>
+  feature.get('hidden')
+
+const isFeatureShowing = feature =>
+  !feature.get('hidden')
 
 // --
 // SECTION: reduces; event targets
@@ -116,7 +131,7 @@ const pushReducer = reducer => {
   if (Object.keys(featureCollections).length) {
     const layers = Object.entries(featureCollections).map(([id, features]) => {
       const locked = collectionArray(features).some(feature => feature.get('locked'))
-      const hidden = collectionArray(features).some(feature => feature.get('hidden'))
+      const hidden = collectionArray(features).some(isFeatureHidden)
 
       return {
         id,
@@ -221,7 +236,7 @@ const addFeatureCollection = ([layerUri, features]) => {
   })
 
   const locked = collectionArray(features).some(feature => feature.get('locked'))
-  const hidden = collectionArray(features).some(feature => feature.get('hidden'))
+  const hidden = collectionArray(features).some(isFeatureHidden)
 
   emit({
     type: 'layerAdded',
@@ -284,7 +299,7 @@ const loadFeatures = async filename => {
 
   // Hide hidden features.
   collectionArray(features)
-    .filter(feature => feature.get('hidden'))
+    .filter(isFeatureHidden)
     .forEach(feature => feature.setStyle(new Style(null)))
 
   features.set('filename', filename)
@@ -486,7 +501,7 @@ const editSelectAll = () => {
   const features = Object.values(featureCollections)
     .flatMap(collectionArray)
     .filter(feature => !feature.get('locked'))
-    .filter(feature => !feature.get('hidden'))
+    .filter(isFeatureShowing)
 
   replaceSelection(features)
 }
@@ -711,19 +726,12 @@ evented.on('layer.toggleLock', id => {
 })
 
 evented.on('layer.toggleShow', id => {
-  const features = featureCollections[id]
-  const hidden = !collectionArray(features).some(feature => feature.get('hidden'))
+  const features = collectionArray(featureCollections[id])
+  const hidden = !features.some(isFeatureHidden)
   if (hidden) {
-    features.forEach(feature => {
-      feature.set('hidden', true)
-      feature.setStyle(new Style(null))
-    })
-  } else {
-    features.forEach(feature => {
-      feature.unset('hidden')
-      feature.setStyle(null)
-    })
-  }
+    removeSelection(features)
+    features.forEach(hideFeature)
+  } else features.forEach(unhideFeature)
 
   writeFeatureCollection(id)
 
