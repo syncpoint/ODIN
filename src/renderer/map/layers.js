@@ -1,4 +1,5 @@
 import fs from 'fs'
+import path from 'path'
 import uuid from 'uuid-random'
 import { ipcRenderer } from 'electron'
 import Mousetrap from 'mousetrap'
@@ -12,12 +13,14 @@ import Feature from 'ol/Feature'
 import { fromLonLat } from 'ol/proj'
 import { Select, Modify, Translate, DragBox } from 'ol/interaction'
 import { click, primaryAction, platformModifierKeyOnly } from 'ol/events/condition'
+import Style from 'ol/style/Style'
 
 import { noop, uniq, K } from '../../shared/combinators'
 import style from './style/style'
 import project from '../project'
 import undo from '../undo'
 import selection from '../selection'
+import evented from '../evented'
 
 
 // --
@@ -99,6 +102,36 @@ const assignFeatureId = layerId => feature =>
 
 const assignGeometry = geometry => feature =>
   K(feature)(feature => feature.setGeometry(geometry))
+
+
+// --
+// SECTION: reduces; event targets
+
+const reducers = []
+
+const pushReducer = reducer => {
+  reducers.push(reducer)
+
+  // Emit snapshot if we already have some layers:
+  if (Object.keys(featureCollections).length) {
+    const layers = Object.entries(featureCollections).map(([id, features]) => {
+      const locked = collectionArray(features).some(feature => feature.get('locked'))
+      const hidden = collectionArray(features).some(feature => feature.get('hidden'))
+
+      return {
+        id,
+        name: path.basename(features.get('filename'), '.json'),
+        locked,
+        hidden
+      }
+    })
+
+    reducer({ type: 'snapshot', layers })
+  }
+}
+
+const emit = event => reducers.forEach(reducer => reducer(event))
+
 
 // --
 // SECTION: Geometry-specific vector sources and layers.
@@ -186,6 +219,19 @@ const addFeatureCollection = ([layerUri, features]) => {
     source.removeFeature(element)
     selection.deselect([element.getId()])
   })
+
+  const locked = collectionArray(features).some(feature => feature.get('locked'))
+  const hidden = collectionArray(features).some(feature => feature.get('hidden'))
+
+  emit({
+    type: 'layerAdded',
+    layer: {
+      id: layerUri,
+      name: path.basename(features.get('filename'), '.json'),
+      locked,
+      hidden
+    }
+  })
 }
 
 /**
@@ -235,6 +281,12 @@ const loadFeatures = async filename => {
 
   // Use mutable ol/Collection to write current layer snapshot to file.
   const features = new Collection(geoJSON.readFeatures(contents))
+
+  // Hide hidden features.
+  collectionArray(features)
+    .filter(feature => feature.get('hidden'))
+    .forEach(feature => feature.setStyle(new Style(null)))
+
   features.set('filename', filename)
   features.forEach(assignFeatureId(layerId))
   return [`layer:${layerId}`, features]
@@ -430,7 +482,12 @@ const clipboardRead = () =>
  * editSelectAll :: () -> unit
  */
 const editSelectAll = () => {
-  const features = sources().reduce((acc, source) => acc.concat(source.getFeatures()), [])
+
+  const features = Object.values(featureCollections)
+    .flatMap(collectionArray)
+    .filter(feature => !feature.get('locked'))
+    .filter(feature => !feature.get('hidden'))
+
   replaceSelection(features)
 }
 
@@ -494,7 +551,6 @@ const conjunction = (...ps) => v => ps.reduce((acc, p) => acc && p(v), true)
  * Select interaction.
  */
 const createSelect = () => {
-
   const interaction = new Select({
     hitTolerance,
 
@@ -504,7 +560,8 @@ const createSelect = () => {
     style,
     condition: conjunction(click, noAltKey),
     toggleCondition: platformModifierKeyOnly, // macOS: command
-    multi: false // don't select all features under cursor at once.
+    multi: false, // don't select all features under cursor at once.
+    filter: feature => !feature.get('locked')
   })
 
   interaction.on('select', ({ selected, deselected }) => {
@@ -606,7 +663,8 @@ const createBoxSelect = () => {
     const extent = interaction.getGeometry().getExtent()
     sources().forEach(source => {
       source.forEachFeatureIntersectingExtent(extent, feature => {
-        features.push(feature)
+        const locked = feature.get('locked')
+        if (!locked) features.push(feature)
       })
     })
 
@@ -633,6 +691,48 @@ Mousetrap.bind('del', editDelete) // macOS: fn+backspace
 Mousetrap.bind('command+backspace', editDelete)
 Mousetrap.bind('esc', clearSelection)
 
+
+// --
+// SECTION: Event handling
+
+evented.on('layer.toggleLock', id => {
+  const features = featureCollections[id]
+  const locked = !collectionArray(features).some(feature => feature.get('locked'))
+  if (locked) features.forEach(feature => feature.set('locked', true))
+  else features.forEach(feature => feature.unset('locked'))
+
+  writeFeatureCollection(id)
+
+  emit({
+    type: 'layerLocked',
+    id,
+    locked
+  })
+})
+
+evented.on('layer.toggleShow', id => {
+  const features = featureCollections[id]
+  const hidden = !collectionArray(features).some(feature => feature.get('hidden'))
+  if (hidden) {
+    features.forEach(feature => {
+      feature.set('hidden', true)
+      feature.setStyle(new Style(null))
+    })
+  } else {
+    features.forEach(feature => {
+      feature.unset('hidden')
+      feature.setStyle(null)
+    })
+  }
+
+  writeFeatureCollection(id)
+
+  emit({
+    type: 'layerHidden',
+    id,
+    hidden
+  })
+})
 
 // --
 // SECTION: Handle project events.
@@ -676,3 +776,12 @@ const projectEventHandlers = {
 
 export default map =>
   project.register(event => (projectEventHandlers[event] || noop)(map))
+
+export const registerReducer = reducer => {
+  pushReducer(reducer)
+}
+
+export const deregisterReducer = reducer => {
+  const index = reducers.indexOf(reducer)
+  if (index !== -1) reducers.splice(index, 1)
+}

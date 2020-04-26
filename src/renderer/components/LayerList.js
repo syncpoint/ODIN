@@ -4,13 +4,17 @@ import { makeStyles } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
 import Paper from '@material-ui/core/Paper'
 import IconButton from '@material-ui/core/IconButton'
+import LockIcon from '@material-ui/icons/Lock'
+import LockOpenIcon from '@material-ui/icons/LockOpen'
+import VisibilityIcon from '@material-ui/icons/Visibility'
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
+
 import Tooltip from './Tooltip.js'
+import { registerReducer, deregisterReducer } from '../map/layers.js'
+import evented from '../evented'
+import { K } from '../../shared/combinators'
 
 import {
-  LockOpen,
-  Lock,
-  Eye,
-  EyeOff,
   LayersMinus,
   LayersPlus,
   ExportVariant,
@@ -41,7 +45,8 @@ const useStyles = makeStyles((theme) => ({
 
   itemLeft: {
     gridArea: 'L',
-    alignSelf: 'center'
+    alignSelf: 'center',
+    userSelect: 'none'
   },
 
   itemRight: {
@@ -74,37 +79,43 @@ const actions = [
   { icon: <ExportVariant/>, tooltip: 'Share layer' }
 ]
 
-const layers = [
-  {
-    name: 'EST Force Laydown',
-    locked: false,
-    visible: true
-  },
-  {
-    name: 'FSCM',
-    locked: false,
-    visible: true
-  },
-  {
-    name: 'Intel',
-    locked: false,
-    visible: true
-  },
-  {
-    name: 'Main Supply Routes',
-    locked: false,
-    visible: false,
-    selected: true
-  },
-  {
-    name: 'Maritime',
-    locked: true,
-    visible: true
+const reducer = (state, event) => {
+  switch (event.type) {
+    case 'snapshot': return event.layers.reduce((acc, layer) => K(acc)(acc => {
+      acc[layer.id] = layer
+    }), {})
+    case 'layerAdded': {
+      const updatedState = { ...state }
+      updatedState[event.layer.id] = event.layer
+      return updatedState
+    }
+    case 'layerHidden': {
+      const updatedState = { ...state }
+      updatedState[event.id].hidden = event.hidden
+      return updatedState
+    }
+    case 'layerLocked': {
+      const updatedState = { ...state }
+      updatedState[event.id].locked = event.locked
+      return updatedState
+    }
+    default: return state
   }
-]
+}
 
 const LayerList = props => {
+
+  const [layers, dispatch] = React.useReducer(reducer, {})
+
+  React.useEffect(() => {
+    registerReducer(dispatch)
+    return () => deregisterReducer(dispatch)
+  }, [])
+
+
   const classes = useStyles()
+  const onLock = layer => () => evented.emit('layer.toggleLock', layer.id)
+  const onShow = layer => () => evented.emit('layer.toggleShow', layer.id)
 
   const buttons = () => actions.map(({ icon, tooltip }, index) => (
     <Tooltip key={index} title={tooltip} >
@@ -114,19 +125,28 @@ const LayerList = props => {
     </Tooltip>
   ))
 
-  const layer = (layer, index) => {
-    const lockIcon = layer.locked ? <Lock/> : <LockOpen/>
-    const visibleIcon = layer.visible ? <Eye/> : <EyeOff/>
+
+  const layer = layer => {
+    const lockIcon = layer.locked ? <LockIcon/> : <LockOpenIcon/>
+    const visibleIcon = layer.hidden ? <VisibilityOffIcon/> : <VisibilityIcon/>
     const body = layer.selected ? <b>{layer.name}</b> : layer.name
     return (
-      <div key={index} className={classes.item}>
+      <div
+        key={layer.id}
+        className={classes.item}
+        onDoubleClick={ event => console.log('doubleClick', event)}
+      >
         <Body>{body}</Body>
         <div className={classes.itemRight}>
           <Tooltip title="Lock Layer" >
-            <IconButton size='small'>{lockIcon}</IconButton>
+            <IconButton size='small' onClick={onLock(layer)}>
+              {lockIcon}
+            </IconButton>
           </Tooltip>
           <Tooltip title="Toggle Visibility" >
-            <IconButton size='small'>{visibleIcon}</IconButton>
+            <IconButton size='small' onClick={onShow(layer)}>
+              {visibleIcon}
+            </IconButton>
           </Tooltip>
         </div>
       </div>
@@ -139,7 +159,7 @@ const LayerList = props => {
       <div className={classes.buttonGroup}>
         { buttons() }
       </div>
-      <List>{ layers.map(layer) }</List>
+      <List>{ Object.values(layers).map(layer) }</List>
     </Paper>
   )
 }
