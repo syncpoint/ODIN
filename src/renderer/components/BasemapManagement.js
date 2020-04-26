@@ -23,6 +23,8 @@ import { fromLonLat } from 'ol/proj'
 import { ipcRenderer } from 'electron'
 
 import Url from './basemap/Url'
+import XYZOptions from './basemap/XYZOptions'
+import WMTSOptions from './basemap/WMTSOptions'
 
 import { useTranslation } from 'react-i18next'
 
@@ -123,7 +125,7 @@ SourceDescriptorList.propTypes = {
 
 const DescriptorDetails = props => {
   const { classes, t, selectedDescriptor } = props
-  const { onCancel, onSave } = props
+  const { onCancel, onSave, onVerify } = props
 
   const [descriptor, setDescriptor] = React.useState(selectedDescriptor)
   const [stepIndex, setStepIndex] = React.useState(0)
@@ -134,10 +136,21 @@ const DescriptorDetails = props => {
   const nextStep = () => setStepIndex(stepIndex => stepIndex + 1)
   const previousStep = () => setStepIndex(stepIndex => stepIndex - 1)
 
-  const handlePropertyChange = (event) => {
+  const handlePropertyChange = event => {
     const updated = { ...descriptor }
     updated[event.target.name] = event.target.value
     setDescriptor(updated)
+  }
+
+  const handleUrlReady = url => {
+    const shadow = { ...descriptor }
+    shadow.type = sourceType
+
+    const options = { ...descriptor.options }
+    options.url = url
+    shadow.options = options
+
+    setDescriptor(shadow)
   }
 
   const steps = [
@@ -147,15 +160,22 @@ const DescriptorDetails = props => {
     'Finalize and save'
   ]
 
-
-
   const Options = props => {
-    return <div id="editOptions">Options go here</div>
+    switch (sourceType) {
+      case 'XYZ': return <XYZOptions />
+      case 'WMTS': return <WMTSOptions />
+      default: return <div>UNKNOWN SOURCE TYPE</div>
+    }
   }
 
-  const Verify = props => (
-    <div>VERIFY goes here</div>
-  )
+  const Verify = props => {
+    const { descriptor } = props
+    React.useEffect(() => {
+      setBasemap(descriptor)
+    })
+    return <div>Use the map preview to verify the basemap settings.</div>
+  }
+  Verify.propTypes = { descriptor: PropTypes.object }
 
   const Finalize = props => {
     return (
@@ -186,12 +206,13 @@ const DescriptorDetails = props => {
       case 0:
         return <Url
           classes={classes}
-          url={selectedDescriptor.url}
-          onValidation={isValid => setAllowNextStep(isValid)}
-          onTypePrediction={sourceType => setSourceType(sourceType)}
+          url={selectedDescriptor.options.url}
+          onValidation={setAllowNextStep}
+          onTypePrediction={setSourceType}
+          onUrlReady={handleUrlReady}
         />
       case 1: return <Options />
-      case 2: return <Verify />
+      case 2: return <Verify descriptor={descriptor}/>
       case 3: return <Finalize />
       default: return <div>UNKNOWN STEP</div>
     }
@@ -250,7 +271,8 @@ DescriptorDetails.propTypes = {
   t: PropTypes.func,
   selectedDescriptor: PropTypes.object,
   onCancel: PropTypes.func,
-  onSave: PropTypes.func
+  onSave: PropTypes.func,
+  onVerify: PropTypes.func
 }
 
 
@@ -331,7 +353,7 @@ const BasemapManagement = props => {
   }
 
   const handleEditNew = () => {
-    setSelectedDescriptor({})
+    setSelectedDescriptor({ options: {} })
     setIsEditing(true)
   }
 
@@ -346,6 +368,7 @@ const BasemapManagement = props => {
             selectedDescriptor={selectedDescriptor}
             onSave={handleEditSave}
             onCancel={handleEditCancel}
+            onVerify={descriptor => setSelectedDescriptor(descriptor)}
           />
           : <Overview classes={classes} t={t}
             onNew={handleEditNew}

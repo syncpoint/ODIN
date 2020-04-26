@@ -12,7 +12,8 @@ const Url = props => {
   const [isValid, setIsValid] = React.useState(false)
   const [predictedUrlType, setPredictedURLType] = React.useState(null)
 
-  const checkUrl = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i
+  // TODO: provide reliable url checker
+  const checkUrl = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,7}(:[0-9]{1,5})?(\/.*)?$/i
   const xyzType = /\{z\}.*\{x\}.*\{-?y\}/i
   const wmtsType = /WMTSCapabilities/i
 
@@ -21,7 +22,8 @@ const Url = props => {
   }
 
   React.useEffect(() => {
-    const result = checkUrl.test(url)
+    // TODO: reestablish url verification
+    const result = true // checkUrl.test(url)
     setIsValid(result)
     props.onValidation(result)
 
@@ -39,6 +41,8 @@ const Url = props => {
         <InputLabel htmlFor="url">{t('basemapManagement.descriptorUrl')}</InputLabel>
         <Input id="url" name="url" defaultValue={url}
           onChange={event => handlePropertyChanged(event.target.value)}
+          onBlur={() => props.onUrlReady(url)}
+          autoFocus={true}
         />
       </FormControl>
     </form>
@@ -48,7 +52,8 @@ Url.propTypes = {
   classes: PropTypes.object,
   url: PropTypes.string,
   onValidation: PropTypes.func,
-  onTypePrediction: PropTypes.func
+  onTypePrediction: PropTypes.func,
+  onUrlReady: PropTypes.func
 }
 
 export default Url
