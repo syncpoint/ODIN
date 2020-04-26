@@ -15,12 +15,12 @@ import { useTranslation } from 'react-i18next'
 
 const useStyles = makeStyles(theme => ({
   management: {
-    padding: '1em',
+    padding: theme.spacing(1.5),
     zIndex: 20,
     display: 'grid',
-    gridTemplateColumns: '1fr 2fr',
+    gridTemplateColumns: '1fr 1fr',
     gridTemplateRows: '3em auto',
-    gridGap: '1em',
+    gridGap: theme.spacing(1.5),
     gridTemplateAreas: `
       "navigation navigation"
       "sources details"
@@ -51,17 +51,21 @@ const useStyles = makeStyles(theme => ({
   },
 
   preview: {
-    margin: '1.5em',
+    margin: theme.spacing(1.5),
     objectFit: 'contain',
     boxShadow: '0 1px 0 rgba(255,255,255,.6), 0 11px 35px 2px rgba(0,0,0,0.56), 0 0 0 1px rgba(0, 0, 0, 0.0)'
   },
 
   actions: {
-    margin: '1.5em'
+    margin: theme.spacing(1.5)
   },
 
   sourceList: {
-    margin: '1.5em'
+    margin: theme.spacing(1.5)
+  },
+
+  formControl: {
+    margin: theme.spacing(1.5)
   }
 }))
 
@@ -100,21 +104,35 @@ SourceDescriptorList.propTypes = {
 }
 
 const DescriptorDetails = props => {
-  const { t, selectedDescriptor } = props
+  const { classes, t, selectedDescriptor } = props
+
+  const [descriptor, setDescriptor] = React.useState(selectedDescriptor)
+
+  const handlePropertyChange = (event) => {
+    const updated = { ...descriptor }
+    updated[event.target.name] = event.target.value
+    setDescriptor(updated)
+  }
+
   return (
-    <div id="descriptorDetails">
-      <FormControl error={false} fullWidth>
-        <InputLabel htmlFor="name">{t('basemapManagement.name')}</InputLabel>
-        <Input id="basemapName" name="basemapName" />
+    <form id="descriptorDetails">
+      <FormControl error={false} fullWidth className={classes.formControl}>
+        <InputLabel htmlFor="descriptorName">{t('basemapManagement.descriptorName')}</InputLabel>
+        <Input id="name" name="name" value={descriptor.name}
+          onChange={handlePropertyChange}
+        />
       </FormControl>
-      <FormControl error={false} fullWidth>
-        <InputLabel htmlFor="url">{t('basemapManagement.url')}</InputLabel>
-        <Input id="basemapUrl" name="basemapUrl" />
+      <FormControl error={false} fullWidth className={classes.formControl}>
+        <InputLabel htmlFor="descriptorUrl">{t('basemapManagement.descriptorUrl')}</InputLabel>
+        <Input id="url" name="url" value={descriptor.url}
+          onChange={handlePropertyChange}
+        />
       </FormControl>
-    </div>
+    </form>
   )
 }
 DescriptorDetails.propTypes = {
+  classes: PropTypes.object,
   t: PropTypes.func,
   selectedDescriptor: PropTypes.object
 }
@@ -189,7 +207,9 @@ const BasemapManagement = props => {
       </div>
       <div className={classes.sources}>
         { isEditing
-          ? <DescriptorDetails selectedDescriptor={selectedDescriptor} t={t}/>
+          ? <DescriptorDetails classes={classes} t={t}
+            selectedDescriptor={selectedDescriptor}
+          />
           : <Overview classes={classes} t={t}
             onDescriptorEdited={onDescriptorEdited}
             onDescriptorSelected={setSelectedDescriptor}
