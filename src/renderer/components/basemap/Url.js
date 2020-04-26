@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { FormControl, InputLabel, Input } from '@material-ui/core'
+import Chip from '@material-ui/core/Chip'
 import { useTranslation } from 'react-i18next'
 
 const Url = props => {
@@ -9,25 +10,31 @@ const Url = props => {
 
   const [url, setUrl] = React.useState(props.url)
   const [isValid, setIsValid] = React.useState(false)
+  const [predictedUrlType, setPredictedURLType] = React.useState(null)
 
-  const checkUrl = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/
+  const checkUrl = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i
+  const xyzType = /\{z\}.*\{x\}.*\{-?y\}/i
+  const wmtsType = /WMTSCapabilities/i
 
   const handlePropertyChanged = value => {
     setUrl(value)
   }
 
   React.useEffect(() => {
-    handlePropertyChanged(props.url)
-  }, [])
-
-  React.useEffect(() => {
     const result = checkUrl.test(url)
     setIsValid(result)
     props.onValidation(result)
+
+    let urlType = 'UNKNOWN'
+    if (xyzType.test(url)) urlType = 'XYZ'
+    else if (wmtsType.test(url)) urlType = 'WMTS'
+    setPredictedURLType(urlType)
+    props.onTypePrediction(urlType)
   }, [url])
 
   return (
     <form id="editURL">
+      { predictedUrlType ? <Chip label={predictedUrlType} color='primary' variant='outlined' style={{ float: 'right' }}/> : null }
       <FormControl error={!isValid} fullWidth className={classes.formControl}>
         <InputLabel htmlFor="url">{t('basemapManagement.descriptorUrl')}</InputLabel>
         <Input id="url" name="url" defaultValue={url}
@@ -40,7 +47,8 @@ const Url = props => {
 Url.propTypes = {
   classes: PropTypes.object,
   url: PropTypes.string,
-  onValidation: PropTypes.func
+  onValidation: PropTypes.func,
+  onTypePrediction: PropTypes.func
 }
 
 export default Url

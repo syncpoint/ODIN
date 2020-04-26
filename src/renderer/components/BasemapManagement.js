@@ -127,9 +127,11 @@ const DescriptorDetails = props => {
 
   const [descriptor, setDescriptor] = React.useState(selectedDescriptor)
   const [stepIndex, setStepIndex] = React.useState(0)
+  const [allowNextStep, setAllowNextStep] = React.useState(true)
+  const [sourceType, setSourceType] = React.useState(null)
+
 
   const nextStep = () => setStepIndex(stepIndex => stepIndex + 1)
-
   const previousStep = () => setStepIndex(stepIndex => stepIndex - 1)
 
   const handlePropertyChange = (event) => {
@@ -185,7 +187,8 @@ const DescriptorDetails = props => {
         return <Url
           classes={classes}
           url={selectedDescriptor.url}
-          onValidation={isValid => console.log(isValid)}
+          onValidation={isValid => setAllowNextStep(isValid)}
+          onTypePrediction={sourceType => setSourceType(sourceType)}
         />
       case 1: return <Options />
       case 2: return <Verify />
@@ -215,8 +218,9 @@ const DescriptorDetails = props => {
 
                     { stepIndex < (steps.length - 1)
                       ? (<Button id="nextStep" variant="contained" color="primary" className={classes.actionButton}
-                        startIcon={<ArrowForwardIosIcon />}
+                        endIcon={<ArrowForwardIosIcon />}
                         onClick={nextStep}
+                        disabled={!allowNextStep}
                       >
                         {t('basemapManagement.nextStep')}
                       </Button>)
