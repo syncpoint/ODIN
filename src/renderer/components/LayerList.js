@@ -1,7 +1,15 @@
+/* eslint-disable */
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
+import ExpandLess from '@material-ui/icons/ExpandLess'
+import ExpandMore from '@material-ui/icons/ExpandMore'
+import Collapse from '@material-ui/core/Collapse'
+
+
 import Paper from '@material-ui/core/Paper'
 import IconButton from '@material-ui/core/IconButton'
 import LockIcon from '@material-ui/icons/Lock'
@@ -34,13 +42,32 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'flex-end'
   },
 
+  // item: {
+  //   display: 'grid',
+  //   gridGap: '10px',
+  //   gridTemplateColumns: 'auto auto',
+  //   gridTemplateAreas: '"L R"',
+  //   padding: '8px 8px', // top/bottom left/right
+  //   borderBottom: '1px solid #cccccc'
+  // },
+
   item: {
+    paddingLeft: '8px',
+    borderBottom: '1px solid #cccccc'
+  },
+
+  feature: {
+    backgroundColor: 'rgba(0, 0, 0, 0.08)'
+  },
+
+  'item:selected': {
     display: 'grid',
     gridGap: '10px',
     gridTemplateColumns: 'auto auto',
     gridTemplateAreas: '"L R"',
     padding: '8px 8px', // top/bottom left/right
-    borderBottom: '1px solid #cccccc'
+    borderBottom: '1px solid #cccccc',
+    backgroundColor: 'red'
   },
 
   itemLeft: {
@@ -99,13 +126,28 @@ const reducer = (state, event) => {
       updatedState[event.id].locked = event.locked
       return updatedState
     }
+    case 'layerActivated': {
+      const updatedState = { ...state }
+      Object.values(updatedState).forEach(layer => (layer.active = false))
+      updatedState[event.id].active = true
+      return updatedState
+    }
     default: return state
   }
 }
 
-const LayerList = props => {
+const LayerList = (/* props */) => {
+  const classes = useStyles()
 
+  const [selectedItem, setSelectedItem] = React.useState(null)
   const [layers, dispatch] = React.useReducer(reducer, {})
+
+  const selectlayer = id => () => setSelectedItem(id)
+  const activatelayer = id => () => {
+    // TODO: update persistent project model
+    dispatch({ type: 'layerActivated', id })
+    evented.emit('OSD_MESSAGE', { message: layers[id].name, slot: 'A2' })
+  }
 
   React.useEffect(() => {
     registerReducer(dispatch)
@@ -113,7 +155,6 @@ const LayerList = props => {
   }, [])
 
 
-  const classes = useStyles()
   const onLock = layer => () => evented.emit('layer.toggleLock', layer.id)
   const onShow = layer => () => evented.emit('layer.toggleShow', layer.id)
 
@@ -125,30 +166,41 @@ const LayerList = props => {
     </Tooltip>
   ))
 
-
   const layer = layer => {
     const lockIcon = layer.locked ? <LockIcon/> : <LockOpenIcon/>
     const visibleIcon = layer.hidden ? <VisibilityOffIcon/> : <VisibilityIcon/>
-    const body = layer.selected ? <b>{layer.name}</b> : layer.name
+    const body = layer.active ? <b>{layer.name}</b> : layer.name
+    const selected = selectedItem === layer.id
+
     return (
-      <div
-        key={layer.id}
-        className={classes.item}
-        onDoubleClick={ event => console.log('doubleClick', event)}
-      >
-        <Body>{body}</Body>
-        <div className={classes.itemRight}>
-          <Tooltip title="Lock Layer" >
+      <div key={layer.id}>
+        <ListItem
+          button
+          // dense
+          className={classes.item}
+          onDoubleClick={ activatelayer(layer.id) }
+          onClick={ selectlayer(layer.id) }
+          selected={selected}
+        >
+          {/* {selected ? <ExpandMore/> : <ExpandLess/> } */}
+          { body }
+          <ListItemSecondaryAction>
             <IconButton size='small' onClick={onLock(layer)}>
               {lockIcon}
             </IconButton>
-          </Tooltip>
-          <Tooltip title="Toggle Visibility" >
             <IconButton size='small' onClick={onShow(layer)}>
               {visibleIcon}
             </IconButton>
-          </Tooltip>
-        </div>
+          </ListItemSecondaryAction>
+        </ListItem>
+        <Collapse in={selected} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <ListItem className={classes.feature} button>Feature A</ListItem>
+            <ListItem className={classes.feature} button>Feature B</ListItem>
+            <ListItem className={classes.feature} button>...</ListItem>
+            <ListItem className={classes.feature} button>Feature X</ListItem>
+          </List>
+        </Collapse>
       </div>
     )
   }
