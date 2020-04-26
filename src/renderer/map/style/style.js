@@ -99,9 +99,6 @@ const geometryType = feature => {
 }
 
 export default (feature, resolution) => {
-  // console.log('style', feature.get('hidden'))
-  // if (feature.get('hidden')) return null
-
   const provider = R.cond([
     [R.equals('Point'), R.always(symbolStyle)],
     [R.T, R.always(defaultStyle)]
