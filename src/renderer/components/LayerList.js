@@ -107,6 +107,7 @@ const actions = [
 ]
 
 const reducer = (state, event) => {
+  console.log('[LayerList] reducer', event)
   switch (event.type) {
     case 'snapshot': return event.layers.reduce((acc, layer) => K(acc)(acc => {
       acc[layer.id] = layer
@@ -150,8 +151,12 @@ const LayerList = (/* props */) => {
   }
 
   React.useEffect(() => {
+    console.log('[LayerList] mounting.')
     registerReducer(dispatch)
-    return () => deregisterReducer(dispatch)
+    return () => {
+      console.log('[LayerList] unmounting.')
+      deregisterReducer(dispatch)
+    }
   }, [])
 
 
@@ -195,10 +200,17 @@ const LayerList = (/* props */) => {
         </ListItem>
         <Collapse in={selected} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItem className={classes.feature} button>Feature A</ListItem>
-            <ListItem className={classes.feature} button>Feature B</ListItem>
-            <ListItem className={classes.feature} button>...</ListItem>
-            <ListItem className={classes.feature} button>Feature X</ListItem>
+            {
+              layer.features.map(feature => (
+                <ListItem
+                  className={classes.feature}
+                  key={feature.id}
+                  button
+                >
+                  { feature.t }
+                </ListItem>
+              ))
+            }
           </List>
         </Collapse>
       </div>
