@@ -113,11 +113,12 @@ const unhideFeature = feature => {
   feature.setStyle(null)
 }
 
-const isFeatureHidden = feature =>
-  feature.get('hidden')
-
-const isFeatureShowing = feature =>
-  !feature.get('hidden')
+const isFeatureHidden = feature => feature.get('hidden')
+const isFeatureShowing = feature => !feature.get('hidden')
+const lockFeature = feature => feature.set('locked', true)
+const unlockFeature = feature => feature.unset('locked')
+const isFeatureLocked = feature => feature.get('locked')
+const isFeatureUnlocked = feature => !feature.get('locked')
 
 // --
 // SECTION: reduces; event targets
@@ -129,9 +130,12 @@ const pushReducer = reducer => {
 
   // Emit snapshot if we already have some layers:
   if (Object.keys(featureCollections).length) {
+
+    // layers :: [{string, string, boolean, boolean}]
     const layers = Object.entries(featureCollections).map(([id, features]) => {
-      const locked = collectionArray(features).some(feature => feature.get('locked'))
-      const hidden = collectionArray(features).some(isFeatureHidden)
+      const array = collectionArray(features)
+      const locked = array.some(isFeatureLocked)
+      const hidden = array.some(isFeatureHidden)
 
       return {
         id,
@@ -235,7 +239,7 @@ const addFeatureCollection = ([layerUri, features]) => {
     selection.deselect([element.getId()])
   })
 
-  const locked = collectionArray(features).some(feature => feature.get('locked'))
+  const locked = collectionArray(features).some(isFeatureLocked)
   const hidden = collectionArray(features).some(isFeatureHidden)
 
   emit({
@@ -500,7 +504,7 @@ const editSelectAll = () => {
 
   const features = Object.values(featureCollections)
     .flatMap(collectionArray)
-    .filter(feature => !feature.get('locked'))
+    .filter(isFeatureUnlocked)
     .filter(isFeatureShowing)
 
   replaceSelection(features)
@@ -576,7 +580,7 @@ const createSelect = () => {
     condition: conjunction(click, noAltKey),
     toggleCondition: platformModifierKeyOnly, // macOS: command
     multi: false, // don't select all features under cursor at once.
-    filter: feature => !feature.get('locked')
+    filter: isFeatureUnlocked
   })
 
   interaction.on('select', ({ selected, deselected }) => {
@@ -678,15 +682,14 @@ const createBoxSelect = () => {
     const extent = interaction.getGeometry().getExtent()
     sources().forEach(source => {
       source.forEachFeatureIntersectingExtent(extent, feature => {
-        const locked = feature.get('locked')
-        if (!locked) features.push(feature)
+        features.push(feature)
       })
     })
 
     const isSelected = feature => selection.isSelected(feature.getId())
     const [removals, additions] = R.partition(isSelected)(features)
     removeSelection(removals)
-    addSelection(additions)
+    addSelection(additions.filter(isFeatureUnlocked))
   })
 
   return interaction
@@ -711,10 +714,12 @@ Mousetrap.bind('esc', clearSelection)
 // SECTION: Event handling
 
 evented.on('layer.toggleLock', id => {
-  const features = featureCollections[id]
-  const locked = !collectionArray(features).some(feature => feature.get('locked'))
-  if (locked) features.forEach(feature => feature.set('locked', true))
-  else features.forEach(feature => feature.unset('locked'))
+  const features = collectionArray(featureCollections[id])
+  const locked = !features.some(isFeatureLocked)
+  if (locked) {
+    removeSelection(features)
+    features.forEach(lockFeature)
+  } else features.forEach(unlockFeature)
 
   writeFeatureCollection(id)
 
