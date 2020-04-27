@@ -11,6 +11,15 @@ const Name = props => {
   const { t } = useTranslation()
 
   const [name, setName] = React.useState(props.name)
+  const [isValid, setIsValid] = React.useState(false)
+
+  React.useEffect(() => {
+    // name validation
+    // TODO: check if name is unique
+    const valid = name && name.length > 0
+    setIsValid(valid)
+    props.onValidation(valid)
+  }, [name])
 
   const handlePropertyChanged = event => {
     setName(event.target.value)
@@ -19,20 +28,21 @@ const Name = props => {
   return (
     <>
       <form id="editName">
-        <FormControl error={false} fullWidth className={classes.formControl}>
+        <FormControl error={!isValid} fullWidth className={classes.formControl}>
           <InputLabel htmlFor="descriptorName">{t('basemapManagement.descriptorName')}</InputLabel>
-          <Input id="name" name="name" defaultValue={name}
+          <Input id="name" name="name" defaultValue={name} autoFocus={true}
             onChange={handlePropertyChanged}
+            onBlur={() => props.onNameReady(name)}
           />
         </FormControl>
       </form>
-
     </>
   )
 }
 Name.propTypes = {
   classes: PropTypes.object,
   name: PropTypes.string.isRequired,
+  onValidation: PropTypes.func,
   onNameReady: PropTypes.func
 }
 

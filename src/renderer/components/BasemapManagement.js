@@ -125,7 +125,7 @@ SourceDescriptorList.propTypes = {
 
 const DescriptorDetails = props => {
   const { classes, t, selectedDescriptor } = props
-  const { onCancel, onSave, onVerify } = props
+  const { onCancel, onSave } = props
 
   const [descriptor, setDescriptor] = React.useState(selectedDescriptor)
   const [stepIndex, setStepIndex] = React.useState(0)
@@ -135,12 +135,6 @@ const DescriptorDetails = props => {
 
   const nextStep = () => setStepIndex(stepIndex => stepIndex + 1)
   const previousStep = () => setStepIndex(stepIndex => stepIndex - 1)
-
-  const handlePropertyChange = event => {
-    const updated = { ...descriptor }
-    updated[event.target.name] = event.target.value
-    setDescriptor(updated)
-  }
 
   const handleUrlReady = url => {
     const shadow = { ...descriptor }
@@ -153,11 +147,18 @@ const DescriptorDetails = props => {
     setDescriptor(shadow)
   }
 
+  const handleNameReady = name => {
+    const shadow = { ...descriptor }
+    shadow.name = name
+    shadow.options = { ...descriptor.options }
+    setDescriptor(shadow)
+  }
+
   const steps = [
     'Provide URL',
     'Specify options',
-    'Verify with the preview',
-    'Finalize and save'
+    'Verify using the preview',
+    'Provide name and save'
   ]
 
   const Options = props => {
@@ -169,13 +170,18 @@ const DescriptorDetails = props => {
   }
 
   const Verify = props => {
-    const { descriptor } = props
+    const { descriptor, onValidation } = props
     React.useEffect(() => {
       setBasemap(descriptor)
+      // visual verification is done by the user and always returns true
+      onValidation(true)
     })
     return <div>Use the map preview to verify the basemap settings.</div>
   }
-  Verify.propTypes = { descriptor: PropTypes.object }
+  Verify.propTypes = {
+    descriptor: PropTypes.object,
+    onValidation: PropTypes.func
+  }
 
   const getStepContent = index => {
     switch (index) {
@@ -187,12 +193,19 @@ const DescriptorDetails = props => {
           onTypePrediction={setSourceType}
           onUrlReady={handleUrlReady}
         />
-      case 1: return <Options />
-      case 2: return <Verify descriptor={descriptor}/>
+      case 1:
+        return <Options />
+      case 2:
+        return <Verify
+          descriptor={descriptor}
+          onValidation={setAllowNextStep}
+        />
       case 3:
         return <Name
           classes={classes}
           name={selectedDescriptor.name}
+          onValidation={setAllowNextStep}
+          onNameReady={handleNameReady}
         />
       default: return <div>UNKNOWN STEP</div>
     }
@@ -228,6 +241,7 @@ const DescriptorDetails = props => {
                       : (<Button id="save" variant="contained" color="primary" className={classes.actionButton}
                         startIcon={<SaveIcon />}
                         onClick={() => onSave(descriptor)}
+                        disabled={!allowNextStep}
                       >
                         {t('basemapManagement.save')}
                       </Button>)
