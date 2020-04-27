@@ -34,9 +34,9 @@ const generateMgrsLayers = (options = { gzdRes: [10000, 0], detailRes: [1200, 25
 
 const styleFunction = (feature) => {
   const styles = new Style({
-    stroke: new Stroke({ color: 'rgba(255,0,0,0.4)', width: 5 / feature.values_.detail }),
+    stroke: new Stroke({ color: 'rgba(255,0,0,0.4)', width: 5 / feature.get('detail') }),
     text: new Text({
-      text: feature.values_.text,
+      text: feature.get('text'),
       font: '20px serif',
       textBaseline: 'ideographic',
       rotateWithView: true,

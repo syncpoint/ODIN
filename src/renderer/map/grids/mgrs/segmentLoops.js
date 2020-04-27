@@ -1,5 +1,6 @@
 import { toLonLat } from 'ol/proj'
 import { SEGMENTIDENTIEFERS, toMgrs } from './mgrs'
+import { range } from 'ramda'
 
 
 export const loopGZD = (extent, cb) => {
@@ -22,13 +23,14 @@ const loopGzdZones = (extent, cb) => {
 
     const startGZD = Math.max(Math.min(bottomLeftMGRS.substr(0, 2), topLeftMGRS.substr(0, 2)), 0)
     const endGZD = Math.min(Math.max(topRightMGRS.substr(0, 2), bottomRightMGRS.substr(0, 2)), 60)
-    return [startGZD, endGZD]
+    // expected to be used exclusive the maximum value hence why +1 is required
+    return [startGZD, endGZD + 1]
   }
 
   const gzdRange = getGZDRange(extent)
-  for (let gzd = gzdRange[0]; gzd <= gzdRange[1]; gzd++) {
+  range(gzdRange[0], gzdRange[1]).forEach(gzd => {
     cb(gzd)
-  }
+  })
 }
 
 const loopGzdBands = (extent, cb) => {
@@ -39,14 +41,14 @@ const loopGzdBands = (extent, cb) => {
     const topRightMGRS = toMgrs([endPoint[0], endPoint[1]])
     const startBand = Math.max(SEGMENTIDENTIEFERS.indexOf(bottomLeftMGRS.substr(2, 1)), SEGMENTIDENTIEFERS.indexOf('C'))
     const endBand = Math.min(SEGMENTIDENTIEFERS.indexOf(topRightMGRS.substr(2, 1)), SEGMENTIDENTIEFERS.indexOf('X'))
-    return [startBand, endBand]
+    // expected to be used exclusive the maximum value hence why +1 is required
+    return [startBand, endBand + 1]
   }
 
   const bandRange = getBandRange(extent)
-  for (let ySegment = bandRange[0]; ySegment <= bandRange[1]; ySegment++) {
-    const band = SEGMENTIDENTIEFERS[ySegment]
+  SEGMENTIDENTIEFERS.slice(bandRange[0], bandRange[1]).forEach(band => {
     cb(band)
-  }
+  })
 }
 
 export const loop100k = (cb) => {
@@ -54,25 +56,26 @@ export const loop100k = (cb) => {
 }
 
 export const loopE100k = (cb) => {
-  for (let e100k = 0; e100k < SEGMENTIDENTIEFERS.length; e100k++) {
-    cb(SEGMENTIDENTIEFERS[e100k])
-  }
+  SEGMENTIDENTIEFERS.forEach(e100k => {
+    cb(e100k)
+  })
 }
 
+// up to V
 export const loopN100k = (cb) => {
-  for (let n100k = 0; n100k < SEGMENTIDENTIEFERS.length - 4; n100k++) {
-    cb(SEGMENTIDENTIEFERS[n100k])
-  }
+  SEGMENTIDENTIEFERS.slice(0, SEGMENTIDENTIEFERS.length - 4).forEach(n100k => {
+    cb(n100k)
+  })
 }
-
 /**
+ * unused
  * @param {Number} step segment Length
  * @param {Number} parentSegmentPos parent Segment Easting/Northing
  * @param {Function} cb Function that handles the new Position, returns true if loop should break
  */
 export const loopNumericalSegments = (step, parentSegmentPos, cb) => {
-  for (let pos = 0; pos <= 10 && parentSegmentPos + (pos * step) <= 100000; pos++) {
+  range(0, 10).forEach(pos => {
     const newPosition = parentSegmentPos + (pos * step)
     cb(newPosition)
-  }
+  })
 }

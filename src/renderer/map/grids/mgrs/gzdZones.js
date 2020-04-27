@@ -84,7 +84,6 @@ export const getGzdPoint = (point, isEndPoint) => {
   }
   const long = calcSegmentPosition(point[0], 6, isEndPoint)
   const lat = calcSegmentPosition(point[1], 8, isEndPoint)
-
   const longitudeGzdNorwayZones = (long, lat, point, isEndPoint) => {
     if ((long === 6 && lat === 64 && isEndPoint) || (long === 0 && lat === 56 && long + 3 < point[0])) {
       return 3

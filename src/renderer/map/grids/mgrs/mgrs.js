@@ -25,30 +25,45 @@ export const fromMgrs = (mgrs) => {
   return mgrs.startsWith('0') ? inverse(mgrs.substr(1)) : inverse(mgrs)
 }
 
+
+const NUMERICSEGMENTMAXIMUM = 99999
 /**
  * creates a MGRS String
  * @param {Number} xGZD xGZD Zone 01-60
  * @param {String} band band A-Z
  * @param {String} e100k easting for 100km segments A-Z omitting I and O
  * @param {String} n100k Northing for 100km segments A-V omitting I and O
- * @param {Number} x 0-100000 100000 changes 100km segment
- * @param {Number} y 0-100000 100000 changes 100km segment
+ * @param {Number} x 0-99999 100000 changes 100km segment
+ * @param {Number} y 0-99999 100000 changes 100km segment
  */
 export const buildMgrsString = (xGZD, band, e100k, n100k, x = 0, y = 0) => {
+
   const stringGZD = xGZD < 10 ? `0${xGZD}` : `${xGZD}`
-  if (x < 100000 && y < 100000) {
+  if (x <= NUMERICSEGMENTMAXIMUM && y <= NUMERICSEGMENTMAXIMUM) {
     return `${stringGZD}${band}${e100k}${n100k}${fromatDetailLevel(x)}${fromatDetailLevel(y)}`
-  } else if (x >= 100000 && y >= 100000) {
+  } else if (x > NUMERICSEGMENTMAXIMUM && y > NUMERICSEGMENTMAXIMUM) {
     const newE100k = e100k === 'Z' ? 'A' : getNext(e100k)
     const newN100k = n100k === 'V' ? 'A' : getNext(n100k)
     return `${stringGZD}${band}${newE100k}${newN100k}${fromatDetailLevel(0)}${fromatDetailLevel(0)}`
-  } else if (x >= 100000) {
+  } else if (x > NUMERICSEGMENTMAXIMUM) {
     const newE100k = e100k === 'Z' ? 'A' : getNext(e100k)
     return `${stringGZD}${band}${newE100k}${n100k}${fromatDetailLevel(0)}${fromatDetailLevel(y)}`
-  } else if (y >= 100000) {
+  } else if (y > NUMERICSEGMENTMAXIMUM) {
     const newN100k = n100k === 'V' ? 'A' : getNext(n100k)
     return `${stringGZD}${band}${e100k}${newN100k}${fromatDetailLevel(x)}${fromatDetailLevel(0)}`
   }
+}
+export const addStep = (mgrs, isHorizontal, step) => {
+  const xGZD = Number(mgrs.substr(0, 2))
+  const band = mgrs.substr(2, 1)
+  const e100k = mgrs.substr(3, 1)
+  const n100k = mgrs.substr(4, 1)
+  const x = Number(mgrs.substr(5, 5))
+  const y = Number(mgrs.substr(10, 5))
+  if (isHorizontal) {
+    return buildMgrsString(xGZD, band, e100k, n100k, x + step, y)
+  }
+  return buildMgrsString(xGZD, band, e100k, n100k, x, y + step)
 }
 
 /**

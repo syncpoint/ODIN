@@ -1,7 +1,7 @@
 import { fromLonLat } from 'ol/proj'
 import { getGzdPoint } from './gzdZones'
-import { loopGZD, loopE100k, loopN100k, loop100k } from './segmentLoops'
-import { SEGMENTIDENTIEFERS, fromMgrs, toMgrs, buildMgrsString, fromatDetailLevel, getPrevious } from './mgrs'
+import { loopGZD, loopE100k, loopN100k, loop100k, loopNumericalSegments } from './segmentLoops'
+import { fromMgrs, toMgrs, buildMgrsString, fromatDetailLevel, getPrevious, addStep } from './mgrs'
 import { intersectsSegment, isValid100kSegment, isValidGzdZone, isValidBand } from './validation'
 import { createLine, wrapX, splitWorlds } from '../utils'
 import { equals } from 'ol/extent'
@@ -59,24 +59,20 @@ const buildLines = (extent, depth) => {
 const generate100kLines = (gzd, band) => {
   const lines = []
   // stores the last valid e100ks, so it can be used as startPoint in the next n100k Segment
-  const lastValidE100ks = {}
   loopN100k(n100k => {
-    let lastValidPosition
     loopE100k(e100k => {
-      const target = buildMgrsString(gzd, band, e100k, n100k, 0, 0)
+      const startMgrs = buildMgrsString(gzd, band, e100k, n100k, 0, 0)
 
-      const horizontalLine = horizontal100kLine(target, lastValidPosition, lines)
+      const horizontalLine = horizontal100kLine(startMgrs, n100k)
       if (horizontalLine) {
         lines.push(horizontalLine)
       }
 
-      const verticalLine = vertical100kLine(target, lastValidE100ks[e100k], lines)
+      const verticalLine = vertical100kLine(startMgrs, e100k)
       if (verticalLine) {
         lines.push(verticalLine)
       }
 
-      lastValidPosition = horizontalLine ? fromMgrs(target) : lastValidPosition
-      lastValidE100ks[e100k] = lastValidPosition
     })
   })
   return lines
@@ -84,31 +80,22 @@ const generate100kLines = (gzd, band) => {
 
 /**
  * generates the vertical 100k Line from the last valid Mgrs Coordinate within the Segment
- * @param {String} target target Mgrs Coordinate String (length=15)
- * @param {[Number,Number]} lastValidPosition startPoint [Lon,Lat]
+ * @param {String} startPoint startMgrs Coordinate String (length=15)
+ * @param {String} text linetext
  * @returns {import("ol/Feature")[]} Array of ol/Feature
  */
-const vertical100kLine = (target, lastValidPosition) => {
-  const first = target.substr(3, 1)
-  if (lastValidPosition) {
-    const controllMGRS = toMgrs(lastValidPosition)
-    if (controllMGRS.substr(3, 1) !== first) {
-      // new Grid segment
-      return
-    }
-  }
-  return drawGridLine(target, lastValidPosition, 0, first, false, 100000)
+const vertical100kLine = (startPoint, text) => {
+  return drawGridLine(startPoint, 0, text, false, 100000)
 }
 
 /**
- * generates the horizontal 100k Line from the last valid Mgrs Coordinate within the Segment
- * also generates the right GZD Connection with the last valid MGRS coordinate within the segment and the last possible coordinate
- * @param {String} target target Mgrs Coordinate String (length=15)
- * @param {[Number,Number]} lastValidPosition startPoint [Lon,Lat]
+ * generates the vertical 100k Line from the last valid Mgrs Coordinate within the Segment
+ * @param {String} startPoint startMgrs Coordinate String (length=15)
+ * @param {String} text linetext
  * @returns {import("ol/Feature")[]} Array of ol/Feature
  */
-const horizontal100kLine = (target, lastValidPosition) => {
-  return drawGridLine(target, lastValidPosition, 0, target.substr(4, 1), true, 100000)
+const horizontal100kLine = (startPoint, text) => {
+  return drawGridLine(startPoint, 0, text, true, 100000)
 }
 /**
  * generates the detail Lines for the GZD Segment defined by gzd and band
@@ -125,18 +112,18 @@ const generateDetailLines = (gzd, band, extent, depth) => {
     const intersects = (easting, northing, step) => intersectsSegment(gzd, band, e100k, n100k, easting, northing, step, extent)
     if (intersects(0, 0, 99999)) {
       const mgrsBuilder = (easting, northing) => buildMgrsString(gzd, band, e100k, n100k, easting, northing)
-      const horizontalLines = horizontalNumericLines(mgrsBuilder, intersects, depth)
-      const verticalLines = verticalNumericLines(mgrsBuilder, intersects, depth)
-      lines.push(...horizontalLines, ...verticalLines)
+      const detailLines = numericLines(mgrsBuilder, intersects, depth)
+      lines.push(...detailLines)
     }
   })
   return lines
 }
 
 /**
- * generates the VerticalLines for a Segment
- * loops mgrs northing and easting coordinates, at the first detail level with 10.000 steps, to calculate the sub Segments or draw the lines
- * recursion level reduces the step to step/10 so the next detail level is 1 000
+ * generates the Lines for a Segment depending on the detail level
+ * loops through the segments below 100k segments,
+ * if they are intersect with the view they will eigther generate more detailed segments
+ * or draw the lines within the segment, depending on the depth and the recursion depth
  * @param {Function} mgrsBuilder used to get the mgrs String for the current segment and the x/y coordinates
  * @param {Function} intersects used to check if the current easting/norting Segment is within the extent
  * @param {Number} depth detail level of the Grid
@@ -145,116 +132,79 @@ const generateDetailLines = (gzd, band, extent, depth) => {
  * @param {Number} parentNorthing northing of the parent segment
  * @returns {import("ol/Feature")[]} Array of ol/Feature
  */
-const verticalNumericLines = (mgrsBuilder, intersects, depth, currentDepth = 1, parentEasting = 0, parentNorthing = 0) => {
+const numericLines = (mgrsBuilder, intersects, depth, currentDepth = 1, parentEasting = 0, parentNorthing = 0) => {
   const lines = []
+  // the step gets lower with the recursion depth, initialy 10000
   const step = 10000 / Math.pow(10, currentDepth - 1)
-  for (let segmentEasting = 0; segmentEasting < 10; segmentEasting++) {
-    let lastValidPosition
-    const easting = parentEasting + (segmentEasting * step)
-    for (let segmentNorthing = 0; segmentNorthing <= 10; segmentNorthing++) {
-      const northing = parentNorthing + (segmentNorthing * step)
-      if (northing <= 100000) {
-        if (currentDepth === depth) {
-          const target = mgrsBuilder(easting, northing)
-          const text = easting === 0 ? target.substr(3, 1) : mgrsNumericText(easting, depth)
-          const line = drawGridLine(target, lastValidPosition, depth, text, false, step)
-          if (line) {
-            lines.push(line)
-          }
-          if (lastValidPosition && !isValid100kSegment(target)) {
-            break
-          }
-          lastValidPosition = isValid100kSegment(target) ? fromMgrs(target) : lastValidPosition
-        } else if (intersects(easting, northing, step)) {
-          const newLines = verticalNumericLines(mgrsBuilder, intersects, depth, currentDepth + 1, easting, northing)
-          lines.push(...newLines)
+
+  const drawLine = (position, text, isHorizontal) => drawGridLine(position, currentDepth, text, isHorizontal, step)
+  loopNumericalSegments(step, parentNorthing, (northing) => {
+    loopNumericalSegments(step, parentEasting, (easting) => {
+      if (currentDepth === depth) {
+        const startMGRS = mgrsBuilder(easting, northing)
+
+        const hText = numericTextFunction(northing, startMGRS.substr(4, 1), depth)
+        const hLine = drawLine(startMGRS, hText, true)
+        if (hLine) {
+          lines.push(hLine)
         }
+        const vText = numericTextFunction(easting, startMGRS.substr(3, 1), depth)
+        const vLine = drawLine(startMGRS, vText, false)
+        if (vLine) {
+          lines.push(vLine)
+        }
+      } else if (intersects(easting, northing, step)) {
+        const newLines = numericLines(mgrsBuilder, intersects, depth, currentDepth + 1, easting, northing)
+        lines.push(...newLines)
       }
-    }
-  }
+    })
+  })
   return lines
 }
 
-
-/**
- * generates the Horizontal Lines for a Segment defined by gzd, band, e100k, n100k,easting and northing
- * loops trough mgrs northing and easting coordinates, at the first detail level with 10.000 steps
- * recursion level reduces the step to step/10 so the next detail level is 1 000
- * @param {Function} mgrsBuilder used to get the mgrs String for the current segment and the x/y coordinates
- * @param {Function} intersects used to check if the current easting/norting Segment is within the extent
- * @param {Number} depth detail level of the Grid
- * @param {Number} currentDepth detail level of the Recursion
- * @param {Number} parentEasting easting of the parent segment
- * @param {Number} parentNorthing northing of the parent segment
- * @returns {import("ol/Feature")[]} Array of ol/Feature
- */
-const horizontalNumericLines = (mgrsBuilder, intersects, depth, currentDepth = 1, parentEasting = 0, parentNorthing = 0) => {
-  const lines = []
-  const step = 10000 / Math.pow(10, currentDepth - 1)
-  for (let segmentNorthing = 0; segmentNorthing < 10; segmentNorthing++) {
-    const northing = parentNorthing + (segmentNorthing * step)
-    let lastValidPosition
-    for (let segmentEasting = 0; segmentEasting <= 10; segmentEasting++) {
-      const easting = parentEasting + (segmentEasting * step)
-      if (easting <= 100000) {
-        if (currentDepth === depth) {
-          const target = mgrsBuilder(easting, northing)
-          const text = northing === 0 ? target.substr(4, 1) : mgrsNumericText(northing, depth)
-          const line = drawGridLine(target, lastValidPosition, depth, text, true, step)
-          if (line) {
-            lines.push(line)
-          }
-          if (lastValidPosition && !isValid100kSegment(target)) {
-            break
-          }
-          lastValidPosition = isValid100kSegment(target) ? fromMgrs(target) : lastValidPosition
-        } else if (intersects(easting, northing, step)) {
-          const newLines = horizontalNumericLines(mgrsBuilder, intersects, depth, currentDepth + 1, easting, northing)
-          lines.push(...newLines)
-        }
-      }
-    }
-  }
-  return lines
-}
 /**
  * Formats number to a MGRS easting/northing String with the accuracy of 5
  * and returns the substring according to its depth
- * @param {Number} number
+ * @param {Number} number easting/northing
+ * @param {String} segmentText100k parent Segment text, that should be shown if the number is 0
  * @param {Number} depth
  */
-const mgrsNumericText = (number, depth) => {
+const numericTextFunction = (number, segmentText100k, depth) => {
+  if (number === 0) {
+    return segmentText100k
+  }
   const text = fromatDetailLevel(number)
   return text.substr(0, depth)
 }
 
 /**
  * generates a ol/Linestring from the last valid Position to mgrs or to the gzd border connections
- * @param {String} mgrs MGRS string
- * @param {[Number,Number]} lastPosition startPoint [Lon,Lat]
+ * @param {String} startMgrs startPoint
  * @param {Number} depth detailLevel
  * @param {String} text LineString Text
  * @param {Boolean} isHorizontal says if the Line is Horizontal, needed for GZD Border calculations
  * @param {Number} step difference between the easting/northing (x/y) for each detail segment
  */
-const drawGridLine = (mgrs, lastPosition, depth, text, isHorizontal, step) => {
-  const lonlat = fromMgrs(mgrs)
+const drawGridLine = (startMgrs, depth, text, isHorizontal, step) => {
+  const validStart = isValid100kSegment(startMgrs) ? fromMgrs(startMgrs) : undefined
+  const target = addStep(startMgrs, isHorizontal, step)
+  const lonlat = fromMgrs(target)
   let visualDepth = depth + 2
-  if (depth > 0 && ((isHorizontal && mgrs.substr(10, 5) === '00000') || (!isHorizontal && mgrs.substr(5, 5) === '00000'))) {
+  if (depth > 0 && ((isHorizontal && startMgrs.substr(10, 5) === '00000') || (!isHorizontal && startMgrs.substr(5, 5) === '00000'))) {
     visualDepth = depth
   }
-  if (isValid100kSegment(mgrs)) {
-    if (lastPosition) {
-      return createLine(fromLonLat(lastPosition), fromLonLat(lonlat), visualDepth, text, loadedWrapBack)
+  if (isValid100kSegment(target)) {
+    if (validStart) {
+      return createLine(fromLonLat(validStart), fromLonLat(lonlat), visualDepth, text, loadedWrapBack)
     } else if (isHorizontal) {
-      return leftGzdConnection(mgrs, step, visualDepth, depth, text)
+      return leftGzdConnection(target, step, visualDepth, depth, text)
     } else {
-      return bottomGzdConnection(mgrs, step, visualDepth, depth, text)
+      return bottomGzdConnection(target, step, visualDepth, depth, text)
     }
-  } else if (!isHorizontal && lastPosition) {
-    return topGzdConnection(mgrs, lastPosition, visualDepth, depth, text)
-  } else if (isHorizontal && lastPosition) {
-    return rightGzdConnection(mgrs, lastPosition, visualDepth, depth, text)
+  } else if (!isHorizontal && validStart) {
+    return topGzdConnection(target, validStart, visualDepth, depth, text)
+  } else if (isHorizontal && validStart) {
+    return rightGzdConnection(target, validStart, visualDepth, depth, text)
   }
 }
 
@@ -306,10 +256,10 @@ const rightGzdConnection = (mgrs, lastPosition, visualDepth, depth, text) => {
   const lonlat = fromMgrs(mgrs)
   if (depth > 0) {
     return borderConnection(lastPosition, lonlat, visualDepth, text, true, true)
-  } else if (mgrs.substr(3, 1) === SEGMENTIDENTIEFERS[SEGMENTIDENTIEFERS.length - 1]) {
+  } else if (lastPosition) {
     const newValidPosition = isValid100kSegment(mgrs) ? fromMgrs(mgrs) : lastPosition
-    const startPoint = getGzdPoint(newValidPosition, true)
-    return createLine(fromLonLat([startPoint[0], newValidPosition[1]]), fromLonLat(newValidPosition), 2, mgrs.substr(4, 1), loadedWrapBack)
+    const endPoint = getGzdPoint(newValidPosition, true)
+    return createLine(fromLonLat([endPoint[0], newValidPosition[1]]), fromLonLat(newValidPosition), 2, mgrs.substr(4, 1), loadedWrapBack)
   }
 }
 
