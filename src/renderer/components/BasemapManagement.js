@@ -102,6 +102,11 @@ const SourceDescriptorList = props => {
     loadSourceDescriptors()
   }, [reloadDescriptors])
 
+  /* when a descriptor gets persisted we need to force the list to reload */
+  React.useEffect(() => {
+    setReloadDescriptors(props.forceReload)
+  })
+
   return (
     <List>
       { sourceDescriptors ? sourceDescriptors.map(descriptor => (
@@ -120,7 +125,8 @@ const SourceDescriptorList = props => {
 }
 SourceDescriptorList.propTypes = {
   onDescriptorSelected: PropTypes.func,
-  onDescriptorEdited: PropTypes.func
+  onDescriptorEdited: PropTypes.func,
+  forceReload: PropTypes.bool
 }
 
 const DescriptorDetails = props => {
@@ -143,7 +149,6 @@ const DescriptorDetails = props => {
   }, [options])
 
   const mergeOptions = (key, value) => {
-    console.log(`merging options with key ${key} and value ${value}`)
     const shadow = { ...options }
     shadow[key] = value
     setOptions(shadow)
@@ -159,7 +164,6 @@ const DescriptorDetails = props => {
     const descriptor = { ...metadata }
     descriptor.options = { ...options }
     /* call the parent's onSave function */
-    console.dir(descriptor)
     onSave(descriptor)
   }
 
@@ -291,7 +295,7 @@ DescriptorDetails.propTypes = {
 
 const Overview = props => {
   const { classes, t } = props
-  const { onDescriptorSelected, onDescriptorEdited, onNew } = props
+  const { onDescriptorSelected, onDescriptorEdited, onNew, forceReload } = props
 
   return (
     <>
@@ -307,6 +311,7 @@ const Overview = props => {
         <SourceDescriptorList
           onDescriptorSelected={onDescriptorSelected}
           onDescriptorEdited={onDescriptorEdited}
+          forceReload={forceReload}
         />
       </div>
     </>
@@ -317,7 +322,8 @@ Overview.propTypes = {
   t: PropTypes.func,
   onNew: PropTypes.func,
   onDescriptorSelected: PropTypes.func,
-  onDescriptorEdited: PropTypes.func
+  onDescriptorEdited: PropTypes.func,
+  forceReload: PropTypes.bool
 }
 
 
@@ -397,6 +403,7 @@ const BasemapManagement = props => {
             onNew={handleEditNew}
             onDescriptorEdited={onDescriptorEdited}
             onDescriptorSelected={setSelectedDescriptor}
+            forceReload={isPersisted}
           /> }
       </div>
       <div className={classes.details}>
