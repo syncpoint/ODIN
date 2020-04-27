@@ -3,8 +3,7 @@ import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import BackToMapIcon from '@material-ui/icons/ExitToApp'
 import {
-  Button, FormControl,
-  Input, InputLabel,
+  Button,
   List, ListItem,
   ListItemText, ListItemSecondaryAction,
   IconButton,
@@ -25,6 +24,7 @@ import { ipcRenderer } from 'electron'
 import Url from './basemap/Url'
 import XYZOptions from './basemap/XYZOptions'
 import WMTSOptions from './basemap/WMTSOptions'
+import Name from './basemap/Name'
 
 import { useTranslation } from 'react-i18next'
 
@@ -177,30 +177,6 @@ const DescriptorDetails = props => {
   }
   Verify.propTypes = { descriptor: PropTypes.object }
 
-  const Finalize = props => {
-    return (
-      <>
-        <form id="editFinalize">
-          <FormControl error={false} fullWidth className={classes.formControl}>
-            <InputLabel htmlFor="descriptorName">{t('basemapManagement.descriptorName')}</InputLabel>
-            <Input id="name" name="name" value={descriptor.name}
-              onChange={handlePropertyChange}
-            />
-          </FormControl>
-        </form>
-        <div className={classes.actions}>
-
-          <Button id="save" variant="contained" color="primary" className={classes.actionButton}
-            startIcon={<SaveIcon />}
-            onClick={() => onSave(descriptor)}
-          >
-            {t('basemapManagement.save')}
-          </Button>
-        </div>
-      </>
-    )
-  }
-
   const getStepContent = index => {
     switch (index) {
       case 0:
@@ -213,7 +189,11 @@ const DescriptorDetails = props => {
         />
       case 1: return <Options />
       case 2: return <Verify descriptor={descriptor}/>
-      case 3: return <Finalize />
+      case 3:
+        return <Name
+          classes={classes}
+          name={selectedDescriptor.name}
+        />
       default: return <div>UNKNOWN STEP</div>
     }
   }
@@ -245,7 +225,12 @@ const DescriptorDetails = props => {
                       >
                         {t('basemapManagement.nextStep')}
                       </Button>)
-                      : null
+                      : (<Button id="save" variant="contained" color="primary" className={classes.actionButton}
+                        startIcon={<SaveIcon />}
+                        onClick={() => onSave(descriptor)}
+                      >
+                        {t('basemapManagement.save')}
+                      </Button>)
                     }
                     <Button id="previousStep" variant="contained" className={classes.actionButton}
                       startIcon={<ArrowBackIosIcon />}
@@ -254,7 +239,6 @@ const DescriptorDetails = props => {
                     >
                       {t('basemapManagement.previousStep')}
                     </Button>
-
                   </div>
                 </StepContent>
               </Step>

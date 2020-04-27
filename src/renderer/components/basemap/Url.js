@@ -17,8 +17,8 @@ const Url = props => {
   const xyzType = /\{z\}.*\{x\}.*\{-?y\}/i
   const wmtsType = /WMTSCapabilities/i
 
-  const handlePropertyChanged = value => {
-    setUrl(value)
+  const handlePropertyChanged = event => {
+    setUrl(event.target.value)
   }
 
   React.useEffect(() => {
@@ -40,7 +40,7 @@ const Url = props => {
       <FormControl error={!isValid} fullWidth className={classes.formControl}>
         <InputLabel htmlFor="url">{t('basemapManagement.descriptorUrl')}</InputLabel>
         <Input id="url" name="url" defaultValue={url}
-          onChange={event => handlePropertyChanged(event.target.value)}
+          onChange={handlePropertyChanged}
           onBlur={() => props.onUrlReady(url)}
           autoFocus={true}
         />
