@@ -132,14 +132,20 @@ const pushReducer = reducer => {
   if (Object.keys(featureCollections).length) {
 
     // layers :: [{string, string, boolean, boolean}]
-    const layers = Object.entries(featureCollections).map(([id, features]) => {
-      const array = collectionArray(features)
-      const locked = array.some(isFeatureLocked)
-      const hidden = array.some(isFeatureHidden)
+    const layers = Object.entries(featureCollections).map(([id, featureCollection]) => {
+      const features = collectionArray(featureCollection)
+      const locked = features.some(isFeatureLocked)
+      const hidden = features.some(isFeatureHidden)
+
+      const featureProperties = features.map(feature => {
+        const { t, v, sidc } = feature.getProperties()
+        return { t, v, sidc, id: feature.getId() }
+      })
 
       return {
         id,
-        name: path.basename(features.get('filename'), '.json'),
+        name: path.basename(featureCollection.get('filename'), '.json'),
+        features: featureProperties,
         locked,
         hidden
       }
@@ -221,16 +227,17 @@ let featureCollections = {}
 /**
  * addFeatureCollection :: [string, ol/Collection<ol/Feature>] -> unit
  */
-const addFeatureCollection = ([layerUri, features]) => {
-  featureCollections[layerUri] = features
+const addFeatureCollection = ([layerUri, featureColleciton]) => {
+  featureCollections[layerUri] = featureColleciton
 
   // Add features to corresponding source and
   // propagate feature collection updates to sources.
 
+  const features = collectionArray(featureColleciton)
   features.forEach(feature => geometrySource(feature).addFeature(feature))
-  features.on('add', ({ element }) => geometrySource(element).addFeature(element))
 
-  features.on('remove', ({ element }) => {
+  featureColleciton.on('add', ({ element }) => geometrySource(element).addFeature(element))
+  featureColleciton.on('remove', ({ element }) => {
     const source = selection.isSelected(element.getId())
       ? selectionSource
       : geometrySource(element)
@@ -239,14 +246,20 @@ const addFeatureCollection = ([layerUri, features]) => {
     selection.deselect([element.getId()])
   })
 
-  const locked = collectionArray(features).some(isFeatureLocked)
-  const hidden = collectionArray(features).some(isFeatureHidden)
+  const locked = features.some(isFeatureLocked)
+  const hidden = features.some(isFeatureHidden)
+
+  const featureProperties = features.map(feature => {
+    const { t, v, sidc } = feature.getProperties()
+    return { t, v, sidc, id: feature.getId() }
+  })
 
   emit({
     type: 'layerAdded',
     layer: {
       id: layerUri,
-      name: path.basename(features.get('filename'), '.json'),
+      name: path.basename(featureColleciton.get('filename'), '.json'),
+      features: featureProperties,
       locked,
       hidden
     }
@@ -751,6 +764,7 @@ evented.on('layer.toggleShow', id => {
 // SECTION: Handle project events.
 
 const projectOpened = async map => {
+  console.log('[layers] projectOpened()')
 
   // Set viewport.
   const { center, zoom } = project.preferences().viewport
@@ -788,7 +802,10 @@ const projectEventHandlers = {
 }
 
 export default map =>
-  project.register(event => (projectEventHandlers[event] || noop)(map))
+  project.register(event => {
+    console.log('[layers] event', event)
+    ;(projectEventHandlers[event] || noop)(map)
+  })
 
 export const registerReducer = reducer => {
   pushReducer(reducer)
