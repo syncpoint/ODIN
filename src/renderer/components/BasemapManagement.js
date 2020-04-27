@@ -132,6 +132,14 @@ const DescriptorDetails = props => {
   const [allowNextStep, setAllowNextStep] = React.useState(true)
   const [sourceType, setSourceType] = React.useState(null)
 
+  React.useEffect(() => {
+    console.log(descriptor)
+  }, [descriptor])
+
+  React.useEffect(() => {
+    console.log('running the one-shot effect')
+  }, [])
+
 
   const nextStep = () => setStepIndex(stepIndex => stepIndex + 1)
   const previousStep = () => setStepIndex(stepIndex => stepIndex - 1)
@@ -188,7 +196,7 @@ const DescriptorDetails = props => {
       case 0:
         return <Url
           classes={classes}
-          url={selectedDescriptor.options.url}
+          url={descriptor.options.url}
           onValidation={setAllowNextStep}
           onTypePrediction={setSourceType}
           onUrlReady={handleUrlReady}
@@ -203,7 +211,7 @@ const DescriptorDetails = props => {
       case 3:
         return <Name
           classes={classes}
-          name={selectedDescriptor.name}
+          name={descriptor.name}
           onValidation={setAllowNextStep}
           onNameReady={handleNameReady}
         />
@@ -314,6 +322,7 @@ const BasemapManagement = props => {
 
   const [selectedDescriptor, setSelectedDescriptor] = React.useState(null)
   const [isEditing, setIsEditing] = React.useState(false)
+  const [isPersisted, setIsPersisted] = React.useState(true)
 
   /* initialize Open Layers map */
   React.useEffect(() => {
@@ -334,6 +343,15 @@ const BasemapManagement = props => {
     handleDescriptorChanged()
   }, [selectedDescriptor])
 
+  React.useEffect(() => {
+    if (isPersisted) return
+    const doPersist = async () => {
+      await ipcRenderer.invoke('IPC_PERSIST_DESCRIPTOR', selectedDescriptor)
+      setIsPersisted(true)
+    }
+    doPersist()
+  }, [isPersisted])
+
   const onDescriptorEdited = descriptor => {
     setSelectedDescriptor(descriptor)
     setIsEditing(true)
@@ -344,9 +362,9 @@ const BasemapManagement = props => {
   }
 
   const handleEditSave = sourceDescriptor => {
-    // TODO: save descriptor
-    console.log('handle edit save')
-    console.dir(sourceDescriptor)
+    setSelectedDescriptor(sourceDescriptor)
+    /* this will trigger the React effect */
+    setIsPersisted(false)
     setIsEditing(false)
   }
 
