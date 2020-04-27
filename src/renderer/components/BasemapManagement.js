@@ -127,39 +127,40 @@ const DescriptorDetails = props => {
   const { classes, t, selectedDescriptor } = props
   const { onCancel, onSave } = props
 
-  const [descriptor, setDescriptor] = React.useState(selectedDescriptor)
+  /* Metadata are a shallow copy without the embedded 'options' object */
+  const [metadata, setMetadata] = React.useState({ ...selectedDescriptor })
+  /* Options are required in order to create an instance of a OpenLayers source */
+  const [options, setOptions] = React.useState({ ...selectedDescriptor.options })
+
   const [stepIndex, setStepIndex] = React.useState(0)
   const [allowNextStep, setAllowNextStep] = React.useState(true)
-  const [sourceType, setSourceType] = React.useState(null)
-
-  React.useEffect(() => {
-    console.log(descriptor)
-  }, [descriptor])
-
-  React.useEffect(() => {
-    console.log('running the one-shot effect')
-  }, [])
-
 
   const nextStep = () => setStepIndex(stepIndex => stepIndex + 1)
   const previousStep = () => setStepIndex(stepIndex => stepIndex - 1)
 
-  const handleUrlReady = url => {
-    const shadow = { ...descriptor }
-    shadow.type = sourceType
+  React.useEffect(() => {
+    console.dir(options)
+  }, [options])
 
-    const options = { ...descriptor.options }
-    options.url = url
-    shadow.options = options
-
-    setDescriptor(shadow)
+  const mergeOptions = (key, value) => {
+    console.log(`merging options with key ${key} and value ${value}`)
+    const shadow = { ...options }
+    shadow[key] = value
+    setOptions(shadow)
   }
 
-  const handleNameReady = name => {
-    const shadow = { ...descriptor }
-    shadow.name = name
-    shadow.options = { ...descriptor.options }
-    setDescriptor(shadow)
+  const mergeMetadata = (key, value) => {
+    const shadow = { ...metadata }
+    shadow[key] = value
+    setMetadata(shadow)
+  }
+
+  const handleSaveButtonClick = () => {
+    const descriptor = { ...metadata }
+    descriptor.options = { ...options }
+    /* call the parent's onSave function */
+    console.dir(descriptor)
+    onSave(descriptor)
   }
 
   const steps = [
@@ -170,7 +171,7 @@ const DescriptorDetails = props => {
   ]
 
   const Options = props => {
-    switch (sourceType) {
+    switch (metadata.type) {
       case 'XYZ': return <XYZOptions />
       case 'WMTS': return <WMTSOptions />
       default: return <div>UNKNOWN SOURCE TYPE</div>
@@ -178,8 +179,10 @@ const DescriptorDetails = props => {
   }
 
   const Verify = props => {
-    const { descriptor, onValidation } = props
+    const { metadata, options, onValidation } = props
     React.useEffect(() => {
+      const descriptor = { ...metadata }
+      descriptor.options = { ...options }
       setBasemap(descriptor)
       // visual verification is done by the user and always returns true
       onValidation(true)
@@ -187,7 +190,8 @@ const DescriptorDetails = props => {
     return <div>Use the map preview to verify the basemap settings.</div>
   }
   Verify.propTypes = {
-    descriptor: PropTypes.object,
+    metadata: PropTypes.object,
+    options: PropTypes.object,
     onValidation: PropTypes.func
   }
 
@@ -196,24 +200,27 @@ const DescriptorDetails = props => {
       case 0:
         return <Url
           classes={classes}
-          url={descriptor.options.url}
+          // eslint-disable-next-line react/prop-types
+          url={options.url}
           onValidation={setAllowNextStep}
-          onTypePrediction={setSourceType}
-          onUrlReady={handleUrlReady}
+          onTypePrediction={predictedType => mergeMetadata('type', predictedType)}
+          onUrlReady={url => mergeOptions('url', url)}
         />
       case 1:
         return <Options />
       case 2:
         return <Verify
-          descriptor={descriptor}
+          metadata={metadata}
+          options={options}
           onValidation={setAllowNextStep}
         />
       case 3:
         return <Name
           classes={classes}
-          name={descriptor.name}
+          // eslint-disable-next-line react/prop-types
+          name={metadata.name}
           onValidation={setAllowNextStep}
-          onNameReady={handleNameReady}
+          onNameReady={name => mergeMetadata('name', name)}
         />
       default: return <div>UNKNOWN STEP</div>
     }
@@ -248,7 +255,7 @@ const DescriptorDetails = props => {
                       </Button>)
                       : (<Button id="save" variant="contained" color="primary" className={classes.actionButton}
                         startIcon={<SaveIcon />}
-                        onClick={() => onSave(descriptor)}
+                        onClick={handleSaveButtonClick}
                         disabled={!allowNextStep}
                       >
                         {t('basemapManagement.save')}
