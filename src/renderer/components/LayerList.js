@@ -1,14 +1,10 @@
-/* eslint-disable */
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
-import ExpandLess from '@material-ui/icons/ExpandLess'
-import ExpandMore from '@material-ui/icons/ExpandMore'
 import Collapse from '@material-ui/core/Collapse'
-
 
 import Paper from '@material-ui/core/Paper'
 import IconButton from '@material-ui/core/IconButton'
@@ -33,7 +29,8 @@ const useStyles = makeStyles((theme) => ({
   panel: {
     gridArea: 'L',
     pointerEvents: 'auto',
-    fontFamily: 'Roboto'
+    fontFamily: 'Roboto',
+    overflow: 'auto'
   },
 
   buttonGroup: {
@@ -42,14 +39,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'flex-end'
   },
 
-  // item: {
-  //   display: 'grid',
-  //   gridGap: '10px',
-  //   gridTemplateColumns: 'auto auto',
-  //   gridTemplateAreas: '"L R"',
-  //   padding: '8px 8px', // top/bottom left/right
-  //   borderBottom: '1px solid #cccccc'
-  // },
+  list: {
+    maxHeight: '0px'
+  },
 
   item: {
     paddingLeft: '8px',
@@ -142,8 +134,13 @@ const LayerList = (/* props */) => {
 
   const [selectedItem, setSelectedItem] = React.useState(null)
   const [layers, dispatch] = React.useReducer(reducer, {})
+  const [expanded, setExpanded] = React.useState(null)
 
-  const selectlayer = id => () => setSelectedItem(id)
+  const selectlayer = id => () => {
+    setSelectedItem(id)
+    setExpanded(expanded === id ? null : id)
+  }
+
   const activatelayer = id => () => {
     // TODO: update persistent project model
     dispatch({ type: 'layerActivated', id })
@@ -198,7 +195,7 @@ const LayerList = (/* props */) => {
             </IconButton>
           </ListItemSecondaryAction>
         </ListItem>
-        <Collapse in={selected} timeout="auto" unmountOnExit>
+        <Collapse in={expanded === layer.id} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             {
               layer.features.map(feature => (
@@ -223,7 +220,9 @@ const LayerList = (/* props */) => {
       <div className={classes.buttonGroup}>
         { buttons() }
       </div>
-      <List>{ Object.values(layers).map(layer) }</List>
+      <List className={classes.list}>
+        { Object.values(layers).map(layer) }
+      </List>
     </Paper>
   )
 }

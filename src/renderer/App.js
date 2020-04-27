@@ -1,19 +1,13 @@
 import { ipcRenderer, remote } from 'electron'
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import Paper from '@material-ui/core/Paper'
-import Category from '@material-ui/icons/Category'
-import PermDataSettingIcon from '@material-ui/icons/PermDataSetting'
-import MapIcon from '@material-ui/icons/Map'
-import { LayersTriple, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 'mdi-material-ui'
 import 'typeface-roboto'
 
 import evented from './evented'
 import OSD from './components/OSD'
 import Map from './map/Map'
 import Management from './components/Management'
-import ActivityBar from './components/ActivityBar'
-import LayerList from './components/LayerList'
+import Activities from './components/Activities'
 
 const useStyles = makeStyles((/* theme */) => ({
   overlay: {
@@ -47,93 +41,12 @@ const useStyles = makeStyles((/* theme */) => ({
     `
   },
 
-  toolsPanel: {
-    gridArea: 'L',
-    pointerEvents: 'auto',
-    padding: 20
-  },
-
   propertiesPanel: {
     gridArea: 'R',
     pointerEvents: 'auto'
   }
 }))
 
-// Activities for activity bar.
-// TODO: use dedicated components/panels for individual tools
-// TODO: see what icons MDI has to offer
-const initialActivities = classes => [
-  {
-    id: 'map',
-    type: 'activity',
-    icon: <MapIcon/>,
-    tooltip: 'Show Map/Pictures',
-    panel: () => <Paper className={classes.toolsPanel} elevation={6}>Map/Pictures</Paper>
-  },
-  {
-    id: 'layers',
-    type: 'activity',
-    icon: <LayersTriple/>,
-    panel: () => <LayerList/>,
-    tooltip: 'Show Layers',
-    selected: true
-  },
-  {
-    id: 'palette',
-    type: 'activity',
-    icon: <Category/>,
-    tooltip: 'Show Symbol Palette',
-    panel: () => <Paper className={classes.toolsPanel} elevation={6}>Palette</Paper>
-  },
-  {
-    id: 'tools',
-    type: 'activity',
-    icon: <PermDataSettingIcon/>,
-    tooltip: 'Show Tools',
-    panel: () => <Paper className={classes.toolsPanel} elevation={6}>Measurement Tools</Paper>
-  },
-  {
-    type: 'divider'
-  },
-  {
-    id: 'undo',
-    type: 'action',
-    icon: <Undo/>,
-    tooltip: 'Undo',
-    action: () => console.log('UNDO')
-  },
-  {
-    id: 'redo',
-    type: 'action',
-    icon: <Redo/>,
-    tooltip: 'Redo',
-    action: () => console.log('REDO')
-  },
-  {
-    type: 'divider'
-  },
-  {
-    id: 'cut',
-    type: 'action',
-    icon: <ContentCut/>,
-    tooltip: 'Cut',
-    action: () => console.log('CUT')
-  },
-  {
-    id: 'copy',
-    type: 'action',
-    icon: <ContentCopy/>,
-    tooltip: 'Copy',
-    action: () => console.log('COPY')
-  },
-  {
-    id: 'paste',
-    type: 'action',
-    icon: <ContentPaste/>,
-    tooltip: 'Paste',
-    action: () => console.log('PASTE')
-  }
-]
 
 
 const App = (props) => {
@@ -142,8 +55,6 @@ const App = (props) => {
 
   const [showManagement, setManagement] = React.useState(false)
   const [currentProjectPath, setCurrentProjectPath] = React.useState(undefined)
-  const [activities, setActivities] = React.useState(initialActivities(classes))
-  const [activeTool, setActiveTool] = React.useState(activities[1]) // layers
 
   React.useEffect(() => {
     setCurrentProjectPath(remote.getCurrentWindow().path)
@@ -184,40 +95,19 @@ const App = (props) => {
   }, [showManagement, currentProjectPath])
 
 
-  const handleActivitySelected = id => {
-    // TODO: immutable.js?
-    const [...shadows] = activities
-    shadows.forEach(activity => {
-      if (activity.id !== id) activity.selected = false
-      else {
-        if (activity.selected && !activeTool) setActiveTool(activity)
-        else if (activity.selected && activeTool) {
-          setActiveTool(null)
-          activity.selected = false
-        } else {
-          setActiveTool(activity)
-          activity.selected = true
-        }
-      }
-    })
-
-    setActivities(shadows)
-  }
 
   const management = () => <Management
     currentProjectPath={currentProjectPath}
     onCloseClicked={() => setManagement(false)}
   />
 
-  const toolPanel = () => activeTool ? activeTool.panel() : null
 
   const map = () => <>
     <Map { ...mapProps }/>
     <div className={classes.overlay}>
       <OSD />
       <div className={classes.contentPanel}>
-        <ActivityBar activities={activities} onActivitySelected={handleActivitySelected}/>
-        { toolPanel() }
+        <Activities/>
         {/* <Paper className={classes.propertiesPanel} elevation={6}/> */}
       </div>
     </div>
