@@ -5,6 +5,7 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import Collapse from '@material-ui/core/Collapse'
+import { InputBase } from '@material-ui/core'
 
 import Paper from '@material-ui/core/Paper'
 import IconButton from '@material-ui/core/IconButton'
@@ -30,17 +31,36 @@ const useStyles = makeStyles((theme) => ({
     gridArea: 'L',
     pointerEvents: 'auto',
     fontFamily: 'Roboto',
-    overflow: 'auto'
+    height: 'auto',
+    display: 'grid',
+    gridTemplateRows: 'max-content max-content auto',
+    gridTemplateAreas: `
+      "BUTTONS"
+      "SEARCH"
+      "LIST"
+    `
   },
 
-  buttonGroup: {
+  buttons: {
     padding: '8px',
     display: 'flex',
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
+    gridArea: 'BUTTONS'
+  },
+
+  search: {
+    paddingLeft: '8px',
+    paddingRight: '8px',
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+    fontSize: '120%',
+    gridArea: 'SEARCH'
   },
 
   list: {
-    maxHeight: '0px'
+    gridArea: 'LIST',
+    maxHeight: 'fill-available',
+    overflow: 'auto'
   },
 
   item: {
@@ -217,9 +237,14 @@ const LayerList = (/* props */) => {
   return (
     <Paper className={classes.panel} elevation={6}>
       {/* <ButtonGroup/> not supported for <IconButton> */}
-      <div className={classes.buttonGroup}>
+      <div className={classes.buttons}>
         { buttons() }
       </div>
+      <InputBase
+        className={classes.search}
+        placeholder={ 'Search...' }
+        autoFocus
+      />
       <List className={classes.list}>
         { Object.values(layers).map(layer) }
       </List>
