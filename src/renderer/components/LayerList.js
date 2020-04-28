@@ -47,7 +47,8 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: '8px',
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
-    fontSize: '120%'
+    fontSize: '120%',
+    userSelect: 'none'
   },
 
   listContainer: {
@@ -163,10 +164,8 @@ const LayerList = (/* props */) => {
   }
 
   React.useEffect(() => {
-    console.log('[LayerList] mounting.')
     registerReducer(dispatch)
     return () => {
-      console.log('[LayerList] unmounting.')
       deregisterReducer(dispatch)
     }
   }, [])
@@ -229,6 +228,11 @@ const LayerList = (/* props */) => {
     )
   }
 
+  // Search: Prevent undo/redo when not focused.
+  const [readOnly, setReadOnly] = React.useState(false)
+  const onBlur = () => setReadOnly(true)
+  const onFocus = () => setReadOnly(false)
+
   return (
     <Paper className={classes.panel} elevation={6}>
       {/* <ButtonGroup/> not supported for <IconButton> */}
@@ -239,6 +243,9 @@ const LayerList = (/* props */) => {
         className={classes.search}
         placeholder={ 'Search...' }
         autoFocus
+        readOnly={readOnly}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
       <div className={classes.listContainer}>
         <List className={classes.list}>
