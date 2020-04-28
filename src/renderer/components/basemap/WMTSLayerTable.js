@@ -11,7 +11,7 @@ const WMTSLayerTable = props => {
     : 0
   )
 
-  const handleChangePage = (event, nextPageIndex) => {
+  const handleChangePage = (_, nextPageIndex) => {
     setPageIndex(nextPageIndex)
   }
 
@@ -19,12 +19,12 @@ const WMTSLayerTable = props => {
 
   return (
     <div>
-      <Paper variant="outlined" style={{ marginBottom: '1.5em' }}>
+      <Paper variant="outlined" style={{ marginTop: '1.5em' }}>
         <Table size="small">
           <TableBody>
             {
               layers
-                .filter((layer, index) => (index >= pageIndex * PAGE_SIZE && index < (pageIndex + 1) * PAGE_SIZE))
+                .filter((_, index) => (index >= pageIndex * PAGE_SIZE && index < (pageIndex + 1) * PAGE_SIZE))
                 .map(layer => (
                   <TableRow key={layer.Identifier} hover={true}
                     selected={selectedLayerIdentifier && selectedLayerIdentifier === layer.Identifier}
