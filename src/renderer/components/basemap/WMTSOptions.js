@@ -13,9 +13,12 @@ const WMTSOptions = props => {
   const [selectedLayerId, setSelectedLayerId] = React.useState(props.options.layer)
 
   React.useEffect(() => {
-    const readCapabilites = async () => {
+    const controller = new AbortController()
+    const signal = controller.signal
+
+    const fetchAndSetCapabilities = async () => {
       try {
-        const response = await fetch(props.options.url)
+        const response = await fetch(props.options.url, { signal })
         const caps = (new WMTSCapabilities()).read(await response.text())
         console.dir(caps)
         setCapabilities(caps)
@@ -24,8 +27,32 @@ const WMTSOptions = props => {
         setCapabilities(null)
       }
     }
-    readCapabilites()
+    fetchAndSetCapabilities()
+    return () => { controller.abort() }
   }, [])
+
+  const columns = React.useMemo(() => [
+    {
+      Header: 'Title',
+      accessor: 'Title'
+    },
+    {
+      Header: 'Abstract',
+      accessor: 'Abstract'
+    }
+  ])
+
+  const layers = React.useMemo(() => {
+    if (!capabilities) return []
+    return capabilities.Contents.Layer.map(layer => {
+      return {
+        Identifier: layer.Identifier,
+        Title: layer.Title,
+        Abstract: (layer.Abstract.length > 140 ? `${layer.Abstract.substring(0, 140)} ...` : layer.Abstract)
+      }
+    })
+  }, [capabilities])
+
 
   /* functions */
   const handleLayerSelected = layerId => {
@@ -34,7 +61,7 @@ const WMTSOptions = props => {
   }
 
   /* rendering */
-  if (!capabilities) return null
+  if (!capabilities) return <div>Loading data ...</div>
 
   return (
     <>
@@ -51,7 +78,8 @@ const WMTSOptions = props => {
         </CardContent>
       </Card>
       <WMTSLayerTable
-        layers={capabilities.Contents.Layer}
+        columns={columns}
+        layers={layers}
         selectedLayerIdentifier={selectedLayerId}
         onLayerSelected={handleLayerSelected}
       />
