@@ -26,25 +26,20 @@ import {
   ContentDuplicate
 } from 'mdi-material-ui'
 
+
 const useStyles = makeStyles((theme) => ({
   panel: {
     gridArea: 'L',
     pointerEvents: 'auto',
     fontFamily: 'Roboto',
-    display: 'grid',
-    gridTemplateRows: 'max-content max-content auto',
-    gridTemplateAreas: `
-      "BUTTONS"
-      "SEARCH"
-      "LIST"
-    `
+    display: 'flex',
+    flexDirection: 'column'
   },
 
   buttons: {
     padding: '8px',
     display: 'flex',
-    justifyContent: 'flex-end',
-    gridArea: 'BUTTONS'
+    justifyContent: 'flex-end'
   },
 
   search: {
@@ -52,14 +47,12 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: '8px',
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
-    fontSize: '120%',
-    gridArea: 'SEARCH'
+    fontSize: '120%'
   },
 
   listContainer: {
     height: '100%',
-    overflow: 'auto',
-    gridArea: 'LIST'
+    overflow: 'auto'
   },
 
   list: {
@@ -117,7 +110,7 @@ Body.propTypes = {
 const actions = [
   { icon: <LayersPlus/>, tooltip: 'Add Layer' },
   { icon: <LayersMinus/>, tooltip: 'Delete Layer' },
-  { icon: <ContentDuplicate/>, tooltip: 'Duplicat Layer' },
+  { icon: <ContentDuplicate/>, tooltip: 'Duplicate Layer' },
   { icon: <ExportVariant/>, tooltip: 'Share layer' }
 ]
 
