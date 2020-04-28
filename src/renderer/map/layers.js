@@ -741,8 +741,6 @@ evented.on('MAP_BLUR', () => {
 })
 
 
-
-
 // --
 // SECTION: Event handling
 

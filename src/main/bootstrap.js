@@ -6,6 +6,7 @@ import projects from '../shared/projects'
 import { exportProject, importProject } from './ipc/share-project'
 import handleCreatePreview from './ipc/create-preview'
 import i18n from '../i18n'
+import './ipc/source-descriptors'
 
 /**
  * Facade for application windows/project state.
