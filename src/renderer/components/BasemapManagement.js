@@ -149,6 +149,7 @@ const DescriptorDetails = props => {
   }, [options])
 
   const mergeOptions = (key, value) => {
+    console.log(`merging options ${key} with ${value}`)
     const shadow = { ...options }
     shadow[key] = value
     setOptions(shadow)
@@ -212,7 +213,14 @@ const DescriptorDetails = props => {
           onUrlReady={url => mergeOptions('url', url)}
         />
       case 1:
-        return <Options options={options}/>
+      {
+        // eslint-disable-next-line react/prop-types
+        switch (metadata.type) {
+          case 'XYZ': return <XYZOptions options={options} merge={mergeOptions}/>
+          case 'WMTS': return <WMTSOptions options={options} merge={mergeOptions}/>
+          default: return <div>UNKNOWN SOURCE TYPE</div>
+        }
+      }
       case 2:
         return <Verify
           metadata={metadata}

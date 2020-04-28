@@ -6,9 +6,11 @@ import WMTSLayerTable from './WMTSLayerTable'
 import WMTSCapabilities from 'ol/format/WMTSCapabilities'
 
 const WMTSOptions = props => {
+  const { merge } = props
 
+  /* effects */
   const [capabilities, setCapabilities] = React.useState(null)
-  // const [selectedLayer, setSelectedLayer] = React.useState(null)
+  const [selectedLayerId, setSelectedLayerId] = React.useState(props.options.layer)
 
   React.useEffect(() => {
     const readCapabilites = async () => {
@@ -25,6 +27,13 @@ const WMTSOptions = props => {
     readCapabilites()
   }, [])
 
+  /* functions */
+  const handleLayerSelected = layerId => {
+    setSelectedLayerId(layerId)
+    merge('layer', layerId)
+  }
+
+  /* rendering */
   if (!capabilities) return null
 
   return (
@@ -41,10 +50,17 @@ const WMTSOptions = props => {
           </div>
         </CardContent>
       </Card>
-      <WMTSLayerTable layers={capabilities.Contents.Layer} />
+      <WMTSLayerTable
+        layers={capabilities.Contents.Layer}
+        selectedLayerIdentifier={selectedLayerId}
+        onLayerSelected={handleLayerSelected}
+      />
     </>
   )
 }
-WMTSOptions.propTypes = { options: PropTypes.object }
+WMTSOptions.propTypes = {
+  options: PropTypes.object,
+  merge: PropTypes.func
+}
 
 export default WMTSOptions
