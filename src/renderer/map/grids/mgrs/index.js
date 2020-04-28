@@ -2,8 +2,10 @@ import { Vector as VectorLayer } from 'ol/layer'
 import { Vector as VectorSource } from 'ol/source'
 import { Style, Stroke, Text, Fill } from 'ol/style'
 import { bbox, all } from 'ol/loadingstrategy'
+import { toLonLat } from 'ol/proj'
 import { getGzdGrid as getGzdGridLines } from './gzdZones'
 import { getDetailGrid as getDetailGridLines } from './detailZones'
+import { toMgrs } from './mgrs'
 
 /**
  * @typedef {Object} Options options for generating the layers
@@ -21,7 +23,7 @@ import { getDetailGrid as getDetailGridLines } from './detailZones'
  * @param {Options} options
  * @returns {VectorLayer[]} Array of ol/layer/Vector
  */
-const generateMgrsLayers = (options = { gzdRes: [10000, 0], detailRes: [1200, 250, 20], zIndex: 0 }) => {
+const generateMgrsLayers = (options = { gzdRes: [10000, 0], detailRes: [1200, 200, 15], zIndex: 0 }) => {
   const mgrsLayers = []
   const gzdLayer = generateGzdLayer(options)
   mgrsLayers.push(gzdLayer)
@@ -29,24 +31,6 @@ const generateMgrsLayers = (options = { gzdRes: [10000, 0], detailRes: [1200, 25
   const detailLayers = generateDetailLayers(options)
   mgrsLayers.push(...detailLayers)
   return mgrsLayers
-}
-
-
-const styleFunction = (feature) => {
-  const styles = new Style({
-    stroke: new Stroke({ color: 'rgba(255,0,0,0.4)', width: 5 / feature.get('detail') }),
-    text: new Text({
-      text: feature.get('text'),
-      font: '20px serif',
-      textBaseline: 'ideographic',
-      rotateWithView: true,
-      backgroundFill: new Fill({ color: 'rgba(255,255,255,0.5)', width: 1 }),
-      fill: new Fill({ color: 'rgba(255,0,0,1.0)' }),
-      placement: 'point',
-      offsetY: 7
-    })
-  })
-  return styles
 }
 
 /**
@@ -69,11 +53,23 @@ const generateGzdLayer = (options) => {
     minResolution: options.gzdRes[1] || 0,
     zIndex: options.zIndex || 0,
     source: gzdSource,
-    style: styleFunction
+    style: styleFunction(gzdTextFunction)
   })
   return gzdLayer
 }
 
+/**
+ * generates LineString text for the GZD Lines
+ * @param {*} geometry LineString feature geometry
+ */
+const gzdTextFunction = (geometry) => {
+  const coords = geometry.getCoordinates()
+  const sortedCoords = sortCoords(coords)
+
+  // +1 is to counter inaccuracies coords are in
+  const mgrs = toMgrs(toLonLat([sortedCoords[0][0] + 1, sortedCoords[0][1] + 1]))
+  return isHorizontal(coords[0], coords[1]) ? mgrs.substr(2, 1) : mgrs.substr(0, 2)
+}
 
 /**
  * generates the detailLayers
@@ -98,11 +94,62 @@ const generateDetailLayers = (options) => {
         minResolution: options.detailRes[i + 1] || 0,
         zIndex: options.zIndex || 0,
         source: detailSource,
-        style: styleFunction
+        style: styleFunction(getText(i))
       })
     )
   }
   return detailLayers
+}
+
+const styleFunction = (textFunction) => (feature) => {
+  const styles = new Style({
+    stroke: new Stroke({ color: 'rgba(255,0,0,0.4)', width: 5 / feature.get('detail') }),
+    text: new Text({
+      text: textFunction(feature.getGeometry()),
+      font: '20px serif',
+      textBaseline: 'ideographic',
+      rotateWithView: true,
+      backgroundFill: new Fill({ color: 'rgba(255,255,255,0.5)', width: 1 }),
+      fill: new Fill({ color: 'rgba(255,0,0,1.0)' }),
+      placement: 'point',
+      offsetY: 7
+    })
+  })
+  return styles
+}
+
+/**
+ * generates a function to generate a LineString Text depending on the detail level and the line coordinates
+ * @param {Number} depth detail level of the Grid
+ */
+const getText = (depth) => (geometry) => {
+  const coords = geometry.getCoordinates()
+  const horizontal = isHorizontal(coords[0], coords[1])
+  const sortedCoords = sortCoords(coords)
+
+  // +1 is to counter inaccuracies
+  const mgrs = toMgrs(toLonLat([sortedCoords[0][0] + 1, sortedCoords[0][1] + 1]))
+  const text = horizontal ? mgrs.substr(10, depth) : mgrs.substr(5, depth)
+  // 100k names
+  if (depth === 0 || Number(text) === 0) {
+    return horizontal ? mgrs.substr(4, 1) : mgrs.substr(3, 1)
+  }
+  return text
+}
+/**
+ * rearranges the coords withing the array so the startPoint is first
+ * @param {[[Number,Number],[Number,Number]]} coords LineString Coordinates
+ */
+const sortCoords = (coords) => {
+  if (isHorizontal(coords[0], coords[1])) {
+    return coords[0][0] < coords[1][0] ? coords : [coords[1], coords[0]]
+  }
+  return coords[0][1] < coords[1][1] ? coords : [coords[1], coords[0]]
+}
+const isHorizontal = (start, end) => {
+  const eastingDiff = Math.abs(start[0] - end[0])
+  const northingDiff = Math.abs(start[1] - end[1])
+  return eastingDiff > northingDiff
 }
 
 export default generateMgrsLayers

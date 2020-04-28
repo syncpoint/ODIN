@@ -1,6 +1,5 @@
 import { createLine } from '../utils'
-import { fromLonLat, toLonLat } from 'ol/proj'
-import { toMgrs } from './mgrs'
+import { fromLonLat } from 'ol/proj'
 
 /**
  * Generates GZD Grid
@@ -15,16 +14,16 @@ export const getGzdGrid = () => {
     while (y < 72) {
       if (x === 6 && y === 56) {
         // thanks norway
-        lines.push(createGzdLine(fromLonLat([0, 56]), fromLonLat([3, 56]), 1))
-        lines.push(createGzdLine(fromLonLat([3, 56]), fromLonLat([3, 64]), 1))
-        lines.push(createGzdLine(fromLonLat([3, 56]), fromLonLat([12, 56]), 1))
+        lines.push(createLine(fromLonLat([0, 56]), fromLonLat([3, 56]), 1))
+        lines.push(createLine(fromLonLat([3, 56]), fromLonLat([3, 64]), 1))
+        lines.push(createLine(fromLonLat([3, 56]), fromLonLat([12, 56]), 1))
       } else {
-        lines.push(createGzdLine(fromLonLat([x, y]), fromLonLat([x + 6, y]), 1))
-        lines.push(createGzdLine(fromLonLat([x, y]), fromLonLat([x, y + 8]), 1))
+        lines.push(createLine(fromLonLat([x, y]), fromLonLat([x + 6, y]), 1))
+        lines.push(createLine(fromLonLat([x, y]), fromLonLat([x, y + 8]), 1))
       }
       y = y + 8
     }
-    lines.push(createGzdLine(fromLonLat([x, y]), fromLonLat([x + 6, y]), 1))
+    lines.push(createLine(fromLonLat([x, y]), fromLonLat([x + 6, y]), 1))
     x = x + 6
     y = -80
   }
@@ -33,9 +32,9 @@ export const getGzdGrid = () => {
     let x = -180
     const y = 72
     while (x < 180) {
-      lines.push(createGzdLine(fromLonLat([x, y]), fromLonLat([x + 6, y]), 1))
-      lines.push(createGzdLine(fromLonLat([x, y]), fromLonLat([x, y + 12]), 1))
-      lines.push(createGzdLine(fromLonLat([x, y + 12]), fromLonLat([x + 6 + 6, y + 12]), 1))
+      lines.push(createLine(fromLonLat([x, y]), fromLonLat([x + 6, y]), 1))
+      lines.push(createLine(fromLonLat([x, y]), fromLonLat([x, y + 12]), 1))
+      lines.push(createLine(fromLonLat([x, y + 12]), fromLonLat([x + 6 + 6, y + 12]), 1))
       // thanks norway (everything but else)
       if (x === 0 || x === 33) {
         x = x + 9
@@ -52,25 +51,6 @@ export const getGzdGrid = () => {
   return lines
 }
 
-const createGzdLine = (startPoint, endPoint, detail) => {
-  const text = getLineText(startPoint, endPoint) || ''
-  return createLine(startPoint, endPoint, detail, text)
-}
-
-/**
- * Used to generate the Line text
- * @param {[Number,Number]} startpoint startpoint of the GZD Segment
- * @param {[Number,Number]} endPoint endPoint of the GZD Segment
- * @returns {String} Line text
- */
-const getLineText = (startPoint, endPoint) => {
-  const lonLat1 = toLonLat(startPoint)
-  const lonLat2 = toLonLat(endPoint)
-  const mgrs = toMgrs([(lonLat1[0] + lonLat2[0]) / 2, (lonLat1[1] + lonLat2[1]) / 2])
-  if (mgrs.length >= 3) {
-    return mgrs.substr(0, 3)
-  }
-}
 
 /**
  * returns Array of [Longitude,latitude] of the GZD End/Startpoint

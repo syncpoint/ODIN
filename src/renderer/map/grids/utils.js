@@ -7,19 +7,17 @@ import { getCenter, getWidth } from 'ol/extent'
  * @param {[Number, Number]} startPoint Line start
  * @param {[Number, Number]} endPoint Line end
  * @param {Number} visualDepth Number used to calculate the width of a Line
- * @param {String} text Line text to display
  * @param {Function} wrapBack function to use for calculating X-Coordinates back to the inital world
  * @returns {LineString} linestrin feature
  */
-export const createLine = (startPoint, endPoint, visualDepth, text, wrapBack) => {
+export const createLine = (startPoint, endPoint, visualDepth, wrapBack) => {
   if (wrapBack) {
     startPoint[0] = wrapBack(startPoint[0])
     endPoint[0] = wrapBack(endPoint[0])
   }
   const feature = new Feature({
     geometry: new LineString([startPoint[0], startPoint[1], endPoint[0], endPoint[1]], 'XY'),
-    detail: visualDepth,
-    text: text
+    detail: visualDepth
   })
   return feature
 }

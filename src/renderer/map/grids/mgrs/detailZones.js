@@ -58,17 +58,18 @@ const buildLines = (extent, depth) => {
  */
 const generate100kLines = (gzd, band) => {
   const lines = []
+  const drawLine = (position, isHorizontal) => drawGridLine(position, 0, isHorizontal, 100000)
   // stores the last valid e100ks, so it can be used as startPoint in the next n100k Segment
   loopN100k(n100k => {
     loopE100k(e100k => {
       const startMgrs = buildMgrsString(gzd, band, e100k, n100k, 0, 0)
 
-      const horizontalLine = horizontal100kLine(startMgrs, n100k)
+      const horizontalLine = drawLine(startMgrs, false)
       if (horizontalLine) {
         lines.push(horizontalLine)
       }
 
-      const verticalLine = vertical100kLine(startMgrs, e100k)
+      const verticalLine = drawLine(startMgrs, true)
       if (verticalLine) {
         lines.push(verticalLine)
       }
@@ -78,25 +79,6 @@ const generate100kLines = (gzd, band) => {
   return lines
 }
 
-/**
- * generates the vertical 100k Line from the last valid Mgrs Coordinate within the Segment
- * @param {String} startPoint startMgrs Coordinate String (length=15)
- * @param {String} text linetext
- * @returns {import("ol/Feature")[]} Array of ol/Feature
- */
-const vertical100kLine = (startPoint, text) => {
-  return drawGridLine(startPoint, 0, text, false, 100000)
-}
-
-/**
- * generates the vertical 100k Line from the last valid Mgrs Coordinate within the Segment
- * @param {String} startPoint startMgrs Coordinate String (length=15)
- * @param {String} text linetext
- * @returns {import("ol/Feature")[]} Array of ol/Feature
- */
-const horizontal100kLine = (startPoint, text) => {
-  return drawGridLine(startPoint, 0, text, true, 100000)
-}
 /**
  * generates the detail Lines for the GZD Segment defined by gzd and band
  * Detail lines= {gzd}{band} {e100k}{n100k} {00001-99999} {00001-99999}
@@ -137,19 +119,17 @@ const numericLines = (mgrsBuilder, intersects, depth, currentDepth = 1, parentEa
   // the step gets lower with the recursion depth, initialy 10000
   const step = 10000 / Math.pow(10, currentDepth - 1)
 
-  const drawLine = (position, text, isHorizontal) => drawGridLine(position, currentDepth, text, isHorizontal, step)
+  const drawLine = (position, isHorizontal) => drawGridLine(position, currentDepth, isHorizontal, step)
   loopNumericalSegments(step, parentNorthing, (northing) => {
     loopNumericalSegments(step, parentEasting, (easting) => {
       if (currentDepth === depth) {
         const startMGRS = mgrsBuilder(easting, northing)
-
-        const hText = numericTextFunction(northing, startMGRS.substr(4, 1), depth)
-        const hLine = drawLine(startMGRS, hText, true)
+        const hLine = drawLine(startMGRS, true)
         if (hLine) {
           lines.push(hLine)
         }
-        const vText = numericTextFunction(easting, startMGRS.substr(3, 1), depth)
-        const vLine = drawLine(startMGRS, vText, false)
+
+        const vLine = drawLine(startMGRS, false)
         if (vLine) {
           lines.push(vLine)
         }
@@ -163,29 +143,13 @@ const numericLines = (mgrsBuilder, intersects, depth, currentDepth = 1, parentEa
 }
 
 /**
- * Formats number to a MGRS easting/northing String with the accuracy of 5
- * and returns the substring according to its depth
- * @param {Number} number easting/northing
- * @param {String} segmentText100k parent Segment text, that should be shown if the number is 0
- * @param {Number} depth
- */
-const numericTextFunction = (number, segmentText100k, depth) => {
-  if (number === 0) {
-    return segmentText100k
-  }
-  const text = fromatDetailLevel(number)
-  return text.substr(0, depth)
-}
-
-/**
  * generates a ol/Linestring from the last valid Position to mgrs or to the gzd border connections
  * @param {String} startMgrs startPoint
  * @param {Number} depth detailLevel
- * @param {String} text LineString Text
  * @param {Boolean} isHorizontal says if the Line is Horizontal, needed for GZD Border calculations
  * @param {Number} step difference between the easting/northing (x/y) for each detail segment
  */
-const drawGridLine = (startMgrs, depth, text, isHorizontal, step) => {
+const drawGridLine = (startMgrs, depth, isHorizontal, step) => {
   const validStart = isValid100kSegment(startMgrs) ? fromMgrs(startMgrs) : undefined
   const target = addStep(startMgrs, isHorizontal, step)
   const lonlat = fromMgrs(target)
@@ -195,20 +159,20 @@ const drawGridLine = (startMgrs, depth, text, isHorizontal, step) => {
   }
   if (isValid100kSegment(target)) {
     if (validStart) {
-      return createLine(fromLonLat(validStart), fromLonLat(lonlat), visualDepth, text, loadedWrapBack)
+      return createLine(fromLonLat(validStart), fromLonLat(lonlat), visualDepth, loadedWrapBack)
     } else if (isHorizontal) {
-      return leftGzdConnection(target, step, visualDepth, depth, text)
+      return leftGzdConnection(target, step, visualDepth, depth)
     } else {
-      return bottomGzdConnection(target, step, visualDepth, depth, text)
+      return bottomGzdConnection(target, step, visualDepth, depth)
     }
   } else if (!isHorizontal && validStart) {
-    return topGzdConnection(target, validStart, visualDepth, depth, text)
+    return topGzdConnection(target, validStart, visualDepth, depth)
   } else if (isHorizontal && validStart) {
-    return rightGzdConnection(target, validStart, visualDepth, depth, text)
+    return rightGzdConnection(target, validStart, visualDepth, depth)
   }
 }
 
-const bottomGzdConnection = (mgrs, step, visualDepth, depth, text) => {
+const bottomGzdConnection = (mgrs, step, visualDepth, depth) => {
   const lonlat = fromMgrs(mgrs)
   const startPoint = getGzdPoint([lonlat[0], lonlat[1]], false)
   if (depth > 0) {
@@ -217,7 +181,7 @@ const bottomGzdConnection = (mgrs, step, visualDepth, depth, text) => {
     const assumedNextPoint = fromMgrs(mgrs.substr(0, 10) + nextNorthing)
     const controllMGRS = toMgrs([assumedNextPoint[0], lonlat[1] - (assumedNextPoint[1] - lonlat[1])])
     if (!isNaN(assumedNextPoint[0]) && !isValidGzdZone(controllMGRS, mgrs) && !isValidBand(controllMGRS, mgrs)) {
-      return borderConnection(lonlat, assumedNextPoint, visualDepth, text, false, false)
+      return borderConnection(lonlat, assumedNextPoint, visualDepth, false, false)
     }
   } else {
     const newBand = getPrevious(mgrs.substr(2, 1))
@@ -226,62 +190,62 @@ const bottomGzdConnection = (mgrs, step, visualDepth, depth, text) => {
     const source = fromMgrs(newMGRS)
     const controllMGRS = toMgrs([source[0], source[1]])
     if (isValidGzdZone(controllMGRS, mgrs)) {
-      return createLine(fromLonLat(fromMgrs(mgrs)), fromLonLat(source), 0, mgrs.substr(3, 1), loadedWrapBack)
+      return createLine(fromLonLat(fromMgrs(mgrs)), fromLonLat(source), 0, loadedWrapBack)
     } else {
       // thanks norway
       const diff = source[0] - lonlat[0]
       const newLon = (diff * (startPoint[1] - lonlat[1]) / (source[1] - lonlat[1])) + lonlat[0]
-      return createLine(fromLonLat(fromMgrs(mgrs)), fromLonLat([newLon, startPoint[1]]), 0, mgrs.substr(3, 1), loadedWrapBack)
+      return createLine(fromLonLat(fromMgrs(mgrs)), fromLonLat([newLon, startPoint[1]]), 0, loadedWrapBack)
     }
   }
 }
 
-const leftGzdConnection = (mgrs, step, visualDepth, depth, text) => {
+const leftGzdConnection = (mgrs, step, visualDepth, depth) => {
   const lonlat = fromMgrs(mgrs)
   if (depth > 0) {
     const nextEasting = fromatDetailLevel(Number(mgrs.substr(5, 5)) + step)
     const assumedNextPoint = fromMgrs(mgrs.substr(0, 5) + nextEasting + mgrs.substr(10, 5))
     const startPoint = getGzdPoint([lonlat[0], lonlat[1]], false)
     if ((!isNaN(assumedNextPoint[0]) && lonlat[0] - (assumedNextPoint[0] - lonlat[0]) < startPoint[0])) {
-      return borderConnection(lonlat, assumedNextPoint, visualDepth, text, false, true)
+      return borderConnection(lonlat, assumedNextPoint, visualDepth, false, true)
     }
 
   } else {
     const startPoint = getGzdPoint([lonlat[0], lonlat[1]], false)
-    return createLine(fromLonLat([startPoint[0], lonlat[1]]), fromLonLat([lonlat[0], lonlat[1]]), visualDepth, text, loadedWrapBack)
+    return createLine(fromLonLat([startPoint[0], lonlat[1]]), fromLonLat([lonlat[0], lonlat[1]]), visualDepth, loadedWrapBack)
   }
 }
 
-const rightGzdConnection = (mgrs, lastPosition, visualDepth, depth, text) => {
+const rightGzdConnection = (mgrs, lastPosition, visualDepth, depth) => {
   const lonlat = fromMgrs(mgrs)
   if (depth > 0) {
-    return borderConnection(lastPosition, lonlat, visualDepth, text, true, true)
+    return borderConnection(lastPosition, lonlat, visualDepth, true, true)
   } else if (lastPosition) {
     const newValidPosition = isValid100kSegment(mgrs) ? fromMgrs(mgrs) : lastPosition
     const endPoint = getGzdPoint(newValidPosition, true)
-    return createLine(fromLonLat([endPoint[0], newValidPosition[1]]), fromLonLat(newValidPosition), 2, mgrs.substr(4, 1), loadedWrapBack)
+    return createLine(fromLonLat([endPoint[0], newValidPosition[1]]), fromLonLat(newValidPosition), 2, loadedWrapBack)
   }
 }
 
-const topGzdConnection = (mgrs, lastPosition, visualDepth, depth, text) => {
+const topGzdConnection = (mgrs, lastPosition, visualDepth, depth) => {
   const lonlat = fromMgrs(mgrs)
   if (depth > 0 && lastPosition && isValidGzdZone(mgrs)) {
-    return createLine(fromLonLat(lastPosition), fromLonLat([lonlat[0], lonlat[1]]), visualDepth, text, loadedWrapBack)
+    return createLine(fromLonLat(lastPosition), fromLonLat([lonlat[0], lonlat[1]]), visualDepth, loadedWrapBack)
   } else if (lastPosition && !isValidGzdZone(mgrs) && !isValidBand(mgrs)) {
     // thanks norway
-    return borderConnection(lastPosition, lonlat, visualDepth, text, true, false)
+    return borderConnection(lastPosition, lonlat, visualDepth, true, false)
   }
 }
 
-const borderConnection = (sourceLonLat, nextPointLonLat, depth, text, isEndPoint, isHorizontal) => {
+const borderConnection = (sourceLonLat, nextPointLonLat, depth, isEndPoint, isHorizontal) => {
   const endPoint = getGzdPoint([sourceLonLat[0], sourceLonLat[1]], isEndPoint)
   if (isHorizontal) {
     const diff = nextPointLonLat[1] - sourceLonLat[1]
     const newLat = diff * (endPoint[0] - sourceLonLat[0]) / (nextPointLonLat[0] - sourceLonLat[0]) + sourceLonLat[1]
-    return createLine(fromLonLat([endPoint[0], newLat]), fromLonLat([sourceLonLat[0], sourceLonLat[1]]), depth, text, loadedWrapBack)
+    return createLine(fromLonLat([endPoint[0], newLat]), fromLonLat([sourceLonLat[0], sourceLonLat[1]]), depth, loadedWrapBack)
   } else {
     const diff = nextPointLonLat[0] - sourceLonLat[0]
     const newLon = (diff * (endPoint[1] - sourceLonLat[1]) / (nextPointLonLat[1] - sourceLonLat[1])) + sourceLonLat[0]
-    return createLine(fromLonLat([newLon, endPoint[1]]), fromLonLat([sourceLonLat[0], sourceLonLat[1]]), depth, text, loadedWrapBack)
+    return createLine(fromLonLat([newLon, endPoint[1]]), fromLonLat([sourceLonLat[0], sourceLonLat[1]]), depth, loadedWrapBack)
   }
 }
