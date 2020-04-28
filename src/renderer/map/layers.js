@@ -18,6 +18,7 @@ import style from './style/style'
 import project from '../project'
 import undo from '../undo'
 import selection from '../selection'
+import evented from '../evented'
 
 
 // --
