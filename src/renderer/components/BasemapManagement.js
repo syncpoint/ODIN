@@ -217,7 +217,7 @@ const DescriptorDetails = props => {
         // eslint-disable-next-line react/prop-types
         switch (metadata.type) {
           case 'XYZ': return <XYZOptions options={options} merge={mergeOptions}/>
-          case 'WMTS': return <WMTSOptions options={options} merge={mergeOptions}/>
+          case 'WMTS': return <WMTSOptions options={options} merge={mergeOptions} onValidation={setAllowNextStep}/>
           default: return <div>UNKNOWN SOURCE TYPE</div>
         }
       }

@@ -90,7 +90,6 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-i18next": "^11.3.4",
-    "react-table": "^7.0.4",
     "sanitize-filename": "^1.6.3",
     "uuid-random": "^1.3.0"
   }

@@ -6,7 +6,7 @@ import WMTSLayerTable from './WMTSLayerTable'
 import WMTSCapabilities from 'ol/format/WMTSCapabilities'
 
 const WMTSOptions = props => {
-  const { merge } = props
+  const { merge, onValidation } = props
 
   /* effects */
   const [capabilities, setCapabilities] = React.useState(null)
@@ -28,27 +28,24 @@ const WMTSOptions = props => {
       }
     }
     fetchAndSetCapabilities()
+
+    onValidation(!!props.options.layer)
     return () => { controller.abort() }
   }, [])
 
-  const columns = React.useMemo(() => [
-    {
-      Header: 'Title',
-      accessor: 'Title'
-    },
-    {
-      Header: 'Abstract',
-      accessor: 'Abstract'
-    }
-  ])
-
+  /* increases performance */
   const layers = React.useMemo(() => {
+    const MAX_ABSTRACT_LENGTH = 140
     if (!capabilities) return []
     return capabilities.Contents.Layer.map(layer => {
       return {
         Identifier: layer.Identifier,
         Title: layer.Title,
-        Abstract: (layer.Abstract.length > 140 ? `${layer.Abstract.substring(0, 140)} ...` : layer.Abstract)
+        Abstract: (
+          layer.Abstract.length > MAX_ABSTRACT_LENGTH
+            ? `${layer.Abstract.substring(0, MAX_ABSTRACT_LENGTH)} ...`
+            : layer.Abstract
+        )
       }
     })
   }, [capabilities])
@@ -56,8 +53,14 @@ const WMTSOptions = props => {
 
   /* functions */
   const handleLayerSelected = layerId => {
-    setSelectedLayerId(layerId)
-    merge('layer', layerId)
+    console.log(`layer ${layerId} was selected`)
+    if (layerId) {
+      setSelectedLayerId(layerId)
+      merge('layer', layerId)
+      onValidation(true)
+    } else {
+      onValidation(false)
+    }
   }
 
   /* rendering */
@@ -70,15 +73,9 @@ const WMTSOptions = props => {
           <Typography gutterBottom>{capabilities.ServiceProvider.ProviderName}</Typography>
           <Typography gutterBottom variant="h5" component="h2">{capabilities.ServiceIdentification.Title}</Typography>
           <Typography gutterBottom >{capabilities.ServiceIdentification.Abstract}</Typography>
-          <div>
-            <Typography variant="body2" component="p">
-            Found {capabilities.Contents.Layer.length} layers and {capabilities.Contents.TileMatrixSet.length} TileMatrix sets.
-            </Typography>
-          </div>
         </CardContent>
       </Card>
       <WMTSLayerTable
-        columns={columns}
         layers={layers}
         selectedLayerIdentifier={selectedLayerId}
         onLayerSelected={handleLayerSelected}
@@ -88,7 +85,8 @@ const WMTSOptions = props => {
 }
 WMTSOptions.propTypes = {
   options: PropTypes.object,
-  merge: PropTypes.func
+  merge: PropTypes.func,
+  onValidation: PropTypes.func
 }
 
 export default WMTSOptions
