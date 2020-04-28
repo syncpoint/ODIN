@@ -31,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
     gridArea: 'L',
     pointerEvents: 'auto',
     fontFamily: 'Roboto',
-    height: 'auto',
     display: 'grid',
     gridTemplateRows: 'max-content max-content auto',
     gridTemplateAreas: `
@@ -57,10 +56,14 @@ const useStyles = makeStyles((theme) => ({
     gridArea: 'SEARCH'
   },
 
+  listContainer: {
+    height: '100%',
+    overflow: 'auto',
+    gridArea: 'LIST'
+  },
+
   list: {
-    gridArea: 'LIST',
-    maxHeight: 'fill-available',
-    overflow: 'auto'
+    maxHeight: '0px' // ?!
   },
 
   item: {
@@ -119,7 +122,6 @@ const actions = [
 ]
 
 const reducer = (state, event) => {
-  console.log('[LayerList] reducer', event)
   switch (event.type) {
     case 'snapshot': return event.layers.reduce((acc, layer) => K(acc)(acc => {
       acc[layer.id] = layer
@@ -245,9 +247,11 @@ const LayerList = (/* props */) => {
         placeholder={ 'Search...' }
         autoFocus
       />
-      <List className={classes.list}>
-        { Object.values(layers).map(layer) }
-      </List>
+      <div className={classes.listContainer}>
+        <List className={classes.list}>
+          { Object.values(layers).map(layer) }
+        </List>
+      </div>
     </Paper>
   )
 }
