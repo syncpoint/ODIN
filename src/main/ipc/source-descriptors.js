@@ -18,9 +18,7 @@ ipcMain.handle('IPC_LIST_SOURCE_DESCRIPTORS', async () => {
   return await listSourceDescriptors()
 })
 
-ipcMain.handle('IPC_PERSIST_DESCRIPTOR', async (event, descriptor) => {
-  console.log('persisting descriptor')
-  console.dir(descriptor)
+ipcMain.handle('IPC_PERSIST_DESCRIPTOR', async (_ /* event */, descriptor) => {
   const sources = await listSourceDescriptors()
 
   if (descriptor.id) {
@@ -32,7 +30,5 @@ ipcMain.handle('IPC_PERSIST_DESCRIPTOR', async (event, descriptor) => {
     descriptor.id = uuid()
     sources.push(descriptor)
   }
-
-  console.dir(sources)
   await fs.promises.writeFile(ODIN_SOURCES, JSON.stringify(sources))
 })
