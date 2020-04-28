@@ -14,7 +14,6 @@ import coordinateFormat from '../../shared/coord-format'
 import layers from './layers'
 import basemap from './basemap'
 import './style/scalebar.css'
-import undo from '../undo'
 import disposable from '../../shared/disposable'
 
 const zoom = view => view.getZoom()
@@ -97,16 +96,6 @@ const effect = props => () => {
   })
 }
 
-const onFocus = () => {
-  ipcRenderer.on('IPC_EDIT_UNDO', undo.undo)
-  ipcRenderer.on('IPC_EDIT_REDO', undo.redo)
-}
-
-const onBlur = () => {
-  ipcRenderer.off('IPC_EDIT_UNDO', undo.undo)
-  ipcRenderer.off('IPC_EDIT_REDO', undo.redo)
-}
-
 /**
  * React OpenLayers Map function component.
  */
@@ -116,8 +105,8 @@ const Map = props => {
   return <div
     id={props.id}
     tabIndex="0"
-    onFocus={ onFocus }
-    onBlur={ onBlur }
+    onFocus={() => evented.emit('MAP_FOCUS')}
+    onBlur={() => evented.emit('MAP_BLUR')}
   />
 }
 

@@ -712,15 +712,35 @@ const createBoxSelect = () => {
 // --
 // SECTION: IPC/mousetrap hooks.
 
-ipcRenderer.on('IPC_EDIT_SELECT_ALL', editSelectAll)
-ipcRenderer.on('IPC_EDIT_DELETE', editDelete)
-ipcRenderer.on('IPC_EDIT_CUT', editCut)
-ipcRenderer.on('IPC_EDIT_COPY', editCopy)
-ipcRenderer.on('IPC_EDIT_PASTE', editPaste)
+// Only handle clipboard ops when map has focus.
 
 Mousetrap.bind('del', editDelete) // macOS: fn+backspace
 Mousetrap.bind('command+backspace', editDelete)
 Mousetrap.bind('esc', clearSelection)
+
+evented.on('MAP_FOCUS', () => {
+  ipcRenderer.on('IPC_EDIT_UNDO', undo.undo)
+  ipcRenderer.on('IPC_EDIT_REDO', undo.redo)
+
+  ipcRenderer.on('IPC_EDIT_SELECT_ALL', editSelectAll)
+  ipcRenderer.on('IPC_EDIT_DELETE', editDelete)
+  ipcRenderer.on('IPC_EDIT_CUT', editCut)
+  ipcRenderer.on('IPC_EDIT_COPY', editCopy)
+  ipcRenderer.on('IPC_EDIT_PASTE', editPaste)
+})
+
+evented.on('MAP_BLUR', () => {
+  ipcRenderer.off('IPC_EDIT_UNDO', undo.undo)
+  ipcRenderer.off('IPC_EDIT_REDO', undo.redo)
+
+  ipcRenderer.off('IPC_EDIT_SELECT_ALL', editSelectAll)
+  ipcRenderer.off('IPC_EDIT_DELETE', editDelete)
+  ipcRenderer.off('IPC_EDIT_CUT', editCut)
+  ipcRenderer.off('IPC_EDIT_COPY', editCopy)
+  ipcRenderer.off('IPC_EDIT_PASTE', editPaste)
+})
+
+
 
 
 // --
