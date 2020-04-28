@@ -176,11 +176,12 @@ const DescriptorDetails = props => {
 
   const Options = props => {
     switch (metadata.type) {
-      case 'XYZ': return <XYZOptions />
-      case 'WMTS': return <WMTSOptions />
+      case 'XYZ': return <XYZOptions options={props.options}/>
+      case 'WMTS': return <WMTSOptions options={props.options}/>
       default: return <div>UNKNOWN SOURCE TYPE</div>
     }
   }
+  Options.propTypes = { options: PropTypes.object }
 
   const Verify = props => {
     const { metadata, options, onValidation } = props
@@ -211,7 +212,7 @@ const DescriptorDetails = props => {
           onUrlReady={url => mergeOptions('url', url)}
         />
       case 1:
-        return <Options />
+        return <Options options={options}/>
       case 2:
         return <Verify
           metadata={metadata}
