@@ -9,6 +9,7 @@ import { LayersTriple, Undo, Redo, ContentCut, ContentCopy, ContentPaste, Delete
 import ActivityBar from './ActivityBar'
 import LayerList from './LayerList'
 import undo from '../undo'
+import evented from '../evented'
 
 const useStyles = makeStyles((/* theme */) => ({
   toolsPanel: {
@@ -76,28 +77,28 @@ const initialActivities = classes => [
     type: 'action',
     icon: <ContentCut/>,
     tooltip: 'Cut',
-    action: () => console.log('CUT')
+    action: () => evented.emit('EDIT_CUT')
   },
   {
     id: 'copy',
     type: 'action',
     icon: <ContentCopy/>,
     tooltip: 'Copy',
-    action: () => console.log('COPY')
+    action: () => evented.emit('EDIT_COPY')
   },
   {
     id: 'paste',
     type: 'action',
     icon: <ContentPaste/>,
     tooltip: 'Paste',
-    action: () => console.log('PASTE')
+    action: () => evented.emit('EDIT_PASTE')
   },
   {
     id: 'delete',
     type: 'action',
     icon: <DeleteOutline/>,
     tooltip: 'Delete',
-    action: () => console.log('DELETE')
+    action: () => evented.emit('EDIT_DELETE')
   }
 ]
 
