@@ -15,7 +15,8 @@ const Url = props => {
   // TODO: provide reliable url checker
   const checkUrl = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,7}(:[0-9]{1,5})?(\/.*)?$/i
   const xyzType = /\{z\}.*\{x\}.*\{-?y\}/i
-  const wmtsType = /WMTSCapabilities/i
+  // TODO: improve detection!
+  const wmtsType = /WMTS/i
 
   const handlePropertyChanged = event => {
     setUrl(event.target.value)
