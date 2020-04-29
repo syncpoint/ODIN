@@ -20,7 +20,6 @@ const WMTSOptions = props => {
       try {
         const response = await fetch(props.options.url, { signal })
         const caps = (new WMTSCapabilities()).read(await response.text())
-        console.dir(caps)
         setCapabilities(caps)
       } catch (error) {
         console.error(error)
@@ -36,16 +35,20 @@ const WMTSOptions = props => {
   /* increases performance */
   const layers = React.useMemo(() => {
     const MAX_ABSTRACT_LENGTH = 140
+
+    const getAbstract = layer => {
+      if (!layer.Abstract) return ''
+      return layer.Abstract.length > MAX_ABSTRACT_LENGTH
+        ? `${layer.Abstract.substring(0, MAX_ABSTRACT_LENGTH)} ...`
+        : layer.Abstract
+    }
+
     if (!capabilities) return []
     return capabilities.Contents.Layer.map(layer => {
       return {
         Identifier: layer.Identifier,
         Title: layer.Title,
-        Abstract: (
-          layer.Abstract.length > MAX_ABSTRACT_LENGTH
-            ? `${layer.Abstract.substring(0, MAX_ABSTRACT_LENGTH)} ...`
-            : layer.Abstract
-        )
+        Abstract: getAbstract(layer)
       }
     })
   }, [capabilities])
@@ -53,7 +56,6 @@ const WMTSOptions = props => {
 
   /* functions */
   const handleLayerSelected = layerId => {
-    console.log(`layer ${layerId} was selected`)
     if (layerId) {
       setSelectedLayerId(layerId)
       merge('layer', layerId)
@@ -70,9 +72,15 @@ const WMTSOptions = props => {
     <>
       <Card variant="outlined">
         <CardContent>
-          <Typography gutterBottom>{capabilities.ServiceProvider.ProviderName}</Typography>
-          <Typography gutterBottom variant="h5" component="h2">{capabilities.ServiceIdentification.Title}</Typography>
-          <Typography gutterBottom >{capabilities.ServiceIdentification.Abstract}</Typography>
+          <Typography gutterBottom>
+            {capabilities.ServiceProvider ? capabilities.ServiceProvider.ProviderName : ''}
+          </Typography>
+          <Typography gutterBottom variant="h5" component="h2">
+            {capabilities.ServiceIdentification ? capabilities.ServiceIdentification.Title : ''}
+          </Typography>
+          <Typography gutterBottom >
+            {capabilities.ServiceIdentification ? capabilities.ServiceIdentification.Abstract : ''}
+          </Typography>
         </CardContent>
       </Card>
       <WMTSLayerTable
