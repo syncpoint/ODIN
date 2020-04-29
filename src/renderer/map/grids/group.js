@@ -10,6 +10,7 @@ const getGridLayerGroup = (options = {}) => {
   const mgrsGrids = generateMgrsLayers()
 
   const gridGroup = new LayerGroup({
+    ...options,
     layers: []
   })
 

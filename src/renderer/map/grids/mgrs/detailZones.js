@@ -2,7 +2,7 @@ import { fromLonLat } from 'ol/proj'
 import { getGzdPoint } from './gzdZones'
 import { loopGZD, loopE100k, loopN100k, loop100k, loopNumericalSegments } from './segmentLoops'
 import { fromMgrs, toMgrs, buildMgrsString, fromatDetailLevel, getPrevious, addStep } from './mgrs'
-import { intersectsSegment, isValid100kSegment, isValidGzdZone, isValidBand } from './validation'
+import { intersectsSegment, isValid100kSegment, isValidGzdZone, isValidBand, isValidGzdSegment } from './validation'
 import { createLine, wrapX, splitWorlds } from '../utils'
 import { equals } from 'ol/extent'
 
@@ -161,14 +161,14 @@ const drawGridLine = (startMgrs, depth, isHorizontal, step) => {
     if (validStart) {
       return createLine(fromLonLat(validStart), fromLonLat(lonlat), visualDepth, loadedWrapBack)
     } else if (isHorizontal) {
-      return leftGzdConnection(target, step, visualDepth, depth)
+      return leftGzdConnection(target, fromMgrs(startMgrs), step, visualDepth)
     } else {
       return bottomGzdConnection(target, step, visualDepth, depth)
     }
   } else if (!isHorizontal && validStart) {
     return topGzdConnection(target, validStart, visualDepth, depth)
   } else if (isHorizontal && validStart) {
-    return rightGzdConnection(target, validStart, visualDepth, depth)
+    return rightGzdConnection(target, validStart, visualDepth)
   }
 }
 
@@ -195,36 +195,20 @@ const bottomGzdConnection = (mgrs, step, visualDepth, depth) => {
       // thanks norway
       const diff = source[0] - lonlat[0]
       const newLon = (diff * (startPoint[1] - lonlat[1]) / (source[1] - lonlat[1])) + lonlat[0]
-      return createLine(fromLonLat(fromMgrs(mgrs)), fromLonLat([newLon, startPoint[1]]), 0, loadedWrapBack)
+      const target = [newLon, startPoint[1]]
+      if (isValidGzdSegment(mgrs, toMgrs(target))) {
+        return createLine(fromLonLat(fromMgrs(mgrs)), fromLonLat(target), 0, loadedWrapBack)
+      }
     }
   }
 }
 
-const leftGzdConnection = (mgrs, step, visualDepth, depth) => {
-  const lonlat = fromMgrs(mgrs)
-  if (depth > 0) {
-    const nextEasting = fromatDetailLevel(Number(mgrs.substr(5, 5)) + step)
-    const assumedNextPoint = fromMgrs(mgrs.substr(0, 5) + nextEasting + mgrs.substr(10, 5))
-    const startPoint = getGzdPoint([lonlat[0], lonlat[1]], false)
-    if ((!isNaN(assumedNextPoint[0]) && lonlat[0] - (assumedNextPoint[0] - lonlat[0]) < startPoint[0])) {
-      return borderConnection(lonlat, assumedNextPoint, visualDepth, false, true)
-    }
-
-  } else {
-    const startPoint = getGzdPoint([lonlat[0], lonlat[1]], false)
-    return createLine(fromLonLat([startPoint[0], lonlat[1]]), fromLonLat([lonlat[0], lonlat[1]]), visualDepth, loadedWrapBack)
-  }
+const leftGzdConnection = (mgrs, lastPosition, step, visualDepth) => {
+  return borderConnection(fromMgrs(mgrs), lastPosition, visualDepth, false, true)
 }
 
-const rightGzdConnection = (mgrs, lastPosition, visualDepth, depth) => {
-  const lonlat = fromMgrs(mgrs)
-  if (depth > 0) {
-    return borderConnection(lastPosition, lonlat, visualDepth, true, true)
-  } else if (lastPosition) {
-    const newValidPosition = isValid100kSegment(mgrs) ? fromMgrs(mgrs) : lastPosition
-    const endPoint = getGzdPoint(newValidPosition, true)
-    return createLine(fromLonLat([endPoint[0], newValidPosition[1]]), fromLonLat(newValidPosition), 2, loadedWrapBack)
-  }
+const rightGzdConnection = (mgrs, lastPosition, visualDepth) => {
+  return borderConnection(lastPosition, fromMgrs(mgrs), visualDepth, true, true)
 }
 
 const topGzdConnection = (mgrs, lastPosition, visualDepth, depth) => {

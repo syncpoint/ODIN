@@ -64,10 +64,10 @@ const generateGzdLayer = (options) => {
  */
 const gzdTextFunction = (geometry) => {
   const coords = geometry.getCoordinates()
-  const sortedCoords = sortCoords(coords)
+  const centeredCoords = getCenter(coords)
 
-  // +1 is to counter inaccuracies coords are in
-  const mgrs = toMgrs(toLonLat([sortedCoords[0][0] + 1, sortedCoords[0][1] + 1]))
+  // +1 is to counter small inaccuracies
+  const mgrs = toMgrs(toLonLat([centeredCoords[0] + 1, centeredCoords[1] + 1]))
   return isHorizontal(coords[0], coords[1]) ? mgrs.substr(2, 1) : mgrs.substr(0, 2)
 }
 
@@ -125,10 +125,10 @@ const styleFunction = (textFunction) => (feature) => {
 const getText = (depth) => (geometry) => {
   const coords = geometry.getCoordinates()
   const horizontal = isHorizontal(coords[0], coords[1])
-  const sortedCoords = sortCoords(coords)
+  const centeredCoords = getCenter(coords)
 
-  // +1 is to counter inaccuracies
-  const mgrs = toMgrs(toLonLat([sortedCoords[0][0] + 1, sortedCoords[0][1] + 1]))
+  // +1 is to counter small inaccuracies
+  const mgrs = toMgrs(toLonLat([centeredCoords[0] + 1, centeredCoords[1] + 1]))
   const text = horizontal ? mgrs.substr(10, depth) : mgrs.substr(5, depth)
   // 100k names
   if (depth === 0 || Number(text) === 0) {
@@ -146,6 +146,27 @@ const sortCoords = (coords) => {
   }
   return coords[0][1] < coords[1][1] ? coords : [coords[1], coords[0]]
 }
+
+/**
+ * the centered Coodrinates can only be used by horizontal lines.
+ * since on the GZD border a centered coordinate would result in a different Segment,
+ * if the horizontal step is lower as half the vertical step
+ *
+ * so the function returns the center of the line for a vertical line
+ * @param {*} coords
+ * @returns {[Number,number]} for a horizontal line it returns the center of the segment, for a vertical line it returns the center of the Line
+ */
+const getCenter = (coords) => {
+  const sortedCoords = sortCoords(coords)
+  const eastingDiff = Math.abs(sortedCoords[0][0] - sortedCoords[1][0])
+  const northingDiff = Math.abs(sortedCoords[0][1] - sortedCoords[1][1])
+  if (eastingDiff > northingDiff) {
+    return [sortedCoords[0][0] + eastingDiff / 2, sortedCoords[0][1] + eastingDiff / 2]
+  }
+  return [sortedCoords[0][0] + eastingDiff / 2, sortedCoords[0][1] + northingDiff / 2]
+
+}
+
 const isHorizontal = (start, end) => {
   const eastingDiff = Math.abs(start[0] - end[0])
   const northingDiff = Math.abs(start[1] - end[1])
