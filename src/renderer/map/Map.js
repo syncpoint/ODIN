@@ -6,6 +6,7 @@ import * as ol from 'ol'
 import 'ol/ol.css'
 import { fromLonLat, toLonLat } from 'ol/proj'
 import { ScaleLine } from 'ol/control'
+import getGridLayerGroup from './grids/group'
 
 
 import evented from '../evented'
@@ -14,7 +15,7 @@ import coordinateFormat from '../../shared/coord-format'
 import layers from './layers'
 import basemap from './basemap'
 import './style/scalebar.css'
-import undo from '../undo'
+import disposable from '../../shared/disposable'
 
 const zoom = view => view.getZoom()
 const center = view => toLonLat(view.getCenter())
@@ -47,7 +48,8 @@ const effect = props => () => {
   const map = new ol.Map({
     view,
     target: id,
-    controls: [scaleLine]
+    controls: [scaleLine],
+    layers: [getGridLayerGroup()]
   })
   map.on('moveend', viewportChanged(view))
   map.on('pointermove', event => {
@@ -63,29 +65,36 @@ const effect = props => () => {
   */
   basemap(map)
 
+
+  // Provide layer/interaction cleanup.
+  let disposables = disposable.of()
+
+  const addLayer = layer => {
+    map.addLayer(layer)
+    disposables.addDisposable(() => map.removeLayer(layer))
+  }
+
+  const addInteraction = interaction => {
+    map.addInteraction(interaction)
+    disposables.addDisposable(() => map.removeInteraction(interaction))
+  }
+
+  const dispose = () => {
+    disposables.dispose()
+    disposables = disposable.of()
+  }
+
   // Delegate layer management.
   // Note: We don't directly expose complete Map API,
   // but only essential operations.
   layers({
+    addLayer,
+    addInteraction,
+    dispose,
     setCenter: view.setCenter.bind(view),
     setZoom: view.setZoom.bind(view),
-    addLayer: map.addLayer.bind(map),
-    removeLayer: map.removeLayer.bind(map),
-    addInteraction: map.addInteraction.bind(map),
-    removeInteraction: map.removeInteraction.bind(map),
     rotation: view.getRotation.bind(view)
   })
-
-}
-
-const onFocus = () => {
-  ipcRenderer.on('IPC_EDIT_UNDO', undo.undo)
-  ipcRenderer.on('IPC_EDIT_REDO', undo.redo)
-}
-
-const onBlur = () => {
-  ipcRenderer.off('IPC_EDIT_UNDO', undo.undo)
-  ipcRenderer.off('IPC_EDIT_REDO', undo.redo)
 }
 
 /**
@@ -97,8 +106,8 @@ const Map = props => {
   return <div
     id={props.id}
     tabIndex="0"
-    onFocus={ onFocus }
-    onBlur={ onBlur }
+    onFocus={() => evented.emit('MAP_FOCUS')}
+    onBlur={() => evented.emit('MAP_BLUR')}
   />
 }
 
