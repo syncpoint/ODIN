@@ -631,25 +631,25 @@ Mousetrap.bind('command+backspace', editDelete)
 Mousetrap.bind('esc', clearSelection)
 
 evented.on('MAP_FOCUS', () => {
-  ipcRenderer.on('IPC_EDIT_UNDO', undo.undo)
-  ipcRenderer.on('IPC_EDIT_REDO', undo.redo)
+  evented.on('EDIT_UNDO', undo.undo)
+  evented.on('EDIT_REDO', undo.redo)
 
-  ipcRenderer.on('IPC_EDIT_SELECT_ALL', editSelectAll)
-  ipcRenderer.on('IPC_EDIT_DELETE', editDelete)
-  ipcRenderer.on('IPC_EDIT_CUT', editCut)
-  ipcRenderer.on('IPC_EDIT_COPY', editCopy)
-  ipcRenderer.on('IPC_EDIT_PASTE', editPaste)
+  evented.on('EDIT_SELECT_ALL', editSelectAll)
+  evented.on('EDIT_DELETE', editDelete)
+  evented.on('EDIT_CUT', editCut)
+  evented.on('EDIT_COPY', editCopy)
+  evented.on('EDIT_PASTE', editPaste)
 })
 
 evented.on('MAP_BLUR', () => {
-  ipcRenderer.off('IPC_EDIT_UNDO', undo.undo)
-  ipcRenderer.off('IPC_EDIT_REDO', undo.redo)
+  evented.off('EDIT_UNDO', undo.undo)
+  evented.off('EDIT_REDO', undo.redo)
 
-  ipcRenderer.off('IPC_EDIT_SELECT_ALL', editSelectAll)
-  ipcRenderer.off('IPC_EDIT_DELETE', editDelete)
-  ipcRenderer.off('IPC_EDIT_CUT', editCut)
-  ipcRenderer.off('IPC_EDIT_COPY', editCopy)
-  ipcRenderer.off('IPC_EDIT_PASTE', editPaste)
+  evented.off('EDIT_SELECT_ALL', editSelectAll)
+  evented.off('EDIT_DELETE', editDelete)
+  evented.off('EDIT_CUT', editCut)
+  evented.off('EDIT_COPY', editCopy)
+  evented.off('EDIT_PASTE', editPaste)
 })
 
 

@@ -1,12 +1,13 @@
+import { ipcRenderer, remote } from 'electron'
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+
+import './i18n'
+import './ipc'
 import OSD from './components/OSD'
 import Map from './map/Map'
 import Management from './components/Management'
-
-import { ipcRenderer, remote } from 'electron'
 import evented from './evented'
-import './i18n'
 
 const useStyles = makeStyles((/* theme */) => ({
   overlay: {
