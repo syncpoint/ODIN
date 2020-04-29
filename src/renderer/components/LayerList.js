@@ -1,3 +1,4 @@
+import { ipcRenderer } from 'electron'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
@@ -194,8 +195,8 @@ const LayerList = (/* props */) => {
           button
           // dense
           className={classes.item}
-          onDoubleClick={ activatelayer(layer.id) }
-          onClick={ selectlayer(layer.id) }
+          onDoubleClick={activatelayer(layer.id)}
+          onClick={selectlayer(layer.id)}
           selected={selected}
         >
           {/* {selected ? <ExpandMore/> : <ExpandLess/> } */}
@@ -230,8 +231,21 @@ const LayerList = (/* props */) => {
 
   // Search: Prevent undo/redo when not focused.
   const [readOnly, setReadOnly] = React.useState(false)
-  const onBlur = () => setReadOnly(true)
-  const onFocus = () => setReadOnly(false)
+  const ref = React.useRef()
+  const selectAll = React.useCallback(() => {
+    const input = ref.current
+    input.setSelectionRange(0, input.value.length)
+  }, [])
+
+  const onBlur = () => {
+    ipcRenderer.removeListener('IPC_EDIT_SELECT_ALL', selectAll)
+    setReadOnly(true)
+  }
+
+  const onFocus = () => {
+    ipcRenderer.on('IPC_EDIT_SELECT_ALL', selectAll)
+    setReadOnly(false)
+  }
 
   return (
     <Paper className={classes.panel} elevation={6}>
@@ -241,8 +255,9 @@ const LayerList = (/* props */) => {
       </div>
       <InputBase
         className={classes.search}
-        placeholder={ 'Search...' }
+        placeholder={'Search...'}
         autoFocus
+        inputRef={ref}
         readOnly={readOnly}
         onFocus={onFocus}
         onBlur={onBlur}

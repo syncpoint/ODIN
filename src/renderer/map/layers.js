@@ -782,7 +782,6 @@ evented.on('layer.toggleShow', id => {
 // SECTION: Handle project events.
 
 const projectOpened = async map => {
-  console.log('[layers] projectOpened()')
 
   // Set viewport.
   const { center, zoom } = project.preferences().viewport
@@ -820,10 +819,7 @@ const projectEventHandlers = {
 }
 
 export default map =>
-  project.register(event => {
-    console.log('[layers] event', event)
-    ;(projectEventHandlers[event] || noop)(map)
-  })
+  project.register(event => (projectEventHandlers[event] || noop)(map))
 
 export const registerReducer = reducer => {
   pushReducer(reducer)

@@ -108,7 +108,6 @@ const App = (props) => {
       <OSD />
       <div className={classes.contentPanel}>
         <Activities/>
-        {/* <Paper className={classes.propertiesPanel} elevation={6}/> */}
       </div>
     </div>
   </>
