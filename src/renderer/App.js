@@ -5,6 +5,7 @@ import 'typeface-roboto'
 
 import './i18n'
 import './ipc'
+import './clipboard'
 import evented from './evented'
 import OSD from './components/OSD'
 import Map from './map/Map'

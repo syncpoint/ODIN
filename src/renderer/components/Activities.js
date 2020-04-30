@@ -4,7 +4,7 @@ import Paper from '@material-ui/core/Paper'
 import Category from '@material-ui/icons/Category'
 import PermDataSettingIcon from '@material-ui/icons/PermDataSetting'
 import MapIcon from '@material-ui/icons/Map'
-import { LayersTriple, Undo, Redo, ContentCut, ContentCopy, ContentPaste, DeleteOutline } from 'mdi-material-ui'
+import { LayersTriple, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 'mdi-material-ui'
 
 import ActivityBar from './ActivityBar'
 import LayerList from './LayerList'
@@ -92,13 +92,6 @@ const initialActivities = classes => [
     icon: <ContentPaste/>,
     tooltip: 'Paste',
     action: () => evented.emit('EDIT_PASTE')
-  },
-  {
-    id: 'delete',
-    type: 'action',
-    icon: <DeleteOutline/>,
-    tooltip: 'Delete',
-    action: () => evented.emit('EDIT_DELETE')
   }
 ]
 

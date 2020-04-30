@@ -718,26 +718,20 @@ Mousetrap.bind('del', editDelete) // macOS: fn+backspace
 Mousetrap.bind('command+backspace', editDelete)
 Mousetrap.bind('esc', clearSelection)
 
+evented.on('EDIT_CUT', editCut)
+evented.on('EDIT_COPY', editCopy)
+evented.on('EDIT_PASTE', editPaste)
+
 evented.on('MAP_FOCUS', () => {
   evented.on('EDIT_UNDO', undo.undo)
   evented.on('EDIT_REDO', undo.redo)
-
   evented.on('EDIT_SELECT_ALL', editSelectAll)
-  evented.on('EDIT_DELETE', editDelete)
-  evented.on('EDIT_CUT', editCut)
-  evented.on('EDIT_COPY', editCopy)
-  evented.on('EDIT_PASTE', editPaste)
 })
 
 evented.on('MAP_BLUR', () => {
   evented.off('EDIT_UNDO', undo.undo)
   evented.off('EDIT_REDO', undo.redo)
-
   evented.off('EDIT_SELECT_ALL', editSelectAll)
-  evented.off('EDIT_DELETE', editDelete)
-  evented.off('EDIT_CUT', editCut)
-  evented.off('EDIT_COPY', editCopy)
-  evented.off('EDIT_PASTE', editPaste)
 })
 
 
