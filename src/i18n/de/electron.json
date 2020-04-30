@@ -31,8 +31,7 @@
     "zoomIn": "Heranzoomen",
     "zoomOut": "Heruaszoomen",
     "grid": {
-      "none": "Kein Grid",
-      "mgrs": "MGRS"
+      "mgrs": "MGRS Gitter"
     },
     "toggleFullscreen": "Vollbildmodus ein/aus"
   },

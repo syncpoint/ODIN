@@ -31,8 +31,7 @@
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
     "grid": {
-      "none": "No Grid",
-      "mgrs": "MGRS"
+      "mgrs": "MGRS Graticule"
     },
     "toggleFullscreen": "Toggle Fullscreen"
   },

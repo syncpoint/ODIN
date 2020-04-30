@@ -4,7 +4,6 @@ const onclick = fn => (_, browserWindow) => {
 }
 
 const menu = (i18n, args) => {
-
   return {
     label: i18n.t('view.name'),
     submenu: [
@@ -17,18 +16,10 @@ const menu = (i18n, args) => {
       { role: 'zoomout', label: i18n.t('view.zoomOut') },
       { type: 'separator' },
       {
-        role: 'none',
-        type: 'radio',
-        checked: args ? args.grid === undefined : true,
-        label: i18n.t('view.grid.none'),
-        click: onclick(browserWindow => browserWindow.send('grid', undefined))
-      },
-      {
-        role: 'mgrs',
-        type: 'radio',
+        type: 'checkbox',
         checked: args ? args.grid === 'mgrs' : false,
         label: i18n.t('view.grid.mgrs'),
-        click: onclick(browserWindow => browserWindow.send('grid', 'mgrs'))
+        click: onclick(browserWindow => browserWindow.send('IPC_TOGGLE_GRID', 'mgrs'))
       },
       { type: 'separator' },
       { role: 'togglefullscreen', label: i18n.t('view.toggleFullscreen') }

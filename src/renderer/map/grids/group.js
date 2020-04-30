@@ -4,40 +4,32 @@ import generateMgrsLayers from './mgrs'
 import { ipcRenderer } from 'electron'
 import project from '../../project'
 
+const noLayers = () => []
+const grids = {
+  mgrs: generateMgrsLayers
+}
 
-const getGridLayerGroup = (options = {}) => {
+const layers = type => (grids[type] || noLayers)()
+const gridGroup = new LayerGroup()
 
-  const mgrsGrids = generateMgrsLayers()
+const toggleGrid = (type) => {
+  ipcRenderer.send('IPC_GRID_TOGGLED', type)
+  const groupLayers = gridGroup.getLayers()
+  project.updatePreferences({ grid: type })
+  groupLayers.clear()
+  layers(type).forEach(groupLayers.push.bind(groupLayers))
+}
 
-  const gridGroup = new LayerGroup({
-    ...options,
-    layers: []
-  })
-
-  const toggleGrid = (type) => {
-    project.updatePreferences({ grid: type })
-    gridGroup.getLayers().clear()
-    switch (type) {
-      case 'mgrs':
-        mgrsGrids.forEach(layer => {
-          gridGroup.getLayers().push(layer)
-        })
-        break
-    }
+project.register(event => {
+  if (event === 'open') {
+    const gridType = project.preferences().grid
+    toggleGrid(gridType)
   }
+})
 
-  projectListener(toggleGrid)
-  ipcRenderer.on('grid', (event, type) => toggleGrid(type))
+ipcRenderer.on('IPC_TOGGLE_GRID', (event, type) => {
+  const storedType = project.preferences().grid
+  toggleGrid(storedType === type ? '' : type)
+})
 
-  return gridGroup
-}
-const projectListener = (toggleGrid) => {
-  project.register(event => {
-    if (event === 'open') {
-      const gridType = project.preferences().grid
-      ipcRenderer.send('grid', gridType)
-      toggleGrid(gridType)
-    }
-  })
-}
-export default getGridLayerGroup
+export default () => gridGroup
