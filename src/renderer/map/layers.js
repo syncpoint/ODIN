@@ -9,7 +9,6 @@ import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
 import { GeoJSON } from 'ol/format'
 import Feature from 'ol/Feature'
-import { fromLonLat } from 'ol/proj'
 import { Select, Modify, Translate, DragBox } from 'ol/interaction'
 import { click, primaryAction, platformModifierKeyOnly } from 'ol/events/condition'
 
@@ -659,12 +658,6 @@ evented.on('MAP_BLUR', () => {
 // SECTION: Handle project events.
 
 const projectOpened = async map => {
-
-  // Set viewport.
-  const { center, zoom } = project.preferences().viewport
-  map.setCenter(fromLonLat(center))
-  map.setZoom(zoom)
-
   layers = createLayers()
   const filenames = project.layerFiles()
   const featureCollectionEntries = await Promise.all(filenames.map(loadFeatures))

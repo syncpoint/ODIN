@@ -4,24 +4,10 @@ import path from 'path'
 import { List } from 'immutable'
 import evented from './evented'
 
-const DEFAULT_PREFERENCES = {
-  viewport: {
-    zoom: 10.29344451062811,
-    center: [
-      15.517894187589647,
-      48.21987507926943
-    ]
-  }
-}
 
 /** Current project directory. */
 let currentProject /* undefined: no project open. */
 
-/**
- * Preferences (in-memory).
- * Should always be in sync with file: preferences.json
- */
-let preferences = DEFAULT_PREFERENCES
 
 /** Open/close event listeners. */
 let listeners = List()
@@ -31,27 +17,6 @@ const register = listener => {
   if (currentProject) setTimeout(() => listener('open'), 0)
 }
 
-
-/**
- * Load preferences for open project.
- */
-const loadPreferences = () => {
-  if (!currentProject) return
-  const location = path.join(currentProject, 'preferences.json')
-  if (fs.existsSync(location)) preferences = JSON.parse(fs.readFileSync(location))
-}
-
-
-/**
- * Update in-memory preferences and sync to file.
- * @param {object} args partial preference values
- */
-const updatePreferences = args => {
-  if (!currentProject) return
-  preferences = { ...preferences, ...args }
-  const location = path.join(currentProject, 'preferences.json')
-  fs.writeFileSync(location, JSON.stringify(preferences, null, 2))
-}
 
 
 /**
@@ -76,8 +41,6 @@ const openProject = project => {
   const updateProject = () => evented.emit('OSD_MESSAGE', { message: projectName, slot: 'A1' })
   // NOTE: Defer message, so OSD has a chance to register event handler:
   setTimeout(updateProject, 0)
-
-  loadPreferences()
   listeners.forEach(listener => listener('open'))
 }
 
@@ -105,7 +68,5 @@ setTimeout(() => {
 
 export default {
   register,
-  layerFiles,
-  preferences: () => preferences,
-  updatePreferences
+  layerFiles
 }
