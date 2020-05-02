@@ -1,7 +1,11 @@
 import React from 'react'
+import { Typography } from '@material-ui/core'
+
+import { useTranslation } from 'react-i18next'
 
 const XYZOptions = props => {
-  return (<div>No options available for XYZ tile provider</div>)
+  const { t } = useTranslation()
+  return (<Typography>{t('basemapManagement.xyzNoOptions')}</Typography>)
 }
 
 export default XYZOptions

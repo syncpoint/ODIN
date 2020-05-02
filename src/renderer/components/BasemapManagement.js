@@ -7,7 +7,7 @@ import {
   List, ListItem,
   ListItemText, ListItemSecondaryAction,
   IconButton,
-  Stepper, Step, StepLabel, StepContent
+  Stepper, Step, StepLabel, StepContent, Typography
 } from '@material-ui/core'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
@@ -164,17 +164,17 @@ const DescriptorDetails = props => {
   }
 
   const steps = [
-    'Provide URL',
-    'Specify options',
-    'Verify using the preview',
-    'Provide name and save'
+    t('basemapManagement.stepUrl'),
+    t('basemapManagement.stepOptions'),
+    t('basemapManagement.stepPreview'),
+    t('basemapManagement.stepFinalize')
   ]
 
   const Options = props => {
     switch (metadata.type) {
       case 'XYZ': return <XYZOptions options={props.options}/>
       case 'WMTS': return <WMTSOptions options={props.options}/>
-      default: return <div>UNKNOWN SOURCE TYPE</div>
+      default: return <Typography>{t('basemapManagement.unknownSource')}</Typography>
     }
   }
   Options.propTypes = { options: PropTypes.object }
@@ -188,7 +188,7 @@ const DescriptorDetails = props => {
       // visual verification is done by the user and always returns true
       onValidation(true)
     })
-    return <div>Use the map preview to verify the basemap settings.</div>
+    return <Typography>{t('basemapManagement.usePreview')}</Typography>
   }
   Verify.propTypes = {
     metadata: PropTypes.object,

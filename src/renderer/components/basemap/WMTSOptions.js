@@ -66,7 +66,7 @@ const WMTSOptions = props => {
   }
 
   /* rendering */
-  if (!capabilities) return <div>Loading data ...</div>
+  if (!capabilities) return null
 
   return (
     <>

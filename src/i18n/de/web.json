@@ -12,5 +12,21 @@
     "dangerZone": "Vorsicht",
     "deleteThisProject": "Dieses Projekt löschen",
     "deleteThisProjectDescription": "Ein gelöschtes Projekt kann nicht wiederhergestellt werden!"
+  },
+  "basemapManagement": {
+    "name": "Basiskarte",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "nextStep": "Weiter",
+    "previousStep": "Zurück",
+    "new": "Neu",
+    "stepUrl": "URL bereitstellen",
+    "stepOptions": "Optionen wählen",
+    "stepPreview": "Mit Vorschau überprüfen",
+    "stepFinalize": "Benennen und Speichern",
+    "descriptorUrl": "URL der Karte",
+    "xyzNoOptions": "Für diesen Kartentyp sind keine Optionen verfügbar",
+    "unknownSource": "Type of the map could no be detected by inspecting the URL",
+    "usePreview": "Benutzen Sie die Vorschau um die Karte zu überprüfen"
   }
 }

@@ -28,7 +28,7 @@ const Url = props => {
     setIsValid(result)
     props.onValidation(result)
 
-    let urlType = 'UNKNOWN'
+    let urlType = t('basemapManagement.unknownSource')
     if (xyzType.test(url)) urlType = 'XYZ'
     else if (wmtsType.test(url)) urlType = 'WMTS'
     setPredictedURLType(urlType)
