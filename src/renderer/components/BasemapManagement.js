@@ -16,7 +16,7 @@ import CloseIcon from '@material-ui/icons/Close'
 import EditIcon from '@material-ui/icons/Edit'
 import SaveIcon from '@material-ui/icons/Save'
 
-import basemap, { setBasemap } from '../map/basemap'
+import basemap, { setBasemap, clearBasemap } from '../map/basemap'
 import * as ol from 'ol'
 import { fromLonLat } from 'ol/proj'
 import { ipcRenderer } from 'electron'
@@ -144,12 +144,7 @@ const DescriptorDetails = props => {
   const nextStep = () => setStepIndex(stepIndex => stepIndex + 1)
   const previousStep = () => setStepIndex(stepIndex => stepIndex - 1)
 
-  React.useEffect(() => {
-    console.dir(options)
-  }, [options])
-
   const mergeOptions = (key, value) => {
-    console.log(`merging options ${key} with ${value}`)
     const shadow = { ...options }
     shadow[key] = value
     setOptions(shadow)
@@ -377,6 +372,7 @@ const BasemapManagement = props => {
   const onDescriptorEdited = descriptor => {
     setSelectedDescriptor(descriptor)
     setIsEditing(true)
+    clearBasemap()
   }
 
   const handleEditCancel = () => {
@@ -393,6 +389,7 @@ const BasemapManagement = props => {
   const handleEditNew = () => {
     setSelectedDescriptor({ options: {} })
     setIsEditing(true)
+    clearBasemap()
   }
 
   return (
