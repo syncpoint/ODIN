@@ -26,7 +26,7 @@
     "stepFinalize": "Benennen und Speichern",
     "descriptorUrl": "URL der Karte",
     "xyzNoOptions": "Für diesen Kartentyp sind keine Optionen verfügbar",
-    "unknownSource": "Type of the map could no be detected by inspecting the URL",
+    "unknownSource": "Kartentyp konnte anhand der URL nicht erkannt werden",
     "usePreview": "Benutzen Sie die Vorschau um die Karte zu überprüfen"
   }
 }

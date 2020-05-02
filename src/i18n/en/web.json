@@ -26,7 +26,7 @@
     "stepFinalize": "Choose name and save",
     "descriptorUrl": "URL of the map",
     "xyzNoOptions": "No options available",
-    "unknownSource": "Kartentyp konnte anhand der URL nicht erkannt werden",
+    "unknownSource": "Type of the map could no be detected by inspecting the URL",
     "usePreview": "Use the map preview to verify the basemap"
   }
 }
