@@ -3,6 +3,7 @@ import { Style, Icon } from 'ol/style'
 import ms from 'milsymbol'
 import { K } from '../../../shared/combinators'
 import defaultStyle from './style-default'
+import selection from '../../selection'
 
 
 
@@ -73,7 +74,7 @@ const symbolStyleModes = {
 // Point geometry, aka symbol.
 const symbolStyle = (feature, resolution) => {
   const { sidc, ...properties } = feature.getProperties()
-  const mode = feature.get('selected') ? 'selected' : 'default'
+  const mode = selection.isSelected(feature.getId()) ? 'selected' : 'default'
   const symbolProperties = { ...modifiers(properties), ...symbolStyleModes[mode] }
   const symbol = new ms.Symbol(sidc, symbolProperties)
   return symbol.isValid()
@@ -107,7 +108,7 @@ export default (feature, resolution) => {
   // Only cache style when not selected.
   const type = geometryType(feature)
   const style = provider(type)(feature, resolution)
-  if (!feature.get('selected')) {
+  if (!selection.isSelected(feature.getId())) {
     feature.setStyle(style)
   }
 

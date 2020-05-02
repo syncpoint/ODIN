@@ -12,10 +12,8 @@ const DEFAULT_PREFERENCES = {
   }
 }
 
-const projectPath = () => {
-  const { path } = remote.getCurrentWindow()
-  return path
-}
+const projectPath = () => remote.getCurrentWindow().path
+
 
 let reducers = []
 
@@ -23,7 +21,6 @@ let reducers = []
  * Load preferences for open project.
  */
 const loadPreferences = () => {
-  if (!projectPath()) return DEFAULT_PREFERENCES
   const location = path.join(projectPath(), 'preferences.json')
   if (!fs.existsSync(location)) return DEFAULT_PREFERENCES
   return JSON.parse(fs.readFileSync(location))
@@ -33,8 +30,7 @@ const loadPreferences = () => {
  * Update in-memory preferences and sync to file.
  * @param {object} args partial preference values
  */
-const writePreferences = () => {
-  if (!projectPath()) return
+const writePreferences = preferences => {
   const location = path.join(projectPath(), 'preferences.json')
   fs.writeFileSync(location, JSON.stringify(preferences, null, 2))
 }
@@ -47,13 +43,13 @@ let preferences = loadPreferences()
 
 const set = args => {
   preferences = { ...preferences, ...args }
-  writePreferences()
+  writePreferences(preferences)
   // TODO: emit event
 }
 
 const register = reducer => {
   reducers = [...reducers, reducer]
-  reducer({ type: 'preferences', preferences })
+  setImmediate(() => reducer({ type: 'preferences', preferences }))
 }
 
 const deregister = reducer => {
