@@ -13,7 +13,14 @@ const Url = props => {
   const [predictedUrlType, setPredictedURLType] = React.useState(null)
 
   // TODO: provide reliable url checker
-  const checkUrl = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,7}(:[0-9]{1,5})?(\/.*)?$/i
+  const isUrl = string => {
+    try {
+      return Boolean(new URL(string))
+    } catch (e) {
+      return false
+    }
+  }
+
   const xyzType = /\{z\}.*\{x\}.*\{-?y\}/i
   // TODO: improve detection!
   const wmtsType = /WMTS/i
@@ -24,7 +31,7 @@ const Url = props => {
 
   React.useEffect(() => {
     // TODO: reestablish url verification
-    const result = true // checkUrl.test(url)
+    const result = isUrl(url)
     setIsValid(result)
     props.onValidation(result)
 
