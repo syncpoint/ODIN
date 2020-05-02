@@ -20,6 +20,16 @@ const DEFAULT_SOURCE_DESCRIPTOR = {
 /* set by constructor */
 let olMap = null
 
+export const clearBasemap = () => {
+  if (!olMap) throw new Error('Not initialized! Call constructor with OpenLayers first!')
+
+  const layers = olMap.getLayers()
+  const rootLayer = layers.item(0)
+  if (rootLayer && rootLayer instanceof TileLayer) {
+    olMap.getLayers().removeAt(0)
+  }
+}
+
 export const setBasemap = async sourceDescriptor => {
   if (!olMap) throw new Error('Not initialized! Call constructor with OpenLayers first!')
 
