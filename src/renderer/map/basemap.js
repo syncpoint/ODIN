@@ -65,7 +65,7 @@ const from = async (sourceDescriptor) => {
 
   const fromWMTS = async descriptor => {
     try {
-      const response = await fetch(descriptor.url)
+      const response = await fetch(descriptor.options.url)
       const capabilities = (new WMTSCapabilities()).read(await response.text())
       const wmtsOptions = optionsFromCapabilities(capabilities, descriptor.options)
       wmtsOptions.tilePixelRatio = (highDPI ? 2 : 1)
