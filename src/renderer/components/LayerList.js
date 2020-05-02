@@ -19,6 +19,7 @@ import Tooltip from './Tooltip.js'
 import { registerReducer, deregisterReducer } from '../map/layers.js'
 import evented from '../evented'
 import { K } from '../../shared/combinators'
+import selection from '../selection'
 
 import {
   LayersMinus,
@@ -67,7 +68,6 @@ const useStyles = makeStyles((theme) => ({
   },
 
   feature: {
-    backgroundColor: 'rgba(0, 0, 0, 0.08)'
   },
 
   'item:selected': {
@@ -149,16 +149,55 @@ const reducer = (state, event) => {
 const LayerList = (/* props */) => {
   const classes = useStyles()
 
-  const [selectedItem, setSelectedItem] = React.useState(null)
+  const [selectedLayer, setSelectedLayer] = React.useState(null)
+  const [selectedFeatures, setSelectedFeatures] = React.useState([])
   const [layers, dispatch] = React.useReducer(reducer, {})
   const [expanded, setExpanded] = React.useState(null)
 
-  const selectlayer = id => () => {
-    setSelectedItem(id)
+  const selectLayer = id => () => {
     setExpanded(expanded === id ? null : id)
+    if (selectedLayer === id) return
+
+    selection.deselect()
+    selection.select([id])
   }
 
-  const activatelayer = id => () => {
+  const selectedFeature = id => () => {
+    selection.deselect()
+    selection.select([id])
+  }
+
+
+  React.useEffect(() => {
+    const selected = () => {
+      const layerIds = selection.selected('layer:')
+      if (layerIds && layerIds.length) {
+        // No multi-select for now; take first selected.
+        setSelectedLayer(layerIds[0])
+      }
+
+      setSelectedFeatures(selection.selected('feature:'))
+    }
+
+    const deselected = uris => {
+      const layerIds = uris.filter(s => s.startsWith('layer:'))
+      if (layerIds && layerIds.length) setSelectedLayer(null)
+      const featureIds = uris.filter(s => s.startsWith('feature:'))
+      const remaining = selectedFeatures.filter(id => !featureIds.includes(id))
+      setSelectedFeatures(remaining)
+    }
+
+    selection.on('selected', selected)
+    selection.on('deselected', deselected)
+
+    return () => {
+      selection.off('selected', selected)
+      selection.off('deselected', deselected)
+    }
+  }, [])
+
+
+  const activateLayer = id => () => {
     // TODO: update persistent project model
     dispatch({ type: 'layerActivated', id })
     evented.emit('OSD_MESSAGE', { message: layers[id].name, slot: 'A2' })
@@ -166,9 +205,7 @@ const LayerList = (/* props */) => {
 
   React.useEffect(() => {
     registerReducer(dispatch)
-    return () => {
-      deregisterReducer(dispatch)
-    }
+    return () => deregisterReducer(dispatch)
   }, [])
 
 
@@ -187,7 +224,7 @@ const LayerList = (/* props */) => {
     const lockIcon = layer.locked ? <LockIcon/> : <LockOpenIcon/>
     const visibleIcon = layer.hidden ? <VisibilityOffIcon/> : <VisibilityIcon/>
     const body = layer.active ? <b>{layer.name}</b> : layer.name
-    const selected = selectedItem === layer.id
+    const selected = selectedLayer === layer.id
 
     return (
       <div key={layer.id}>
@@ -195,8 +232,8 @@ const LayerList = (/* props */) => {
           button
           // dense
           className={classes.item}
-          onDoubleClick={activatelayer(layer.id)}
-          onClick={selectlayer(layer.id)}
+          onDoubleClick={activateLayer(layer.id)}
+          onClick={selectLayer(layer.id)}
           selected={selected}
         >
           {/* {selected ? <ExpandMore/> : <ExpandLess/> } */}
@@ -217,6 +254,8 @@ const LayerList = (/* props */) => {
                 <ListItem
                   className={classes.feature}
                   key={feature.id}
+                  onClick={selectedFeature(feature.id)}
+                  selected={selectedFeatures.includes(feature.id)}
                   button
                 >
                   { feature.t }

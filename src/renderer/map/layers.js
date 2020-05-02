@@ -355,14 +355,23 @@ const createLayers = () => {
 // SECTION: Selection handling.
 // Manage collection of selected features and feature selection state.
 
-const selectedFeatures = new Collection()
+/**
+ * selectedFeatures :: ol/Collection<ol/Feature>
+ * NOTE: With unique options, collection throws when duplicate is added.
+ */
+const selectedFeatures = new Collection([], { unique: true })
 
 /**
  * select :: [ol/Feature] => unit
  * Update selection without updating collection.
  */
-const select = features =>
+const select = features => {
+  // Deselect others than feature:
+  const removals = selection.selected().filter(s => !s.startsWith('feature'))
+  selection.deselect(removals)
   selection.select(features.map(featureId))
+}
+
 
 /**
  * deselect :: [Feature] => unit
@@ -377,7 +386,10 @@ const deselect = features =>
  */
 const addSelection = features => {
   select(features)
-  features.forEach(selectedFeatures.push.bind(selectedFeatures))
+
+  features
+    .filter(feature => selectedFeatures.getArray().indexOf(feature) === -1)
+    .forEach(selectedFeatures.push.bind(selectedFeatures))
 }
 
 /**
@@ -413,6 +425,16 @@ const clearSelection = () => {
 
 selection.on('selected', ids => {
   featuresById(ids).forEach(feature => {
+
+    // If triggered from the outside, chances are that
+    // the feature is not already contained in
+    // selected feature collection.
+    // NOTE: Respect uniqueness.
+    // FIXME:
+    if (selectedFeatures.getArray().indexOf(feature) === -1) {
+      selectedFeatures.push(feature)
+    }
+
     feature.set('selected', true)
     geometrySource(feature).removeFeature(feature)
     selectionSource.addFeature(feature)
@@ -421,6 +443,7 @@ selection.on('selected', ids => {
 
 selection.on('deselected', ids => {
   featuresById(ids).forEach(feature => {
+    selectedFeatures.remove(feature)
     feature.unset('selected')
     feature.setStyle(null) // release cached style, if any
     selectionSource.removeFeature(feature)
