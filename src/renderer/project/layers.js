@@ -3,10 +3,11 @@ import path from 'path'
 import fs from 'fs'
 import uuid from 'uuid-random'
 import { GeoJSON } from 'ol/format'
-import Feature from 'ol/Feature'
+import * as ol from 'ol'
 
-import undo from '../undo'
 import { K, uniq, noop } from '../../shared/combinators'
+import undo from '../undo'
+import Feature from './Feature'
 
 const projectPath = () => remote.getCurrentWindow().path
 
@@ -51,7 +52,7 @@ const loadFeatures = async (id, filename) => {
 const writeFeatures = xs => {
   const layerId = s => `layer:${s.match(/feature:(.*)\/.*/)[1]}`
   const layerIds = xs
-    .map(x => x instanceof Feature ? x.get('layerId') : x)
+    .map(x => x instanceof ol.Feature ? x.get('layerId') : x)
     .map(s => s.startsWith('feature:') ? layerId(s) : s)
     .filter(uniq)
 
@@ -73,8 +74,9 @@ const writeFeatures = xs => {
  */
 const featureList = {}
 
-const layerFeatures = layerId => Object.values(featureList)
-  .filter(feature => feature.get('layerId') === layerId)
+const layerFeatures = layerId =>
+  Object.values(featureList)
+    .filter(Feature.hasLayerId(layerId))
 
 /**
  * Load layers from project.
@@ -83,8 +85,9 @@ const layerFeatures = layerId => Object.values(featureList)
   const id = uuid()
   filenameList[`layer:${id}`] = filename
 
+  // Asynchronously load input layers:
   const additions = await loadFeatures(id, filename)
-  additions.forEach(feature => (featureList[feature.getId()] = feature))
+  additions.forEach(feature => (featureList[Feature.id(feature)] = feature))
   emit({ type: 'featuresadded', features: additions, selected: false })
 }))()
 
@@ -92,18 +95,21 @@ const layerFeatures = layerId => Object.values(featureList)
 const register = reducer => {
   reducers = [...reducers, reducer]
 
+  // Prepare layers/features snapshot for new reducer.
+  // NOTE: Early bird registrations will probably miss features,
+  // because they are loaded asynchronously, but 'featuresadded' event
+  // will accommodate for that.
   const features = Object.values(featureList)
   const layers = Object.entries(filenameList).map(([id, filename]) => {
     const features = layerFeatures(id)
     return {
       id,
       filename,
-      locked: features.some(featureLocked),
-      hidden: features.some(featureHidden),
+      locked: features.some(Feature.locked),
+      hidden: features.some(Feature.hidden),
       name: path.basename(filename, '.json')
     }
   })
-
 
   setImmediate(() => reducer({ type: 'snapshot', layers, features }))
 }
@@ -111,13 +117,6 @@ const register = reducer => {
 const deregister = reducer => {
   reducers = reducers.filter(x => x !== reducer)
 }
-
-const hideFeature = feature => feature.set('hidden', true)
-const unhideFeature = feature => feature.unset('hidden')
-const featureHidden = feature => feature.get('hidden')
-const lockFeature = feature => feature.set('locked', true)
-const unlockFeature = feature => feature.unset('locked')
-const featureLocked = feature => feature.get('locked')
 
 
 /**
@@ -128,14 +127,14 @@ const insertFeaturesCommand = clones => {
   const featureId = s => `feature:${s.match(/layer:(.*)/)[1]}/${uuid()}`
   const additions = clones.map(feature => {
     // TODO: insert into active layer
-    feature.setId(featureId(feature.get('layerId')))
+    feature.setId(featureId(Feature.layerId(feature)))
     return feature
   })
 
   return {
-    inverse: () => deleteFeaturesCommand(additions.map(feature => feature.getId())),
+    inverse: () => deleteFeaturesCommand(additions.map(feature => Feature.id(feature))),
     apply: () => {
-      additions.forEach(feature => (featureList[feature.getId()] = feature))
+      additions.forEach(feature => (featureList[Feature.id(feature)] = feature))
       emit({ type: 'featuresadded', features: additions, selected: true })
       writeFeatures(additions)
     }
@@ -205,7 +204,7 @@ const addFeatures = content => {
  */
 const updateGeometries = (initial, features) => {
   const current = features
-    .map(feature => [feature.getId(), feature.getGeometry().clone()])
+    .map(feature => [Feature.id(feature), Feature.cloneGeometry(feature)])
     .reduce((acc, [id, geometry]) => K(acc)(acc => (acc[id] = geometry)), {})
 
   // NOTE: No need to apply; geometries are already up to date.
@@ -216,8 +215,8 @@ const updateGeometries = (initial, features) => {
 
 const toggleLayerLock = layerId => {
   const features = layerFeatures(layerId)
-  const locked = !features.some(featureLocked)
-  const toggle = locked ? lockFeature : unlockFeature
+  const locked = features.some(Feature.locked)
+  const toggle = locked ? Feature.unlock : Feature.lock
   features.forEach(toggle)
   writeFeatures(features)
   emit({ type: 'layerlocked', layerId, locked })
@@ -225,8 +224,8 @@ const toggleLayerLock = layerId => {
 
 const toggleLayerShow = layerId => {
   const features = layerFeatures(layerId)
-  const hidden = !features.some(featureHidden)
-  const toggle = hidden ? hideFeature : unhideFeature
+  const hidden = features.some(Feature.hidden)
+  const toggle = hidden ? Feature.unhide : Feature.hide
   features.forEach(toggle)
   writeFeatures(features)
   emit({ type: 'layerhidden', layerId, hidden })

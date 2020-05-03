@@ -20,6 +20,7 @@ import evented from '../evented'
 import { K, I, uniq } from '../../shared/combinators'
 import selection from '../selection'
 import inputLayers from '../project/layers'
+import Feature from '../project/Feature'
 
 import {
   LayersMinus,
@@ -118,44 +119,37 @@ const actions = [
 
 
 const layerEventHandlers = {
-  snapshot: (_, { layers, features }) => {
-    const next = layers.reduce((acc, layer) => K(acc)(acc => {
-      acc[layer.id] = {
-        id: layer.id,
-        name: layer.name,
-        locked: layer.locked,
-        hidden: layer.hidden,
-        features: {}
-      }
-    }), {})
+  snapshot: (prev, { layers, features }) => K({ ...prev })(next => {
+    layers.forEach(layer => (next[layer.id] = { ...layer, features: {} }))
 
     features.forEach(feature => {
-      const features = next[feature.get('layerId')].features
-      features[feature.getId()] = {
-        id: feature.getId(),
+      const layerId = Feature.layerId(feature)
+      const featureId = Feature.id(feature)
+      const features = next[layerId].features
+      features[featureId] = {
+        id: featureId,
         name: feature.getProperties().t
       }
     })
-
-    return next
-  },
+  }),
 
   featuresadded: (prev, { features }) => K({ ...prev })(next => {
     features.forEach(feature => {
-      const features = next[feature.get('layerId')].features
-      features[feature.getId()] = {
-        id: feature.getId(),
+      const layerId = Feature.layerId(feature)
+      const featureId = Feature.id(feature)
+      next[layerId].features[featureId] = {
+        id: featureId,
         name: feature.getProperties().t
       }
     })
 
     // Update lock/hidden layer states.
     features
-      .map(feature => feature.get('layerId'))
+      .map(Feature.layerId)
       .filter(uniq)
       .forEach(layerId => {
-        next[layerId].locked = features.some(feature => feature.get('locked'))
-        next[layerId].hidden = features.some(feature => feature.get('hidden'))
+        next[layerId].locked = features.some(Feature.locked)
+        next[layerId].hidden = features.some(Feature.hidden)
       })
   }),
 

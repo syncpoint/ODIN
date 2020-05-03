@@ -6,7 +6,7 @@ import Collection from 'ol/Collection'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
 import { GeoJSON } from 'ol/format'
-import Feature from 'ol/Feature'
+import * as ol from 'ol'
 import { Select, Modify, Translate, DragBox } from 'ol/interaction'
 import { click, primaryAction, platformModifierKeyOnly } from 'ol/events/condition'
 import Style from 'ol/style/Style'
@@ -14,6 +14,7 @@ import Style from 'ol/style/Style'
 import { noop, K } from '../../shared/combinators'
 import style from './style/style'
 import inputLayers from '../project/layers'
+import Feature from '../project/Feature'
 import undo from '../undo'
 import selection from '../selection'
 import evented from '../evented'
@@ -27,7 +28,7 @@ import evented from '../evented'
  * Map feature or feature geometry to rendered layer type.
  */
 const geometryType = object => {
-  const type = object instanceof Feature
+  const type = object instanceof ol.Feature
     ? object.getGeometry().getType()
     : object.getType()
 
@@ -45,16 +46,9 @@ const geometryType = object => {
  */
 const cloneGeometries = features =>
   features
-    .map(feature => [feature.getId(), feature.getGeometry().clone()])
+    .map(feature => [Feature.id(feature), Feature.cloneGeometry(feature)])
     .reduce((acc, [id, geometry]) => K(acc)(acc => (acc[id] = geometry)), {})
 
-/**
- * featureId :: ol/Feature -> string
- */
-const featureId = feature => feature.getId()
-const featureUnlocked = feature => !feature.get('locked')
-const featureHidden = feature => feature.get('hidden')
-const featureShowing = feature => !feature.get('hidden')
 const hideFeature = feature => feature.setStyle(new Style(null))
 const unhideFeature = feature => feature.setStyle(null)
 
@@ -90,7 +84,7 @@ const sources = () => [
 
 const layerFeatures = layerId => sources()
   .reduce((acc, source) => acc.concat(source.getFeatures()), [])
-  .filter(feature => feature.get('layerId') === layerId)
+  .filter(Feature.hasLayerId(layerId))
 
 /**
  * geometrySource :: (ol/Feature | ol/geom/Geometry) -> ol/source/Vector
@@ -119,17 +113,17 @@ const featuresById = ids =>
     .filter(x => x)
 
 const addFeature = feature => {
-  if (featureHidden(feature)) feature.setStyle(new Style(null))
+  if (Feature.hidden(feature)) feature.setStyle(new Style(null))
   geometrySource(feature).addFeature(feature)
 }
 
 const removeFeature = feature => {
-  const source = selection.isSelected(feature.getId())
+  const source = selection.isSelected(Feature.id(feature))
     ? selectionSource
     : geometrySource(feature)
 
   source.removeFeature(feature)
-  selection.deselect([feature.getId()])
+  selection.deselect([Feature.id(feature)])
 }
 
 // --
@@ -190,7 +184,7 @@ const select = features => {
   // Deselect others than feature:
   const removals = selection.selected().filter(s => !s.startsWith('feature'))
   selection.deselect(removals)
-  selection.select(features.map(featureId))
+  selection.select(features.map(Feature.id))
 }
 
 
@@ -199,7 +193,7 @@ const select = features => {
  * Update selection without updating collection.
  */
 const deselect = features =>
-  selection.deselect(features.map(featureId))
+  selection.deselect(features.map(Feature.id))
 
 /**
  * addSelection :: [Feature] => unit
@@ -279,7 +273,7 @@ selection.on('deselected', ids => {
  * Write serialize (JSON) features to clipboard.
  */
 const clipboardWrite = featureIds => {
-  const writeFeatures = feature => [feature.get('layerId'), geoJSON.writeFeature(feature)]
+  const writeFeatures = feature => [Feature.layerId(feature), geoJSON.writeFeature(feature)]
   const content = featuresById(featureIds).map(writeFeatures)
   ipcRenderer.send('IPC_CLIPBOARD_WRITE', content)
 }
@@ -290,8 +284,8 @@ const clipboardWrite = featureIds => {
 const editSelectAll = () => {
   const features = sources()
     .reduce((acc, source) => acc.concat(source.getFeatures()), [])
-    .filter(featureUnlocked)
-    .filter(featureShowing)
+    .filter(Feature.unlocked)
+    .filter(Feature.showing)
 
   replaceSelection(features)
 }
@@ -355,7 +349,7 @@ const createSelect = () => {
     condition: conjunction(click, noAltKey),
     toggleCondition: platformModifierKeyOnly, // macOS: command
     multi: false, // don't select all features under cursor at once.
-    filter: featureUnlocked
+    filter: Feature.unlocked
   })
 
   interaction.on('select', ({ selected, deselected }) => {
@@ -453,10 +447,10 @@ const createBoxSelect = () => {
       })
     })
 
-    const isSelected = feature => selection.isSelected(feature.getId())
+    const isSelected = feature => selection.isSelected(Feature.id(feature))
     const [removals, additions] = R.partition(isSelected)(features)
     removeSelection(removals)
-    addSelection(additions.filter(featureUnlocked))
+    addSelection(additions.filter(Feature.unlocked))
   })
 
   return interaction
@@ -490,7 +484,7 @@ evented.on('MAP_BLUR', () => {
 
 
 // --
-// SECTION: Handle project events.
+// SECTION: Handle project/layer events.
 
 
 const eventHandlers = {
@@ -506,16 +500,16 @@ const eventHandlers = {
     if (!locked) return
 
     // Deselect locked features:
-    const featureIds = layerFeatures(layerId).map(featureId)
+    const featureIds = layerFeatures(layerId).map(Feature.id)
     selection.deselect(featureIds)
   },
   layerhidden: ({ layerId, hidden }) => {
     const toggle = hidden ? hideFeature : unhideFeature
     const features = sources()
       .reduce((acc, source) => acc.concat(source.getFeatures()), [])
-      .filter(feature => feature.get('layerId') === layerId)
+      .filter(Feature.hasLayerId(layerId))
 
-    if (hidden) selection.deselect(features.map(featureId))
+    if (hidden) selection.deselect(features.map(Feature.id))
     features.forEach(toggle)
   }
 }
