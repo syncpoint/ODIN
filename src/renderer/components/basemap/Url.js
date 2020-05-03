@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { FormControl, InputLabel, Input } from '@material-ui/core'
+import { Card, CardContent, FormControl, InputLabel, Input } from '@material-ui/core'
 import Chip from '@material-ui/core/Chip'
 import { useTranslation } from 'react-i18next'
 
@@ -43,17 +43,21 @@ const Url = props => {
   }, [url])
 
   return (
-    <form id="editURL">
-      { predictedUrlType ? <Chip label={predictedUrlType} color='primary' variant='outlined' style={{ float: 'right' }}/> : null }
-      <FormControl error={!isValid} fullWidth className={classes.formControl}>
-        <InputLabel htmlFor="url">{t('basemapManagement.descriptorUrl')}</InputLabel>
-        <Input id="url" name="url" defaultValue={url}
-          onChange={handlePropertyChanged}
-          onBlur={() => props.onUrlReady(url)}
-          autoFocus={true}
-        />
-      </FormControl>
-    </form>
+    <Card variant="outlined">
+      <CardContent>
+        <form id="editURL">
+          { predictedUrlType ? <Chip label={predictedUrlType} color='primary' variant='outlined' style={{ float: 'right' }}/> : null }
+          <FormControl error={!isValid} fullWidth className={classes.formControl}>
+            <InputLabel htmlFor="url">{t('basemapManagement.descriptorUrl')}</InputLabel>
+            <Input id="url" name="url" defaultValue={url}
+              onChange={handlePropertyChanged}
+              onBlur={() => props.onUrlReady(url)}
+              autoFocus={true}
+            />
+          </FormControl>
+        </form>
+      </CardContent>
+    </Card>
   )
 }
 Url.propTypes = {
