@@ -6,7 +6,7 @@ import {
   Button,
   Stepper, Step, StepLabel, StepContent, Typography
 } from '@material-ui/core'
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
+
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos'
 import CloseIcon from '@material-ui/icons/Close'
@@ -17,11 +17,12 @@ import * as ol from 'ol'
 import { fromLonLat } from 'ol/proj'
 import { ipcRenderer } from 'electron'
 
+import Overview from './basemap/Overview'
 import Url from './basemap/Url'
 import XYZOptions from './basemap/XYZOptions'
 import WMTSOptions from './basemap/WMTSOptions'
 import Name from './basemap/Name'
-import SourceDescriptorList from './basemap/SourceDescriptorList'
+
 
 import { useTranslation } from 'react-i18next'
 
@@ -256,38 +257,7 @@ DescriptorDetails.propTypes = {
 }
 
 
-const Overview = props => {
-  const { classes, t } = props
-  const { onDescriptorSelected, onDescriptorEdited, onNew, forceReload } = props
 
-  return (
-    <>
-      <div className={classes.actions}>
-        <Button id="newSourceDescriptor" variant="contained" color="primary"
-          startIcon={<AddCircleOutlineIcon />}
-          onClick={onNew}
-        >
-          {t('basemapManagement.new')}
-        </Button>
-      </div>
-      <div className={classes.sourceList}>
-        <SourceDescriptorList
-          onDescriptorSelected={onDescriptorSelected}
-          onDescriptorEdited={onDescriptorEdited}
-          forceReload={forceReload}
-        />
-      </div>
-    </>
-  )
-}
-Overview.propTypes = {
-  classes: PropTypes.object,
-  t: PropTypes.func,
-  onNew: PropTypes.func,
-  onDescriptorSelected: PropTypes.func,
-  onDescriptorEdited: PropTypes.func,
-  forceReload: PropTypes.bool
-}
 
 
 const BasemapManagement = props => {
