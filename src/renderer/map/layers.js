@@ -1,11 +1,8 @@
-import { ipcRenderer } from 'electron'
-import Mousetrap from 'mousetrap'
 import * as R from 'ramda'
 
 import Collection from 'ol/Collection'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
-import { GeoJSON } from 'ol/format'
 import * as ol from 'ol'
 import { Select, Modify, Translate, DragBox } from 'ol/interaction'
 import { click, primaryAction, platformModifierKeyOnly } from 'ol/events/condition'
@@ -15,9 +12,7 @@ import { noop, K } from '../../shared/combinators'
 import style from './style/style'
 import inputLayers from '../project/layers'
 import Feature from '../project/Feature'
-import undo from '../undo'
 import selection from '../selection'
-import evented from '../evented'
 
 
 // --
@@ -128,15 +123,6 @@ const removeFeature = feature => {
 
 // --
 // SECTION: Setup layers from project.
-
-/**
- * GeoJSON data, by definitions, comes in WGS84;
- * OL uses Web-Mercator by default.
- */
-const geoJSON = new GeoJSON({
-  dataProjection: 'EPSG:4326', // WGS84
-  featureProjection: 'EPSG:3857' // Web-Mercator
-})
 
 
 /**
@@ -263,68 +249,6 @@ selection.on('deselected', ids => {
     geometrySource(feature).addFeature(feature)
   })
 })
-
-
-// --
-// SECTION: Clipboard
-
-/**
- * clipboardWrite :: [string] -> unit
- * Write serialize (JSON) features to clipboard.
- */
-const clipboardWrite = featureIds => {
-  const writeFeatures = feature => [Feature.layerId(feature), geoJSON.writeFeature(feature)]
-  const content = featuresById(featureIds).map(writeFeatures)
-  ipcRenderer.send('IPC_CLIPBOARD_WRITE', content)
-}
-
-/**
- * editSelectAll :: () -> unit
- */
-const editSelectAll = () => {
-  const features = sources()
-    .reduce((acc, source) => acc.concat(source.getFeatures()), [])
-    .filter(Feature.unlocked)
-    .filter(Feature.showing)
-
-  replaceSelection(features)
-}
-
-/**
- * editDelete :: () -> unit
- * Delete selected features.
- */
-const editDelete = () => {
-  const featureIds = selection.selected('feature:')
-  inputLayers.removeFeatures(featureIds)
-}
-
-/**
- * editCut :: () -> unit
- * Write current selection to clipboard and delete selected features.
- */
-const editCut = () => {
-  const featureIds = selection.selected('feature:')
-  clipboardWrite(featureIds)
-  inputLayers.removeFeatures(featureIds)
-}
-
-/**
- * editCopy :: () -> unit
- * Write current selection to clipboard.
- */
-const editCopy = () =>
-  clipboardWrite(selection.selected('feature:'))
-
-/**
- * editPaste :: () -> unit
- * Insert features from clipboard.
- */
-const editPaste = async () => {
-  const content = await ipcRenderer.invoke('IPC_CLIPBOARD_READ')
-  if (!content) return
-  inputLayers.addFeatures(content)
-}
 
 
 // --
@@ -455,32 +379,6 @@ const createBoxSelect = () => {
 
   return interaction
 }
-
-
-// --
-// SECTION: IPC/mousetrap hooks.
-
-// Only handle clipboard ops when map has focus.
-
-Mousetrap.bind('del', editDelete) // macOS: fn+backspace
-Mousetrap.bind('command+backspace', editDelete)
-Mousetrap.bind('esc', clearSelection)
-
-evented.on('EDIT_CUT', editCut)
-evented.on('EDIT_COPY', editCopy)
-evented.on('EDIT_PASTE', editPaste)
-
-evented.on('MAP_FOCUS', () => {
-  evented.on('EDIT_UNDO', undo.undo)
-  evented.on('EDIT_REDO', undo.redo)
-  evented.on('EDIT_SELECT_ALL', editSelectAll)
-})
-
-evented.on('MAP_BLUR', () => {
-  evented.off('EDIT_UNDO', undo.undo)
-  evented.off('EDIT_REDO', undo.redo)
-  evented.off('EDIT_SELECT_ALL', editSelectAll)
-})
 
 
 // --
