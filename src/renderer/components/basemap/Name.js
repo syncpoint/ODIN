@@ -1,13 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { FormControl, Input, InputLabel } from '@material-ui/core'
-
+import { Card, CardContent, FormControl, Input, InputLabel } from '@material-ui/core'
 
 import { useTranslation } from 'react-i18next'
 
 const Name = props => {
   const { classes } = props
-  // const { onNameReady } = props
   const { t } = useTranslation()
 
   const [name, setName] = React.useState(props.name)
@@ -26,17 +24,19 @@ const Name = props => {
   }
 
   return (
-    <>
-      <form id="editName">
-        <FormControl error={!isValid} fullWidth className={classes.formControl}>
-          <InputLabel htmlFor="descriptorName">{t('basemapManagement.descriptorName')}</InputLabel>
-          <Input id="name" name="name" defaultValue={name} autoFocus={true}
-            onChange={handlePropertyChanged}
-            onBlur={() => props.onNameReady(name)}
-          />
-        </FormControl>
-      </form>
-    </>
+    <Card variant="outlined">
+      <CardContent>
+        <form id="editName">
+          <FormControl error={!isValid} fullWidth className={classes.formControl}>
+            <InputLabel htmlFor="descriptorName">{t('basemapManagement.descriptorName')}</InputLabel>
+            <Input id="name" name="name" defaultValue={name} autoFocus={true}
+              onChange={handlePropertyChanged}
+              onBlur={() => props.onNameReady(name)}
+            />
+          </FormControl>
+        </form>
+      </CardContent>
+    </Card>
   )
 }
 Name.propTypes = {
