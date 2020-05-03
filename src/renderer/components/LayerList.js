@@ -16,10 +16,10 @@ import VisibilityIcon from '@material-ui/icons/Visibility'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 
 import Tooltip from './Tooltip.js'
-import { registerReducer, deregisterReducer } from '../map/layers.js'
 import evented from '../evented'
-import { K } from '../../shared/combinators'
+import { K, I, uniq } from '../../shared/combinators'
 import selection from '../selection'
+import inputLayers from '../project/layers'
 
 import {
   LayersMinus,
@@ -116,39 +116,73 @@ const actions = [
   { icon: <ExportVariant/>, tooltip: 'Share layer' }
 ]
 
-const reducer = (state, event) => {
-  switch (event.type) {
-    case 'snapshot': return event.layers.reduce((acc, layer) => K(acc)(acc => {
-      acc[layer.id] = layer
+
+const layerEventHandlers = {
+  snapshot: (_, { layers, features }) => {
+    const next = layers.reduce((acc, layer) => K(acc)(acc => {
+      acc[layer.id] = {
+        id: layer.id,
+        name: layer.name,
+        locked: layer.locked,
+        hidden: layer.hidden,
+        features: {}
+      }
     }), {})
-    case 'layerAdded': {
-      const updatedState = { ...state }
-      updatedState[event.layer.id] = event.layer
-      return updatedState
-    }
-    case 'layerHidden': {
-      const updatedState = { ...state }
-      updatedState[event.id].hidden = event.hidden
-      return updatedState
-    }
-    case 'layerLocked': {
-      const updatedState = { ...state }
-      updatedState[event.id].locked = event.locked
-      return updatedState
-    }
-    case 'layerActivated': {
-      const updatedState = { ...state }
-      Object.values(updatedState).forEach(layer => (layer.active = false))
-      updatedState[event.id].active = true
-      return updatedState
-    }
-    default: return state
-  }
+
+    features.forEach(feature => {
+      const features = next[feature.get('layerId')].features
+      features[feature.getId()] = {
+        id: feature.getId(),
+        name: feature.getProperties().t
+      }
+    })
+
+    return next
+  },
+
+  featuresadded: (prev, { features }) => K({ ...prev })(next => {
+    features.forEach(feature => {
+      const features = next[feature.get('layerId')].features
+      features[feature.getId()] = {
+        id: feature.getId(),
+        name: feature.getProperties().t
+      }
+    })
+
+    // Update lock/hidden layer states.
+    features
+      .map(feature => feature.get('layerId'))
+      .filter(uniq)
+      .forEach(layerId => {
+        next[layerId].locked = features.some(feature => feature.get('locked'))
+        next[layerId].hidden = features.some(feature => feature.get('hidden'))
+      })
+  }),
+
+  featuresremoved: (prev, { ids }) => K({ ...prev })(next => {
+    ids.forEach(id => {
+      const layerId = `layer:${id.match(/feature:(.*)\/.*/)[1]}`
+      delete next[layerId].features[id]
+    })
+  }),
+
+  layerlocked: (prev, { layerId, locked }) => K({ ...prev })(next => {
+    next[layerId].locked = locked
+  }),
+
+  layerhidden: (prev, { layerId, hidden }) => K({ ...prev })(next => {
+    next[layerId].hidden = hidden
+  })
 }
 
+
+/**
+ * Handle input layer events.
+ * NOTE: Functions must be pure and must allow to be called twice for same event.
+ */
 const LayerList = (/* props */) => {
   const classes = useStyles()
-
+  const reducer = (state, event) => (layerEventHandlers[event.type] || I)(state, event)
   const [selectedLayer, setSelectedLayer] = React.useState(null)
   const [selectedFeatures, setSelectedFeatures] = React.useState([])
   const [layers, dispatch] = React.useReducer(reducer, {})
@@ -157,34 +191,28 @@ const LayerList = (/* props */) => {
   const selectLayer = id => () => {
     setExpanded(expanded === id ? null : id)
     if (selectedLayer === id) return
-
     selection.deselect()
     selection.select([id])
   }
 
-  const selectedFeature = id => () => {
+  const selectFeature = id => () => {
     selection.deselect()
     selection.select([id])
   }
 
-
+  // Sync selection with component state:
   React.useEffect(() => {
     const selected = () => {
       const layerIds = selection.selected('layer:')
-      if (layerIds && layerIds.length) {
-        // No multi-select for now; take first selected.
-        setSelectedLayer(layerIds[0])
-      }
-
+      // No multi-select for layers; take first selected.
+      if (layerIds && layerIds.length) setSelectedLayer(layerIds[0])
       setSelectedFeatures(selection.selected('feature:'))
     }
 
-    const deselected = uris => {
-      const layerIds = uris.filter(s => s.startsWith('layer:'))
+    const deselected = ids => {
+      const layerIds = ids.filter(s => s.startsWith('layer:'))
       if (layerIds && layerIds.length) setSelectedLayer(null)
-      const featureIds = uris.filter(s => s.startsWith('feature:'))
-      const remaining = selectedFeatures.filter(id => !featureIds.includes(id))
-      setSelectedFeatures(remaining)
+      setSelectedFeatures(selection.selected('feature:'))
     }
 
     selection.on('selected', selected)
@@ -196,21 +224,19 @@ const LayerList = (/* props */) => {
     }
   }, [])
 
+  // Reduce input layer events to component state:
+  React.useEffect(() => {
+    inputLayers.register(dispatch)
+    return () => inputLayers.deregister(dispatch)
+  }, [])
 
+  const lockLayer = layer => () => inputLayers.toggleLayerLock(layer.id)
+  const showLayer = layer => () => inputLayers.toggleLayerShow(layer.id)
   const activateLayer = id => () => {
     // TODO: update persistent project model
     dispatch({ type: 'layerActivated', id })
     evented.emit('OSD_MESSAGE', { message: layers[id].name, slot: 'A2' })
   }
-
-  React.useEffect(() => {
-    registerReducer(dispatch)
-    return () => deregisterReducer(dispatch)
-  }, [])
-
-
-  const onLock = layer => () => evented.emit('layer.toggleLock', layer.id)
-  const onShow = layer => () => evented.emit('layer.toggleShow', layer.id)
 
   const buttons = () => actions.map(({ icon, tooltip }, index) => (
     <Tooltip key={index} title={tooltip} >
@@ -220,7 +246,19 @@ const LayerList = (/* props */) => {
     </Tooltip>
   ))
 
-  const layer = layer => {
+  const featureItem = feature => (
+    <ListItem
+      className={classes.feature}
+      key={feature.id}
+      onClick={selectFeature(feature.id)}
+      selected={selectedFeatures.includes(feature.id)}
+      button
+    >
+      { feature.name }
+    </ListItem>
+  )
+
+  const layerItem = layer => {
     const lockIcon = layer.locked ? <LockIcon/> : <LockOpenIcon/>
     const visibleIcon = layer.hidden ? <VisibilityOffIcon/> : <VisibilityIcon/>
     const body = layer.active ? <b>{layer.name}</b> : layer.name
@@ -230,19 +268,17 @@ const LayerList = (/* props */) => {
       <div key={layer.id}>
         <ListItem
           button
-          // dense
           className={classes.item}
           onDoubleClick={activateLayer(layer.id)}
           onClick={selectLayer(layer.id)}
           selected={selected}
         >
-          {/* {selected ? <ExpandMore/> : <ExpandLess/> } */}
           { body }
           <ListItemSecondaryAction>
-            <IconButton size='small' onClick={onLock(layer)}>
+            <IconButton size='small' onClick={lockLayer(layer)}>
               {lockIcon}
             </IconButton>
-            <IconButton size='small' onClick={onShow(layer)}>
+            <IconButton size='small' onClick={showLayer(layer)}>
               {visibleIcon}
             </IconButton>
           </ListItemSecondaryAction>
@@ -250,17 +286,9 @@ const LayerList = (/* props */) => {
         <Collapse in={expanded === layer.id} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             {
-              layer.features.map(feature => (
-                <ListItem
-                  className={classes.feature}
-                  key={feature.id}
-                  onClick={selectedFeature(feature.id)}
-                  selected={selectedFeatures.includes(feature.id)}
-                  button
-                >
-                  { feature.t }
-                </ListItem>
-              ))
+              Object.values(layer.features)
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map(featureItem)
             }
           </List>
         </Collapse>
@@ -303,7 +331,11 @@ const LayerList = (/* props */) => {
       />
       <div className={classes.listContainer}>
         <List className={classes.list}>
-          { Object.values(layers).map(layer) }
+          {
+            Object.values(layers)
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map(layerItem)
+          }
         </List>
       </div>
     </Paper>

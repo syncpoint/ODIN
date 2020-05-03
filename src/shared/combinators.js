@@ -6,6 +6,12 @@
 export const K = value => fn => { fn(value); return value }
 
 /**
+ * I :: a -> a
+ * Identity.
+ */
+export const I = x => x
+
+/**
  * Hee hee hee hee... What da ya want for nothing? ... a rrrrrrrrubber biscuit?
  */
 export const noop = () => {}
