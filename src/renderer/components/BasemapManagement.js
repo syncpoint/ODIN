@@ -19,8 +19,14 @@ import { useTranslation } from 'react-i18next'
 
 const useStyles = makeStyles(theme => ({
   management: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    background: theme.palette.background.paper,
     padding: theme.spacing(1.5),
-    zIndex: 20,
+    zIndex: 200,
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
     gridTemplateRows: '3em auto',

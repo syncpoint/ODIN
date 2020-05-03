@@ -95,19 +95,23 @@ const App = (props) => {
     onCloseClicked={() => setManagement(null)}
   />
 
-  const map = () => <>
-    <Map { ...mapProps }/>
-    <div className={classes.overlay}>
-      <OSD />
-    </div>
-  </>
-
-  // Either show project management or map:
-  if (!showManagement) return map()
-  switch (showManagement) {
-    case 'PROJECT_MANAGEMENT': return projectManagement()
-    case 'BASEMAP_MANAGEMENT': return basemapManagement()
+  const currentManagementTool = () => {
+    if (!showManagement) return null
+    switch (showManagement) {
+      case 'PROJECT_MANAGEMENT': return projectManagement()
+      case 'BASEMAP_MANAGEMENT': return basemapManagement()
+    }
   }
+
+  return (
+    <div>
+      <Map { ...mapProps }/>
+      <div className={classes.overlay}>
+        <OSD />
+      </div>
+      { currentManagementTool() }
+    </div>
+  )
 }
 
 export default App

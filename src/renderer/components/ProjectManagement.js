@@ -18,11 +18,16 @@ import { useTranslation } from 'react-i18next'
 
 const useStyles = makeStyles(theme => ({
   management: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    background: theme.palette.background.paper,
     paddingTop: '1em',
     paddingLeft: '3em',
-    bottom: '1.5em',
     paddingRight: '3em',
-    zIndex: 20,
+    zIndex: 200,
     display: 'grid',
     gridTemplateColumns: '1fr 2fr',
     gridTemplateRows: 'auto',
@@ -38,13 +43,14 @@ const useStyles = makeStyles(theme => ({
   },
 
   sidebar: {
+    background: theme.palette.background.paper,
     position: 'fixed',
     display: 'grid',
     gridTemplateColumns: '3em',
     gridTemplateRows: 'auto',
     top: '1em',
     left: '0.5em',
-    zIndex: 21
+    zIndex: 200
   },
 
   projects: {
