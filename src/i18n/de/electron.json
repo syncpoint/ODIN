@@ -1,6 +1,9 @@
 {
-  "Projects": "Projekte",
-  "Manage Projects": "Projekte verwalten...",
+  "management": {
+    "name": "Verwaltung",
+    "projects": "Projekte",
+    "basemaps": "Grundkarten"
+  },
   "Language": "Sprache",
   "en": "Englisch",
   "de": "Deutsch",
