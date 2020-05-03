@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
     zIndex: 200,
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    gridTemplateRows: '3em auto',
+    gridTemplateRows: '2em auto',
     gridGap: theme.spacing(1.5),
     gridTemplateAreas: `
       "navigation navigation"
@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
     `,
     '@media (max-width:1024px)': {
       gridTemplateColumns: '1fr',
-      gridTemplateRows: '3em auto auto',
+      gridTemplateRows: '2em auto auto',
       gridTemplateAreas: `
       "navigation"
       "sources"
