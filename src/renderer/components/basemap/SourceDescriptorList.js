@@ -7,46 +7,17 @@ import {
 } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit'
 
-import { ipcRenderer } from 'electron'
-
 const SourceDescriptorList = props => {
-  const [sourceDescriptors, setSourceDescriptors] = React.useState(null)
-  const [reloadDescriptors, setReloadDescriptors] = React.useState(true)
-  const [selected, setSelected] = React.useState(null)
-
-  React.useEffect(() => {
-    if (!reloadDescriptors) return
-    const loadSourceDescriptors = async () => {
-      setSourceDescriptors(await ipcRenderer.invoke('IPC_LIST_SOURCE_DESCRIPTORS'))
-      setReloadDescriptors(false)
-    }
-    loadSourceDescriptors()
-  }, [reloadDescriptors])
-
-  /* when a descriptor gets persisted we need to force the list to reload */
-  React.useEffect(() => {
-    setReloadDescriptors(props.forceReload)
-  })
-
-  React.useEffect(() => {
-    if (!sourceDescriptors || sourceDescriptors.lenght === 0) return
-    handleSelected(sourceDescriptors[0])
-  }, [sourceDescriptors])
-
-  const handleSelected = descriptor => {
-    setSelected(descriptor)
-    props.onDescriptorSelected(descriptor)
-  }
-
+  const { sourceDescriptors, selectedDescriptor } = props
   return (
     <List>
       { sourceDescriptors ? sourceDescriptors.map(descriptor => (
         <ListItem key={descriptor.name} button
-          selected={selected && selected.id === descriptor.id}
-          onClick={() => handleSelected(descriptor)}>
+          selected={selectedDescriptor && selectedDescriptor.id === descriptor.id}
+          onClick={() => props.onDescriptorSelected(descriptor)}>
           <ListItemText primary={descriptor.name} />
           <ListItemSecondaryAction>
-            <IconButton edge="end" onClick={() => props.onDescriptorEdited(descriptor)}>
+            <IconButton edge="end" onClick={() => props.onDescriptorEdit(descriptor)}>
               <EditIcon />
             </IconButton>
           </ListItemSecondaryAction>
@@ -57,9 +28,10 @@ const SourceDescriptorList = props => {
   )
 }
 SourceDescriptorList.propTypes = {
+  sourceDescriptors: PropTypes.array,
+  selectedDescriptor: PropTypes.object,
   onDescriptorSelected: PropTypes.func,
-  onDescriptorEdited: PropTypes.func,
-  forceReload: PropTypes.bool
+  onDescriptorEdit: PropTypes.func
 }
 
 export default SourceDescriptorList

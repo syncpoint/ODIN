@@ -2,13 +2,17 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import BackToMapIcon from '@material-ui/icons/ExitToApp'
+import { Button } from '@material-ui/core'
+
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 
 import basemap, { setBasemap, clearBasemap } from '../map/basemap'
 import * as ol from 'ol'
 import { fromLonLat } from 'ol/proj'
 import { ipcRenderer } from 'electron'
 
-import Overview from './basemap/Overview'
+import SourceDescriptorList from './basemap/SourceDescriptorList'
 import SourceDescriptorDetails from './basemap/SourceDescriptorDetails'
 
 import { useTranslation } from 'react-i18next'
@@ -82,9 +86,14 @@ const BasemapManagement = props => {
   const { t } = useTranslation()
   const classes = useStyles()
 
+  const [sourceDescriptors, setSourceDescriptors] = React.useState(null)
   const [selectedDescriptor, setSelectedDescriptor] = React.useState(null)
+
   const [isEditing, setIsEditing] = React.useState(false)
-  const [isPersisted, setIsPersisted] = React.useState(true)
+
+  const [shouldUpsertSelected, setShouldUpsertSelected] = React.useState(false)
+  const [shouldDeleteSelected, setShouldDeleteSelected] = React.useState(false)
+  // const [reloadRequired, setReloadRequired] = React.useState(true)
 
   /* initialize Open Layers map */
   React.useEffect(() => {
@@ -98,23 +107,58 @@ const BasemapManagement = props => {
     }))
   }, [])
 
+  /* source descriptors */
+  React.useEffect(() => {
+    /* pending upsert or delete action */
+    if (shouldUpsertSelected || shouldDeleteSelected) return
+    const loadSourceDescriptors = async () => {
+      const descriptors = await ipcRenderer.invoke('IPC_LIST_SOURCE_DESCRIPTORS')
+      setSourceDescriptors(descriptors)
+      if (descriptors && descriptors.length > 0) {
+        setSelectedDescriptor(descriptors[0])
+      } else {
+        setSelectedDescriptor(null)
+      }
+    }
+    loadSourceDescriptors()
+  }, [shouldUpsertSelected, shouldDeleteSelected])
+
+  /* changes the preview whenever a new descriptor is selected */
   React.useEffect(() => {
     const handleDescriptorChanged = async () => {
-      await setBasemap(selectedDescriptor)
+      if (selectedDescriptor) {
+        await setBasemap(selectedDescriptor)
+      } else {
+        clearBasemap()
+      }
     }
     handleDescriptorChanged()
   }, [selectedDescriptor])
 
+  /* save new or update current selection */
   React.useEffect(() => {
-    if (isPersisted) return
-    const doPersist = async () => {
-      await ipcRenderer.invoke('IPC_PERSIST_DESCRIPTOR', selectedDescriptor)
-      setIsPersisted(true)
+    console.log(`should we upsert the current selection: ${shouldUpsertSelected}`)
+    if (!shouldUpsertSelected) return
+    const addDescriptor = async () => {
+      await ipcRenderer.invoke('IPC_UPSERT_DESCRIPTOR', selectedDescriptor)
+      setShouldUpsertSelected(false)
     }
-    doPersist()
-  }, [isPersisted])
+    addDescriptor()
+  }, [shouldUpsertSelected])
 
-  const onDescriptorEdited = descriptor => {
+  /* Delete the current selection */
+  React.useEffect(() => {
+    console.log(`should we delete the current selection: ${shouldDeleteSelected}`)
+    if (!shouldDeleteSelected) return
+    const deleteDescriptor = async () => {
+      await ipcRenderer.invoke('IPC_DELETE_DESCRIPTOR', selectedDescriptor)
+      setShouldDeleteSelected(false)
+      setSelectedDescriptor(null)
+    }
+    deleteDescriptor()
+  }, [shouldDeleteSelected])
+
+  const handleEdit = descriptor => {
     setSelectedDescriptor(descriptor)
     setIsEditing(true)
     clearBasemap()
@@ -125,16 +169,20 @@ const BasemapManagement = props => {
   }
 
   const handleEditSave = sourceDescriptor => {
+    setIsEditing(false)
     setSelectedDescriptor(sourceDescriptor)
     /* this will trigger the React effect */
-    setIsPersisted(false)
-    setIsEditing(false)
+    setShouldUpsertSelected(true)
   }
 
   const handleEditNew = () => {
-    setSelectedDescriptor({ options: {} })
     setIsEditing(true)
+    setSelectedDescriptor({ options: {} })
     clearBasemap()
+  }
+
+  const handleDelete = () => {
+    setShouldDeleteSelected(true)
   }
 
   return (
@@ -150,16 +198,42 @@ const BasemapManagement = props => {
             onCancel={handleEditCancel}
             onVerify={descriptor => setBasemap(descriptor)}
           />
-          : <Overview classes={classes} t={t}
-            onNew={handleEditNew}
-            onDescriptorEdited={onDescriptorEdited}
-            onDescriptorSelected={setSelectedDescriptor}
-            forceReload={isPersisted}
-          /> }
+          : <div>
+            <div className={classes.actions}>
+              <Button id="newSourceDescriptor" variant="contained" color="primary"
+                startIcon={<AddCircleOutlineIcon />}
+                onClick={handleEditNew}
+                className={classes.actionButton}
+              >
+                {t('basemapManagement.new')}
+              </Button>
+            </div>
+            <div className={classes.sourceList}>
+              <SourceDescriptorList
+                onDescriptorSelected={descriptor => setSelectedDescriptor(descriptor)}
+                onDescriptorEdit={handleEdit}
+                sourceDescriptors={sourceDescriptors}
+                selectedDescriptor={selectedDescriptor}
+              />
+            </div>
+          </div>
+        }
       </div>
       <div className={classes.details}>
         <div className={classes.preview}>
           <div id="mapPreview" style={{ width: '100%', height: '400px' }}/>
+        </div>
+        <div className={classes.actions}>
+          <div className={classes.actions}>
+            <Button variant="outlined" edge="end" color="secondary"
+              onClick={() => handleDelete()}
+              className={classes.actionButton}
+              startIcon={<DeleteForeverIcon />}
+              disabled={!selectedDescriptor || isEditing}
+            >
+              {t('basemapManagement.delete')}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

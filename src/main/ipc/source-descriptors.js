@@ -18,7 +18,8 @@ ipcMain.handle('IPC_LIST_SOURCE_DESCRIPTORS', async () => {
   return await listSourceDescriptors()
 })
 
-ipcMain.handle('IPC_PERSIST_DESCRIPTOR', async (_ /* event */, descriptor) => {
+ipcMain.handle('IPC_UPSERT_DESCRIPTOR', async (_ /* event */, descriptor) => {
+  if (!descriptor) return
   const sources = await listSourceDescriptors()
 
   if (descriptor.id) {
@@ -31,4 +32,13 @@ ipcMain.handle('IPC_PERSIST_DESCRIPTOR', async (_ /* event */, descriptor) => {
     sources.push(descriptor)
   }
   await fs.promises.writeFile(ODIN_SOURCES, JSON.stringify(sources))
+})
+
+ipcMain.handle('IPC_DELETE_DESCRIPTOR', async (_ /* event */, descriptor) => {
+  if (!descriptor) return
+  const sources = await listSourceDescriptors()
+
+  const reducedSources = sources.filter(source => source.id !== descriptor.id)
+
+  await fs.promises.writeFile(ODIN_SOURCES, JSON.stringify(reducedSources))
 })

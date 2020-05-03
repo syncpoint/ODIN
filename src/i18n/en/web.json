@@ -17,6 +17,7 @@
     "name": "Basemap",
     "cancel": "Cancel",
     "save": "Save",
+    "delete": "Delete",
     "nextStep": "Next",
     "previousStep": "Previous",
     "new": "New",
@@ -27,6 +28,7 @@
     "descriptorUrl": "URL of the map",
     "xyzNoOptions": "No options available",
     "unknownSource": "Type of the map could no be detected by inspecting the URL",
-    "usePreview": "Use the map preview to verify the basemap"
+    "usePreview": "Use the map preview to verify the basemap",
+    "deleteWarning": "Use with caution! You cannot undo this action!"
   }
 }
