@@ -9,33 +9,54 @@ import { K, uniq, noop } from '../../shared/combinators'
 import undo from '../undo'
 import Feature from './Feature'
 
-const projectPath = () => remote.getCurrentWindow().path
+/**
+ * Project layer/feature model.
+ * Model is updated through public functions.
+ * Updates are propagated as events to registered reducers.
+ *
+ * NOTE: Events are emitted in a pretty relaxed manner (setImmediate()).
+ * I.e. event emitting is scheduled behind outstandig I/O.
+ * This is probably not necessary, but we want to play nice and not
+ * choke our precious thread. Reducers have to live with it.
+ */
+
+
+// --
+// SECTION: In-memory state: layer file names and features.
+
+const filenameList = {}
+
+/**
+ * features :: string ~> ol/Feature
+ *
+ * NOTE: We choose to store ol/Feature instead of object/JSON
+ * for a number of reasons.
+ *   - support for cloning of features and geometries
+ *   - features are directly shared (mostly R/O) with views
+ *   - Web-Mercator projection is used throughout the model
+ */
+const featureList = {}
+
+/**
+ * layerFeatures :: string -> [ol/Feature]
+ */
+const layerFeatures = layerId =>
+  Object.values(featureList)
+    .filter(Feature.hasLayerId(layerId))
 
 const geoJSON = new GeoJSON({
   dataProjection: 'EPSG:4326', // WGS84
   featureProjection: 'EPSG:3857' // Web-Mercator
 })
 
-let reducers = []
 
-const emit = event =>
-  reducers.forEach(reducer => setImmediate(() => reducer(event)))
-
-const filenameList = {}
+// --
+// SECTION: Input layer I/O.
 
 /**
- * Read (absolute) layer file names from open project.
- */
-const layerFiles = () => {
-  const dir = path.join(projectPath(), 'layers')
-  if (!fs.existsSync(dir)) return []
-  return fs.readdirSync(dir)
-    .filter(filename => filename.endsWith('.json'))
-    .map(filename => path.join(dir, filename))
-}
-
-/**
- *
+ * loadFeatures :: uuid -> string -> Promise<[ol/Feature]>
+ * Load features for a layer. Features are assigned unique ids
+ * and a property identifying the containing layer.
  */
 const loadFeatures = async (id, filename) => {
   const contents = await fs.promises.readFile(filename, 'utf8')
@@ -64,19 +85,54 @@ const writeFeatures = xs => {
 }
 
 /**
- * features :: string ~> ol/Feature
- *
- * NOTE: We choose to store ol/Feature instead of object/JSON
- * for a number of reasons.
- *   - support for cloning of features and geometries
- *   - features are directly shared (mostly R/O) with views
- *   - Web-Mercator projection is used throughout the model
+ * reducers :: [(event) -> unit]
  */
-const featureList = {}
+let reducers = []
 
-const layerFeatures = layerId =>
-  Object.values(featureList)
-    .filter(Feature.hasLayerId(layerId))
+const register = reducer => {
+  reducers = [...reducers, reducer]
+
+  // Prepare layers/features snapshot for new reducer.
+  // NOTE: Early bird registrations will probably miss features,
+  // because they are loaded asynchronously, but 'featuresadded' event
+  // will accommodate for that.
+  const layers = Object.entries(filenameList).map(([id, filename]) => {
+    const features = layerFeatures(id)
+    return {
+      id,
+      filename,
+      locked: features.some(Feature.locked),
+      hidden: features.some(Feature.hidden),
+      name: path.basename(filename, '.json')
+    }
+  })
+
+  setImmediate(() => reducer({
+    type: 'snapshot',
+    layers,
+    features: Object.values(featureList)
+  }))
+}
+
+const deregister = reducer => (reducers = reducers.filter(x => x !== reducer))
+const emit = event => reducers.forEach(reducer => setImmediate(() => reducer(event)))
+
+
+// --
+// SECTION: Initialization.
+// NOTE: Currently, project lifecycle is bound to renderer window.
+
+/**
+ * Read (absolute) layer file names from open project.
+ */
+const layerFiles = () => {
+  const projectPath = remote.getCurrentWindow().path
+  const dir = path.join(projectPath, 'layers')
+  if (!fs.existsSync(dir)) return []
+  return fs.readdirSync(dir)
+    .filter(filename => filename.endsWith('.json'))
+    .map(filename => path.join(dir, filename))
+}
 
 /**
  * Load layers from project.
@@ -92,32 +148,8 @@ const layerFeatures = layerId =>
 }))()
 
 
-const register = reducer => {
-  reducers = [...reducers, reducer]
-
-  // Prepare layers/features snapshot for new reducer.
-  // NOTE: Early bird registrations will probably miss features,
-  // because they are loaded asynchronously, but 'featuresadded' event
-  // will accommodate for that.
-  const features = Object.values(featureList)
-  const layers = Object.entries(filenameList).map(([id, filename]) => {
-    const features = layerFeatures(id)
-    return {
-      id,
-      filename,
-      locked: features.some(Feature.locked),
-      hidden: features.some(Feature.hidden),
-      name: path.basename(filename, '.json')
-    }
-  })
-
-  setImmediate(() => reducer({ type: 'snapshot', layers, features }))
-}
-
-const deregister = reducer => {
-  reducers = reducers.filter(x => x !== reducer)
-}
-
+// --
+// SECTION: Public API to update state.
 
 /**
  * insertFeaturesCommand :: [ol/Feature] -> command
@@ -213,16 +245,27 @@ const updateGeometries = (initial, features) => {
   writeFeatures(features)
 }
 
+/**
+ * toggleLayerLock :: string -> unit
+ * Lock/unlock layer.
+ * NOTE: Lock state is stored in features:
+ * One locked feature locks layer.
+ */
 const toggleLayerLock = layerId => {
   const features = layerFeatures(layerId)
   const locked = features.some(Feature.locked)
-  console.log('[toggleLayerLock]', locked)
   const toggle = locked ? Feature.unlock : Feature.lock
   features.forEach(toggle)
   writeFeatures(features)
   emit({ type: 'layerlocked', layerId, locked: !locked })
 }
 
+/**
+ * toggleLayerShow :: string -> unit
+ * Hide/show layer.
+ * NOTE: Hidden state is stored in features:
+ * One hidden feature hides layer.
+ */
 const toggleLayerShow = layerId => {
   const features = layerFeatures(layerId)
   const hidden = features.some(Feature.hidden)
