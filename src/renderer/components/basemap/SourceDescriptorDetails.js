@@ -123,10 +123,12 @@ const SourceDescriptorDetails = props => {
 
   return (
     <>
-      <div>
+      <div className={classes.actions}>
         <Button id="cancel" variant="contained"
           startIcon={<CloseIcon />}
-          onClick={onCancel} >
+          onClick={onCancel}
+          className={classes.actionButton}
+        >
           {t('basemapManagement.cancel')}
         </Button>
       </div>

@@ -10,11 +10,12 @@ const Overview = props => {
   const { onDescriptorSelected, onDescriptorEdited, onNew, forceReload } = props
 
   return (
-    <>
+    <div>
       <div className={classes.actions}>
         <Button id="newSourceDescriptor" variant="contained" color="primary"
           startIcon={<AddCircleOutlineIcon />}
           onClick={onNew}
+          className={classes.actionButton}
         >
           {t('basemapManagement.new')}
         </Button>
@@ -26,7 +27,7 @@ const Overview = props => {
           forceReload={forceReload}
         />
       </div>
-    </>
+    </div>
   )
 }
 Overview.propTypes = {

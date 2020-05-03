@@ -57,7 +57,9 @@ const useStyles = makeStyles(theme => ({
   },
 
   actions: {
-    margin: theme.spacing(1.5)
+    margin: theme.spacing(1.5),
+    display: 'inlineBlock',
+    overflow: 'auto'
   },
 
   actionButton: {
