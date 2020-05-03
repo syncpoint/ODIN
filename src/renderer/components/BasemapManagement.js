@@ -177,7 +177,7 @@ const BasemapManagement = props => {
 
   const handleEditNew = () => {
     setIsEditing(true)
-    setSelectedDescriptor({ options: {} })
+    setSelectedDescriptor(null)
     clearBasemap()
   }
 

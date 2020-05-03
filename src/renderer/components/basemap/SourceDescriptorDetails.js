@@ -21,9 +21,9 @@ const SourceDescriptorDetails = props => {
   const { onCancel, onSave, onVerify } = props
 
   /* Metadata are a shallow copy without the embedded 'options' object */
-  const [metadata, setMetadata] = React.useState({ ...selectedDescriptor })
+  const [metadata, setMetadata] = React.useState(selectedDescriptor ? { ...selectedDescriptor } : {})
   /* Options are required in order to create an instance of a OpenLayers source */
-  const [options, setOptions] = React.useState({ ...selectedDescriptor.options })
+  const [options, setOptions] = React.useState(selectedDescriptor ? { ...selectedDescriptor.options } : {})
 
   const [stepIndex, setStepIndex] = React.useState(0)
   const [allowNextStep, setAllowNextStep] = React.useState(true)
