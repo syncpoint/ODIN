@@ -4,16 +4,12 @@ import { makeStyles } from '@material-ui/core/styles'
 import BackToMapIcon from '@material-ui/icons/ExitToApp'
 import {
   Button,
-  List, ListItem,
-  ListItemText, ListItemSecondaryAction,
-  IconButton,
   Stepper, Step, StepLabel, StepContent, Typography
 } from '@material-ui/core'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos'
 import CloseIcon from '@material-ui/icons/Close'
-import EditIcon from '@material-ui/icons/Edit'
 import SaveIcon from '@material-ui/icons/Save'
 
 import basemap, { setBasemap, clearBasemap } from '../map/basemap'
@@ -25,6 +21,7 @@ import Url from './basemap/Url'
 import XYZOptions from './basemap/XYZOptions'
 import WMTSOptions from './basemap/WMTSOptions'
 import Name from './basemap/Name'
+import SourceDescriptorList from './basemap/SourceDescriptorList'
 
 import { useTranslation } from 'react-i18next'
 
@@ -89,45 +86,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const SourceDescriptorList = props => {
-  const [sourceDescriptors, setSourceDescriptors] = React.useState(null)
-  const [reloadDescriptors, setReloadDescriptors] = React.useState(true)
 
-  React.useEffect(() => {
-    if (!reloadDescriptors) return
-    const loadSourceDescriptors = async () => {
-      setSourceDescriptors(await ipcRenderer.invoke('IPC_LIST_SOURCE_DESCRIPTORS'))
-      setReloadDescriptors(false)
-    }
-    loadSourceDescriptors()
-  }, [reloadDescriptors])
-
-  /* when a descriptor gets persisted we need to force the list to reload */
-  React.useEffect(() => {
-    setReloadDescriptors(props.forceReload)
-  })
-
-  return (
-    <List>
-      { sourceDescriptors ? sourceDescriptors.map(descriptor => (
-        <ListItem key={descriptor.name} button onClick={() => props.onDescriptorSelected(descriptor)}>
-          <ListItemText primary={descriptor.name} />
-          <ListItemSecondaryAction>
-            <IconButton edge="end" onClick={() => props.onDescriptorEdited(descriptor)}>
-              <EditIcon />
-            </IconButton>
-          </ListItemSecondaryAction>
-        </ListItem>
-      )) : null
-      }
-    </List>
-  )
-}
-SourceDescriptorList.propTypes = {
-  onDescriptorSelected: PropTypes.func,
-  onDescriptorEdited: PropTypes.func,
-  forceReload: PropTypes.bool
-}
 
 const DescriptorDetails = props => {
   const { classes, t, selectedDescriptor } = props
