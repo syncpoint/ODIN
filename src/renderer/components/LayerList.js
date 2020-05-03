@@ -177,14 +177,13 @@ const layerEventHandlers = {
 const LayerList = (/* props */) => {
   const classes = useStyles()
   const reducer = (state, event) => (layerEventHandlers[event.type] || I)(state, event)
-  const [selectedLayer, setSelectedLayer] = React.useState(null)
-  const [selectedFeatures, setSelectedFeatures] = React.useState([])
+  const [selectedItems, setSelectedItems] = React.useState([])
   const [layers, dispatch] = React.useReducer(reducer, {})
   const [expanded, setExpanded] = React.useState(null)
 
   const selectLayer = id => () => {
     setExpanded(expanded === id ? null : id)
-    if (selectedLayer === id) return
+    if (selectedItems.includes(id)) return
     selection.deselect()
     selection.select([id])
   }
@@ -196,26 +195,10 @@ const LayerList = (/* props */) => {
 
   // Sync selection with component state:
   React.useEffect(() => {
-    const selected = () => {
-      const layerIds = selection.selected('layer:')
-      // No multi-select for layers; take first selected.
-      if (layerIds && layerIds.length) setSelectedLayer(layerIds[0])
-      setSelectedFeatures(selection.selected('feature:'))
-    }
-
-    const deselected = ids => {
-      const layerIds = ids.filter(s => s.startsWith('layer:'))
-      if (layerIds && layerIds.length) setSelectedLayer(null)
-      setSelectedFeatures(selection.selected('feature:'))
-    }
-
-    selection.on('selected', selected)
-    selection.on('deselected', deselected)
-
-    return () => {
-      selection.off('selected', selected)
-      selection.off('deselected', deselected)
-    }
+    const events = ['selected', 'deselected']
+    const update = () => setSelectedItems(selection.selected())
+    events.forEach(event => selection.on(event, update))
+    return () => events.forEach(event => selection.off(event, update))
   }, [])
 
   // Reduce input layer events to component state:
@@ -227,7 +210,7 @@ const LayerList = (/* props */) => {
   const lockLayer = layer => () => inputLayers.toggleLayerLock(layer.id)
   const showLayer = layer => () => inputLayers.toggleLayerShow(layer.id)
   const activateLayer = id => () => {
-    // TODO: update persistent project model
+    // TODO: update transient project model
     dispatch({ type: 'layerActivated', id })
     evented.emit('OSD_MESSAGE', { message: layers[id].name, slot: 'A2' })
   }
@@ -245,7 +228,7 @@ const LayerList = (/* props */) => {
       className={classes.feature}
       key={feature.id}
       onClick={selectFeature(feature.id)}
-      selected={selectedFeatures.includes(feature.id)}
+      selected={selectedItems.includes(feature.id)}
       button
     >
       { feature.name }
@@ -256,7 +239,6 @@ const LayerList = (/* props */) => {
     const lockIcon = layer.locked ? <LockIcon/> : <LockOpenIcon/>
     const visibleIcon = layer.hidden ? <VisibilityOffIcon/> : <VisibilityIcon/>
     const body = layer.active ? <b>{layer.name}</b> : layer.name
-    const selected = selectedLayer === layer.id
 
     return (
       <div key={layer.id}>
@@ -265,7 +247,7 @@ const LayerList = (/* props */) => {
           className={classes.item}
           onDoubleClick={activateLayer(layer.id)}
           onClick={selectLayer(layer.id)}
-          selected={selected}
+          selected={selectedItems.includes(layer.id)}
         >
           { body }
           <ListItemSecondaryAction>
