@@ -216,10 +216,11 @@ const updateGeometries = (initial, features) => {
 const toggleLayerLock = layerId => {
   const features = layerFeatures(layerId)
   const locked = features.some(Feature.locked)
+  console.log('[toggleLayerLock]', locked)
   const toggle = locked ? Feature.unlock : Feature.lock
   features.forEach(toggle)
   writeFeatures(features)
-  emit({ type: 'layerlocked', layerId, locked })
+  emit({ type: 'layerlocked', layerId, locked: !locked })
 }
 
 const toggleLayerShow = layerId => {
@@ -228,7 +229,7 @@ const toggleLayerShow = layerId => {
   const toggle = hidden ? Feature.unhide : Feature.hide
   features.forEach(toggle)
   writeFeatures(features)
-  emit({ type: 'layerhidden', layerId, hidden })
+  emit({ type: 'layerhidden', layerId, hidden: !hidden })
 }
 
 export default {
