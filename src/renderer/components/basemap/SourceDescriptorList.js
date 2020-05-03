@@ -12,6 +12,7 @@ import { ipcRenderer } from 'electron'
 const SourceDescriptorList = props => {
   const [sourceDescriptors, setSourceDescriptors] = React.useState(null)
   const [reloadDescriptors, setReloadDescriptors] = React.useState(true)
+  const [selected, setSelected] = React.useState(null)
 
   React.useEffect(() => {
     if (!reloadDescriptors) return
@@ -27,7 +28,10 @@ const SourceDescriptorList = props => {
     setReloadDescriptors(props.forceReload)
   })
 
-  const [selected, setSelected] = React.useState(null)
+  React.useEffect(() => {
+    if (!sourceDescriptors || sourceDescriptors.lenght === 0) return
+    handleSelected(sourceDescriptors[0])
+  }, [sourceDescriptors])
 
   const handleSelected = descriptor => {
     setSelected(descriptor)

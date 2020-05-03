@@ -74,14 +74,6 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-
-
-
-
-
-
-
-
 const BasemapManagement = props => {
   const { onCloseClicked } = props
 
