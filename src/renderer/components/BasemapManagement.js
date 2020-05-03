@@ -148,7 +148,7 @@ const BasemapManagement = props => {
             selectedDescriptor={selectedDescriptor}
             onSave={handleEditSave}
             onCancel={handleEditCancel}
-            onVerify={descriptor => setSelectedDescriptor(descriptor)}
+            onVerify={descriptor => setBasemap(descriptor)}
           />
           : <Overview classes={classes} t={t}
             onNew={handleEditNew}

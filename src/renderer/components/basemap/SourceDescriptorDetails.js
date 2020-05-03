@@ -18,7 +18,7 @@ import Name from './Name'
 
 const SourceDescriptorDetails = props => {
   const { classes, t, selectedDescriptor } = props
-  const { onCancel, onSave } = props
+  const { onCancel, onSave, onVerify } = props
 
   /* Metadata are a shallow copy without the embedded 'options' object */
   const [metadata, setMetadata] = React.useState({ ...selectedDescriptor })
@@ -71,7 +71,7 @@ const SourceDescriptorDetails = props => {
     React.useEffect(() => {
       const descriptor = { ...metadata }
       descriptor.options = { ...options }
-      // TODO! setBasemap(descriptor)
+      onVerify(descriptor)
       // visual verification is done by the user and always returns true
       onValidation(true)
     })
