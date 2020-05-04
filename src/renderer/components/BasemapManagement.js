@@ -18,8 +18,18 @@ import SourceDescriptorDetails from './basemap/SourceDescriptorDetails'
 import { useTranslation } from 'react-i18next'
 
 const useStyles = makeStyles(theme => ({
+  blurredBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    background: theme.palette.grey[700],
+    opacity: theme.palette.action.disabledOpacity,
+    zIndex: 199
+  },
   management: {
-    position: 'fixed',
+    position: 'relative',
     top: 0,
     left: 0,
     bottom: 0,
@@ -29,7 +39,7 @@ const useStyles = makeStyles(theme => ({
     zIndex: 200,
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    gridTemplateRows: '2em auto',
+    gridTemplateRows: '1em auto',
     gridGap: theme.spacing(1.5),
     gridTemplateAreas: `
       "navigation navigation"
@@ -51,13 +61,11 @@ const useStyles = makeStyles(theme => ({
   },
 
   sources: {
-    gridArea: 'sources',
-    zIndex: 21
+    gridArea: 'sources'
   },
 
   details: {
-    gridArea: 'details',
-    zIndex: 21
+    gridArea: 'details'
   },
 
   preview: {
@@ -192,57 +200,60 @@ const BasemapManagement = props => {
   }
 
   return (
-    <div className={classes.management}>
-      <div className={classes.navigation}>
-        <BackToMapIcon id="backToMap" onClick={onCloseClicked}/>
-      </div>
-      <div className={classes.sources}>
-        { isEditing
-          ? <SourceDescriptorDetails classes={classes} t={t}
-            selectedDescriptor={selectedDescriptor}
-            onSave={handleEditSave}
-            onCancel={handleEditCancel}
-            onVerify={descriptor => setBasemap(descriptor)}
-          />
-          : <div>
+    <>
+      <div className={classes.blurredBackground} />
+      <div className={classes.management}>
+        <div className={classes.navigation}>
+          <BackToMapIcon id="backToMap" onClick={onCloseClicked}/>
+        </div>
+        <div className={classes.sources}>
+          { isEditing
+            ? <SourceDescriptorDetails classes={classes} t={t}
+              selectedDescriptor={selectedDescriptor}
+              onSave={handleEditSave}
+              onCancel={handleEditCancel}
+              onVerify={descriptor => setBasemap(descriptor)}
+            />
+            : <div>
+              <div className={classes.actions}>
+                <Button id="newSourceDescriptor" variant="contained" color="primary"
+                  startIcon={<AddCircleOutlineIcon />}
+                  onClick={handleEditNew}
+                  className={classes.actionButton}
+                >
+                  {t('basemapManagement.new')}
+                </Button>
+              </div>
+              <div className={classes.sourceList}>
+                <SourceDescriptorList
+                  onDescriptorSelected={descriptor => setSelectedDescriptor(descriptor)}
+                  onDescriptorEdit={handleEdit}
+                  sourceDescriptors={sourceDescriptors}
+                  selectedDescriptor={selectedDescriptor}
+                />
+              </div>
+            </div>
+          }
+        </div>
+        <div className={classes.details}>
+          <div className={classes.preview}>
+            <div id="mapPreview" style={{ width: '100%', height: '400px' }}/>
+          </div>
+          <div className={classes.actions}>
             <div className={classes.actions}>
-              <Button id="newSourceDescriptor" variant="contained" color="primary"
-                startIcon={<AddCircleOutlineIcon />}
-                onClick={handleEditNew}
+              <Button variant="outlined" edge="end" color="secondary"
+                onClick={() => handleDelete()}
                 className={classes.actionButton}
+                startIcon={<DeleteForeverIcon />}
+                disabled={!selectedDescriptor || isEditing}
               >
-                {t('basemapManagement.new')}
+                {t('basemapManagement.delete')}
               </Button>
             </div>
-            <div className={classes.sourceList}>
-              <SourceDescriptorList
-                onDescriptorSelected={descriptor => setSelectedDescriptor(descriptor)}
-                onDescriptorEdit={handleEdit}
-                sourceDescriptors={sourceDescriptors}
-                selectedDescriptor={selectedDescriptor}
-              />
-            </div>
-          </div>
-        }
-      </div>
-      <div className={classes.details}>
-        <div className={classes.preview}>
-          <div id="mapPreview" style={{ width: '100%', height: '400px' }}/>
-        </div>
-        <div className={classes.actions}>
-          <div className={classes.actions}>
-            <Button variant="outlined" edge="end" color="secondary"
-              onClick={() => handleDelete()}
-              className={classes.actionButton}
-              startIcon={<DeleteForeverIcon />}
-              disabled={!selectedDescriptor || isEditing}
-            >
-              {t('basemapManagement.delete')}
-            </Button>
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 BasemapManagement.propTypes = {
