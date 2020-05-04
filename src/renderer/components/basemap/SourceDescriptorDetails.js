@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import {
   Button,
+  Card, CardContent,
   Stepper, Step, StepLabel, Typography
 } from '@material-ui/core'
 
@@ -75,7 +76,12 @@ const SourceDescriptorDetails = props => {
       // visual verification is done by the user and always returns true
       onValidation(true)
     })
-    return <Typography>{t('basemapManagement.usePreview')}</Typography>
+    return (
+      <Card variant="outlined">
+        <CardContent>
+          <Typography>{t('basemapManagement.usePreview')}</Typography>
+        </CardContent>
+      </Card>)
   }
   Verify.propTypes = {
     metadata: PropTypes.object,
