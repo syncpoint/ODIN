@@ -128,11 +128,11 @@ const BasemapManagement = props => {
     const loadSourceDescriptors = async () => {
       const descriptors = await ipcRenderer.invoke('IPC_LIST_SOURCE_DESCRIPTORS')
       setSourceDescriptors(descriptors)
-      if (descriptors && descriptors.length > 0) {
-        setSelectedDescriptor(descriptors[0])
-      } else {
-        setSelectedDescriptor(null)
-      }
+
+      const selection = descriptors && descriptors.length > 0
+        ? descriptors[0]
+        : null
+      setSelectedDescriptor(selection)
     }
     loadSourceDescriptors()
   }, [shouldUpsertSelected, shouldDeleteSelected])
@@ -151,7 +151,6 @@ const BasemapManagement = props => {
 
   /* save new or update current selection */
   React.useEffect(() => {
-    console.log(`should we upsert the current selection: ${shouldUpsertSelected}`)
     if (!shouldUpsertSelected) return
     const addDescriptor = async () => {
       await ipcRenderer.invoke('IPC_UPSERT_DESCRIPTOR', selectedDescriptor)
@@ -162,7 +161,6 @@ const BasemapManagement = props => {
 
   /* Delete the current selection */
   React.useEffect(() => {
-    console.log(`should we delete the current selection: ${shouldDeleteSelected}`)
     if (!shouldDeleteSelected) return
     const deleteDescriptor = async () => {
       await ipcRenderer.invoke('IPC_DELETE_DESCRIPTOR', selectedDescriptor)
