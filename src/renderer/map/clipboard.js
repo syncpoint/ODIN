@@ -5,8 +5,9 @@ import { GeoJSON } from 'ol/format'
 import undo from '../undo'
 import evented from '../evented'
 import selection from '../selection'
-import inputLayers from '../project/layers'
+import inputLayers from '../project/input-layers'
 import Feature from '../project/Feature'
+import URI from '../project/URI'
 import { noop } from '../../shared/combinators'
 
 /**
@@ -14,6 +15,8 @@ import { noop } from '../../shared/combinators'
  * Current set of loaded features.
  */
 const features = {}
+
+let activeLayerId
 
 /**
  * GeoJSON data, by definitions, comes in WGS84;
@@ -55,14 +58,14 @@ const editSelectAll = () => {
  * Delete selected features.
  */
 const editDelete = () =>
-  inputLayers.removeFeatures(selection.selected('feature:'))
+  inputLayers.removeFeatures(selection.selected(URI.isFeatureId))
 
 /**
  * editCut :: () -> unit
  * Write current selection to clipboard and delete selected features.
  */
 const editCut = () => {
-  const featureIds = selection.selected('feature:')
+  const featureIds = selection.selected(URI.isFeatureId)
   clipboardWrite(featureIds)
   inputLayers.removeFeatures(featureIds)
 }
@@ -72,7 +75,7 @@ const editCut = () => {
  * Write current selection to clipboard.
  */
 const editCopy = () =>
-  clipboardWrite(selection.selected('feature:'))
+  clipboardWrite(selection.selected(URI.isFeatureId))
 
 /**
  * editPaste :: () -> unit
@@ -80,8 +83,11 @@ const editCopy = () =>
  */
 const editPaste = async () => {
   const content = await ipcRenderer.invoke('IPC_CLIPBOARD_READ')
-  if (!content) return
-  inputLayers.addFeatures(content)
+  if (content) {
+    // Overwrite target layer if any.
+    if (activeLayerId) content.forEach(tuple => (tuple[0] = activeLayerId))
+    inputLayers.addFeatures(content)
+  }
 }
 
 
@@ -108,11 +114,13 @@ const disengage = () => {
   evented.off('EDIT_SELECT_ALL', editSelectAll)
 }
 
+const layeractivated = ({ layerId }) => (activeLayerId = layerId)
 const addFeature = feature => (features[Feature.id(feature)] = feature)
 const addFeatures = ({ features }) => features.forEach(addFeature)
 const deleteFeatures = ({ ids }) => ids.forEach(id => delete features[id])
 
 const eventHandlers = {
+  layeractivated,
   featuresadded: addFeatures,
   featuresremoved: deleteFeatures
 }

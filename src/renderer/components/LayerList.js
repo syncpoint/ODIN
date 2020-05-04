@@ -16,11 +16,11 @@ import VisibilityIcon from '@material-ui/icons/Visibility'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 
 import Tooltip from './Tooltip.js'
-import evented from '../evented'
 import { K, I, uniq } from '../../shared/combinators'
 import selection from '../selection'
-import inputLayers from '../project/layers'
+import inputLayers from '../project/input-layers'
 import Feature from '../project/Feature'
+import URI from '../project/URI'
 
 import {
   LayersMinus,
@@ -155,8 +155,7 @@ const layerEventHandlers = {
 
   featuresremoved: (prev, { ids }) => K({ ...prev })(next => {
     ids.forEach(id => {
-      const layerId = `layer:${id.match(/feature:(.*)\/.*/)[1]}`
-      delete next[layerId].features[id]
+      delete next[URI.layerId(id)].features[id]
     })
   }),
 
@@ -166,6 +165,11 @@ const layerEventHandlers = {
 
   layerhidden: (prev, { layerId, hidden }) => K({ ...prev })(next => {
     next[layerId].hidden = hidden
+  }),
+
+  layeractivated: (prev, { layerId }) => K({ ...prev })(next => {
+    Object.values(next).forEach(layer => (layer.active = false))
+    next[layerId].active = true
   })
 }
 
@@ -209,11 +213,7 @@ const LayerList = (/* props */) => {
 
   const lockLayer = layer => () => inputLayers.toggleLayerLock(layer.id)
   const showLayer = layer => () => inputLayers.toggleLayerShow(layer.id)
-  const activateLayer = id => () => {
-    // TODO: update transient project model
-    dispatch({ type: 'layerActivated', id })
-    evented.emit('OSD_MESSAGE', { message: layers[id].name, slot: 'A2' })
-  }
+  const activateLayer = id => () => inputLayers.activateLayer(id)
 
   const buttons = () => actions.map(({ icon, tooltip }, index) => (
     <Tooltip key={index} title={tooltip} >

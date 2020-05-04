@@ -10,8 +10,9 @@ import Style from 'ol/style/Style'
 
 import { noop, K } from '../../shared/combinators'
 import style from './style/style'
-import inputLayers from '../project/layers'
+import inputLayers from '../project/input-layers'
 import Feature from '../project/Feature'
+import URI from '../project/URI'
 import selection from '../selection'
 
 
@@ -141,7 +142,7 @@ const createLayers = () => {
   // Update layer opacity depending on selection.
 
   const updateOpacity = () => {
-    const hasSelection = selection.selected('feature:').length
+    const hasSelection = selection.selected(URI.isFeatureId).length
     entries.forEach(([_, layer]) => layer.setOpacity(hasSelection ? 0.35 : 1))
   }
 
@@ -168,7 +169,7 @@ const selectedFeatures = new Collection([], { unique: true })
  */
 const select = features => {
   // Deselect others than feature:
-  const removals = selection.selected().filter(s => !s.startsWith('feature'))
+  const removals = selection.selected(uri => !URI.isFeatureId(uri))
   selection.deselect(removals)
   selection.select(features.map(Feature.id))
 }
@@ -308,7 +309,7 @@ const createModify = () => {
 
   // Activate Modify interaction only for single-select:
   const activate = () =>
-    interaction.setActive(selection.selected('feature:').length === 1)
+    interaction.setActive(selection.selected(URI.isFeatureId).length === 1)
 
   selection.on('selected', activate)
   selection.on('deselected', activate)

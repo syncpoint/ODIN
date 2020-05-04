@@ -1,13 +1,14 @@
 import { remote } from 'electron'
 import path from 'path'
 import fs from 'fs'
-import uuid from 'uuid-random'
 import { GeoJSON } from 'ol/format'
 import * as ol from 'ol'
 
 import { K, uniq, noop } from '../../shared/combinators'
 import undo from '../undo'
 import Feature from './Feature'
+import URI from './URI'
+import evented from '../evented'
 
 /**
  * Project layer/feature model.
@@ -24,7 +25,7 @@ import Feature from './Feature'
 // --
 // SECTION: In-memory state: layer file names and features.
 
-const filenameList = {}
+const layerList = {}
 
 /**
  * features :: string ~> ol/Feature
@@ -54,15 +55,15 @@ const geoJSON = new GeoJSON({
 // SECTION: Input layer I/O.
 
 /**
- * loadFeatures :: uuid -> string -> Promise<[ol/Feature]>
+ * loadFeatures :: (string, string) -> Promise<[ol/Feature]>
  * Load features for a layer. Features are assigned unique ids
  * and a property identifying the containing layer.
  */
-const loadFeatures = async (id, filename) => {
+const loadFeatures = async (layerId, filename) => {
   const contents = await fs.promises.readFile(filename, 'utf8')
   return geoJSON.readFeatures(contents).map(feature => {
-    feature.setId(`feature:${id}/${uuid()}`)
-    feature.set('layerId', `layer:${id}`)
+    feature.setId(URI.featureId(layerId))
+    feature.set('layerId', layerId)
     return feature
   })
 }
@@ -71,14 +72,13 @@ const loadFeatures = async (id, filename) => {
  * writeFeatures :: a (ol/Feature | featureId | layerId) => [a] -> unit
  */
 const writeFeatures = xs => {
-  const layerId = s => `layer:${s.match(/feature:(.*)\/.*/)[1]}`
   const layerIds = xs
-    .map(x => x instanceof ol.Feature ? x.get('layerId') : x)
-    .map(s => s.startsWith('feature:') ? layerId(s) : s)
+    .map(x => x instanceof ol.Feature ? Feature.layerId(x) : x)
+    .map(s => URI.isFeatureId(s) ? URI.layerId(s) : s)
     .filter(uniq)
 
   layerIds.forEach(layerId => {
-    const filename = filenameList[layerId]
+    const filename = layerList[layerId].filename
     const features = layerFeatures(layerId)
     fs.writeFile(filename, geoJSON.writeFeatures(features), noop)
   })
@@ -96,14 +96,12 @@ const register = reducer => {
   // NOTE: Early bird registrations will probably miss features,
   // because they are loaded asynchronously, but 'featuresadded' event
   // will accommodate for that.
-  const layers = Object.entries(filenameList).map(([id, filename]) => {
-    const features = layerFeatures(id)
+  const layers = Object.values(layerList).map(layer => {
+    const features = layerFeatures(layer.id)
     return {
-      id,
-      filename,
+      ...layer,
       locked: features.some(Feature.locked),
-      hidden: features.some(Feature.hidden),
-      name: path.basename(filename, '.json')
+      hidden: features.some(Feature.hidden)
     }
   })
 
@@ -138,11 +136,17 @@ const layerFiles = () => {
  * Load layers from project.
  */
 ;(() => layerFiles().forEach(async filename => {
-  const id = uuid()
-  filenameList[`layer:${id}`] = filename
+  const layerId = URI.layerId()
+
+  layerList[layerId] = {
+    id: layerId,
+    filename,
+    name: path.basename(filename, '.json'),
+    active: false
+  }
 
   // Asynchronously load input layers:
-  const additions = await loadFeatures(id, filename)
+  const additions = await loadFeatures(layerId, filename)
   additions.forEach(feature => (featureList[Feature.id(feature)] = feature))
   emit({ type: 'featuresadded', features: additions, selected: false })
 }))()
@@ -156,10 +160,9 @@ const layerFiles = () => {
  * Add given features to corresponding input layer.
  */
 const insertFeaturesCommand = clones => {
-  const featureId = s => `feature:${s.match(/layer:(.*)/)[1]}/${uuid()}`
   const additions = clones.map(feature => {
-    // TODO: insert into active layer
-    feature.setId(featureId(Feature.layerId(feature)))
+    const layerId = Feature.layerId(feature)
+    feature.setId(URI.featureId(layerId))
     return feature
   })
 
@@ -222,10 +225,14 @@ const removeFeatures = featureIds => {
  * addFeatures :: [[string, string]] -> unit
  */
 const addFeatures = content => {
-  // TODO: use active layer
-  const readFeature = ([layerUri, json]) => geoJSON.readFeature(json)
-  const clones = content.map(readFeature)
-  const command = insertFeaturesCommand(clones)
+  const readFeature = ([layerId, json]) => {
+    const feature = geoJSON.readFeature(json)
+    feature.set('layerId', layerId)
+    return feature
+  }
+
+  const additions = content.map(readFeature)
+  const command = insertFeaturesCommand(additions)
   command.apply()
   undo.push(command.inverse())
 }
@@ -275,6 +282,13 @@ const toggleLayerShow = layerId => {
   emit({ type: 'layerhidden', layerId, hidden: !hidden })
 }
 
+const activateLayer = layerId => {
+  Object.values(layerList).forEach(layer => (layer.active = false))
+  layerList[layerId].active = true
+  emit({ type: 'layeractivated', layerId })
+  evented.emit('OSD_MESSAGE', { message: layerList[layerId].name, slot: 'A2' })
+}
+
 export default {
   register,
   deregister,
@@ -282,5 +296,6 @@ export default {
   addFeatures,
   updateGeometries,
   toggleLayerLock,
-  toggleLayerShow
+  toggleLayerShow,
+  activateLayer
 }
