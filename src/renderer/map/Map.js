@@ -14,7 +14,7 @@ import layers from './layers'
 import basemap from './basemap'
 import './style/scalebar.css'
 import disposable from '../../shared/disposable'
-import clipboard from './clipboard'
+import './clipboard'
 
 const zoom = view => view.getZoom()
 const center = view => toLonLat(view.getCenter())
@@ -109,8 +109,6 @@ const Map = props => {
   return <div
     id={props.id}
     tabIndex="0"
-    onFocus={clipboard.engage}
-    onBlur={clipboard.disengage}
   />
 }
 

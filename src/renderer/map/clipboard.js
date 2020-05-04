@@ -90,29 +90,26 @@ const editPaste = async () => {
   }
 }
 
+// Block certain ops when text input field is focused.
+
+const activeElement = () => document.activeElement
+const inputFocused = () => activeElement() instanceof HTMLInputElement
+const block = p => fn => () => (p() ? noop : fn)()
+
+document.addEventListener('cut', () => evented.emit('EDIT_CUT'))
+document.addEventListener('copy', () => evented.emit('EDIT_COPY'))
+document.addEventListener('paste', () => evented.emit('EDIT_PASTE'))
+
+evented.on('EDIT_CUT', block(inputFocused)(editCut))
+evented.on('EDIT_COPY', block(inputFocused)(editCopy))
+evented.on('EDIT_PASTE', block(inputFocused)(editPaste))
+evented.on('EDIT_UNDO', block(inputFocused)(undo.undo))
+evented.on('EDIT_REDO', block(inputFocused)(undo.redo))
+evented.on('EDIT_SELECT_ALL', block(inputFocused)(editSelectAll))
 
 Mousetrap.bind('del', editDelete) // macOS: fn+backspace
 Mousetrap.bind('command+backspace', editDelete)
 Mousetrap.bind('esc', () => selection.deselect())
-
-evented.on('EDIT_CUT', editCut)
-evented.on('EDIT_COPY', editCopy)
-evented.on('EDIT_PASTE', editPaste)
-
-
-// Only handle the following when map has focus.
-
-const engage = () => {
-  evented.on('EDIT_UNDO', undo.undo)
-  evented.on('EDIT_REDO', undo.redo)
-  evented.on('EDIT_SELECT_ALL', editSelectAll)
-}
-
-const disengage = () => {
-  evented.off('EDIT_UNDO', undo.undo)
-  evented.off('EDIT_REDO', undo.redo)
-  evented.off('EDIT_SELECT_ALL', editSelectAll)
-}
 
 const layeractivated = ({ layerId }) => (activeLayerId = layerId)
 const addFeature = feature => (features[Feature.id(feature)] = feature)
@@ -126,8 +123,3 @@ const eventHandlers = {
 }
 
 inputLayers.register(event => (eventHandlers[event.type] || noop)(event))
-
-export default {
-  engage,
-  disengage
-}
