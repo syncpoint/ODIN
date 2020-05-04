@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import {
   Button,
-  Stepper, Step, StepLabel, StepContent, Typography
+  Stepper, Step, StepLabel, Typography
 } from '@material-ui/core'
 
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
@@ -133,45 +133,44 @@ const SourceDescriptorDetails = props => {
         </Button>
       </div>
       <div>
-        <Stepper activeStep={stepIndex} orientation="vertical">
+        <Stepper activeStep={stepIndex}>
           { steps.map(label => {
             return (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>
-                <StepContent>
-                  { getStepContent(stepIndex) }
-                  <div className={classes.actions}>
-
-                    { stepIndex < (steps.length - 1)
-                      ? (<Button id="nextStep" variant="contained" color="primary" className={classes.actionButton}
-                        endIcon={<ArrowForwardIosIcon />}
-                        onClick={nextStep}
-                        disabled={!allowNextStep}
-                      >
-                        {t('basemapManagement.nextStep')}
-                      </Button>)
-                      : (<Button id="save" variant="contained" color="primary" className={classes.actionButton}
-                        startIcon={<SaveIcon />}
-                        onClick={handleSaveButtonClick}
-                        disabled={!allowNextStep}
-                      >
-                        {t('basemapManagement.save')}
-                      </Button>)
-                    }
-                    <Button id="previousStep" variant="contained" className={classes.actionButton}
-                      startIcon={<ArrowBackIosIcon />}
-                      onClick={previousStep}
-                      disabled={stepIndex === 0}
-                    >
-                      {t('basemapManagement.previousStep')}
-                    </Button>
-                  </div>
-                </StepContent>
               </Step>
             )
           })
           }
         </Stepper>
+      </div>
+      <div>
+        { getStepContent(stepIndex) }
+        <div className={classes.actions}>
+          { stepIndex < (steps.length - 1)
+            ? (<Button id="nextStep" variant="contained" color="primary" className={classes.actionButton}
+              endIcon={<ArrowForwardIosIcon />}
+              onClick={nextStep}
+              disabled={!allowNextStep}
+            >
+              {t('basemapManagement.nextStep')}
+            </Button>)
+            : (<Button id="save" variant="contained" color="primary" className={classes.actionButton}
+              startIcon={<SaveIcon />}
+              onClick={handleSaveButtonClick}
+              disabled={!allowNextStep}
+            >
+              {t('basemapManagement.save')}
+            </Button>)
+          }
+          <Button id="previousStep" variant="contained" className={classes.actionButton}
+            startIcon={<ArrowBackIosIcon />}
+            onClick={previousStep}
+            disabled={stepIndex === 0}
+          >
+            {t('basemapManagement.previousStep')}
+          </Button>
+        </div>
       </div>
     </>
   )
