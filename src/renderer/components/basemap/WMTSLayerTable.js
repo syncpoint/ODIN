@@ -19,7 +19,7 @@ const WMTSLayerTable = props => {
 
   return (
     <div>
-      <Paper variant="outlined" style={{ marginTop: '1.5em' }}>
+      <Paper variant="outlined" style={{ marginTop: '1em' }}>
         <Table size="small">
           <TableBody>
             {
