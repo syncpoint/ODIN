@@ -111,10 +111,10 @@ Body.propTypes = {
 }
 
 const actions = [
-  { icon: <LayersPlus/>, tooltip: 'Add Layer' },
-  { icon: <LayersMinus/>, tooltip: 'Delete Layer' },
-  { icon: <ContentDuplicate/>, tooltip: 'Duplicate Layer' },
-  { icon: <ExportVariant/>, tooltip: 'Share layer' }
+  { icon: <LayersPlus/>, tooltip: 'Add Layer', disabled: true },
+  { icon: <LayersMinus/>, tooltip: 'Delete Layer', disabled: true },
+  { icon: <ContentDuplicate/>, tooltip: 'Duplicate Layer', disabled: true },
+  { icon: <ExportVariant/>, tooltip: 'Share layer', disabled: true }
 ]
 
 
@@ -219,11 +219,14 @@ const LayerList = (/* props */) => {
   const showLayer = layer => () => inputLayers.toggleLayerShow(layer.id)
   const activateLayer = id => () => inputLayers.activateLayer(id)
 
-  const buttons = () => actions.map(({ icon, tooltip }, index) => (
-    <Tooltip key={index} title={tooltip} >
-      <IconButton size='small'>
-        { icon }
-      </IconButton>
+  const buttons = () => actions.map(({ icon, tooltip, disabled }, index) => (
+    <Tooltip key={index} title={tooltip}>
+      {/* </span> needed for disabled </Tooltip> child. */}
+      <span>
+        <IconButton size='small' disabled={disabled}>
+          { icon }
+        </IconButton>
+      </span>
     </Tooltip>
   ))
 
@@ -308,6 +311,7 @@ const LayerList = (/* props */) => {
         readOnly={readOnly}
         onFocus={onFocus}
         onBlur={onBlur}
+        disabled
       />
       <div className={classes.listContainer}>
         <List className={classes.list}>
