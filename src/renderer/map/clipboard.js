@@ -16,6 +16,21 @@ import { noop } from '../../shared/combinators'
  */
 const features = {}
 
+/**
+ * deletableSelection :: () -> [string]
+ * Ids of selected features which are neither locked nor hidden.
+ */
+const deletableSelection = () =>
+  selection.selected(URI.isFeatureId)
+    .map(id => features[id])
+    .filter(Feature.showing)
+    .filter(Feature.unlocked)
+    .map(Feature.id)
+
+/**
+ * activeLayerId :: string
+ * Active layer id or null.
+ */
 let activeLayerId
 
 /**
@@ -58,14 +73,15 @@ const editSelectAll = () => {
  * Delete selected features.
  */
 const editDelete = () =>
-  inputLayers.removeFeatures(selection.selected(URI.isFeatureId))
+  inputLayers.removeFeatures(deletableSelection())
+
 
 /**
  * editCut :: () -> unit
  * Write current selection to clipboard and delete selected features.
  */
 const editCut = () => {
-  const featureIds = selection.selected(URI.isFeatureId)
+  const featureIds = deletableSelection
   clipboardWrite(featureIds)
   inputLayers.removeFeatures(featureIds)
 }

@@ -170,6 +170,10 @@ const layerEventHandlers = {
   layeractivated: (prev, { layerId }) => K({ ...prev })(next => {
     Object.values(next).forEach(layer => (layer.active = false))
     next[layerId].active = true
+  }),
+
+  layerdeactivated: (prev, { layerId }) => K({ ...prev })(next => {
+    delete next[layerId].active
   })
 }
 

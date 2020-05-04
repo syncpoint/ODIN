@@ -263,6 +263,7 @@ const toggleLayerLock = layerId => {
   const locked = features.some(Feature.locked)
   const toggle = locked ? Feature.unlock : Feature.lock
   features.forEach(toggle)
+  if (!locked) deactivateLayer(layerId)
   writeFeatures(features)
   emit({ type: 'layerlocked', layerId, locked: !locked })
 }
@@ -278,15 +279,29 @@ const toggleLayerShow = layerId => {
   const hidden = features.some(Feature.hidden)
   const toggle = hidden ? Feature.unhide : Feature.hide
   features.forEach(toggle)
+  if (!hidden) deactivateLayer(layerId)
   writeFeatures(features)
   emit({ type: 'layerhidden', layerId, hidden: !hidden })
 }
 
 const activateLayer = layerId => {
+
+  // Ignore if layer is hidden or locked.
+  const features = layerFeatures(layerId)
+  const hidden = features.some(Feature.hidden)
+  const locked = features.some(Feature.locked)
+  if (hidden || locked) return
+
   Object.values(layerList).forEach(layer => (layer.active = false))
   layerList[layerId].active = true
   emit({ type: 'layeractivated', layerId })
   evented.emit('OSD_MESSAGE', { message: layerList[layerId].name, slot: 'A2' })
+}
+
+const deactivateLayer = layerId => {
+  delete layerList[layerId].active
+  emit({ type: 'layerdeactivated', layerId })
+  evented.emit('OSD_MESSAGE', { message: '', slot: 'A2' })
 }
 
 export default {
@@ -297,5 +312,6 @@ export default {
   updateGeometries,
   toggleLayerLock,
   toggleLayerShow,
-  activateLayer
+  activateLayer,
+  deactivateLayer
 }

@@ -142,7 +142,13 @@ const createLayers = () => {
   // Update layer opacity depending on selection.
 
   const updateOpacity = () => {
-    const hasSelection = selection.selected(URI.isFeatureId).length
+    const hasSelection = selection
+      .selected(URI.isFeatureId)
+      .map(featureById)
+      .filter(Feature.showing)
+      .filter(Feature.unlocked)
+      .length
+
     entries.forEach(([_, layer]) => layer.setOpacity(hasSelection ? 0.35 : 1))
   }
 
@@ -225,8 +231,10 @@ const clearSelection = () => {
  * Move selected features between feature layer and selection layer.
  */
 
-selection.on('selected', ids => {
-  featuresById(ids).forEach(feature => {
+selection.on('selected', ids => featuresById(ids)
+  .filter(Feature.showing)
+  .filter(Feature.unlocked)
+  .forEach(feature => {
 
     // If triggered from the outside, chances are that
     // the feature is not already contained in
@@ -239,17 +247,19 @@ selection.on('selected', ids => {
 
     geometrySource(feature).removeFeature(feature)
     selectionSource.addFeature(feature)
-  })
-})
+  }))
 
-selection.on('deselected', ids => {
-  featuresById(ids).forEach(feature => {
+selection.on('deselected', ids => featuresById(ids)
+  .forEach(feature => {
     selectedFeatures.remove(feature)
-    feature.setStyle(null) // release cached style, if any
-    selectionSource.removeFeature(feature)
-    geometrySource(feature).addFeature(feature)
-  })
-})
+
+    // Hidden features are not moved to selection source.
+    if (selectionSource.hasFeature(feature)) {
+      feature.setStyle(null) // release cached style, if any
+      selectionSource.removeFeature(feature)
+      geometrySource(feature).addFeature(feature)
+    }
+  }))
 
 
 // --
@@ -308,8 +318,13 @@ const createModify = () => {
   })
 
   // Activate Modify interaction only for single-select:
-  const activate = () =>
-    interaction.setActive(selection.selected(URI.isFeatureId).length === 1)
+  const activate = () => {
+    const features = selection.selected(URI.isFeatureId)
+      .map(featureById)
+      .filter(Feature.showing)
+
+    interaction.setActive(features.length === 1)
+  }
 
   selection.on('selected', activate)
   selection.on('deselected', activate)
@@ -368,7 +383,7 @@ const createBoxSelect = () => {
     const extent = interaction.getGeometry().getExtent()
     sources().forEach(source => {
       source.forEachFeatureIntersectingExtent(extent, feature => {
-        features.push(feature)
+        if (Feature.showing(feature)) features.push(feature)
       })
     })
 
