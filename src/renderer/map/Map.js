@@ -11,7 +11,7 @@ import evented from '../evented'
 import preferences from '../project/preferences'
 import coordinateFormat from '../../shared/coord-format'
 import layers from './layers'
-import basemap from './basemap'
+import basemap, { setBasemap } from './basemap'
 import './style/scalebar.css'
 import disposable from '../../shared/disposable'
 import './clipboard'
@@ -62,6 +62,10 @@ const effect = props => () => {
     Handling the basemap layer is done using the basemap module.
   */
   basemap(map)
+  evented.on('BASEMAP_SET', (sourceDescriptor) => {
+    console.dir(sourceDescriptor)
+    setBasemap(map, sourceDescriptor)
+  })
 
 
   // Provide layer/interaction cleanup.
