@@ -81,7 +81,7 @@ const editDelete = () =>
  * Write current selection to clipboard and delete selected features.
  */
 const editCut = () => {
-  const featureIds = deletableSelection
+  const featureIds = deletableSelection()
   clipboardWrite(featureIds)
   inputLayers.removeFeatures(featureIds)
 }
