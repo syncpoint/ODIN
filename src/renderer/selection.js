@@ -41,12 +41,6 @@ evented.deselect = uris => {
 
 evented.isEmpty = () => state.length === 0
 evented.isSelected = uri => state.includes(uri)
-
-evented.selected = prefix => {
-  const p = prefix
-    ? s => s.startsWith(prefix)
-    : () => true
-  return state.filter(p)
-}
+evented.selected = (p = () => true) => state.filter(p)
 
 export default evented

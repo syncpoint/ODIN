@@ -7,14 +7,14 @@ import 'ol/ol.css'
 import { fromLonLat, toLonLat } from 'ol/proj'
 import { ScaleLine } from 'ol/control'
 
-
 import evented from '../evented'
-import project from '../project'
+import preferences from '../project/preferences'
 import coordinateFormat from '../../shared/coord-format'
 import layers from './layers'
 import basemap from './basemap'
 import './style/scalebar.css'
 import disposable from '../../shared/disposable'
+import './clipboard'
 
 const zoom = view => view.getZoom()
 const center = view => toLonLat(view.getCenter())
@@ -22,9 +22,8 @@ const center = view => toLonLat(view.getCenter())
 const viewportChanged = view => () => {
   const viewport = { zoom: zoom(view), center: center(view) }
   ipcRenderer.send('IPC_VIEWPORT_CHANGED', viewport)
-  project.updatePreferences({ viewport })
+  preferences.set({ viewport })
 }
-
 
 
 /**
@@ -89,10 +88,15 @@ const effect = props => () => {
   layers({
     addLayer,
     addInteraction,
-    dispose,
-    setCenter: view.setCenter.bind(view),
-    setZoom: view.setZoom.bind(view),
-    rotation: view.getRotation.bind(view)
+    dispose
+  })
+
+  // Set viewport from preferences.
+  preferences.register(({ type, preferences }) => {
+    if (type !== 'preferences') return
+    const { center, zoom } = preferences.viewport
+    view.setCenter(fromLonLat(center))
+    view.setZoom(zoom)
   })
 }
 
@@ -105,8 +109,6 @@ const Map = props => {
   return <div
     id={props.id}
     tabIndex="0"
-    onFocus={() => evented.emit('MAP_FOCUS')}
-    onBlur={() => evented.emit('MAP_BLUR')}
   />
 }
 
