@@ -26,6 +26,7 @@
     "stepPreview": "Mit Vorschau überprüfen",
     "stepFinalize": "Benennen und Speichern",
     "descriptorUrl": "URL der Karte",
+    "descriptorName": "Bezeichnung der Karte",
     "xyzNoOptions": "Für diesen Kartentyp sind keine Optionen verfügbar",
     "unknownSource": "Kartentyp konnte anhand der URL nicht erkannt werden",
     "usePreview": "Benutzen Sie die Vorschau um die Karte zu überprüfen",
