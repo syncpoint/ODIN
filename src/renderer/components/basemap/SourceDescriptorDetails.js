@@ -33,9 +33,14 @@ const SourceDescriptorDetails = props => {
   const previousStep = () => setStepIndex(stepIndex => stepIndex - 1)
 
   const mergeOptions = (key, value) => {
-    const shadow = { ...options }
-    shadow[key] = value
-    setOptions(shadow)
+    if (typeof key === 'object') {
+      const shadow = { ...options, ...key }
+      setOptions(shadow)
+    } else {
+      const shadow = { ...options }
+      shadow[key] = value
+      setOptions(shadow)
+    }
   }
 
   const mergeMetadata = (key, value) => {

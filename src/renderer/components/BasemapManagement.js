@@ -10,6 +10,7 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import basemap, { setBasemap, clearBasemap } from '../map/basemap'
 import * as ol from 'ol'
 import { fromLonLat } from 'ol/proj'
+import { boundingExtent } from 'ol/extent'
 import { ipcRenderer } from 'electron'
 
 import SourceDescriptorList from './basemap/SourceDescriptorList'
@@ -107,18 +108,20 @@ const BasemapManagement = props => {
 
   const [shouldUpsertSelected, setShouldUpsertSelected] = React.useState(false)
   const [shouldDeleteSelected, setShouldDeleteSelected] = React.useState(false)
-  // const [reloadRequired, setReloadRequired] = React.useState(true)
+
+  /* map is initialized by the useEffect hook */
+  const [map] = React.useState(new ol.Map({
+    view: new ol.View({
+      center: fromLonLat([16.363449, 48.210033]),
+      zoom: 4
+    }),
+    layers: []
+  }))
 
   /* initialize Open Layers map */
   React.useEffect(() => {
-    basemap(new ol.Map({
-      view: new ol.View({
-        center: fromLonLat([16.363449, 48.210033]),
-        zoom: 4
-      }),
-      layers: [],
-      target: 'mapPreview'
-    }))
+    map.setTarget('mapPreview')
+    basemap(map)
   }, [])
 
   /* source descriptors */
@@ -139,14 +142,7 @@ const BasemapManagement = props => {
 
   /* changes the preview whenever a new descriptor is selected */
   React.useEffect(() => {
-    const handleDescriptorChanged = async () => {
-      if (selectedDescriptor) {
-        await setBasemap(selectedDescriptor)
-      } else {
-        clearBasemap()
-      }
-    }
-    handleDescriptorChanged()
+    updatePreview(selectedDescriptor)
   }, [selectedDescriptor])
 
   /* save new or update current selection */
@@ -169,6 +165,25 @@ const BasemapManagement = props => {
     }
     deleteDescriptor()
   }, [shouldDeleteSelected])
+
+  /* map helper functions */
+  const zoomToExtent = wgs84boundingBox => {
+    if (map && wgs84boundingBox) {
+      const southWest = fromLonLat(wgs84boundingBox.slice(0, 2))
+      const northEast = fromLonLat(wgs84boundingBox.slice(2, 4))
+      const extent = boundingExtent([southWest, northEast])
+      map.getView().fit(extent)
+    }
+  }
+
+  const updatePreview = async (descriptor) => {
+    if (descriptor) {
+      await setBasemap(descriptor)
+      zoomToExtent(descriptor.options.wgs84BoundingBox)
+    } else {
+      clearBasemap()
+    }
+  }
 
   const handleEdit = descriptor => {
     setSelectedDescriptor(descriptor)
@@ -210,7 +225,7 @@ const BasemapManagement = props => {
               selectedDescriptor={selectedDescriptor}
               onSave={handleEditSave}
               onCancel={handleEditCancel}
-              onVerify={descriptor => setBasemap(descriptor)}
+              onVerify={descriptor => updatePreview(descriptor)}
             />
             : <div>
               <div className={classes.actions}>

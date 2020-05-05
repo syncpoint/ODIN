@@ -53,12 +53,22 @@ const WMTSOptions = props => {
     })
   }, [capabilities])
 
+  const wgs84BoundingBox = (wmtsCapabilites, layerId) => {
+    console.log(`extracting wgs84 bb for layer ${layerId}`)
+    const layer = wmtsCapabilites.Contents.Layer.find(l => l.Identifier === layerId)
+    console.dir(layer)
+    if (!layer) return null
+    return layer.WGS84BoundingBox
+  }
 
   /* functions */
   const handleLayerSelected = layerId => {
     if (layerId) {
       setSelectedLayerId(layerId)
-      merge('layer', layerId)
+      merge({
+        layer: layerId,
+        wgs84BoundingBox: wgs84BoundingBox(capabilities, layerId)
+      })
       onValidation(true)
     } else {
       onValidation(false)
