@@ -7,7 +7,7 @@ import { Button } from '@material-ui/core'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 
-import basemap, { setBasemap, clearBasemap } from '../map/basemap'
+import { setBasemap, clearBasemap } from '../map/basemap'
 import * as ol from 'ol'
 import { fromLonLat } from 'ol/proj'
 import { boundingExtent } from 'ol/extent'
@@ -121,7 +121,6 @@ const BasemapManagement = props => {
   /* initialize Open Layers map */
   React.useEffect(() => {
     map.setTarget('mapPreview')
-    basemap(map)
   }, [])
 
   /* source descriptors */
@@ -178,7 +177,7 @@ const BasemapManagement = props => {
 
   const updatePreview = async (descriptor) => {
     if (descriptor) {
-      await setBasemap(descriptor)
+      await setBasemap(map, descriptor)
       zoomToExtent(descriptor.options.wgs84BoundingBox)
     } else {
       clearBasemap()

@@ -42,7 +42,17 @@ const from = async descriptor => {
   return (sources[descriptor.type] || fallbackSource)(descriptor)
 }
 
+export const clearBasemap = map => {
+  if (!map) return
+  const layers = map.getLayers()
+  const rootLayer = layers.item(0)
+  if (rootLayer && rootLayer instanceof TileLayer) {
+    return map.getLayers().removeAt(0)
+  }
+}
+
 export const setBasemap = async (map, sourceDescriptor) => {
+  if (!map) return
   const source = await from(sourceDescriptor)
   const baseLayer = new TileLayer({ source: source })
 
