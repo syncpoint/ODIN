@@ -6,6 +6,7 @@ import * as ol from 'ol'
 import 'ol/ol.css'
 import { fromLonLat, toLonLat } from 'ol/proj'
 import { ScaleLine } from 'ol/control'
+import getGridLayerGroup from './grids/group'
 
 import evented from '../evented'
 import preferences from '../project/preferences'
@@ -22,7 +23,7 @@ const center = view => toLonLat(view.getCenter())
 const viewportChanged = view => () => {
   const viewport = { zoom: zoom(view), center: center(view) }
   ipcRenderer.send('IPC_VIEWPORT_CHANGED', viewport)
-  preferences.set({ viewport })
+  preferences.set('viewport', viewport)
 }
 
 
@@ -43,17 +44,17 @@ const effect = props => () => {
     text: true,
     minWidth: 140
   })
-
   const map = new ol.Map({
     view,
     target: id,
-    controls: [scaleLine]
+    controls: [scaleLine],
+    layers: [getGridLayerGroup()]
   })
-
   map.on('moveend', viewportChanged(view))
   map.on('pointermove', event => {
     const lonLatCooridinate = toLonLat(event.coordinate)
     const currentCoordinate = coordinateFormat.format({ lng: lonLatCooridinate[0], lat: lonLatCooridinate[1] })
+
     // TODO: throttle?
     evented.emit('OSD_MESSAGE', { message: currentCoordinate, slot: 'C2' })
   })

@@ -8,7 +8,7 @@
   "en": "Englisch",
   "de": "Deutsch",
   "app": {
-    "about":"Über {{name}}",
+    "about": "Über {{name}}",
     "hide": "{{name}} verbergen",
     "hideOthers": "Andere verbergen",
     "unhide": "{{name}} einblenden",
@@ -33,6 +33,9 @@
     "resetZoom": "Originalgröße",
     "zoomIn": "Heranzoomen",
     "zoomOut": "Heruaszoomen",
+    "grid": {
+      "mgrs": "MGRS Gitter"
+    },
     "toggleFullscreen": "Vollbildmodus ein/aus"
   },
   "window": {
