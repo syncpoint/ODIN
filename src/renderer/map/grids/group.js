@@ -22,8 +22,12 @@ const showGrid = type => {
 let currentGrid
 
 const handlers = {
-  preferences: ({ preferences }) => (currentGrid = preferences.grid),
+  preferences: ({ preferences }) => {
+    currentGrid = preferences.grid
+    showGrid(currentGrid)
+  },
   set: ({ options }) => {
+    if (!options.grid) return
     currentGrid = options.grid ? options.grid : currentGrid
     showGrid(currentGrid)
   },
