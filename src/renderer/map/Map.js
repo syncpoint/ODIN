@@ -23,7 +23,7 @@ const center = view => toLonLat(view.getCenter())
 const viewportChanged = view => () => {
   const viewport = { zoom: zoom(view), center: center(view) }
   ipcRenderer.send('IPC_VIEWPORT_CHANGED', viewport)
-  preferences.set({ viewport })
+  preferences.set('viewport', viewport)
 }
 
 

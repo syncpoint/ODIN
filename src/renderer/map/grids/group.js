@@ -26,13 +26,14 @@ const handlers = {
     currentGrid = preferences.grid
     showGrid(currentGrid)
   },
-  set: ({ options }) => {
-    if (!options.grid) return
-    currentGrid = options.grid ? options.grid : currentGrid
+  set: ({ key, value }) => {
+    if (key !== 'grid') return
+    currentGrid = value
     showGrid(currentGrid)
   },
   unset: ({ key }) => {
-    currentGrid = key === 'grid' ? '' : currentGrid
+    if (key !== 'grid') return
+    currentGrid = ''
     showGrid(currentGrid)
   }
 }
@@ -41,7 +42,7 @@ preferences.register(event => (handlers[event.type] || noop)(event))
 
 ipcRenderer.on('IPC_TOGGLE_GRID', (_, type) => currentGrid === type
   ? preferences.unset('grid')
-  : preferences.set({ grid: type })
+  : preferences.set('grid', type)
 )
 
 export default () => gridGroup

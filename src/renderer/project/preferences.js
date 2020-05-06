@@ -42,13 +42,12 @@ const writePreferences = preferences => {
  * Preferences (in-memory).
  * Should always be in sync with file: preferences.json
  */
-let preferences = loadPreferences()
+const preferences = loadPreferences()
 
-// TODO: split options => key/value
-const set = options => {
-  preferences = { ...preferences, ...options }
+const set = (key, value) => {
+  preferences[key] = value
   writePreferences(preferences)
-  emit({ type: 'set', options })
+  emit({ type: 'set', key, value })
 }
 
 const unset = key => {
