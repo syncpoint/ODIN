@@ -41,5 +41,5 @@ ipcMain.handle('IPC_DELETE_DESCRIPTOR', async (event, descriptor) => {
   const reducedSources = sources.filter(source => source.id !== descriptor.id)
 
   await fs.promises.writeFile(ODIN_SOURCES, JSON.stringify(reducedSources))
-  event.sender.send('IPC_SOURCE_DESCRIPTORS_CHANGED', sources)
+  event.sender.send('IPC_SOURCE_DESCRIPTORS_CHANGED', reducedSources)
 })
