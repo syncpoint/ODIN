@@ -14,8 +14,11 @@ const DEFAULT_PREFERENCES = {
 
 const projectPath = () => remote.getCurrentWindow().path
 
-
 let reducers = []
+
+const emit = event => {
+  reducers.forEach(reducer => setImmediate(() => reducer(event)))
+}
 
 /**
  * Load preferences for open project.
@@ -41,10 +44,17 @@ const writePreferences = preferences => {
  */
 let preferences = loadPreferences()
 
-const set = args => {
-  preferences = { ...preferences, ...args }
+// TODO: split options => key/value
+const set = options => {
+  preferences = { ...preferences, ...options }
   writePreferences(preferences)
-  // TODO: emit event
+  emit({ type: 'set', options })
+}
+
+const unset = key => {
+  delete preferences[key]
+  writePreferences(preferences)
+  emit({ type: 'unset', key })
 }
 
 const register = reducer => {
@@ -59,5 +69,6 @@ const deregister = reducer => {
 export default {
   register,
   deregister,
-  set
+  set,
+  unset
 }

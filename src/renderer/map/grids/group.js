@@ -1,35 +1,43 @@
-
-import LayerGroup from 'ol/layer/Group'
-import generateMgrsLayers from './mgrs'
 import { ipcRenderer } from 'electron'
-import project from '../../project'
+import LayerGroup from 'ol/layer/Group'
+import * as R from 'ramda'
+import generateMgrsLayers from './mgrs'
+import preferences from '../../project/preferences'
+import { noop } from '../../../shared/combinators'
 
-const noLayers = () => []
 const grids = {
   mgrs: generateMgrsLayers
 }
 
-const layers = type => (grids[type] || noLayers)()
+const layers = type => (grids[type] || R.always([]))()
 const gridGroup = new LayerGroup()
 
-const toggleGrid = (type) => {
-  ipcRenderer.send('IPC_GRID_TOGGLED', type)
+const showGrid = type => {
   const groupLayers = gridGroup.getLayers()
-  project.updatePreferences({ grid: type })
   groupLayers.clear()
   layers(type).forEach(groupLayers.push.bind(groupLayers))
+  ipcRenderer.send('IPC_GRID_TOGGLED', type)
 }
 
-project.register(event => {
-  if (event === 'open') {
-    const gridType = project.preferences().grid
-    toggleGrid(gridType)
-  }
-})
+let currentGrid
 
-ipcRenderer.on('IPC_TOGGLE_GRID', (event, type) => {
-  const storedType = project.preferences().grid
-  toggleGrid(storedType === type ? '' : type)
-})
+const handlers = {
+  preferences: ({ preferences }) => (currentGrid = preferences.grid),
+  set: ({ options }) => {
+    currentGrid = options.grid ? options.grid : currentGrid
+    showGrid(currentGrid)
+  },
+  unset: ({ key }) => {
+    currentGrid = key === 'grid' ? '' : currentGrid
+    showGrid(currentGrid)
+  }
+}
+
+preferences.register(event => (handlers[event.type] || noop)(event))
+
+ipcRenderer.on('IPC_TOGGLE_GRID', (_, type) => currentGrid === type
+  ? preferences.unset('grid')
+  : preferences.set({ grid: type })
+)
 
 export default () => gridGroup
