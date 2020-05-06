@@ -18,7 +18,7 @@ ipcMain.handle('IPC_LIST_SOURCE_DESCRIPTORS', async () => {
   return await listSourceDescriptors()
 })
 
-ipcMain.handle('IPC_UPSERT_DESCRIPTOR', async (_ /* event */, descriptor) => {
+ipcMain.handle('IPC_UPSERT_DESCRIPTOR', async (event, descriptor) => {
   if (!descriptor) return
   const sources = await listSourceDescriptors()
 
@@ -32,13 +32,14 @@ ipcMain.handle('IPC_UPSERT_DESCRIPTOR', async (_ /* event */, descriptor) => {
     sources.push(descriptor)
   }
   await fs.promises.writeFile(ODIN_SOURCES, JSON.stringify(sources))
+  event.sender.send('IPC_SOURCE_DESCRIPTORS_CHANGED', sources)
 })
 
-ipcMain.handle('IPC_DELETE_DESCRIPTOR', async (_ /* event */, descriptor) => {
+ipcMain.handle('IPC_DELETE_DESCRIPTOR', async (event, descriptor) => {
   if (!descriptor) return
   const sources = await listSourceDescriptors()
-
   const reducedSources = sources.filter(source => source.id !== descriptor.id)
 
   await fs.promises.writeFile(ODIN_SOURCES, JSON.stringify(reducedSources))
+  event.sender.send('IPC_SOURCE_DESCRIPTORS_CHANGED', sources)
 })
