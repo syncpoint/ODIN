@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { ListItem, List, Paper, Typography } from '@material-ui/core'
 
 import { listSourceDescriptors } from '../map/basemap'
-import evented from '../evented'
+import preferences from '../project/preferences'
 
 const useStyles = makeStyles(theme => ({
   panel: {
@@ -33,9 +33,9 @@ const BasemapList = props => {
     loadBasemaps()
   }, [])
 
+  /*  The selcted descriptor is written to the project preferences */
   const handleDescriptorSelected = descriptor => {
-    console.dir(descriptor)
-    evented.emit('BASEMAP_SET', descriptor)
+    preferences.set('basemap', descriptor)
   }
 
   return (

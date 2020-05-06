@@ -6,14 +6,14 @@ import WMTS, { optionsFromCapabilities } from 'ol/source/WMTS'
 import WMTSCapabilities from 'ol/format/WMTSCapabilities'
 import { DEVICE_PIXEL_RATIO } from 'ol/has'
 
-import preferences from '../project/preferences'
 import './epsg'
 
 const highDPI = DEVICE_PIXEL_RATIO > 1
 
 const DEFAULT_SOURCE_DESCRIPTOR = {
   name: 'Open Street Map',
-  type: 'OSM'
+  type: 'OSM',
+  id: '708b7f83-12a2-4a8b-a49d-9f2683586bcf'
 }
 
 /*
@@ -93,15 +93,4 @@ export const listSourceDescriptors = async () => {
   */
   const sourceDescriptors = await ipcRenderer.invoke('IPC_LIST_SOURCE_DESCRIPTORS')
   return [...sourceDescriptors, ...[DEFAULT_SOURCE_DESCRIPTOR]]
-}
-
-
-export default map => {
-  const reducer = ({ type, preferences }) => {
-    switch (type) {
-      case 'preferences': setBasemap(map, preferences.basemap)
-    }
-  }
-
-  preferences.register(reducer)
 }
