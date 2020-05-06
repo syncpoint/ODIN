@@ -5,7 +5,7 @@
   "en": "English",
   "de": "German",
   "app": {
-    "about":"About {{name}}",
+    "about": "About {{name}}",
     "hide": "Hide {{name}}",
     "hideOthers": "Hide others",
     "unhide": "Unhide {{name}}",
@@ -30,6 +30,9 @@
     "resetZoom": "Reset zoom",
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
+    "grid": {
+      "mgrs": "MGRS Graticule"
+    },
     "toggleFullscreen": "Toggle Fullscreen"
   },
   "window": {

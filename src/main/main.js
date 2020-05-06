@@ -1,12 +1,13 @@
 /* eslint-disable dot-notation */
 
-import { app, Menu } from 'electron'
+import { app, Menu, ipcMain } from 'electron'
 import { buildFromTemplate } from '../main/menu/menu'
 import settings from 'electron-settings'
 import bootstrap from './bootstrap'
 import i18n, { languageKey } from '../i18n'
 import config from '../shared/config'
 import './ipc/clipboard'
+
 
 // Disable for production:
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
@@ -42,4 +43,9 @@ i18n.on('initialized', () => {
   */
   i18n.changeLanguage(config.language || settings.get(languageKey, 'en'))
   bootstrap()
+})
+
+ipcMain.on('IPC_GRID_TOGGLED', (event, type) => {
+  const menu = buildFromTemplate(i18n, { grid: type })
+  Menu.setApplicationMenu(menu)
 })
