@@ -1,6 +1,6 @@
 import { Menu } from 'electron'
 import applicationMenu from './application-menu'
-import projectsMenu from './projects-menu'
+import managementMenu from './management-menu'
 import viewMenu from './view-menu'
 import windowMenu from './window-menu'
 import editMenu from './edit-menu'
@@ -12,7 +12,7 @@ let oldArgs = {}
 const template = (i18n, args) => ([
   // darwin only (must be filtered for other platforms)
   applicationMenu(i18n),
-  projectsMenu(i18n),
+  managementMenu(i18n),
   editMenu(i18n),
   viewMenu(i18n, args),
   // goMenu,

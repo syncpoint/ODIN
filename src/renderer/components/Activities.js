@@ -7,6 +7,7 @@ import MapIcon from '@material-ui/icons/Map'
 import { LayersTriple, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 'mdi-material-ui'
 
 import ActivityBar from './ActivityBar'
+import BasemapList from './BasemapList'
 import LayerList from './LayerList'
 import undo from '../undo'
 import evented from '../evented'
@@ -28,15 +29,14 @@ const initialActivities = classes => [
     type: 'activity',
     icon: <MapIcon/>,
     tooltip: 'Show Map/Pictures',
-    panel: () => <Paper className={classes.toolsPanel} elevation={6}>Map/Pictures</Paper>
+    panel: () => <BasemapList />
   },
   {
     id: 'layers',
     type: 'activity',
     icon: <LayersTriple/>,
     panel: () => <LayerList/>,
-    tooltip: 'Show Layers',
-    selected: true
+    tooltip: 'Show Layers'
   },
   {
     id: 'palette',
@@ -98,7 +98,7 @@ const initialActivities = classes => [
 const Activities = (/* props */) => {
   const classes = useStyles()
   const [activities, setActivities] = React.useState(initialActivities(classes))
-  const [activeTool, setActiveTool] = React.useState(activities[1]) // layers
+  const [activeTool, setActiveTool] = React.useState(null)
 
   const handleActivitySelected = id => {
     // TODO: immutable.js?

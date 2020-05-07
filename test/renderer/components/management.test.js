@@ -1,13 +1,13 @@
-import Management from '../../../src/renderer/components/Management'
+import ProjectManagement from '../../../src/renderer/components/ProjectManagement'
 import React from 'react'
 import sinon from 'sinon'
 import { expect } from 'chai'
 
 
 /* eslint-disable no-undef */
-describe('Management', () => {
+describe('Project management', () => {
   const clickCallback = sinon.spy()
-  const wrapper = shallow(<Management currentProjectPath={''} onCloseClicked={clickCallback} />)
+  const wrapper = shallow(<ProjectManagement currentProjectPath={''} onCloseClicked={clickCallback} />)
 
   it('verify project management components', () => {
     expect(wrapper.find('#projects')).to.have.lengthOf(1)

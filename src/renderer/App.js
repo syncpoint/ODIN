@@ -1,4 +1,3 @@
-import { ipcRenderer, remote } from 'electron'
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import 'typeface-roboto'
@@ -8,8 +7,12 @@ import './ipc'
 import evented from './evented'
 import OSD from './components/OSD'
 import Map from './map/Map'
-import Management from './components/Management'
+import ProjectManagement from './components/ProjectManagement'
+import BasemapManagement from './components/BasemapManagement'
 import Activities from './components/Activities'
+
+import { ipcRenderer, remote } from 'electron'
+
 
 const useStyles = makeStyles((/* theme */) => ({
   overlay: {
@@ -55,7 +58,7 @@ const App = (props) => {
   const classes = useStyles()
   const mapProps = { ...props, id: 'map' }
 
-  const [showManagement, setManagement] = React.useState(false)
+  const [showManagement, setManagement] = React.useState(null)
   const [currentProjectPath, setCurrentProjectPath] = React.useState(undefined)
 
   React.useEffect(() => {
@@ -63,7 +66,8 @@ const App = (props) => {
 
     /*  Tell the main process that React has finished rendering of the App */
     setTimeout(() => ipcRenderer.send('IPC_APP_RENDERING_COMPLETED'), 0)
-    ipcRenderer.on('IPC_SHOW_PROJECT_MANAGEMENT', () => setManagement(true))
+    ipcRenderer.on('IPC_SHOW_PROJECT_MANAGEMENT', () => setManagement('PROJECT_MANAGEMENT'))
+    ipcRenderer.on('IPC_SHOW_BASEMAP_MANAGEMENT', () => setManagement('BASEMAP_MANAGEMENT'))
 
     /*
       Normally we need to return a cleanup function in order to remove listeners. Since
@@ -96,15 +100,24 @@ const App = (props) => {
     return () => clearTimeout(appLoadedTimer)
   }, [showManagement, currentProjectPath])
 
-
-
-  const management = () => <Management
+  const projectManagement = () => <ProjectManagement
     currentProjectPath={currentProjectPath}
-    onCloseClicked={() => setManagement(false)}
+    onCloseClicked={() => setManagement(null)}
   />
 
+  const basemapManagement = () => <BasemapManagement
+    onCloseClicked={() => setManagement(null)}
+  />
 
-  const map = () => <>
+  const currentManagementTool = () => {
+    if (!showManagement) return null
+    switch (showManagement) {
+      case 'PROJECT_MANAGEMENT': return projectManagement()
+      case 'BASEMAP_MANAGEMENT': return basemapManagement()
+    }
+  }
+
+  return (<>
     <Map { ...mapProps }/>
     <div className={classes.overlay}>
       <OSD />
@@ -112,10 +125,9 @@ const App = (props) => {
         <Activities/>
       </div>
     </div>
+    { currentManagementTool() }
   </>
-
-  // Either show project management or map:
-  return showManagement ? management() : map()
+  )
 }
 
 export default App

@@ -1,6 +1,9 @@
 {
-  "Projects": "Projects",
-  "Manage Projects": "Manage Projects...",
+  "management": {
+    "name": "Management",
+    "projects": "Projects",
+    "basemaps": "Basemaps"
+  },
   "Language": "Language",
   "en": "English",
   "de": "German",

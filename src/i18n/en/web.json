@@ -12,5 +12,24 @@
     "dangerZone": "Danger Zone",
     "deleteThisProject": "Delete this project",
     "deleteThisProjectDescription": "Once a project is deleted, there is no going back!"
+  },
+  "basemapManagement": {
+    "name": "Basemap",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "nextStep": "Next",
+    "previousStep": "Previous",
+    "new": "New",
+    "stepUrl": "Provide URL",
+    "stepOptions": "Choose options",
+    "stepPreview": "Verify using preview",
+    "stepFinalize": "Choose name and save",
+    "descriptorUrl": "URL of the map",
+    "descriptorName": "Name of the map",
+    "xyzNoOptions": "No options available",
+    "unknownSource": "Type of the map could no be detected by inspecting the URL",
+    "usePreview": "Use the map preview to verify the basemap",
+    "deleteWarning": "Use with caution! You cannot undo this action!"
   }
 }

@@ -18,33 +18,35 @@ import { useTranslation } from 'react-i18next'
 
 const useStyles = makeStyles(theme => ({
   management: {
-    paddingTop: '1em',
-    paddingLeft: '3em',
-    bottom: '1.5em',
-    paddingRight: '3em',
-    zIndex: 20,
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    background: theme.palette.background.paper,
+    padding: theme.spacing(1.5),
+    zIndex: 200,
     display: 'grid',
     gridTemplateColumns: '1fr 2fr',
-    gridTemplateRows: 'auto',
-    gridGap: '1em',
-    gridTemplateAreas: '"projects details"',
+    gridTemplateRows: '3em auto',
+    gridGap: theme.spacing(1.5),
+    gridTemplateAreas: `
+      "navigation navigation"
+      "projects details"
+    `,
     '@media (max-width:1024px)': {
       gridTemplateColumns: '1fr',
-      gridTemplateRows: 'auto auto',
+      gridTemplateRows: '3em auto auto',
       gridTemplateAreas: `
+      "navigation"
       "projects"
-      "details"`
+      "details"
+      `
     }
   },
 
-  sidebar: {
-    position: 'fixed',
-    display: 'grid',
-    gridTemplateColumns: '3em',
-    gridTemplateRows: 'auto',
-    top: '1em',
-    left: '0.5em',
-    zIndex: 21
+  navigation: {
+    gridArea: 'navigation'
   },
 
   projects: {
@@ -57,13 +59,11 @@ const useStyles = makeStyles(theme => ({
   },
 
   caption: {
-    marginTop: '1.5em',
-    marginBottom: '1.5em'
+    margin: theme.spacing(1.5)
   },
 
   settings: {
-    marginTop: '1.5em',
-    marginBottom: '1.5em'
+    margin: theme.spacing(1.5)
   },
 
   dangerZone: {
@@ -71,17 +71,17 @@ const useStyles = makeStyles(theme => ({
     borderWidth: '1px',
     borderRadius: '1px',
     borderStyle: 'solid',
-    padding: '1em'
+    padding: theme.spacing(1.5),
+    margin: theme.spacing(1.5)
   },
 
   dangerActionList: {
     listStyleType: 'none',
-    paddingLeft: 0,
-    margin: '5px'
+    margin: theme.spacing(1.5)
   },
 
   preview: {
-    margin: '1.5em',
+    margin: theme.spacing(1.5),
     objectFit: 'contain',
     boxShadow: '0 1px 0 rgba(255,255,255,.6), 0 11px 35px 2px rgba(0,0,0,0.56), 0 0 0 1px rgba(0, 0, 0, 0.0)'
   }
@@ -326,30 +326,28 @@ const Management = props => {
 
   /* main screen */
   return (
-    <div>
-      <div className={classes.sidebar}>
+    <div className={classes.management}>
+      <div className={classes.navigation}>
         <BackToMapIcon id="backToMap" onClick={onCloseClicked}/>
       </div>
-      <div className={classes.management}>
-        <div className={classes.projects} id="projects">
-          <div style={{ marginBottom: '3em' }} id="projectActions">
-            <Button id="importProject" variant="outlined" color="primary" style={{ float: 'right', marginRight: '1em', marginLeft: '2px' }}
-              startIcon={<ImportProjectIcon />}
-              onClick={ event => handleImportProject() }
-            >
-              {t('projectManagement.import')}
-            </Button>
-            <Button id="newProject" variant="contained" color="primary" style={{ float: 'right', marginRight: '2px' }}
-              startIcon={<AddCircleOutlineIcon />}
-              onClick={ event => handleNewProject(event) }>
-              {t('projectManagement.new')}
-            </Button>
-          </div>
-          <List id="projectList"><Projects projects={currentProjects}/></List>
+      <div className={classes.projects} id="projects">
+        <div style={{ marginBottom: '3em' }} id="projectActions">
+          <Button id="importProject" variant="outlined" color="primary" style={{ float: 'right', marginRight: '1em', marginLeft: '2px' }}
+            startIcon={<ImportProjectIcon />}
+            onClick={ event => handleImportProject() }
+          >
+            {t('projectManagement.import')}
+          </Button>
+          <Button id="newProject" variant="contained" color="primary" style={{ float: 'right', marginRight: '2px' }}
+            startIcon={<AddCircleOutlineIcon />}
+            onClick={ event => handleNewProject(event) }>
+            {t('projectManagement.new')}
+          </Button>
         </div>
-        <div className={classes.details}>
-          <Details project={selectedProject}/>
-        </div>
+        <List id="projectList"><Projects projects={currentProjects}/></List>
+      </div>
+      <div className={classes.details}>
+        <Details project={selectedProject}/>
       </div>
     </div>
   )
