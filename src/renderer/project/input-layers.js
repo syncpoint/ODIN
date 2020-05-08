@@ -55,6 +55,7 @@ const geoJSON = new GeoJSON({
 // SECTION: Input layer I/O.
 
 const projectPath = () => remote.getCurrentWindow().path
+const layerPath = name => path.join(projectPath(), 'layers', `${name}.json`)
 
 /**
  * loadFeatures :: (string, string) -> Promise<[ol/Feature]>
@@ -157,7 +158,7 @@ const layerFiles = () => {
 
 
 // --
-// SECTION: Public API to update state.
+// SECTION: Commands
 
 /**
  * insertFeaturesCommand :: [ol/Feature] -> command
@@ -217,12 +218,30 @@ const updateGeometriesCommand = (initial, current) => ({
 })
 
 /**
+ * renameLayerCommand :: (string, string, string) -> command
+ */
+const renameLayerCommand = (layerId, prevName, nextName) => ({
+  inverse: () => renameLayerCommand(layerId, nextName, prevName),
+  apply: () => {
+    fs.renameSync(layerPath(prevName), layerPath(nextName))
+    layerList[layerId] = {
+      ...layerList[layerId],
+      name: nextName,
+      filename: layerPath(nextName)
+    }
+
+    emit({ type: 'layerrenamed', layerId, name: nextName })
+  }
+})
+
+// --
+// SECTION: Public API.
+
+/**
  * removeFeatures :: [string] -> unit
  */
 const removeFeatures = featureIds => {
-  const command = deleteFeaturesCommand(featureIds)
-  command.apply()
-  undo.push(command.inverse())
+  undo.applyAndPush(deleteFeaturesCommand(featureIds))
 }
 
 /**
@@ -236,9 +255,7 @@ const addFeatures = content => {
   }
 
   const additions = content.map(readFeature)
-  const command = insertFeaturesCommand(additions)
-  command.apply()
-  undo.push(command.inverse())
+  undo.applyAndPush(insertFeaturesCommand(additions))
 }
 
 /**
@@ -309,7 +326,7 @@ const deactivateLayer = layerId => {
 }
 
 const renameLayer = (layerId, name) => {
-  console.log('[renameLayer]', layerId, name)
+  undo.applyAndPush(renameLayerCommand(layerId, layerList[layerId].name, name))
 }
 
 const deleteLayer = layerId => {
