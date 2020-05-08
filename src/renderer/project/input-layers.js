@@ -54,6 +54,8 @@ const geoJSON = new GeoJSON({
 // --
 // SECTION: Input layer I/O.
 
+const projectPath = () => remote.getCurrentWindow().path
+
 /**
  * loadFeatures :: (string, string) -> Promise<[ol/Feature]>
  * Load features for a layer. Features are assigned unique ids
@@ -69,20 +71,23 @@ const loadFeatures = async (layerId, filename) => {
 }
 
 /**
+ * writeLayer :: string -> unit
+ */
+const writeLayerFile = layerId => {
+  const filename = layerList[layerId].filename
+  const features = layerFeatures(layerId)
+  fs.writeFile(filename, geoJSON.writeFeatures(features), noop)
+}
+
+/**
  * writeFeatures :: a (ol/Feature | featureId | layerId) => [a] -> unit
  */
-const writeFeatures = xs => {
-  const layerIds = xs
+const writeFeatures = xs =>
+  xs
     .map(x => x instanceof ol.Feature ? Feature.layerId(x) : x)
     .map(s => URI.isFeatureId(s) ? URI.layerId(s) : s)
     .filter(uniq)
-
-  layerIds.forEach(layerId => {
-    const filename = layerList[layerId].filename
-    const features = layerFeatures(layerId)
-    fs.writeFile(filename, geoJSON.writeFeatures(features), noop)
-  })
-}
+    .forEach(writeLayerFile)
 
 /**
  * reducers :: [(event) -> unit]
@@ -124,8 +129,7 @@ const emit = event => reducers.forEach(reducer => setImmediate(() => reducer(eve
  * Read (absolute) layer file names from open project.
  */
 const layerFiles = () => {
-  const projectPath = remote.getCurrentWindow().path
-  const dir = path.join(projectPath, 'layers')
+  const dir = path.join(projectPath(), 'layers')
   if (!fs.existsSync(dir)) return []
   return fs.readdirSync(dir)
     .filter(filename => filename.endsWith('.json'))
@@ -304,6 +308,14 @@ const deactivateLayer = layerId => {
   evented.emit('OSD_MESSAGE', { message: '', slot: 'A2' })
 }
 
+const renameLayer = (layerId, name) => {
+  console.log('[renameLayer]', layerId, name)
+}
+
+const deleteLayer = layerId => {
+  console.log('[deleteLayer]', layerId)
+}
+
 export default {
   register,
   deregister,
@@ -313,5 +325,7 @@ export default {
   toggleLayerLock,
   toggleLayerShow,
   activateLayer,
-  deactivateLayer
+  deactivateLayer,
+  renameLayer,
+  deleteLayer
 }

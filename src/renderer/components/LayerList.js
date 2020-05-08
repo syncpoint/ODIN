@@ -68,6 +68,11 @@ const useStyles = makeStyles((theme) => ({
     borderBottom: '1px solid #cccccc'
   },
 
+  editor: {
+    paddingLeft: '8px',
+    paddingTop: '2px'
+  },
+
   feature: {
   },
 
@@ -174,6 +179,14 @@ const layerEventHandlers = {
 
   layerdeactivated: (prev, { layerId }) => K({ ...prev })(next => {
     delete next[layerId].active
+  }),
+
+  layerrenamed: (prev, { layerId, name }) => K({ ...prev })(next => {
+    next[layerId].name = name
+  }),
+
+  layerremoved: (prev, { layerId }) => K({ ...prev })(next => {
+    delete next[layerId]
   })
 }
 
@@ -188,6 +201,9 @@ const LayerList = (/* props */) => {
   const [selectedItems, setSelectedItems] = React.useState([])
   const [layers, dispatch] = React.useReducer(reducer, {})
   const [expanded, setExpanded] = React.useState(null)
+
+  // layerEditor :: { layerId, name }
+  const [layerEditor, setLayerEditor] = React.useState({})
 
   const selectLayer = id => () => {
     setExpanded(expanded === id ? null : id)
@@ -219,11 +235,38 @@ const LayerList = (/* props */) => {
   const showLayer = layer => () => inputLayers.toggleLayerShow(layer.id)
   const activateLayer = id => () => inputLayers.activateLayer(id)
 
-  const buttons = () => actions.map(({ icon, tooltip, disabled }, index) => (
+  const toggleLayerEditor = layer => {
+    if (layerEditor.layerId === layer.id) {
+      inputLayers.renameLayer(layerEditor.layerId, layerEditor.name)
+      setLayerEditor({})
+    } else {
+      setLayerEditor({ layerId: layer.id, name: layer.name })
+    }
+  }
+
+  const onLayerKey = layer => event => {
+    switch (event.key) {
+      case 'Enter': return toggleLayerEditor(layer)
+      case 'Backspace': return inputLayers.deleteLayer(layer.id)
+    }
+  }
+
+  const onLayerEdiorKey = layer => event => {
+    switch (event.key) {
+      case 'Enter': return toggleLayerEditor(layer)
+      case 'Escape': return setLayerEditor({})
+    }
+  }
+
+  const onLayerEditorChange = event => {
+    setLayerEditor({ ...layerEditor, name: event.target.value })
+  }
+
+  const buttons = () => actions.map(({ icon, tooltip, disabled, action }, index) => (
     <Tooltip key={index} title={tooltip}>
       {/* </span> needed for disabled </Tooltip> child. */}
       <span>
-        <IconButton size='small' disabled={disabled}>
+        <IconButton size='small' disabled={disabled} onClick={action}>
           { icon }
         </IconButton>
       </span>
@@ -242,7 +285,7 @@ const LayerList = (/* props */) => {
     </ListItem>
   )
 
-  const layerItem = layer => {
+  const layerLineEntry = layer => {
     const lockIcon = layer.locked ? <LockIcon/> : <LockOpenIcon/>
     const visibleIcon = layer.hidden ? <VisibilityOffIcon/> : <VisibilityIcon/>
     const body = layer.active ? <b>{layer.name}</b> : layer.name
@@ -255,6 +298,7 @@ const LayerList = (/* props */) => {
           onDoubleClick={activateLayer(layer.id)}
           onClick={selectLayer(layer.id)}
           selected={selectedItems.includes(layer.id)}
+          onKeyDown={onLayerKey(layer)}
         >
           { body }
           <ListItemSecondaryAction>
@@ -278,6 +322,21 @@ const LayerList = (/* props */) => {
       </div>
     )
   }
+
+  const layerNameEditor = layer =>
+    <InputBase
+      className={classes.editor}
+      key={`${layer.id}#editor`}
+      value={layerEditor.name}
+      autoFocus
+      onKeyDown={onLayerEdiorKey(layer)}
+      onChange={onLayerEditorChange}
+    />
+
+  const layerItem = layer =>
+    layerEditor.layerId === layer.id
+      ? layerNameEditor(layer)
+      : layerLineEntry(layer)
 
   // Search: Prevent undo/redo when not focused.
   const [readOnly, setReadOnly] = React.useState(false)

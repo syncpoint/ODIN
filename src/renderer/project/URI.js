@@ -6,5 +6,6 @@ export default {
     : `layer:${uuid()}`,
 
   featureId: layerId => `feature:${layerId.match(/layer:(.*)/)[1]}/${uuid()}`,
-  isFeatureId: s => s.startsWith('feature:')
+  isFeatureId: s => s.startsWith('feature:'),
+  isLayerId: s => s.startsWith('layer:')
 }
