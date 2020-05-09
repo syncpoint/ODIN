@@ -9,6 +9,8 @@ import undo from '../undo'
 import Feature from './Feature'
 import URI from './URI'
 import evented from '../evented'
+import * as clipboard from '../clipboard'
+import selection from '../selection'
 
 /**
  * Project layer/feature model.
@@ -37,6 +39,17 @@ const layerList = {}
  *   - Web-Mercator projection is used throughout the model
  */
 const featureList = {}
+
+/**
+ * deletableSelection :: () -> [string]
+ * Ids of selected features which are neither locked nor hidden.
+ */
+const deletableSelection = () =>
+  selection.selected(URI.isFeatureId)
+    .map(id => featureList[id])
+    .filter(Feature.showing)
+    .filter(Feature.unlocked)
+    .map(Feature.id)
 
 /**
  * layerFeatures :: string -> [ol/Feature]
@@ -333,6 +346,34 @@ const renameLayer = (layerId, name) => {
 const deleteLayer = layerId => {
   console.log('[deleteLayer]', layerId)
 }
+
+clipboard.registerHandler(URI.SCHEME_FEATURE, {
+
+  selectAll: () => Object.values(featureList)
+    .filter(Feature.unlocked)
+    .filter(Feature.showing)
+    .map(Feature.id),
+
+  // NOTE: For COPY operation, feature may be locked.
+  copy: () => selection.selected(URI.isFeatureId)
+    .map(featureId => featureList[featureId])
+    .map(feature => geoJSON.writeFeature(feature)),
+
+  paste: content => addFeatures(content),
+
+  // NOTE: For CUT operation, feature must not be locked.
+  cut: () => {
+    const ids = deletableSelection()
+    const content = ids
+      .map(featureId => featureList[featureId])
+      .map(feature => geoJSON.writeFeature(feature))
+
+    removeFeatures(ids)
+    return content
+  },
+
+  delete: () => removeFeatures(deletableSelection())
+})
 
 export default {
   register,
