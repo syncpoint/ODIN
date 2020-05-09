@@ -28,12 +28,6 @@ const deletableSelection = () =>
     .map(Feature.id)
 
 /**
- * activeLayerId :: string
- * Active layer id or null.
- */
-let activeLayerId
-
-/**
  * GeoJSON data, by definitions, comes in WGS84;
  * OL uses Web-Mercator by default.
  */
@@ -47,10 +41,9 @@ const geoJSON = new GeoJSON({
  * Write serialize (JSON) features to clipboard.
  */
 const clipboardWrite = featureIds => {
-  const writeFeatures = feature => [Feature.layerId(feature), geoJSON.writeFeature(feature)]
   const content = featureIds
     .map(featureId => features[featureId])
-    .map(writeFeatures)
+    .map(feature => geoJSON.writeFeature(feature))
 
   ipcRenderer.send('IPC_CLIPBOARD_WRITE', content)
 }
@@ -99,11 +92,7 @@ const editCopy = () =>
  */
 const editPaste = async () => {
   const content = await ipcRenderer.invoke('IPC_CLIPBOARD_READ')
-  if (content) {
-    // Overwrite target layer if any.
-    if (activeLayerId) content.forEach(tuple => (tuple[0] = activeLayerId))
-    inputLayers.addFeatures(content)
-  }
+  if (content) inputLayers.addFeatures(content)
 }
 
 // Block certain ops when text input field is focused.
@@ -127,13 +116,11 @@ Mousetrap.bind('del', editDelete) // macOS: fn+backspace
 Mousetrap.bind('command+backspace', editDelete)
 Mousetrap.bind('esc', () => selection.deselect())
 
-const layeractivated = ({ layerId }) => (activeLayerId = layerId)
 const addFeature = feature => (features[Feature.id(feature)] = feature)
 const addFeatures = ({ features }) => features.forEach(addFeature)
 const deleteFeatures = ({ ids }) => ids.forEach(id => delete features[id])
 
 const eventHandlers = {
-  layeractivated,
   featuresadded: addFeatures,
   featuresremoved: deleteFeatures
 }

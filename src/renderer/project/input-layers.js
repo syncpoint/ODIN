@@ -248,13 +248,14 @@ const removeFeatures = featureIds => {
  * addFeatures :: [[string, string]] -> unit
  */
 const addFeatures = content => {
-  const readFeature = ([layerId, json]) => {
-    const feature = geoJSON.readFeature(json)
-    feature.set('layerId', layerId)
-    return feature
+  const additions = content.map(json => geoJSON.readFeature(json))
+
+  // Add features to active layer if defined.
+  const activeLayer = Object.entries(layerList).find(([_, layer]) => layer.active)
+  if (activeLayer) {
+    additions.forEach(feature => feature.set('layerId', activeLayer[0]))
   }
 
-  const additions = content.map(readFeature)
   undo.applyAndPush(insertFeaturesCommand(additions))
 }
 

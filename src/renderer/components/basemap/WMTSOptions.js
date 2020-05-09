@@ -11,19 +11,21 @@ const WMTSOptions = props => {
   /* effects */
   const [capabilities, setCapabilities] = React.useState(null)
   const [selectedLayerId, setSelectedLayerId] = React.useState(props.options.layer)
+  const [error, setError] = React.useState(null)
 
   React.useEffect(() => {
     const controller = new AbortController()
     const signal = controller.signal
 
     const fetchAndSetCapabilities = async () => {
+      setError(null)
       try {
         const response = await fetch(props.options.url, { signal })
+        if (!response.ok) { throw new Error(response.statusText) }
         const caps = (new WMTSCapabilities()).read(await response.text())
         setCapabilities(caps)
       } catch (error) {
-        console.error(error)
-        setCapabilities(null)
+        setError(error.message)
       }
     }
     fetchAndSetCapabilities()
@@ -76,7 +78,17 @@ const WMTSOptions = props => {
   }
 
   /* rendering */
-  if (!capabilities) return null
+  if (!capabilities || error) {
+    return (
+      <Card variant="outlined">
+        <CardContent>
+          <Typography gutterBottom variant="body1" color="secondary">
+            Error: {error}
+          </Typography>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <>
