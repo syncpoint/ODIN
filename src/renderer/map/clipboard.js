@@ -8,7 +8,7 @@ import selection from '../selection'
 import inputLayers from '../project/input-layers'
 import Feature from '../project/Feature'
 import URI from '../project/URI'
-import { noop } from '../../shared/combinators'
+import { K, noop } from '../../shared/combinators'
 
 /**
  * features :: [ol/Feature]
@@ -36,17 +36,41 @@ const geoJSON = new GeoJSON({
   featureProjection: 'EPSG:3857' // Web-Mercator
 })
 
-/**
- * clipboardWrite :: [string] -> unit
- * Write serialize (JSON) features to clipboard.
- */
-const clipboardWrite = featureIds => {
-  const content = featureIds
-    .map(featureId => features[featureId])
-    .map(feature => geoJSON.writeFeature(feature))
 
-  ipcRenderer.send('IPC_CLIPBOARD_WRITE', content)
-}
+// -- SECTION: ...
+
+const clipboardHandlers = {}
+
+const registerClipboardHandler = (scheme, handler) => (clipboardHandlers[scheme] = handler)
+
+registerClipboardHandler(URI.SCHEME_FEATURE, {
+  // NOTE: For COPY operation, feature may be locked.
+  copy: () => selection.selected(URI.isFeatureId)
+    .map(featureId => features[featureId])
+    .map(feature => geoJSON.writeFeature(feature)),
+
+  paste: content => inputLayers.addFeatures(content),
+
+  // NOTE: For CUT operation, feature must not be locked.
+  cut: () => {
+    const ids = deletableSelection()
+    const content = ids
+      .map(featureId => features[featureId])
+      .map(feature => geoJSON.writeFeature(feature))
+
+    inputLayers.removeFeatures(ids)
+    return content
+  }
+})
+
+// registerClipboardHandler(URI.SCHEME_LAYER, {
+//   copy: () => {
+//     const ids = selection.selected(URI.isLayerId)
+//     console.log(URI.SCHEME_LAYER, 'copy', ids)
+//   },
+//   paste: content => console.log(URI.SCHEME_LAYER, 'paste'),
+//   cut: () => console.log(URI.SCHEME_LAYER, 'cut')
+// })
 
 /**
  * editSelectAll :: () -> unit
@@ -74,17 +98,30 @@ const editDelete = () =>
  * Write current selection to clipboard and delete selected features.
  */
 const editCut = () => {
-  const featureIds = deletableSelection()
-  clipboardWrite(featureIds)
-  inputLayers.removeFeatures(featureIds)
+  const content = Object
+    .entries(clipboardHandlers)
+    .reduce((acc, [scheme, handler]) => K(acc)(acc => {
+      const content = handler.cut()
+      if (content && content.length) acc[scheme] = content
+    }), {})
+
+  ipcRenderer.send('IPC_CLIPBOARD_WRITE', content)
 }
 
 /**
  * editCopy :: () -> unit
  * Write current selection to clipboard.
  */
-const editCopy = () =>
-  clipboardWrite(selection.selected(URI.isFeatureId))
+const editCopy = () => {
+  const content = Object
+    .entries(clipboardHandlers)
+    .reduce((acc, [scheme, handler]) => K(acc)(acc => {
+      const content = handler.copy()
+      if (content && content.length) acc[scheme] = content
+    }), {})
+
+  ipcRenderer.send('IPC_CLIPBOARD_WRITE', content)
+}
 
 /**
  * editPaste :: () -> unit
@@ -92,7 +129,9 @@ const editCopy = () =>
  */
 const editPaste = async () => {
   const content = await ipcRenderer.invoke('IPC_CLIPBOARD_READ')
-  if (content) inputLayers.addFeatures(content)
+  console.log(content)
+  Object.entries(content)
+    .forEach(([scheme, content]) => clipboardHandlers[scheme].paste(content))
 }
 
 // Block certain ops when text input field is focused.
