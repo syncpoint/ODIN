@@ -152,7 +152,7 @@ const FeatureItem = props => {
 FeatureItem.propTypes = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  selected: PropTypes.bool // optional, false if oomitted
+  selected: PropTypes.bool // optional, false if omitted
 }
 
 /**
@@ -187,6 +187,67 @@ LayerNameEditor.propTypes = {
   commit: PropTypes.func.isRequired,
   update: PropTypes.func.isRequired
 }
+
+
+/**
+ * LayerLineEntry.
+ */
+const LayerLineEntry = props => {
+  const classes = useStyles()
+
+  const onLayerItemKey = event => {
+    switch (event.key) {
+      case 'Enter': return props.activateEditor()
+      case 'Backspace': return inputLayers.deleteLayer(props.id)
+    }
+  }
+
+  return (
+    <div key={props.id}>
+      <ListItem
+        button
+        className={classes.item}
+        onDoubleClick={() => inputLayers.activateLayer(props.id)}
+        onClick={props.selectLayer}
+        selected={props.selected}
+        onKeyDown={onLayerItemKey}
+      >
+        { props.active ? <b>{props.name}</b> : props.name }
+        <ListItemSecondaryAction>
+          <IconButton size='small' onClick={() => inputLayers.toggleLayerLock(props.id)}>
+            {props.locked ? <LockIcon/> : <LockOpenIcon/>}
+          </IconButton>
+          <IconButton size='small' onClick={() => inputLayers.toggleLayerShow(props.id)}>
+            {props.hidden ? <VisibilityOffIcon/> : <VisibilityIcon/>}
+          </IconButton>
+        </ListItemSecondaryAction>
+      </ListItem>
+      <Collapse in={props.expanded} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+          {
+            Object.values(props.features)
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map(feature => <FeatureItem key={feature.id} { ...feature }/>)
+          }
+        </List>
+      </Collapse>
+    </div>
+  )
+}
+
+LayerLineEntry.propTypes = {
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  features: PropTypes.object.isRequired,
+  active: PropTypes.bool, // optional, false if omitted
+  selected: PropTypes.bool, // optional, false if omitted
+  locked: PropTypes.bool, // optional, false if omitted
+  hidden: PropTypes.bool, // optional, false if omitted
+  expanded: PropTypes.bool, // optional, false if omitted
+  selectLayer: PropTypes.func.isRequired,
+  activateEditor: PropTypes.func.isRequired
+}
+
 
 const addFeatures = (next, features) =>
   features.forEach(feature => {
@@ -254,13 +315,19 @@ const layerEventHandlers = {
 
   // internal events =>
 
-  deselected: (prev, { ids }) => K({ ...prev })(next => {
-    ids.map(elementById(next)).forEach(element => delete element.selected)
-  }),
+  deselected: (prev, { ids }) => K({ ...prev })(next =>
+    ids
+      .map(elementById(next))
+      .filter(I)
+      .forEach(element => delete element.selected)
+  ),
 
-  selected: (prev, { ids }) => K({ ...prev })(next => {
-    ids.map(elementById(next)).forEach(element => (element.selected = true))
-  }),
+  selected: (prev, { ids }) => K({ ...prev })(next =>
+    ids
+      .map(elementById(next))
+      .filter(I)
+      .forEach(element => (element.selected = true))
+  ),
 
   layerexpanded: (prev, { layerId }) => K({ ...prev })(next => {
     Object.keys(next).forEach(id => (next[id].expanded = id === layerId))
@@ -305,28 +372,22 @@ const LayerList = (/* props */) => {
     return () => inputLayers.deregister(dispatch)
   }, [])
 
-  const lockLayer = layer => () => inputLayers.toggleLayerLock(layer.id)
-  const showLayer = layer => () => inputLayers.toggleLayerShow(layer.id)
-  const activateLayer = id => () => inputLayers.activateLayer(id)
-
-  const selectLayer = layer => event => {
+  const selectLayer = layerId => event => {
     // Ignore keyboard events, i.e. 'Enter':
     if (event.nativeEvent instanceof KeyboardEvent) return
-    dispatch({ type: 'layerexpanded', layerId: layer.expanded ? null : layer.id })
-    if (layer.selected) return
-    selection.deselect()
-    selection.select([layer.id])
+
+    const expanded = layers[layerId].expanded
+    dispatch({ type: 'layerexpanded', layerId: expanded ? null : layerId })
+
+    if (!layers[layerId].selected) {
+      selection.deselect()
+      selection.select([layerId])
+    }
   }
 
-  const onLayerItemKey = layer => event => {
-    switch (event.key) {
-      case 'Enter': {
-        dispatch({ type: 'layerexpanded' })
-        dispatch({ type: 'editoractivated', layerId: layer.id })
-        break
-      }
-      case 'Backspace': return inputLayers.deleteLayer(layer.id)
-    }
+  const activateEditor = layerId => () => {
+    dispatch({ type: 'layerexpanded' })
+    dispatch({ type: 'editoractivated', layerId })
   }
 
   const buttons = () => actions.map(({ icon, tooltip, disabled, action }, index) => (
@@ -340,39 +401,6 @@ const LayerList = (/* props */) => {
     </Tooltip>
   ))
 
-  const layerLineEntry = layer => {
-    return (
-      <div key={layer.id}>
-        <ListItem
-          button
-          className={classes.item}
-          onDoubleClick={activateLayer(layer.id)}
-          onClick={selectLayer(layer)}
-          selected={layer.selected}
-          onKeyDown={onLayerItemKey(layer)}
-        >
-          { layer.active ? <b>{layer.name}</b> : layer.name }
-          <ListItemSecondaryAction>
-            <IconButton size='small' onClick={lockLayer(layer)}>
-              {layer.locked ? <LockIcon/> : <LockOpenIcon/>}
-            </IconButton>
-            <IconButton size='small' onClick={showLayer(layer)}>
-              {layer.hidden ? <VisibilityOffIcon/> : <VisibilityIcon/>}
-            </IconButton>
-          </ListItemSecondaryAction>
-        </ListItem>
-        <Collapse in={layer.expanded} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            {
-              Object.values(layer.features)
-                .sort((a, b) => a.name.localeCompare(b.name))
-                .map(feature => <FeatureItem key={feature.id} { ...feature }/>)
-            }
-          </List>
-        </Collapse>
-      </div>
-    )
-  }
 
   const layerItem = layer =>
     layer.editor
@@ -383,7 +411,12 @@ const LayerList = (/* props */) => {
         cancel={() => dispatch({ type: 'editordeactivated', layerId: layer.id })}
         commit={() => inputLayers.renameLayer(layer.id, layer.editor)}
       />
-      : layerLineEntry(layer)
+      : <LayerLineEntry
+        key={`${layer.id}#editor`}
+        { ...layer }
+        selectLayer={selectLayer(layer.id)}
+        activateEditor={activateEditor(layer.id)}
+      />
 
   // Search: Prevent undo/redo when not focused.
   const [readOnly, setReadOnly] = React.useState(false)
