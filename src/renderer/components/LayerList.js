@@ -125,6 +125,37 @@ const actions = [
   { icon: <ExportVariant/>, tooltip: 'Share layer', disabled: true }
 ]
 
+
+/**
+ * FeatureItem.
+ */
+const FeatureItem = props => {
+  const classes = useStyles()
+
+  const selectFeature = id => () => {
+    selection.deselect()
+    selection.select([id])
+  }
+
+  return (
+    <ListItem
+      className={classes.feature}
+      onClick={selectFeature(props.id)}
+      selected={props.selected}
+      button
+    >
+      { props.name }
+    </ListItem>
+  )
+}
+
+FeatureItem.propTypes = {
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  selected: PropTypes.bool // optional, false if oomitted
+}
+
+
 const addFeatures = (next, features) =>
   features.forEach(feature => {
     const layerId = Feature.layerId(feature)
@@ -216,11 +247,6 @@ const LayerList = (/* props */) => {
   // layerEditor :: { layerId, name }
   const [layerEditor, setLayerEditor] = React.useState({})
 
-  const selectFeature = id => () => {
-    selection.deselect()
-    selection.select([id])
-  }
-
   // Sync selection with component state:
   React.useEffect(() => {
     const selected = ids => dispatch({ type: 'selected', ids })
@@ -293,18 +319,6 @@ const LayerList = (/* props */) => {
     </Tooltip>
   ))
 
-  const featureItem = feature => (
-    <ListItem
-      className={classes.feature}
-      key={feature.id}
-      onClick={selectFeature(feature.id)}
-      selected={feature.selected}
-      button
-    >
-      { feature.name }
-    </ListItem>
-  )
-
   const layerLineEntry = layer => {
     const lockIcon = layer.locked ? <LockIcon/> : <LockOpenIcon/>
     const visibleIcon = layer.hidden ? <VisibilityOffIcon/> : <VisibilityIcon/>
@@ -335,7 +349,7 @@ const LayerList = (/* props */) => {
             {
               Object.values(layer.features)
                 .sort((a, b) => a.name.localeCompare(b.name))
-                .map(featureItem)
+                .map(feature => <FeatureItem key={feature.id} { ...feature }/>)
             }
           </List>
         </Collapse>
