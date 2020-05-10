@@ -70,7 +70,10 @@ const useStyles = makeStyles((theme) => ({
 
   editor: {
     paddingLeft: '8px',
-    paddingTop: '2px'
+    paddingTop: '2px',
+    paddingBottom: '1px',
+    borderBottom: '1px solid #cccccc',
+    width: '100%'
   },
 
   feature: {
@@ -205,13 +208,6 @@ const LayerList = (/* props */) => {
   // layerEditor :: { layerId, name }
   const [layerEditor, setLayerEditor] = React.useState({})
 
-  const selectLayer = id => () => {
-    setExpanded(expanded === id ? null : id)
-    if (selectedItems.includes(id)) return
-    selection.deselect()
-    selection.select([id])
-  }
-
   const selectFeature = id => () => {
     selection.deselect()
     selection.select([id])
@@ -240,11 +236,21 @@ const LayerList = (/* props */) => {
       inputLayers.renameLayer(layerEditor.layerId, layerEditor.name)
       setLayerEditor({})
     } else {
+      setExpanded(null)
       setLayerEditor({ layerId: layer.id, name: layer.name })
     }
   }
 
-  const onLayerKey = layer => event => {
+  const selectLayer = id => event => {
+    // Ignore keyboard events, i.e. 'Enter':
+    if (event.nativeEvent instanceof KeyboardEvent) return
+    setExpanded(expanded === id ? null : id)
+    if (selectedItems.includes(id)) return
+    selection.deselect()
+    selection.select([id])
+  }
+
+  const onLayerItemKey = layer => event => {
     switch (event.key) {
       case 'Enter': return toggleLayerEditor(layer)
       case 'Backspace': return inputLayers.deleteLayer(layer.id)
@@ -298,7 +304,7 @@ const LayerList = (/* props */) => {
           onDoubleClick={activateLayer(layer.id)}
           onClick={selectLayer(layer.id)}
           selected={selectedItems.includes(layer.id)}
-          onKeyDown={onLayerKey(layer)}
+          onKeyDown={onLayerItemKey(layer)}
         >
           { body }
           <ListItemSecondaryAction>
