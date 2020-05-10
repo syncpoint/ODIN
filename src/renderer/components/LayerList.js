@@ -155,6 +155,38 @@ FeatureItem.propTypes = {
   selected: PropTypes.bool // optional, false if oomitted
 }
 
+/**
+ *
+ */
+
+const LayerNameEditor = props => {
+  const classes = useStyles()
+
+  const onChange = event => props.update(event.target.value)
+  const onKeyDown = event => {
+    switch (event.key) {
+      case 'Enter': return props.commit()
+      case 'Escape': return props.cancel()
+    }
+  }
+
+  return (
+    <InputBase
+      className={classes.editor}
+      value={props.value}
+      autoFocus
+      onKeyDown={onKeyDown}
+      onChange={onChange}
+    />
+  )
+}
+
+LayerNameEditor.propTypes = {
+  value: PropTypes.string.isRequired,
+  cancel: PropTypes.func.isRequired,
+  commit: PropTypes.func.isRequired,
+  update: PropTypes.func.isRequired
+}
 
 const addFeatures = (next, features) =>
   features.forEach(feature => {
@@ -213,6 +245,7 @@ const layerEventHandlers = {
 
   layerrenamed: (prev, { layerId, name }) => K({ ...prev })(next => {
     next[layerId].name = name
+    delete next[layerId].editor
   }),
 
   layerremoved: (prev, { layerId }) => K({ ...prev })(next => {
@@ -231,6 +264,14 @@ const layerEventHandlers = {
 
   layerexpanded: (prev, { layerId }) => K({ ...prev })(next => {
     Object.keys(next).forEach(id => (next[id].expanded = id === layerId))
+  }),
+
+  editoractivated: (prev, { layerId }) => K({ ...prev })(next => {
+    next[layerId].editor = next[layerId].name
+  }),
+
+  editorupdated: (prev, { layerId, value }) => K({ ...prev })(next => {
+    next[layerId].editor = value
   })
 }
 
@@ -243,9 +284,6 @@ const LayerList = (/* props */) => {
   const classes = useStyles()
   const reducer = (state, event) => (layerEventHandlers[event.type] || I)(state, event)
   const [layers, dispatch] = React.useReducer(reducer, {})
-
-  // layerEditor :: { layerId, name }
-  const [layerEditor, setLayerEditor] = React.useState({})
 
   // Sync selection with component state:
   React.useEffect(() => {
@@ -271,16 +309,6 @@ const LayerList = (/* props */) => {
   const showLayer = layer => () => inputLayers.toggleLayerShow(layer.id)
   const activateLayer = id => () => inputLayers.activateLayer(id)
 
-  const toggleLayerEditor = layer => {
-    if (layerEditor.layerId === layer.id) {
-      inputLayers.renameLayer(layerEditor.layerId, layerEditor.name)
-      setLayerEditor({})
-    } else {
-      dispatch({ type: 'layerexpanded' })
-      setLayerEditor({ layerId: layer.id, name: layer.name })
-    }
-  }
-
   const selectLayer = layer => event => {
     // Ignore keyboard events, i.e. 'Enter':
     if (event.nativeEvent instanceof KeyboardEvent) return
@@ -292,20 +320,13 @@ const LayerList = (/* props */) => {
 
   const onLayerItemKey = layer => event => {
     switch (event.key) {
-      case 'Enter': return toggleLayerEditor(layer)
+      case 'Enter': {
+        dispatch({ type: 'layerexpanded' })
+        dispatch({ type: 'editoractivated', layerId: layer.id })
+        break
+      }
       case 'Backspace': return inputLayers.deleteLayer(layer.id)
     }
-  }
-
-  const onLayerEdiorKey = layer => event => {
-    switch (event.key) {
-      case 'Enter': return toggleLayerEditor(layer)
-      case 'Escape': return setLayerEditor({})
-    }
-  }
-
-  const onLayerEditorChange = event => {
-    setLayerEditor({ ...layerEditor, name: event.target.value })
   }
 
   const buttons = () => actions.map(({ icon, tooltip, disabled, action }, index) => (
@@ -320,10 +341,6 @@ const LayerList = (/* props */) => {
   ))
 
   const layerLineEntry = layer => {
-    const lockIcon = layer.locked ? <LockIcon/> : <LockOpenIcon/>
-    const visibleIcon = layer.hidden ? <VisibilityOffIcon/> : <VisibilityIcon/>
-    const body = layer.active ? <b>{layer.name}</b> : layer.name
-
     return (
       <div key={layer.id}>
         <ListItem
@@ -334,13 +351,13 @@ const LayerList = (/* props */) => {
           selected={layer.selected}
           onKeyDown={onLayerItemKey(layer)}
         >
-          { body }
+          { layer.active ? <b>{layer.name}</b> : layer.name }
           <ListItemSecondaryAction>
             <IconButton size='small' onClick={lockLayer(layer)}>
-              {lockIcon}
+              {layer.locked ? <LockIcon/> : <LockOpenIcon/>}
             </IconButton>
             <IconButton size='small' onClick={showLayer(layer)}>
-              {visibleIcon}
+              {layer.hidden ? <VisibilityOffIcon/> : <VisibilityIcon/>}
             </IconButton>
           </ListItemSecondaryAction>
         </ListItem>
@@ -357,19 +374,15 @@ const LayerList = (/* props */) => {
     )
   }
 
-  const layerNameEditor = layer =>
-    <InputBase
-      className={classes.editor}
-      key={`${layer.id}#editor`}
-      value={layerEditor.name}
-      autoFocus
-      onKeyDown={onLayerEdiorKey(layer)}
-      onChange={onLayerEditorChange}
-    />
-
   const layerItem = layer =>
-    layerEditor.layerId === layer.id
-      ? layerNameEditor(layer)
+    layer.editor
+      ? <LayerNameEditor
+        key={`${layer.id}#editor`}
+        value={layer.editor}
+        update={value => dispatch({ type: 'editorupdated', layerId: layer.id, value })}
+        cancel={() => dispatch({ type: 'editordeactivated', layerId: layer.id })}
+        commit={() => inputLayers.renameLayer(layer.id, layer.editor)}
+      />
       : layerLineEntry(layer)
 
   // Search: Prevent undo/redo when not focused.
