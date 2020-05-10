@@ -8,7 +8,7 @@ import { LayersTriple, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 
 
 import ActivityBar from './ActivityBar'
 import BasemapList from './BasemapList'
-import LayerList from './LayerList'
+import LayerList from './layerlist/LayerList'
 import undo from '../undo'
 import evented from '../evented'
 
