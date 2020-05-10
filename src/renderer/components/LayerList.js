@@ -125,31 +125,29 @@ const actions = [
   { icon: <ExportVariant/>, tooltip: 'Share layer', disabled: true }
 ]
 
+const addFeatures = (next, features) =>
+  features.forEach(feature => {
+    const layerId = Feature.layerId(feature)
+    const featureId = Feature.id(feature)
+    next[layerId].features[featureId] = {
+      id: featureId,
+      name: feature.getProperties().t
+    }
+  })
+
+const elementById = next => id =>
+  URI.isLayerId(id)
+    ? next[id]
+    : next[URI.layerId(id)].features[id]
 
 const layerEventHandlers = {
   snapshot: (prev, { layers, features }) => K({ ...prev })(next => {
     layers.forEach(layer => (next[layer.id] = { ...layer, features: {} }))
-
-    features.forEach(feature => {
-      const layerId = Feature.layerId(feature)
-      const featureId = Feature.id(feature)
-      const features = next[layerId].features
-      features[featureId] = {
-        id: featureId,
-        name: feature.getProperties().t
-      }
-    })
+    addFeatures(next, features)
   }),
 
   featuresadded: (prev, { features }) => K({ ...prev })(next => {
-    features.forEach(feature => {
-      const layerId = Feature.layerId(feature)
-      const featureId = Feature.id(feature)
-      next[layerId].features[featureId] = {
-        id: featureId,
-        name: feature.getProperties().t
-      }
-    })
+    addFeatures(next, features)
 
     // Update lock/hidden layer states.
     features
@@ -162,9 +160,7 @@ const layerEventHandlers = {
   }),
 
   featuresremoved: (prev, { ids }) => K({ ...prev })(next => {
-    ids.forEach(id => {
-      delete next[URI.layerId(id)].features[id]
-    })
+    ids.forEach(id => delete next[URI.layerId(id)].features[id])
   }),
 
   layerlocked: (prev, { layerId, locked }) => K({ ...prev })(next => {
@@ -190,6 +186,20 @@ const layerEventHandlers = {
 
   layerremoved: (prev, { layerId }) => K({ ...prev })(next => {
     delete next[layerId]
+  }),
+
+  // internal events =>
+
+  deselected: (prev, { ids }) => K({ ...prev })(next => {
+    ids.map(elementById(next)).forEach(element => delete element.selected)
+  }),
+
+  selected: (prev, { ids }) => K({ ...prev })(next => {
+    ids.map(elementById(next)).forEach(element => (element.selected = true))
+  }),
+
+  layerexpanded: (prev, { layerId }) => K({ ...prev })(next => {
+    Object.keys(next).forEach(id => (next[id].expanded = id === layerId))
   })
 }
 
@@ -201,9 +211,7 @@ const layerEventHandlers = {
 const LayerList = (/* props */) => {
   const classes = useStyles()
   const reducer = (state, event) => (layerEventHandlers[event.type] || I)(state, event)
-  const [selectedItems, setSelectedItems] = React.useState([])
   const [layers, dispatch] = React.useReducer(reducer, {})
-  const [expanded, setExpanded] = React.useState(null)
 
   // layerEditor :: { layerId, name }
   const [layerEditor, setLayerEditor] = React.useState({})
@@ -215,10 +223,16 @@ const LayerList = (/* props */) => {
 
   // Sync selection with component state:
   React.useEffect(() => {
-    const events = ['selected', 'deselected']
-    const update = () => setSelectedItems(selection.selected())
-    events.forEach(event => selection.on(event, update))
-    return () => events.forEach(event => selection.off(event, update))
+    const selected = ids => dispatch({ type: 'selected', ids })
+    const deselected = ids => dispatch({ type: 'deselected', ids })
+
+    selection.on('selected', selected)
+    selection.on('deselected', deselected)
+
+    return () => {
+      selection.off('selected', selected)
+      selection.off('deselected', deselected)
+    }
   }, [])
 
   // Reduce input layer events to component state:
@@ -236,18 +250,18 @@ const LayerList = (/* props */) => {
       inputLayers.renameLayer(layerEditor.layerId, layerEditor.name)
       setLayerEditor({})
     } else {
-      setExpanded(null)
+      dispatch({ type: 'layerexpanded' })
       setLayerEditor({ layerId: layer.id, name: layer.name })
     }
   }
 
-  const selectLayer = id => event => {
+  const selectLayer = layer => event => {
     // Ignore keyboard events, i.e. 'Enter':
     if (event.nativeEvent instanceof KeyboardEvent) return
-    setExpanded(expanded === id ? null : id)
-    if (selectedItems.includes(id)) return
+    dispatch({ type: 'layerexpanded', layerId: layer.expanded ? null : layer.id })
+    if (layer.selected) return
     selection.deselect()
-    selection.select([id])
+    selection.select([layer.id])
   }
 
   const onLayerItemKey = layer => event => {
@@ -284,7 +298,7 @@ const LayerList = (/* props */) => {
       className={classes.feature}
       key={feature.id}
       onClick={selectFeature(feature.id)}
-      selected={selectedItems.includes(feature.id)}
+      selected={feature.selected}
       button
     >
       { feature.name }
@@ -302,8 +316,8 @@ const LayerList = (/* props */) => {
           button
           className={classes.item}
           onDoubleClick={activateLayer(layer.id)}
-          onClick={selectLayer(layer.id)}
-          selected={selectedItems.includes(layer.id)}
+          onClick={selectLayer(layer)}
+          selected={layer.selected}
           onKeyDown={onLayerItemKey(layer)}
         >
           { body }
@@ -316,7 +330,7 @@ const LayerList = (/* props */) => {
             </IconButton>
           </ListItemSecondaryAction>
         </ListItem>
-        <Collapse in={expanded === layer.id} timeout="auto" unmountOnExit>
+        <Collapse in={layer.expanded} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             {
               Object.values(layer.features)
