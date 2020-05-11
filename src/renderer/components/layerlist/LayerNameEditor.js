@@ -34,6 +34,7 @@ export const LayerNameEditor = props => {
       autoFocus
       onKeyDown={handleKeyDown}
       onChange={handleChange}
+      onBlur={props.cancel}
     />
   )
 }
