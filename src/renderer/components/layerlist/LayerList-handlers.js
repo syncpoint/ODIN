@@ -12,6 +12,11 @@ const addFeatures = (next, features) =>
     }
   })
 
+const addLayer = (next, layer, features) => {
+  next[layer.id] = { ...layer, features: {} }
+  addFeatures(next, features)
+}
+
 const elementById = next => id =>
   URI.isLayerId(id)
     ? next[id]
@@ -71,6 +76,15 @@ export default {
     delete next[layerId]
   }),
 
+  layercreated: (prev, { layer, features, selected }) => K({ ...prev })(next => {
+    addLayer(next, layer, features)
+    next[layer.id].selected = selected
+  }),
+
+  layeradded: (prev, { layer, features }) => K({ ...prev })(next => {
+    addLayer(next, layer, features)
+  }),
+
   // internal events =>
 
   deselected: (prev, { ids }) => K({ ...prev })(next =>
@@ -97,5 +111,9 @@ export default {
 
   editorupdated: (prev, { layerId, value }) => K({ ...prev })(next => {
     next[layerId].editor = value
+  }),
+
+  editordeactivated: (prev, { layerId }) => K({ ...prev })(next => {
+    delete next[layerId].editor
   })
 }

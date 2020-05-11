@@ -1,10 +1,11 @@
+/* eslint-disable */
 import { remote } from 'electron'
 import path from 'path'
 import fs from 'fs'
 import { GeoJSON } from 'ol/format'
 import * as ol from 'ol'
 
-import { K, uniq, noop } from '../../shared/combinators'
+import { K, I, uniq, noop } from '../../shared/combinators'
 import undo from '../undo'
 import Feature from './Feature'
 import URI from './URI'
@@ -63,6 +64,31 @@ const geoJSON = new GeoJSON({
   featureProjection: 'EPSG:3857' // Web-Mercator
 })
 
+/**
+ * disambiguateLayerName :: string -> string
+ */
+const disambiguateLayerName = basename => {
+  const exactMatch =
+    Object.values(layerList)
+      .map(layer => layer.name)
+      .find(name => name === basename)
+
+  if (!exactMatch) return basename
+  else {
+    const candidates = Object.values(layerList)
+      .map(layer => layer.name)
+      .map(name => name.match(new RegExp(`${exactMatch} \\((\\d+)\\)`, 'i')))
+      .filter(I)
+      .filter(match => match.length > 1)
+      .map(match => parseInt(match[1]))
+
+    const maxN = candidates.length !== 0
+      ? candidates.reduce((a, b) => Math.max(a, b))
+      : 0
+
+    return `${basename} (${maxN + 1})`
+  }
+}
 
 // --
 // SECTION: Input layer I/O.
@@ -71,17 +97,25 @@ const projectPath = () => remote.getCurrentWindow().path
 const layerPath = name => path.join(projectPath(), 'layers', `${name}.json`)
 
 /**
+ * readFeatures :: (string, string) -> [ol/Feature]
+ */
+const readFeatures = (layerId, contents) => {
+  if (contents.length === 0) return []
+
+  return geoJSON.readFeatures(contents).map(feature => K(feature)(feature => {
+    feature.setId(URI.featureId(layerId))
+    feature.set('layerId', layerId)
+  }))
+}
+
+/**
  * loadFeatures :: (string, string) -> Promise<[ol/Feature]>
  * Load features for a layer. Features are assigned unique ids
  * and a property identifying the containing layer.
  */
 const loadFeatures = async (layerId, filename) => {
   const contents = await fs.promises.readFile(filename, 'utf8')
-  return geoJSON.readFeatures(contents).map(feature => {
-    feature.setId(URI.featureId(layerId))
-    feature.set('layerId', layerId)
-    return feature
-  })
+  return readFeatures(layerId, contents)
 }
 
 /**
@@ -247,6 +281,56 @@ const renameLayerCommand = (layerId, prevName, nextName) => ({
   }
 })
 
+/**
+ * unlinkLayerCommand :: string -> command
+ * Delete JSON input layer file.
+ */
+const unlinkLayerCommand = layerId => {
+  const filename = layerList[layerId].filename
+  const contents = fs.readFileSync(filename, 'utf8')
+
+  return {
+    inverse: () => writeLayerCommand(filename, contents),
+    apply: () => {
+      fs.unlink(filename, noop)
+      selection.deselect([layerId])
+      deactivateLayer(layerId)
+      delete layerList[layerId]
+
+      layerFeatures(layerId)
+        .map(Feature.id)
+        .forEach(id => delete layerList[id])
+
+      emit({ type: 'layerremoved', layerId })
+    }
+  }
+}
+
+/**
+ * writeLayerCommand :: (string, string) -> command
+ * Write new JSON input layer file with given contents.
+ */
+const writeLayerCommand = (filename, contents) => {
+  const layerId = URI.layerId()
+
+  return {
+    inverse: () => unlinkLayerCommand(layerId),
+    apply: () => {
+      fs.writeFileSync(filename, contents)
+      layerList[layerId] = {
+        id: layerId,
+        filename,
+        name: path.basename(filename, '.json'),
+        active: false
+      }
+
+      const features = readFeatures(layerId, contents)
+      features.forEach(feature => (featureList[Feature.id(feature)] = feature))
+      emit({ type: 'layeradded', layer: layerList[layerId], features })
+    }
+  }
+}
+
 // --
 // SECTION: Public API.
 
@@ -319,6 +403,10 @@ const toggleLayerShow = layerId => {
   emit({ type: 'layerhidden', layerId, hidden: !hidden })
 }
 
+/**
+ * activateLayer :: string -> unit
+ * Set layer as 'active layer'.
+ */
 const activateLayer = layerId => {
 
   // Ignore if layer is hidden or locked.
@@ -333,18 +421,58 @@ const activateLayer = layerId => {
   evented.emit('OSD_MESSAGE', { message: layerList[layerId].name, slot: 'A2' })
 }
 
+/**
+ * deactivateLayer :: string -> unit
+ * Unset layer as 'active layer'.
+ */
 const deactivateLayer = layerId => {
-  delete layerList[layerId].active
-  emit({ type: 'layerdeactivated', layerId })
-  evented.emit('OSD_MESSAGE', { message: '', slot: 'A2' })
+  if (layerList[layerId] && layerList[layerId].active) {
+    delete layerList[layerId].active
+    emit({ type: 'layerdeactivated', layerId })
+    evented.emit('OSD_MESSAGE', { message: '', slot: 'A2' })
+  }
 }
 
+/**
+ * renameLayer :: (string, string) -> unit
+ * Rename layer and file to new name.
+ */
 const renameLayer = (layerId, name) => {
+  // TODO: check for valid file name; provide error reporting?
   undo.applyAndPush(renameLayerCommand(layerId, layerList[layerId].name, name))
 }
 
-const deleteLayer = layerId => {
-  console.log('[deleteLayer]', layerId)
+/**
+ * removeLayer :: string -> unit
+ */
+const removeLayer = layerId => {
+  undo.applyAndPush(unlinkLayerCommand(layerId))
+}
+
+/**
+ * createLayer :: () -> unit
+ */
+const createLayer = () => {
+  const name = disambiguateLayerName('New Layer')
+
+  const layerId = URI.layerId()
+  layerList[layerId] = {
+    id: layerId,
+    filename: layerPath(name),
+    name: name,
+    active: false
+  }
+
+  writeLayerFile(layerId)
+  selection.deselect()
+  selection.select([layerId])
+
+  emit({
+    type: 'layercreated',
+    layer: layerList[layerId],
+    features: [],
+    selected: true
+  })
 }
 
 clipboard.registerHandler(URI.SCHEME_FEATURE, {
@@ -386,5 +514,6 @@ export default {
   activateLayer,
   deactivateLayer,
   renameLayer,
-  deleteLayer
+  removeLayer,
+  createLayer
 }

@@ -60,4 +60,3 @@ LayerNameEditor.propTypes = {
    */
   update: PropTypes.func.isRequired
 }
-

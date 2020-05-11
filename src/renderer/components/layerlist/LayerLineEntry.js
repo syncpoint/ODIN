@@ -34,10 +34,11 @@ const useStyles = makeStyles((/* theme */) => ({
 export const LayerLineEntry = props => {
   const classes = useStyles()
 
+  // TODO: move to LayerList with global key listener?
   const onLayerItemKey = event => {
     switch (event.key) {
       case 'Enter': return props.activateEditor()
-      case 'Backspace': return inputLayers.deleteLayer(props.id)
+      case 'Backspace': return inputLayers.removeLayer(props.id)
     }
   }
 
