@@ -82,7 +82,7 @@ const LayerList = (/* props */) => {
   }
 
   const layerItem = layer =>
-    layer.editor
+    (typeof layer.editor === 'string')
       ? <LayerNameEditor
         key={`${layer.id}#editor`}
         value={layer.editor}
