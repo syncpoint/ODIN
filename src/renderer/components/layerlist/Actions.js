@@ -34,7 +34,7 @@ const actionDescriptors = [
   },
   {
     icon: <ExportVariant/>,
-    tooltip: 'Share layer',
+    tooltip: 'Share Layer',
     disabled: true,
     action: noop
   }
