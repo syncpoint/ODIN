@@ -16,8 +16,9 @@ const withLayer = fn => {
 const actionDescriptors = [
   {
     icon: <LayersPlus/>,
-    tooltip: 'Add Layer',
-    disabled: true,
+    tooltip: 'Create Layer',
+    disabled: false,
+    sticky: true, // cannot be disabled
     action: () => inputLayers.createLayer()
   },
   {
@@ -44,6 +45,7 @@ const reducer = (prev) => K([...prev])(next => {
   const selected = selection.selected(URI.isLayerId)
   next
     .filter(action => action.action !== noop)
+    .filter(action => !action.sticky)
     .forEach(action => (action.disabled = !selected.length))
 })
 
