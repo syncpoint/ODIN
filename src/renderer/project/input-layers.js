@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { remote } from 'electron'
 import path from 'path'
 import fs from 'fs'
@@ -498,6 +497,16 @@ const createLayer = () => {
   })
 }
 
+const duplicateLayer = layerId => {
+  const { filename, contents } = readLayerFile(layerId)
+  const basename = path.basename(filename, '.json')
+  const name = disambiguateLayerName(basename)
+  undo.applyAndPush(writeLayerCommand(layerPath(name), contents))
+}
+
+/**
+ * Featre clipboard ops.
+ */
 clipboard.registerHandler(URI.SCHEME_FEATURE, {
 
   selectAll: () => Object.values(featureList)
@@ -525,6 +534,7 @@ clipboard.registerHandler(URI.SCHEME_FEATURE, {
 
   delete: () => removeFeatures(deletableSelection())
 })
+
 
 /**
  * Layer clipboards ops.
@@ -573,5 +583,6 @@ export default {
   deactivateLayer,
   renameLayer,
   removeLayer,
-  createLayer
+  createLayer,
+  duplicateLayer
 }

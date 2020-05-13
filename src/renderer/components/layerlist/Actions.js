@@ -7,6 +7,12 @@ import selection from '../../selection'
 import URI from '../../project/URI'
 import { K, noop } from '../../../shared/combinators'
 
+const withLayer = fn => {
+  const selected = selection.selected(URI.isLayerId)
+  if (!selected || !selected.length) return
+  fn(selected[0])
+}
+
 const actionDescriptors = [
   {
     icon: <LayersPlus/>,
@@ -18,17 +24,13 @@ const actionDescriptors = [
     icon: <LayersMinus/>,
     tooltip: 'Delete Layer',
     disabled: true,
-    action: () => {
-      const selected = selection.selected(URI.isLayerId)
-      if (!selected || !selected.length) return
-      inputLayers.removeLayer(selected[0])
-    }
+    action: () => withLayer(layerId => inputLayers.removeLayer(layerId))
   },
   {
     icon: <ContentDuplicate/>,
     tooltip: 'Duplicate Layer',
     disabled: true,
-    action: noop
+    action: () => withLayer(layerId => inputLayers.duplicateLayer(layerId))
   },
   {
     icon: <ExportVariant/>,
