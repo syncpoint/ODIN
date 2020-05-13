@@ -18,7 +18,7 @@ const editSelectAll = () => {
 
   const ids = Object
     .values(clipboardHandlers)
-    .flatMap(handler => handler.selectAll && handler.selectAll())
+    .flatMap(handler => (handler.selectAll && handler.selectAll()) || [])
 
   selection.select(ids)
 }

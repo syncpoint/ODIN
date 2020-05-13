@@ -75,11 +75,6 @@ const LayerList = (/* props */) => {
     dispatch({ type: 'editoractivated', layerId: selectedLayerId() })
   }
 
-  const handleBackspaceKey = () => {
-    console.log(selectedLayerId())
-    inputLayers.removeLayer(selectedLayerId())
-  }
-
   React.useEffect(() => {
     const mousetrap = new Mousetrap()
 
@@ -91,7 +86,6 @@ const LayerList = (/* props */) => {
     }
 
     mousetrap.bind('enter', handleEnterKey)
-    mousetrap.bind('meta+backspace', handleBackspaceKey)
     return () => mousetrap.reset()
   }, [])
 

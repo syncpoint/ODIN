@@ -138,6 +138,17 @@ const writeFeatures = xs =>
     .forEach(writeLayerFile)
 
 /**
+ * readLayerFile :: string -> { string, string }
+ * Read file contents of existing layer.
+ */
+const readLayerFile = layerId => {
+  const filename = layerList[layerId].filename
+  const contents = fs.readFileSync(filename, 'utf8')
+  return { filename, contents }
+}
+
+
+/**
  * reducers :: [(event) -> unit]
  */
 let reducers = []
@@ -286,8 +297,7 @@ const renameLayerCommand = (layerId, prevName, nextName) => ({
  * Delete JSON input layer file.
  */
 const unlinkLayerCommand = layerId => {
-  const filename = layerList[layerId].filename
-  const contents = fs.readFileSync(filename, 'utf8')
+  const { filename, contents } = readLayerFile(layerId)
 
   return {
     inverse: () => writeLayerCommand(filename, contents),
@@ -326,7 +336,16 @@ const writeLayerCommand = (filename, contents) => {
 
       const features = readFeatures(layerId, contents)
       features.forEach(feature => (featureList[Feature.id(feature)] = feature))
-      emit({ type: 'layeradded', layer: layerList[layerId], features })
+
+      emit({
+        type: 'layeradded',
+        layer: {
+          ...layerList[layerId],
+          locked: features.some(Feature.locked),
+          hidden: features.some(Feature.hidden)
+        },
+        features
+      })
     }
   }
 }
@@ -501,6 +520,41 @@ clipboard.registerHandler(URI.SCHEME_FEATURE, {
   },
 
   delete: () => removeFeatures(deletableSelection())
+})
+
+/**
+ * Layer clipboards ops.
+ */
+clipboard.registerHandler(URI.SCHEME_LAYER, {
+
+  copy: () => {
+    const selected = selection.selected(URI.isLayerId)
+    if (!selected.length) return []
+    return [readLayerFile(selected[0])]
+  },
+
+  paste: layers => {
+    if (!layers || !layers.length) return
+    layers.forEach(({ filename, contents }) => {
+      const basename = path.basename(filename, '.json')
+      const name = disambiguateLayerName(basename)
+      undo.applyAndPush(writeLayerCommand(layerPath(name), contents))
+    })
+  },
+
+  cut: () => {
+    const selected = selection.selected(URI.isLayerId)
+    if (!selected.length) return []
+    const content = [readLayerFile(selected[0])]
+    removeLayer(selected[0])
+    return content
+  },
+
+  delete: () => {
+    const selected = selection.selected(URI.isLayerId)
+    if (!selected.length) return
+    removeLayer(selected[0])
+  }
 })
 
 export default {
