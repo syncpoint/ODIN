@@ -2,6 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
 import Paper from '@material-ui/core/Paper'
+import Mousetrap from 'mousetrap'
 
 import { I } from '../../../shared/combinators'
 import selection from '../../selection'
@@ -11,6 +12,7 @@ import { LayerLineEntry } from './LayerLineEntry'
 import { Search } from './Search'
 import { Actions } from './Actions'
 import handlers from './LayerList-handlers'
+import URI from '../../project/URI'
 
 const useStyles = makeStyles((/* theme */) => ({
   panel: {
@@ -43,6 +45,11 @@ const LayerList = (/* props */) => {
   const reducer = (state, event) => (handlers[event.type] || I)(state, event)
   const [layers, dispatch] = React.useReducer(reducer, {})
 
+  const selectedLayerId = () => {
+    const selected = selection.selected(URI.isLayerId)
+    return selected.length ? selected[0] : null
+  }
+
   // Sync selection with component state:
   React.useEffect(() => {
     const selected = ids => dispatch({ type: 'selected', ids })
@@ -63,6 +70,32 @@ const LayerList = (/* props */) => {
     return () => inputLayers.deregister(dispatch)
   }, [])
 
+  const handleEnterKey = () => {
+    dispatch({ type: 'layerexpanded' })
+    dispatch({ type: 'editoractivated', layerId: selectedLayerId() })
+  }
+
+  const handleBackspaceKey = () => {
+    console.log(selectedLayerId())
+    inputLayers.removeLayer(selectedLayerId())
+  }
+
+  React.useEffect(() => {
+    const mousetrap = new Mousetrap()
+
+    // Ignore if event originated from map or no layer is selected:
+    mousetrap.stopCallback = (_, element) => {
+      if (element.id === 'map') return true
+      if (!selectedLayerId()) return true
+      return false
+    }
+
+    mousetrap.bind('enter', handleEnterKey)
+    mousetrap.bind('meta+backspace', handleBackspaceKey)
+    return () => mousetrap.reset()
+  }, [])
+
+
   const selectLayer = layerId => event => {
     // Ignore keyboard events, i.e. 'Enter':
     if (event.nativeEvent instanceof KeyboardEvent) return
@@ -74,11 +107,6 @@ const LayerList = (/* props */) => {
       selection.deselect()
       selection.select([layerId])
     }
-  }
-
-  const activateEditor = layerId => () => {
-    dispatch({ type: 'layerexpanded' })
-    dispatch({ type: 'editoractivated', layerId })
   }
 
   const layerItem = layer =>
@@ -94,7 +122,6 @@ const LayerList = (/* props */) => {
         key={layer.id}
         { ...layer }
         selectLayer={selectLayer(layer.id)}
-        activateEditor={activateEditor(layer.id)}
       />
 
   const sortedLayers = () =>
@@ -103,7 +130,10 @@ const LayerList = (/* props */) => {
       .map(layerItem)
 
   return (
-    <Paper className={classes.panel} elevation={6}>
+    <Paper
+      className={classes.panel}
+      elevation={6}
+    >
       {/* <ButtonGroup/> not supported for <IconButton> */}
       <div className={classes.buttons}>
         <Actions/>

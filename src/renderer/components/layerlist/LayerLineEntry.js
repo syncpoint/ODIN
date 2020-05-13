@@ -34,14 +34,6 @@ const useStyles = makeStyles((/* theme */) => ({
 export const LayerLineEntry = props => {
   const classes = useStyles()
 
-  // TODO: move to LayerList with global key listener?
-  const onLayerItemKey = event => {
-    switch (event.key) {
-      case 'Enter': return props.activateEditor()
-      case 'Backspace': return inputLayers.removeLayer(props.id)
-    }
-  }
-
   return (
     <div key={props.id}>
       <ListItem
@@ -50,7 +42,6 @@ export const LayerLineEntry = props => {
         onDoubleClick={() => inputLayers.activateLayer(props.id)}
         onClick={props.selectLayer}
         selected={props.selected}
-        onKeyDown={onLayerItemKey}
       >
         { props.active ? <b>{props.name}</b> : props.name }
         <ListItemSecondaryAction>
@@ -84,6 +75,5 @@ LayerLineEntry.propTypes = {
   locked: PropTypes.bool, // optional, false if omitted
   hidden: PropTypes.bool, // optional, false if omitted
   expanded: PropTypes.bool, // optional, false if omitted
-  selectLayer: PropTypes.func.isRequired,
-  activateEditor: PropTypes.func.isRequired
+  selectLayer: PropTypes.func.isRequired
 }
