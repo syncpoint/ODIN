@@ -33,6 +33,7 @@ const useStyles = makeStyles((/* theme */) => ({
 
 export const LayerLineEntry = props => {
   const classes = useStyles()
+  const actionsDisabled = Object.keys(props.features).length === 0
 
   return (
     <div key={props.id}>
@@ -45,10 +46,18 @@ export const LayerLineEntry = props => {
       >
         { props.active ? <b>{props.name}</b> : props.name }
         <ListItemSecondaryAction>
-          <IconButton size='small' onClick={() => inputLayers.toggleLayerLock(props.id)}>
+          <IconButton
+            disabled={actionsDisabled}
+            size='small'
+            onClick={() => inputLayers.toggleLayerLock(props.id)}
+          >
             {props.locked ? <LockIcon/> : <LockOpenIcon/>}
           </IconButton>
-          <IconButton size='small' onClick={() => inputLayers.toggleLayerShow(props.id)}>
+          <IconButton
+            disabled={actionsDisabled}
+            size='small'
+            onClick={() => inputLayers.toggleLayerShow(props.id)}
+          >
             {props.hidden ? <VisibilityOffIcon/> : <VisibilityIcon/>}
           </IconButton>
         </ListItemSecondaryAction>
