@@ -75,9 +75,13 @@ const disambiguateLayerName = basename => {
 
   if (!exactMatch) return basename
   else {
+    // Normalize match if already ends with (n)
+    const specialMatch = exactMatch.match(/^(.*) \(\d+\)$/)
+    const match = specialMatch ? specialMatch[1] : exactMatch
+
     const candidates = Object.values(layerList)
       .map(layer => layer.name)
-      .map(name => name.match(new RegExp(`${exactMatch} \\((\\d+)\\)`, 'i')))
+      .map(name => name.match(new RegExp(`${match} \\((\\d+)\\)`, 'i')))
       .filter(I)
       .filter(match => match.length > 1)
       .map(match => parseInt(match[1]))
@@ -86,7 +90,7 @@ const disambiguateLayerName = basename => {
       ? candidates.reduce((a, b) => Math.max(a, b))
       : 0
 
-    return `${basename} (${maxN + 1})`
+    return `${match} (${maxN + 1})`
   }
 }
 
