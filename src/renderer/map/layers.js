@@ -119,7 +119,6 @@ const removeFeature = feature => {
     : geometrySource(feature)
 
   source.removeFeature(feature)
-  selection.deselect([Feature.id(feature)])
 }
 
 // --
@@ -407,24 +406,14 @@ const eventHandlers = {
     if (selected) replaceSelection(features)
   },
   featuresremoved: ({ ids }) => {
-    selection.deselect(ids)
     ids.map(featureById).forEach(removeFeature)
-  },
-  layerlocked: ({ layerId, locked }) => {
-    if (!locked) return
-
-    // Deselect locked features:
-    const featureIds = layerFeatures(layerId).map(Feature.id)
-    selection.deselect(featureIds)
   },
   layerhidden: ({ layerId, hidden }) => {
     const toggle = hidden ? hideFeature : unhideFeature
-    const features = sources()
+    sources()
       .reduce((acc, source) => acc.concat(source.getFeatures()), [])
       .filter(Feature.hasLayerId(layerId))
-
-    if (hidden) selection.deselect(features.map(Feature.id))
-    features.forEach(toggle)
+      .forEach(toggle)
   },
   layerremoved: ({ layerId }) => {
     layerFeatures(layerId).forEach(removeFeature)

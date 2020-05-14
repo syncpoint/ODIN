@@ -256,6 +256,7 @@ const deleteFeaturesCommand = featureIds => {
   return {
     inverse: () => insertFeaturesCommand(clones),
     apply: () => {
+      selection.deselect(featureIds)
       featureIds.forEach(id => delete featureList[id])
       emit({ type: 'featuresremoved', ids: featureIds })
       writeFeatures(featureIds)
@@ -306,13 +307,14 @@ const unlinkLayerCommand = layerId => {
     inverse: () => writeLayerCommand(layerId, filename, contents),
     apply: () => {
       fs.unlink(filename, noop)
-      selection.deselect([layerId])
       deactivateLayer(layerId)
-      delete layerList[layerId]
 
-      layerFeatures(layerId)
-        .map(Feature.id)
-        .forEach(id => delete layerList[id])
+      const featureIds = layerFeatures(layerId).map(Feature.id)
+      selection.deselect(featureIds)
+      selection.deselect([layerId])
+
+      delete layerList[layerId]
+      featureIds.forEach(id => delete layerList[id])
 
       emit({ type: 'layerremoved', layerId })
     }
@@ -406,7 +408,12 @@ const toggleLayerLock = layerId => {
   const locked = features.some(Feature.locked)
   const toggle = locked ? Feature.unlock : Feature.lock
   features.forEach(toggle)
-  if (!locked) deactivateLayer(layerId)
+
+  if (!locked) {
+    deactivateLayer(layerId)
+    selection.deselect(features.map(Feature.id))
+  }
+
   writeFeatures(features)
   emit({ type: 'layerlocked', layerId, locked: !locked })
 }
@@ -422,7 +429,13 @@ const toggleLayerShow = layerId => {
   const hidden = features.some(Feature.hidden)
   const toggle = hidden ? Feature.unhide : Feature.hide
   features.forEach(toggle)
-  if (!hidden) deactivateLayer(layerId)
+
+  if (!hidden) {
+    deactivateLayer(layerId)
+    selection.deselect(features.map(Feature.id))
+  }
+
+
   writeFeatures(features)
   emit({ type: 'layerhidden', layerId, hidden: !hidden })
 }
@@ -514,10 +527,13 @@ const duplicateLayer = layerId => {
  */
 clipboard.registerHandler(URI.SCHEME_FEATURE, {
 
-  selectAll: () => Object.values(featureList)
-    .filter(Feature.unlocked)
-    .filter(Feature.showing)
-    .map(Feature.id),
+  selectAll: () => {
+    console.log('[selectAll]', Object.keys(featureList).length)
+    return Object.values(featureList)
+      .filter(Feature.unlocked)
+      .filter(Feature.showing)
+      .map(Feature.id)
+  },
 
   // NOTE: For COPY operation, feature may be locked.
   copy: () => selection.selected(URI.isFeatureId)
