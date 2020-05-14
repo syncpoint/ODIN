@@ -460,7 +460,6 @@ const deactivateLayer = layerId => {
  * Rename layer and file to new name.
  */
 const renameLayer = (layerId, name) => {
-  // TODO: check for valid file name; provide error reporting?
   undo.applyAndPush(renameLayerCommand(layerId, layerList[layerId].name, name))
 }
 

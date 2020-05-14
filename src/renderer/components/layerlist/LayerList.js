@@ -108,6 +108,7 @@ const LayerList = (/* props */) => {
       ? <LayerNameEditor
         key={`${layer.id}#editor`}
         value={layer.editor}
+        error={layer.error}
         update={value => dispatch({ type: 'editorupdated', layerId: layer.id, value })}
         cancel={() => dispatch({ type: 'editordeactivated', layerId: layer.id })}
         commit={() => inputLayers.renameLayer(layer.id, layer.editor)}

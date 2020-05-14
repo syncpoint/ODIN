@@ -106,11 +106,24 @@ export default {
   }),
 
   editoractivated: (prev, { layerId }) => K({ ...prev })(next => {
+    // Ignore if editor is already active:
+    if (typeof next[layerId].editor === 'string') return
     next[layerId].editor = next[layerId].name
   }),
 
   editorupdated: (prev, { layerId, value }) => K({ ...prev })(next => {
     next[layerId].editor = value
+
+    const duplicate = Object.entries(next)
+      .find(([id, layer]) => id !== layerId && value.toUpperCase() === layer.name.toUpperCase())
+
+    // TODO: i18n
+    if (duplicate) return (next[layerId].error = 'Name is already used.')
+    if (value === '') return (next[layerId].error = 'Name must not be empty.')
+    if (value.length > 64) return (next[layerId].error = 'Name is too long.')
+    if (!/^[\w\-_.()# ]+$/i.test(value)) return (next[layerId].error = 'Name contains invalid characters.')
+
+    delete next[layerId].error
   }),
 
   editordeactivated: (prev, { layerId }) => K({ ...prev })(next => {
