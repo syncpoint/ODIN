@@ -313,8 +313,8 @@ const unlinkLayerCommand = layerId => {
       selection.deselect(featureIds)
       selection.deselect([layerId])
 
+      featureIds.forEach(id => delete featureList[id])
       delete layerList[layerId]
-      featureIds.forEach(id => delete layerList[id])
 
       emit({ type: 'layerremoved', layerId })
     }
@@ -528,7 +528,6 @@ const duplicateLayer = layerId => {
 clipboard.registerHandler(URI.SCHEME_FEATURE, {
 
   selectAll: () => {
-    console.log('[selectAll]', Object.keys(featureList).length)
     return Object.values(featureList)
       .filter(Feature.unlocked)
       .filter(Feature.showing)
