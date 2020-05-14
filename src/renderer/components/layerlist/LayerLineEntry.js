@@ -14,6 +14,9 @@ import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import inputLayers from '../../project/input-layers'
 import { FeatureItem } from './FeatureItem'
 
+const collatorOptions = { numeric: true, sensitivity: 'base' }
+const naturalCollator = new Intl.Collator(undefined, collatorOptions)
+
 const useStyles = makeStyles((/* theme */) => ({
   item: {
     paddingLeft: '8px',
@@ -66,7 +69,7 @@ export const LayerLineEntry = props => {
         <List component="div" disablePadding>
           {
             Object.values(props.features)
-              .sort((a, b) => a.name.localeCompare(b.name))
+              .sort((a, b) => naturalCollator.compare(a.name, b.name))
               .map(feature => <FeatureItem key={feature.id} { ...feature }/>)
           }
         </List>

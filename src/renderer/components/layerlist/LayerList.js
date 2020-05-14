@@ -14,6 +14,9 @@ import { Actions } from './Actions'
 import handlers from './LayerList-handlers'
 import URI from '../../project/URI'
 
+const collatorOptions = { numeric: true, sensitivity: 'base' }
+const naturalCollator = new Intl.Collator(undefined, collatorOptions)
+
 const useStyles = makeStyles((/* theme */) => ({
   panel: {
     gridArea: 'L',
@@ -119,10 +122,9 @@ const LayerList = (/* props */) => {
         selectLayer={selectLayer(layer.id)}
       />
 
-  const sortedLayers = () =>
-    Object.values(layers)
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .map(layerItem)
+  const sortedLayers = () => Object.values(layers)
+    .sort((a, b) => naturalCollator.compare(a.name, b.name))
+    .map(layerItem)
 
   return (
     <Paper
