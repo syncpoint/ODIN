@@ -325,10 +325,13 @@ const unlinkLayerCommand = layerId => {
  */
 const writeLayerCommand = (filename, contents) => {
   const layerId = URI.layerId()
+  const basename = path.basename(filename, '.json')
 
   return {
     inverse: () => unlinkLayerCommand(layerId),
     apply: () => {
+      const name = disambiguateLayerName(basename)
+      const filename = layerPath(name)
       fs.writeFileSync(filename, contents)
       layerList[layerId] = {
         id: layerId,
