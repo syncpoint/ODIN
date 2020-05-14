@@ -4,6 +4,7 @@ import { Card, CardContent, Typography } from '@material-ui/core'
 
 import WMTSLayerTable from './WMTSLayerTable'
 import WMTSCapabilities from 'ol/format/WMTSCapabilities'
+import { get as getProjection } from 'ol/proj'
 
 const WMTSOptions = props => {
   const { merge, onValidation } = props
@@ -23,6 +24,7 @@ const WMTSOptions = props => {
         const response = await fetch(props.options.url, { signal })
         if (!response.ok) { throw new Error(response.statusText) }
         const caps = (new WMTSCapabilities()).read(await response.text())
+        console.dir(caps)
         setCapabilities(caps)
       } catch (error) {
         setError(error.message)
@@ -63,6 +65,20 @@ const WMTSOptions = props => {
     return layer.WGS84BoundingBox
   }
 
+  const crs = (caps, layerId) => {
+    let providedCRS = []
+    const layer = caps.Contents.Layer.find(l => l.Identifier === layerId)
+    if (!layer) return null
+    layer.TileMatrixSetLink.forEach(link => {
+      providedCRS = providedCRS.concat(
+        caps.Contents.TileMatrixSet
+          .filter(tms => tms.Identifier === link.TileMatrixSet)
+          .map(matrixSet => ({ Identifier: matrixSet.Identifier, SupportedCRS: matrixSet.SupportedCRS }))
+      )
+    })
+    return providedCRS
+  }
+
   /* functions */
   const handleLayerSelected = layerId => {
     if (layerId) {
@@ -71,7 +87,18 @@ const WMTSOptions = props => {
         layer: layerId,
         wgs84BoundingBox: wgs84BoundingBox(capabilities, layerId)
       })
-      onValidation(true)
+      const missingCRS = crs(capabilities, layerId)
+        .map(crs => ({
+          Identifier: crs.Identifier,
+          SupportedCRS: crs.SupportedCRS,
+          CRSCode: crs.SupportedCRS.replace(/urn:ogc:def:crs:(\w+):(.*:)?(\w+)$/, '$1:$3')
+        }))
+        .filter(crs => {
+          const definition = getProjection(crs.CRSCode)
+          return definition ? null : crs
+        })
+      console.dir(missingCRS)
+      onValidation(missingCRS.length === 0)
     } else {
       onValidation(false)
     }
