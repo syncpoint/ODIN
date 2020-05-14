@@ -15,7 +15,6 @@ import layers from './layers'
 import { setBasemap } from './basemap'
 import './style/scalebar.css'
 import disposable from '../../shared/disposable'
-import './clipboard'
 
 const zoom = view => view.getZoom()
 const center = view => toLonLat(view.getCenter())

@@ -40,6 +40,7 @@ const menu = i18n => {
         label: i18n.t('edit.selectAll'),
         accelerator: 'CmdOrCtrl+A',
         click: onclick(browserWindow => {
+          browserWindow.webContents.selectAll()
           browserWindow.send('IPC_EDIT_SELECT_ALL')
         })
       }

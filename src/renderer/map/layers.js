@@ -425,6 +425,12 @@ const eventHandlers = {
 
     if (hidden) selection.deselect(features.map(Feature.id))
     features.forEach(toggle)
+  },
+  layerremoved: ({ layerId }) => {
+    layerFeatures(layerId).forEach(removeFeature)
+  },
+  layeradded: ({ _, features }) => {
+    features.forEach(addFeature)
   }
 }
 
