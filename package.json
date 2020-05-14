@@ -75,7 +75,6 @@
     "geodesy": "^2.2.0",
     "geographiclib": "^1.50.0",
     "i18next": "^19.3.4",
-    "icon-gen": "^2.0.0",
     "immutable": "^4.0.0-rc.12",
     "mgrs": "^1.0.0",
     "luxon": "^1.22.2",
