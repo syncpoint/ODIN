@@ -303,7 +303,7 @@ const unlinkLayerCommand = layerId => {
   const { filename, contents } = readLayerFile(layerId)
 
   return {
-    inverse: () => writeLayerCommand(filename, contents),
+    inverse: () => writeLayerCommand(layerId, filename, contents),
     apply: () => {
       fs.unlink(filename, noop)
       selection.deselect([layerId])
@@ -323,8 +323,7 @@ const unlinkLayerCommand = layerId => {
  * writeLayerCommand :: (string, string) -> command
  * Write new JSON input layer file with given contents.
  */
-const writeLayerCommand = (filename, contents) => {
-  const layerId = URI.layerId()
+const writeLayerCommand = (layerId, filename, contents) => {
   const basename = path.basename(filename, '.json')
 
   return {
@@ -503,7 +502,11 @@ const duplicateLayer = layerId => {
   const { filename, contents } = readLayerFile(layerId)
   const basename = path.basename(filename, '.json')
   const name = disambiguateLayerName(basename)
-  undo.applyAndPush(writeLayerCommand(layerPath(name), contents))
+  undo.applyAndPush(writeLayerCommand(
+    URI.layerId(),
+    layerPath(name),
+    contents)
+  )
 }
 
 /**
@@ -554,7 +557,11 @@ clipboard.registerHandler(URI.SCHEME_LAYER, {
     layers.forEach(({ filename, contents }) => {
       const basename = path.basename(filename, '.json')
       const name = disambiguateLayerName(basename)
-      undo.applyAndPush(writeLayerCommand(layerPath(name), contents))
+      undo.applyAndPush(writeLayerCommand(
+        URI.layerId(),
+        layerPath(name),
+        contents)
+      )
     })
   },
 
