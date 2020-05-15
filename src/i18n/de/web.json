@@ -30,6 +30,10 @@
     "xyzNoOptions": "Für diesen Kartentyp sind keine Optionen verfügbar",
     "unknownSource": "Kartentyp konnte anhand der URL nicht erkannt werden",
     "usePreview": "Benutzen Sie die Vorschau um die Karte zu überprüfen",
-    "deleteWarning": "Vorsicht! Diese Aktion kann nicht rückgängig gemacht werden!"
+    "deleteWarning": "Vorsicht! Diese Aktion kann nicht rückgängig gemacht werden!",
+    "wmts": {
+      "error": "Fehler",
+      "missingProjections": "Für diese Projektionen fehlen die Definitionen"
+    }
   }
 }

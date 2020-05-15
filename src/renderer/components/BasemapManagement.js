@@ -176,18 +176,17 @@ const BasemapManagement = props => {
   }
 
   const updatePreview = async (descriptor) => {
+    clearBasemap(map)
     if (descriptor) {
       await setBasemap(map, descriptor)
       zoomToExtent(descriptor.options.wgs84BoundingBox)
-    } else {
-      clearBasemap()
     }
   }
 
   const handleEdit = descriptor => {
     setSelectedDescriptor(descriptor)
     setIsEditing(true)
-    clearBasemap()
+    clearBasemap(map)
   }
 
   const handleEditCancel = () => {
@@ -204,7 +203,7 @@ const BasemapManagement = props => {
   const handleEditNew = () => {
     setIsEditing(true)
     setSelectedDescriptor(null)
-    clearBasemap()
+    clearBasemap(map)
   }
 
   const handleDelete = () => {
