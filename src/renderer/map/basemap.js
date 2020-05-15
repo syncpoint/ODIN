@@ -38,8 +38,12 @@ const from = async descriptor => {
 
   if (!descriptor) return fallbackSource()
   if (!descriptor.type) return fallbackSource()
-
-  return (sources[descriptor.type] || fallbackSource)(descriptor)
+  try {
+    return (sources[descriptor.type] || fallbackSource)(descriptor)
+  } catch (error) {
+    console.error(error)
+    return fallbackSource()
+  }
 }
 
 export const clearBasemap = map => {
