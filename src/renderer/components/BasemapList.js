@@ -4,10 +4,9 @@ import { DndProvider } from 'react-dnd'
 import Backend from 'react-dnd-html5-backend'
 import BasemapListItem from './basemap/BasemapListItem'
 
-import { Paper } from '@material-ui/core'
+import { register, deregister, toggleVisibility } from '../map/basemapLayers'
 
-import { listSourceDescriptors } from '../map/basemap'
-import { ipcRenderer } from 'electron'
+import { Paper } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   panel: {
@@ -26,30 +25,31 @@ const useStyles = makeStyles(theme => ({
 const BasemapList = props => {
   const classes = useStyles()
 
-  const [sourceDescriptors, setSourceDescriptors] = React.useState([])
+  const [basemapLayers, setBasemapLayers] = React.useState([])
 
   React.useEffect(() => {
-    const loadBasemaps = async () => {
-      const descriptors = await listSourceDescriptors()
-      setSourceDescriptors(descriptors)
+    const handleBasemapLayersChanged = ({ type, value }) => {
+      if (!type === 'basemapLayersChanged') return
+      if (!value) return
+      setBasemapLayers(value)
     }
-    loadBasemaps()
-    const handleSourceDescriptorsChanged = (event, descriptors) => {
-      setSourceDescriptors(descriptors)
-    }
-    ipcRenderer.on('IPC_SOURCE_DESCRIPTORS_CHANGED', handleSourceDescriptorsChanged)
-    return () => ipcRenderer.removeListener('IPC_SOURCE_DESCRIPTORS_CHANGED', handleSourceDescriptorsChanged)
+    register(handleBasemapLayersChanged)
+    return () => deregister(handleBasemapLayersChanged)
   }, [])
 
-  const moveBasemapItem = React.useCallback((sourceIndex, hoverIndex) => {
-    if (!sourceDescriptors) return
-    const item = sourceDescriptors[sourceIndex]
-    const shadow = [...sourceDescriptors]
-    shadow.splice(sourceIndex, 1)
-    shadow.splice(hoverIndex, 0, item)
-    setSourceDescriptors(shadow)
+  const moveBasemapItem = React.useCallback((fromIndex, toIndex) => {
+    if (!basemapLayers) return
+    const item = basemapLayers[fromIndex]
+    const shadow = [...basemapLayers]
+    shadow.splice(fromIndex, 1)
+    shadow.splice(toIndex, 0, item)
+    setBasemapLayers(shadow)
   },
-  [sourceDescriptors])
+  [basemapLayers])
+
+  const handleVisibilityClicked = id => {
+    if (id) toggleVisibility(id)
+  }
 
   return (
 
@@ -59,13 +59,15 @@ const BasemapList = props => {
 
           <ul id="basemapItemList" style={{ listStyleType: 'none', padding: '4px' }}>
             {
-              sourceDescriptors.map((descriptor, index) => (
+              basemapLayers.map((layer, index) => (
                 <BasemapListItem
-                  key={descriptor.id}
+                  key={layer.id}
                   index={index}
-                  id={descriptor.id}
-                  text={descriptor.name}
+                  id={layer.id}
+                  text={layer.name}
+                  visible={layer.visible}
                   moveBasemapItem={moveBasemapItem}
+                  visibilityClicked={handleVisibilityClicked}
                 />
               ))
             }
