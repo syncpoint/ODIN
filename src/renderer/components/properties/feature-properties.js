@@ -15,5 +15,5 @@ providers.register(selected => {
     inputLayers.updateFeatureProperties(featureIds[0], properties)
   }
 
-  return <UnitProperties feature={properties} updateFeature={updateFeature}/>
+  return <UnitProperties key={featureIds[0]} feature={properties} updateFeature={updateFeature}/>
 })

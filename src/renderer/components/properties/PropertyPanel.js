@@ -12,7 +12,7 @@ const PropertyPanel = () => {
     return () => {
       providers.off('selected', selectionUpdated)
     }
-  })
+  }, [])
 
   return content
 }

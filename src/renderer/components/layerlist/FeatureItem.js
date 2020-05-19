@@ -22,6 +22,6 @@ export const FeatureItem = props => {
 
 FeatureItem.propTypes = {
   id: PropTypes.string.isRequired,
-  t: PropTypes.string.isRequired,
+  t: PropTypes.string,
   selected: PropTypes.bool // optional, false if omitted
 }
