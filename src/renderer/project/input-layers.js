@@ -510,6 +510,24 @@ const duplicateLayer = layerId => {
   )
 }
 
+const featureProperties = featureId => {
+  if (!featureId) return null
+  const feature = featureList[featureId]
+  if (!feature) return null
+  const properties = feature.clone().getProperties()
+  ;['geometry', 'layerId'].forEach(property => delete properties[property])
+  return properties
+}
+
+const updateFeatureProperties = (featureId, properties) => {
+  if (!featureId) return null
+  const feature = featureList[featureId]
+  if (!feature) return null
+
+  feature.setProperties(properties, true)
+  emit({ type: 'featurepropertiesupdated', featureId, properties })
+}
+
 /**
  * Featre clipboard ops.
  */
@@ -596,5 +614,7 @@ export default {
   renameLayer,
   removeLayer,
   createLayer,
-  duplicateLayer
+  duplicateLayer,
+  featureProperties,
+  updateFeatureProperties
 }

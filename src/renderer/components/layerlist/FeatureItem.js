@@ -15,13 +15,13 @@ export const FeatureItem = props => {
       onClick={handleClick(props.id)}
       button
     >
-      { props.name }
+      { props.t }
     </ListItem>
   )
 }
 
 FeatureItem.propTypes = {
   id: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
+  t: PropTypes.string.isRequired,
   selected: PropTypes.bool // optional, false if omitted
 }

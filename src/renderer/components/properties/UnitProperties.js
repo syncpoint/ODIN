@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { Paper, TextField } from '@material-ui/core'
 import { SelectEchelon } from './SelectEchelon'
@@ -9,6 +10,7 @@ import Status from './Status'
 
 const useStyles = makeStyles(theme => ({
   paper: {
+    userSelect: 'none',
     padding: theme.spacing(4),
     height: 'auto',
     pointerEvents: 'auto',
@@ -25,6 +27,7 @@ const useStyles = makeStyles(theme => ({
 
 const UnitProperties = props => {
   const classes = useStyles()
+  const [feature, setFeature] = React.useState(props.feature)
 
   return (
     <Paper
@@ -32,7 +35,21 @@ const UnitProperties = props => {
       elevation={ 4 }
     >
       <TextField label={'Name'} className={ classes.fullwidth } />
-      <TextField label={'Unique Designation'} />
+
+      {/*
+        TODO: hold temporary value
+        TODO: handle 'ESCAPE': reset to original value
+        TODO: handle 'ENTER': update feature
+        TODO: trim value
+       */}
+
+      <TextField
+        label={'Unique Designation'}
+        value={feature.t}
+        onChange={({ target }) => setFeature({ ...feature, t: target.value })}
+        onBlur={() => props.updateFeature(feature)}
+      />
+
       <TextField label={'Higher Formation'} />
       <TextField label={'Speed'} />
       <TextField label={'Direction'} />
@@ -45,6 +62,11 @@ const UnitProperties = props => {
       <ReinforcedReduced/>
     </Paper>
   )
+}
+
+UnitProperties.propTypes = {
+  feature: PropTypes.object.isRequired,
+  updateFeature: PropTypes.func.isRequired
 }
 
 

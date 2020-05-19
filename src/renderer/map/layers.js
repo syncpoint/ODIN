@@ -408,6 +408,13 @@ const eventHandlers = {
   featuresremoved: ({ ids }) => {
     ids.map(featureById).forEach(removeFeature)
   },
+  featurepropertiesupdated: ({ featureId, properties }) => {
+    const feature = featureById(featureId)
+    if (!feature) return
+
+    feature.setStyle(null)
+    feature.setProperties(properties)
+  },
   layerhidden: ({ layerId, hidden }) => {
     const toggle = hidden ? hideFeature : unhideFeature
     sources()

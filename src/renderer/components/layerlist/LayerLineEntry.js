@@ -69,7 +69,7 @@ export const LayerLineEntry = props => {
         <List component="div" disablePadding>
           {
             Object.values(props.features)
-              .sort((a, b) => naturalCollator.compare(a.name, b.name))
+              .sort((a, b) => naturalCollator.compare(a.t, b.t))
               .map(feature => <FeatureItem key={feature.id} { ...feature }/>)
           }
         </List>

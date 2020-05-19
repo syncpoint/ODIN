@@ -8,7 +8,7 @@ const addFeatures = (next, features) =>
     const featureId = Feature.id(feature)
     next[layerId].features[featureId] = {
       id: featureId,
-      name: feature.getProperties().t
+      ...feature.getProperties()
     }
   })
 
@@ -48,6 +48,11 @@ export default {
 
   featuresremoved: (prev, { ids }) => K({ ...prev })(next => {
     ids.forEach(id => delete next[URI.layerId(id)].features[id])
+  }),
+
+  featurepropertiesupdated: (prev, { featureId, properties }) => K({ ...prev })(next => {
+    const layer = next[URI.layerId(featureId)]
+    layer.features[featureId] = { ...layer.features[featureId], ...properties }
   }),
 
   layerlocked: (prev, { layerId, locked }) => K({ ...prev })(next => {
