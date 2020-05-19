@@ -135,6 +135,9 @@ export const setZIndices = layerIds => {
   const layers = basemapLayerGroup.getLayers()
   layers.clear()
   shadow.forEach(layer => layers.push(layer))
+  emit(
+    { type: 'basemapLayersChanged', value: getBasemapLayers() }
+  )
 }
 
 /*

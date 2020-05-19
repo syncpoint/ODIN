@@ -73,7 +73,7 @@ const BasemapList = props => {
                   visibilityClicked={handleVisibilityClicked}
                   onDrop={handleItemDropped}
                 />
-              ))
+              )).reverse()
             }
           </ul>
         </div>
