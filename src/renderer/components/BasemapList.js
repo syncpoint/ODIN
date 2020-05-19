@@ -4,7 +4,7 @@ import { DndProvider } from 'react-dnd'
 import Backend from 'react-dnd-html5-backend'
 import BasemapListItem from './basemap/BasemapListItem'
 
-import { register, deregister, toggleVisibility } from '../map/basemapLayers'
+import { register, deregister, toggleVisibility, setZIndices } from '../map/basemapLayers'
 
 import { Paper } from '@material-ui/core'
 
@@ -44,8 +44,11 @@ const BasemapList = props => {
     shadow.splice(fromIndex, 1)
     shadow.splice(toIndex, 0, item)
     setBasemapLayers(shadow)
-  },
-  [basemapLayers])
+  }, [basemapLayers])
+
+  const handleItemDropped = event => {
+    setZIndices(basemapLayers.map(layer => layer.id))
+  }
 
   const handleVisibilityClicked = id => {
     if (id) toggleVisibility(id)
@@ -68,6 +71,7 @@ const BasemapList = props => {
                   visible={layer.visible}
                   moveBasemapItem={moveBasemapItem}
                   visibilityClicked={handleVisibilityClicked}
+                  onDrop={handleItemDropped}
                 />
               ))
             }

@@ -23,7 +23,11 @@ const useStyle = makeStyles(theme => ({
 }))
 
 
-const BasemapListItem = ({ id, text, index, visible, moveBasemapItem, visibilityClicked }) => {
+const BasemapListItem = (props) => {
+
+  const { id, text, index, visible } = props
+  const { moveBasemapItem, visibilityClicked, onDrop } = props
+
   const classes = useStyle()
   const ref = React.useRef(null)
 
@@ -65,8 +69,12 @@ const BasemapListItem = ({ id, text, index, visible, moveBasemapItem, visibility
       // but it's good here for the sake of performance
       // to avoid expensive index searches.
       item.index = hoverIndex
+    },
+    drop (item, monitor) {
+      onDrop(item)
     }
-  })
+  }
+  )
 
   const [{ isDragging }, drag] = useDrag({
     item: {
@@ -86,7 +94,7 @@ const BasemapListItem = ({ id, text, index, visible, moveBasemapItem, visibility
 
   return (
     <ListItem ref={ref} className={classes.listItem} style={{ opacity }}>
-      <DragHandle color={visible ? 'initial' : 'disabled'}/>
+      <DragHandle color={visible ? 'inherit' : 'disabled'}/>
       <Typography variant="button" color={visible ? 'initial' : 'textSecondary'}>{text}</Typography>
       <ListItemSecondaryAction>
         <IconButton size="small" onClick={() => visibilityClicked(id)}>
@@ -101,8 +109,10 @@ BasemapListItem.propTypes = {
   id: PropTypes.string,
   text: PropTypes.string,
   index: PropTypes.number,
+  visible: PropTypes.bool,
   moveBasemapItem: PropTypes.func,
-  visibilityClicked: PropTypes.func
+  visibilityClicked: PropTypes.func,
+  onDrop: PropTypes.func
 }
 
 export default BasemapListItem
