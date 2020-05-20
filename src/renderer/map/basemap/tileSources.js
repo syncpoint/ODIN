@@ -53,3 +53,29 @@ export const listSourceDescriptors = async () => {
   const sourceDescriptors = await ipcRenderer.invoke('IPC_LIST_SOURCE_DESCRIPTORS')
   return [...sourceDescriptors, ...[DEFAULT_SOURCE_DESCRIPTOR]]
 }
+
+
+/* event API */
+let reducers = []
+
+export const register = reducer => {
+  reducers = [...reducers, reducer]
+  listSourceDescriptors()
+    .then(sourceDescriptors => {
+      reducer({ type: 'sourceDescriptors', value: sourceDescriptors })
+    })
+}
+
+export const deregister = reducer => {
+  reducers = reducers.filter(x => x !== reducer)
+}
+
+const emit = event => {
+  reducers.forEach(reducer => reducer(event))
+}
+
+ipcRenderer.on('IPC_SOURCE_DESCRIPTORS_CHANGED', (event, sourceDescriptors) => {
+  emit({
+    type: 'sourceDescriptors', value: [...sourceDescriptors, ...[DEFAULT_SOURCE_DESCRIPTOR]]
+  })
+})

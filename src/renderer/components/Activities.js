@@ -5,11 +5,9 @@ import Category from '@material-ui/icons/Category'
 import PermDataSettingIcon from '@material-ui/icons/PermDataSetting'
 import MapIcon from '@material-ui/icons/Map'
 import { LayersTriple, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 'mdi-material-ui'
-import { DndProvider } from 'react-dnd'
-import Backend from 'react-dnd-html5-backend'
 
 import ActivityBar from './ActivityBar'
-import BasemapList from './basemapList/BasemapList'
+import BasemapPanel from './basemapPanel/BasemapPanel'
 import LayerList from './layerlist/LayerList'
 import undo from '../undo'
 import evented from '../evented'
@@ -31,7 +29,7 @@ const initialActivities = classes => [
     type: 'activity',
     icon: <MapIcon/>,
     tooltip: 'Show Map/Pictures',
-    panel: () => <DndProvider backend={Backend}><BasemapList /></DndProvider>
+    panel: () => <BasemapPanel />
   },
   {
     id: 'layers',

@@ -1,6 +1,10 @@
 import LayerGroup from 'ol/layer/Group'
 import TileLayer from 'ol/layer/Tile'
-import { from, listSourceDescriptors } from './tileSources'
+import {
+  from,
+  register as onSourcesChanged
+} from './tileSources'
+
 import preferences from '../../project/preferences'
 
 
@@ -9,12 +13,28 @@ const KEYS = {
   ODIN_LAYER_NAME: 'ODIN_LAYER_NAME'
 }
 
+/* event API */
 let reducers = []
+
+export const register = reducer => {
+  reducers = [...reducers, reducer]
+  reducer({ type: 'basemapLayersChanged', value: getBasemapLayers() })
+}
+
+export const deregister = reducer => {
+  reducers = reducers.filter(x => x !== reducer)
+}
 
 const emit = event => {
   reducers.forEach(reducer => setImmediate(() => reducer(event)))
 }
 
+/*
+  Since we need to
+  * apply persisted preferences
+  * persist preferences on change
+  there are some actions we can execute after a change was made:
+*/
 const ACTIONS = {
   noop: () => {},
   emit: () => emit({ type: 'basemapLayersChanged', value: getBasemapLayers() }),
@@ -27,7 +47,7 @@ const ACTIONS = {
   }
 }
 
-const addTileLayers = async (group, onSuccess = ACTIONS.emit) => {
+const addTileLayers = async (group, sources, onSuccess = ACTIONS.emit) => {
 
   const buildLayerFromSource = async source => {
     try {
@@ -47,8 +67,9 @@ const addTileLayers = async (group, onSuccess = ACTIONS.emit) => {
     }
   }
 
-  const sources = await listSourceDescriptors()
-  const layers = basemapLayerGroup.getLayers()
+  // const sources = await listSourceDescriptors()
+  const layers = group.getLayers()
+  layers.clear()
   await Promise
     .all(sources.map(buildLayerFromSource))
     .then(tileLayers => {
@@ -98,41 +119,47 @@ export const toggleVisibility = (layerId, onSuccess = ACTIONS.persistAndEmit) =>
 
 /**
  *
- * @param {*} layerIds array of layer ids
+ * @param {*} layerIds array of layer ids that define the order of the tile layers
  */
 export const setZIndices = (layerIds, onSuccess = ACTIONS.persistAndEmit) => {
   if (!layerIds || layerIds.length === 0) return
-  const shadow = []
-  layerIds.forEach((layerId) => {
-    shadow.push(layerById(layerId))
-  })
+
   const layers = basemapLayerGroup.getLayers()
+  const shadow = new Map()
+  layers.getArray().forEach(layer => {
+    shadow.set(layer.get(KEYS.ODIN_LAYER_ID), layer)
+  })
   layers.clear()
+
+  /* insert the layers defined by the order of the layerIds */
+  layerIds.forEach(layerId => {
+    const layer = shadow.get(layerId)
+    if (layer) {
+      layers.push(layer)
+      shadow.delete(layerId)
+    }
+  })
+
+  /*
+    If there are layers that are not affected by the given order
+    we just add them in no order at the end of the collection.
+  */
   shadow.forEach(layer => layers.push(layer))
   onSuccess()
-}
-
-export const register = reducer => {
-  reducers = [...reducers, reducer]
-  reducer({ type: 'basemapLayersChanged', value: getBasemapLayers() })
-}
-
-export const deregister = reducer => {
-  reducers = reducers.filter(x => x !== reducer)
 }
 
 const basemapLayerGroup = new LayerGroup()
 basemapLayerGroup.set(KEYS.ODIN_LAYER_ID, 'basemap')
 
+const init = async sourceDescriptors => {
+  await addTileLayers(
+    basemapLayerGroup,
+    sourceDescriptors,
+    () => {}
+  )
 
-const initByPreferences = async event => {
-  if (event.type !== 'preferences') return
-  await addTileLayers(basemapLayerGroup.getLayers(), () => {})
-
-  const basemaps = (event.preferences.basemaps ? event.preferences.basemaps : [])
-  /* preferences.once would be nice */
-  preferences.deregister(initByPreferences)
-  if (!basemaps || basemaps.length === 0) return
+  const basemaps = preferences.get('basemaps') || []
+  if (basemaps.length === 0) return
 
   setZIndices(basemaps.map(basemap => basemap.id), ACTIONS.noop)
   basemaps.forEach(basemap => setVisibility(basemap.id, basemap.visible, ACTIONS.noop))
@@ -140,6 +167,8 @@ const initByPreferences = async event => {
   ACTIONS.emit()
 }
 
-preferences.register(initByPreferences)
+onSourcesChanged(event => {
+  init(event.value)
+})
 
 export default () => basemapLayerGroup
