@@ -76,11 +76,6 @@ export default {
     delete next[layerId]
   }),
 
-  layercreated: (prev, { layer, features, selected }) => K({ ...prev })(next => {
-    addLayer(next, layer, features)
-    next[layer.id].selected = selected
-  }),
-
   layeradded: (prev, { layer, features }) => K({ ...prev })(next => {
     addLayer(next, layer, features)
   }),

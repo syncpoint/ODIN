@@ -490,25 +490,13 @@ const removeLayer = layerId => {
  */
 const createLayer = () => {
   const name = disambiguateLayerName('New Layer')
+  const contents = '{"type":"FeatureCollection","features":[]}'
 
-  const layerId = URI.layerId()
-  layerList[layerId] = {
-    id: layerId,
-    filename: layerPath(name),
-    name: name,
-    active: false
-  }
-
-  writeLayerFile(layerId)
-  selection.deselect()
-  selection.select([layerId])
-
-  emit({
-    type: 'layercreated',
-    layer: layerList[layerId],
-    features: [],
-    selected: true
-  })
+  undo.applyAndPush(writeLayerCommand(
+    URI.layerId(),
+    layerPath(name),
+    contents)
+  )
 }
 
 const duplicateLayer = layerId => {
