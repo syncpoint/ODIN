@@ -14,7 +14,7 @@
     "builder:win": "electron-builder --win",
     "builder:linux": "electron-builder --linux",
     "eslint": "eslint src/",
-    "test": "electron-mocha --require @babel/register --require ./test/helpers.js --require ./test/dom.js --require ignore-styles --recursive",
+    "test": "electron-mocha --require ./test/register.js --require ./test/helpers.js --require ./test/dom.js --require ignore-styles --recursive",
     "spectron": "mocha --require @babel/register --recursive spectron"
   },
   "repository": {
@@ -75,12 +75,11 @@
     "geodesy": "^2.2.0",
     "geographiclib": "^1.50.0",
     "i18next": "^19.3.4",
-    "icon-gen": "^2.0.0",
     "immutable": "^4.0.0-rc.12",
-    "mgrs": "^1.0.0",
     "luxon": "^1.22.2",
     "mathjs": "^6.6.2",
     "mdi-material-ui": "^6.13.0",
+    "mgrs": "^1.0.0",
     "milsymbol": "^2.0.0",
     "minimist": "^1.2.5",
     "mousetrap": "^1.6.5",

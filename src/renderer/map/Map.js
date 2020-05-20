@@ -12,10 +12,9 @@ import evented from '../evented'
 import preferences from '../project/preferences'
 import coordinateFormat from '../../shared/coord-format'
 import layers from './layers'
-import basemap from './basemap'
+import { setBasemap } from './basemap'
 import './style/scalebar.css'
 import disposable from '../../shared/disposable'
-import './clipboard'
 
 const zoom = view => view.getZoom()
 const center = view => toLonLat(view.getCenter())
@@ -59,12 +58,6 @@ const effect = props => () => {
     evented.emit('OSD_MESSAGE', { message: currentCoordinate, slot: 'C2' })
   })
 
-  /*
-    Handling the basemap layer is done using the basemap module.
-  */
-  basemap(map)
-
-
   // Provide layer/interaction cleanup.
   let disposables = disposable.of()
 
@@ -92,12 +85,19 @@ const effect = props => () => {
     dispose
   })
 
-  // Set viewport from preferences.
+  // Set viewport and basemap from preferences.
   preferences.register(({ type, preferences }) => {
     if (type !== 'preferences') return
     const { center, zoom } = preferences.viewport
     view.setCenter(fromLonLat(center))
     view.setZoom(zoom)
+    setBasemap(map, preferences.basemap)
+  })
+
+  // change basemap triggered by setting the preferences
+  preferences.register(({ type, key, value }) => {
+    if (type !== 'set' || key !== 'basemap') return
+    setBasemap(map, value)
   })
 }
 

@@ -63,6 +63,14 @@ const redo = () => (redoStack = shift(redoStack, undoStack))
  */
 const push = command => unshift(undoStack, assertCommand(command))
 
+/**
+ * Apply command and push inverse unto the undo stack.
+ */
+const applyAndPush = command => {
+  command.apply()
+  push(command.inverse())
+}
+
 
 /**
  * Clear undo/redo stacks.
@@ -77,6 +85,7 @@ const canRedo = () => redoStack.length > 0
 
 export default {
   push,
+  applyAndPush,
   clear,
   undo,
   redo,
