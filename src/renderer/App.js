@@ -14,6 +14,9 @@ import Activities from './components/Activities'
 import { ipcRenderer, remote } from 'electron'
 
 
+import extendMilsymbols from './components/milsymbol/msExtend'
+extendMilsymbols()
+
 const useStyles = makeStyles((/* theme */) => ({
   overlay: {
     pointerEvents: 'none',
