@@ -274,6 +274,25 @@
         }
       ]
     },
+    "EXT_MINES": {
+      "circles": [
+        {
+          "cx": 150.84947,
+          "cy": 100.4593,
+          "r": 12
+        },
+        {
+          "cx": 110.44334,
+          "cy": 100.4593,
+          "r": 12
+        },
+        {
+          "cx": 67.343506,
+          "cy": 100.4593,
+          "r": 12
+        }
+      ]
+    },
     "EXT_DUMMY_MINEFIELD_DYNAMIC": {
       "paths": [
         {
@@ -590,14 +609,14 @@
         }
       ]
     },
-    "EXT_ANTI_TANK_DITCH_UNDER_CONSTRUCTION": {
+    "EXT_ANTITANK_DITCH_UNDER_CONSTRUCTION": {
       "paths": [
         {
           "d": "M 99.668385,24.628481 V 174.32347 L 145.54386,147.83725 99.911492,121.49139 143.83838,95.908013 100.48253,69.499863 144.97707,48.905023 Z"
         }
       ]
     },
-    "EXT_ANTI_TANK_DITCH": {
+    "EXT_ANTITANK_DITCH": {
       "paths": [
         {
           "d": "M 99.668385,24.628481 V 174.32347 L 145.54386,147.83725 99.911492,121.49139 143.83838,95.908013 100.48253,69.499863 144.97707,48.905023 Z",
@@ -605,7 +624,7 @@
         }
       ]
     },
-    "EXT_ANTI_TANK_DITCH_WITH_ANTI_TANK_MINES": {
+    "EXT_ANTITANK_DITCH_WITH_ANTITANK_MINES": {
       "paths": [
         {
           "d": "m 20.010641,100.05321 h 11.929421 l 14.935207,25.86853 14.708757,-25.47631 h 8.453218 L 83.899027,124.45474 98.1447,99.780503 h 9.22009 l 14.00194,24.252077 13.95741,-24.174943 h 9.75301 l 14.51999,25.149373 14.4869,-25.092041 h 8.70547 z",
@@ -630,6 +649,304 @@
           "cy": 120,
           "r": 8,
           "fill": "#123"
+        }
+      ]
+    },
+    "EXT_ANTITANK_WALL": {
+      "paths": [
+        {
+          "d": "m 25.013301,100.05321 h 11.929421 l 10.112134,37.73899 10.053175,-37.51896 h 36.788054 l 9.818215,36.64208 9.94985,-37.133338 h 32.56746 l 9.69015,37.806548 8.75914,-37.20427 h 10.02739"
+        }
+      ]
+    },
+    "EXT_MINE_CLUSTER": {
+      "paths": [
+        {
+          "d": "M 24.628481,150.46463 H 174.70829 c 1.21049,-99.682994 -150.079809,-100.623149 -150.079809,0 z",
+          "strokedasharray": "20,6"
+        }
+      ]
+    },
+    "EXT_MINEFIELD_GAP": {
+      "paths": [
+        {
+          "d": "M 65.034584,24.628481 89.855475,49.449373 V 150.07981 l -24.147456,24.14745"
+        },
+        {
+          "d": "m 137.935,24.868996 -24.8209,24.82089 V 150.32033 l 24.14746,24.14745"
+        }
+      ]
+    },
+    "EXT_OBSTACLE_EFFECT": {
+      "paths": [
+        {
+          "d": "M 25.013301,25.013301 V 175.47793"
+        },
+        {
+          "d": "M 25.013301,99.668385 H 174.32347"
+        }
+      ]
+    },
+    "EXT_OBSTACLE_EFFECT_FIX": {
+      "paths": [
+        {
+          "d": "M 174.32347,99.283565 H 137.38075 L 130.7854,74.669394 117.1328,125.62159 103.52371,74.831771 90.036537,125.16658 83.088724,99.236989 H 49.641783"
+        },
+        {
+          "d": "M 49.641783,99.236989 V 112.36745 L 27.447906,99.553805 49.209289,86.989865 Z",
+          "fill": "#123"
+        }
+      ]
+    },
+    "EXT_OBSTACLE_EFFECT_TURN": {
+      "paths": [
+        {
+          "d": "M 36.708608,153.75897 C 36.733781,98.260615 99.206499,25.398121 175.09311,25.398121"
+        },
+        {
+          "d": "m 36.708608,153.75897 13.130444,0.0214 -12.849726,22.173 -12.528529,-21.78179 z",
+          "fill": "#123"
+        }
+      ]
+    },
+    "EXT_OBSTACLE_EFFECT_DISRUPT": {
+      "paths": [
+        {
+          "d": "M 173.55383,75.424729 H 149.31017 V 50.026603 H 49.256963"
+        },
+        {
+          "d": "M 149.31017,75.424729 V 100.43803 H 49.256963"
+        },
+        {
+          "d": "m 149.31017,100.43803 v 50.41142 H 49.641783"
+        },
+        {
+          "d": "M 49.256963,50.026603 V 63.157064 L 27.063086,50.343419 48.824469,37.779479 Z",
+          "fill": "#123"
+        },
+        {
+          "d": "m 49.256963,100.43803 v 13.13046 L 27.063086,100.75485 48.824469,88.190909 Z",
+          "fill": "#123"
+        },
+        {
+          "d": "m 49.641783,150.84945 v 13.13046 L 27.44791,151.16627 49.209293,138.60233 Z",
+          "fill": "#123"
+        }
+      ]
+    },
+    "EXT_BLOWN_BRIDGES_PLANNED": {
+      "paths": [
+        {
+          "d": "M 174.70829,13.083881 12.699061,175.09311",
+          "strokedasharray": "20,6"
+        },
+        {
+          "d": "M 25.782941,187.79217 186.25289,25.013301",
+          "strokedasharray": "20,6"
+        }
+      ]
+    },
+    "EXT_BLOWN_BRIDGES_READINESS_1": {
+      "paths": [
+        {
+          "d": "M 174.70829,13.083881 12.699061,175.09311",
+          "strokedasharray": "20,6"
+        },
+        {
+          "d": "M 25.782941,187.79217 186.25289,25.013301"
+        }
+      ]
+    },
+    "EXT_BLOWN_BRIDGES_READINESS_2": {
+      "paths": [
+        {
+          "d": "M 174.70829,13.083881 12.699061,175.09311"
+        },
+        {
+          "d": "M 25.782941,187.79217 186.25289,25.013301"
+        }
+      ]
+    },
+    "EXT_BLOWN_BRIDGES_READINESS_2_INVERTED": {
+      "paths": [
+        {
+          "d": "M 24.246177,13.083881 186.25541,175.09311"
+        },
+        {
+          "d": "M 173.17153,187.79217 12.701577,25.013301"
+        }
+      ]
+    },
+    "EXT_TRIP_WIRE": {
+      "paths": [
+        {
+          "d": "M 99.283565,25.013301 V 149.31017 c -0.445145,14.63921 11.306875,25.39812 25.398125,25.0133"
+        },
+        {
+          "d": "M 49.256963,50.026603 H 150.07981"
+        }
+      ]
+    },
+    "EXT_WIRE_OBSTACLE": {
+      "paths": [
+        {
+          "d": "m21 89 16 27"
+        },
+        {
+          "d": "m37 88-16 27"
+        },
+        {
+          "d": "m165 87 16 27"
+        },
+        {
+          "d": "m182 86-16 27"
+        },
+        {
+          "d": "m105 87 16 27"
+        },
+        {
+          "d": "m121 87-16 27"
+        },
+        {
+          "d": "m42 88 16 27"
+        },
+        {
+          "d": "m58 88-16 27"
+        },
+        {
+          "d": "m63 88 16 27"
+        },
+        {
+          "d": "m80 88-16 27"
+        },
+        {
+          "d": "m84 88 16 27"
+        },
+        {
+          "d": "m100 87-16 27"
+        },
+        {
+          "d": "m125 87 16 27"
+        },
+        {
+          "d": "m141 87-16 27"
+        },
+        {
+          "d": "m145 87 16 27"
+        },
+        {
+          "d": "m162 86-16 27"
+        }
+      ]
+    },
+    "EXT_WIRE_OBSTACLE_DOUBLE_FENCE": {
+      "paths": [
+        {
+          "d": " m36 93 12 16"
+        },
+        {
+          "d": "m48 93-12 16"
+        },
+        {
+          "d": "m153 93 12 16"
+        },
+        {
+          "d": "m165 92-12 16"
+        },
+        {
+          "d": "m51 93 12 16"
+        },
+        {
+          "d": "m63 93-12 16"
+        },
+        {
+          "d": "m84 93 12 16"
+        },
+        {
+          "d": "m96 93-12 16"
+        },
+        {
+          "d": "m100 93 12 16"
+        },
+        {
+          "d": "m112 93-12 16"
+        },
+        {
+          "d": "m138 93 12 16"
+        },
+        {
+          "d": "m150 92-12 16"
+        }
+      ]
+    },
+    "EXT_WIRE_OBSTACLE_SINGLE_FENCE": {
+      "paths": [
+        {
+          "d": "m141 87-16 27"
+        },
+        {
+          "d": "m125 87 16 27"
+        },
+        {
+          "d": "m94 88 16 27"
+        },
+        {
+          "d": "m110 87-16 27"
+        },
+        {
+          "d": "m63 88 16 27"
+        },
+        {
+          "d": "m80 88-16 27"
+        }
+      ]
+    },
+    "EXT_CONCERTINA":{
+      "paths": [
+        {
+          "d": "m25 100c-0.7 29 13 30 13 0.5 0.5-22-13-26-13-0.5z"
+        },
+        {
+          "d": "m43 100c-0.7 29 13 30 13 0.5 0.5-22-13-26-13-0.5z"
+        },
+        {
+          "d": "m63 100c-0.7 29 13 30 13 0.5 0.5-22-13-26-13-0.5z"
+        },
+        {
+          "d": "m82 100c-0.7 29 13 30 13 0.5 0.5-22-13-26-13-0.5z"
+        },
+        {
+          "d": "m105 99c-0.7 29 13 30 13 0.5 0.5-22-13-26-13-0.5z"
+        },
+        {
+          "d": "m123 99c-0.7 29 13 30 13 0.5 0.5-22-13-26-13-0.5z"
+        },
+        {
+          "d": "m143 99c-0.7 29 13 30 13 0.5 0.5-22-13-26-13-0.5z"
+        },
+        {
+          "d": "m162 100c-0.7 29 13 30 13 0.5 0.5-22-13-26-13-0.5z"
+        }
+      ]
+    },
+    "EXT_OBSTACLE_LINE_BOTTOM": {
+      "paths": [
+        {
+          "d": "m21 122h161"
+        }
+      ]
+    },
+    "EXT_OBSTACLE_LINE_CENTER": {
+      "paths": [
+        {
+          "d": "m21 100h158"
+        }
+      ]
+    },
+    "EXT_OBSTACLE_LINE_TOP": {
+      "paths": [
+        {
+          "d": "m21 82h160"
         }
       ]
     },
@@ -846,6 +1163,22 @@
           "text": "TAI"
         }
       ]
+    },
+    "EXT_UNEXPLODED_ORDNANCE_TEXT": {
+      "texts": [
+        {
+          "text": "UXO",
+          "fontsize": 25,
+          "x": 175,
+          "y": 100
+        },
+        {
+          "text": "UXO",
+          "fontsize": 25,
+          "x": 25,
+          "y": 100
+        }
+      ]
     }
   },
   "lettersidc": {
@@ -1058,13 +1391,100 @@
       "EXT_ABATIS"
     ],
     "G-M-OADU--": [
-      "EXT_ANTI_TANK_DITCH_UNDER_CONSTRUCTION"
+      "EXT_ANTITANK_DITCH_UNDER_CONSTRUCTION"
     ],
     "G-M-OADC--": [
-      "EXT_ANTI_TANK_DITCH"
+      "EXT_ANTITANK_DITCH"
     ],
     "G-M-OAR---": [
-      "EXT_ANTI_TANK_DITCH_WITH_ANTI_TANK_MINES"
+      "EXT_ANTITANK_DITCH_WITH_ANTITANK_MINES"
+    ],
+    "G-M-OAW---": [
+      "EXT_ANTITANK_WALL"
+    ],
+    "G-M-OMC---": [
+      "EXT_MINE_CLUSTER"
+    ],
+    "G-M-OFD---": [
+      "EXT_AREA",
+      "EXT_MINES"
+    ],
+    "G-M-OFG---": [
+      "EXT_MINEFIELD_GAP"
+    ],
+    "G-M-OFA---": [
+      "EXT_DROPZONE",
+      "EXT_MINE_TEXT"
+    ],
+    "G-M-OEB---": [
+      "EXT_OBSTACLE_EFFECT"
+    ],
+    "G-M-OEF---": [
+      "EXT_OBSTACLE_EFFECT_FIX"
+    ],
+    "G-M-OET---": [
+      "EXT_OBSTACLE_EFFECT_TURN"
+    ],
+    "G-M-OED---": [
+      "EXT_OBSTACLE_EFFECT_DISRUPT"
+    ],
+    "G-M-OU----": [
+      "EXT_AREA",
+      "EXT_UNEXPLODED_ORDNANCE_TEXT"
+    ],
+    "G-M-ORP---": [
+      "EXT_BLOWN_BRIDGES_PLANNED"
+    ],
+    "G-M-ORS---": [
+      "EXT_BLOWN_BRIDGES_READINESS_1"
+    ],
+    "G-M-ORA---": [
+      "EXT_BLOWN_BRIDGES_READINESS_2"
+    ],
+    "G-M-ORC---": [
+      "EXT_BLOWN_BRIDGES_READINESS_2",
+      "EXT_BLOWN_BRIDGES_READINESS_2_INVERTED"
+    ],
+    "G-M-OT----": [
+      "EXT_TRIP_WIRE"
+    ],
+    "G-M-OWU---": [
+      "EXT_WIRE_OBSTACLE"
+    ],
+    "G-M-OWS---": [
+      "EXT_DIRECTION_OF_ATTACK_GROUND_LINE",
+      "EXT_WIRE_OBSTACLE_SINGLE_FENCE"
+    ],
+    "G-M-OWD---": [
+      "EXT_DIRECTION_OF_ATTACK_GROUND_LINE",
+      "EXT_WIRE_OBSTACLE_DOUBLE_FENCE"
+    ],
+    "G-M-OWA---": [
+      "EXT_DIRECTION_OF_ATTACK_GROUND_LINE",
+      "EXT_WIRE_OBSTACLE"
+    ],
+    "G-M-OWL---": [
+      "EXT_OBSTACLE_LINE_BOTTOM",
+      "EXT_WIRE_OBSTACLE"
+    ],
+    "G-M-OWH---": [
+      "EXT_OBSTACLE_LINE_BOTTOM",
+      "EXT_OBSTACLE_LINE_TOP",
+      "EXT_WIRE_OBSTACLE"
+    ],
+    "G-M-OWCS--": [
+      "EXT_OBSTACLE_LINE_BOTTOM",
+      "EXT_CONCERTINA"
+    ],
+    "G-M-OWCD--": [
+      "EXT_OBSTACLE_LINE_BOTTOM",
+      "EXT_OBSTACLE_LINE_CENTER",
+      "EXT_CONCERTINA"
+    ],
+    "G-M-OWCT--": [
+      "EXT_OBSTACLE_LINE_BOTTOM",
+      "EXT_OBSTACLE_LINE_TOP",
+      "EXT_CONCERTINA"
     ]
   }
 }
