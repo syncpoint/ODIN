@@ -1,11 +1,11 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { useDrop } from 'react-dnd'
-import ItemTypes from './basemap/DnDItemTypes'
+import ItemTypes from './DnDItemTypes'
 
-import BasemapListItem from './basemap/BasemapListItem'
+import BasemapListItem from './BasemapListItem'
 
-import { register, deregister, toggleVisibility, setZIndices } from '../map/basemap/group'
+import { register, deregister, toggleVisibility, setZIndices } from '../../map/basemap/group'
 
 import { Paper } from '@material-ui/core'
 

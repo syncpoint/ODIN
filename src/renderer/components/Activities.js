@@ -9,7 +9,7 @@ import { DndProvider } from 'react-dnd'
 import Backend from 'react-dnd-html5-backend'
 
 import ActivityBar from './ActivityBar'
-import BasemapList from './BasemapList'
+import BasemapList from './basemapList/BasemapList'
 import LayerList from './layerlist/LayerList'
 import undo from '../undo'
 import evented from '../evented'
