@@ -4,7 +4,7 @@ import OSM from 'ol/source/OSM'
 import XYZ from 'ol/source/XYZ'
 import WMTS, { optionsFromCapabilities } from 'ol/source/WMTS'
 import WMTSCapabilities from 'ol/format/WMTSCapabilities'
-
+import preferences from '../../project/preferences'
 import { ipcRenderer } from 'electron'
 
 const KEYS = {
@@ -59,7 +59,19 @@ export const listSourceDescriptors = async () => {
   return [...sourceDescriptors, ...[DEFAULT_SOURCE_DESCRIPTOR]]
 }
 
-const addTileLayers = async (group) => {
+const ACTIONS = {
+  noop: () => {},
+  emit: () => emit({ type: 'basemapLayersChanged', value: getBasemapLayers() }),
+  persistAndEmit: () => {
+    const layers = getBasemapLayers()
+    preferences.set('basemaps', layers)
+    emit(
+      { type: 'basemapLayersChanged', value: layers }
+    )
+  }
+}
+
+const addTileLayers = async (group, onSuccess = ACTIONS.emit) => {
 
   const buildLayerFromSource = async source => {
     try {
@@ -86,11 +98,7 @@ const addTileLayers = async (group) => {
     .then(tileLayers => {
       tileLayers.forEach(layer => layers.push(layer))
     })
-    .then(() => {
-      emit(
-        { type: 'basemapLayersChanged', value: getBasemapLayers() }
-      )
-    })
+    .then(() => onSuccess())
     .catch(error => {
       console.error(error)
     })
@@ -118,38 +126,38 @@ const getBasemapLayers = () => {
   ))
 }
 
-export const toggleVisibility = layerId => {
-  if (!layerId) return
+const setVisibility = (layerId, visible, onSuccess = ACTIONS.persistAndEmit) => {
+  if (!layerId || visible === undefined) return
   const layer = layerById(layerId)
   if (!layer) return
-  layer.setVisible(!layer.getVisible())
-  emit(
-    { type: 'basemapLayersChanged', value: getBasemapLayers() }
-  )
+  layer.setVisible(visible)
+  onSuccess()
+}
+
+export const toggleVisibility = (layerId, onSuccess = ACTIONS.persistAndEmit) => {
+  const layer = layerById(layerId)
+  if (!layer) return
+  setVisibility(layerId, !layer.getVisible(), onSuccess)
 }
 
 /**
  *
  * @param {*} layerIds array of layer ids
  */
-export const setZIndices = layerIds => {
+export const setZIndices = (layerIds, onSuccess = ACTIONS.persistAndEmit) => {
   if (!layerIds || layerIds.length === 0) return
   const shadow = []
-  layerIds.forEach((layerId, index) => {
-    const layer = layerById(layerId)
-    shadow.push(layer)
+  layerIds.forEach((layerId) => {
+    shadow.push(layerById(layerId))
   })
   const layers = basemapLayerGroup.getLayers()
   layers.clear()
   shadow.forEach(layer => layers.push(layer))
-  emit(
-    { type: 'basemapLayersChanged', value: getBasemapLayers() }
-  )
+  onSuccess()
 }
 
 export const register = reducer => {
   reducers = [...reducers, reducer]
-  // setImmediate(() => reducer({ type: 'basemapLayersChanged', value: getBasemapLayers() }))
   reducer({ type: 'basemapLayersChanged', value: getBasemapLayers() })
 }
 
@@ -159,7 +167,23 @@ export const deregister = reducer => {
 
 const basemapLayerGroup = new LayerGroup()
 basemapLayerGroup.set(KEYS.ODIN_LAYER_ID, 'basemap')
-addTileLayers(basemapLayerGroup.getLayers())
 
+
+const initByPreferences = async event => {
+  if (event.type !== 'preferences') return
+  await addTileLayers(basemapLayerGroup.getLayers(), () => {})
+
+  const basemaps = (event.preferences.basemaps ? event.preferences.basemaps : [])
+  /* preferences.once would be nice */
+  preferences.deregister(initByPreferences)
+  if (!basemaps || basemaps.length === 0) return
+
+  setZIndices(basemaps.map(basemap => basemap.id), ACTIONS.noop)
+  basemaps.forEach(basemap => setVisibility(basemap.id, basemap.visible, ACTIONS.noop))
+
+  ACTIONS.emit()
+}
+
+preferences.register(initByPreferences)
 
 export default () => basemapLayerGroup
