@@ -101,8 +101,12 @@ const layerById = layerId => {
   return layers.find(l => l.get(KEYS.ODIN_LAYER_ID) === layerId)
 }
 
+/**
+ * @returns an array of layers. The first layer is the one that is the one furthest
+ * away from the user, the layer at the end of the array is the one that is nearest to the user.
+ * If layer 1 and layer 0 are visible layer 1 will be above layer 0.
+ */
 const getBasemapLayers = () => {
-
   const layers = basemapLayerGroup.getLayers()
   return layers.getArray().map(layer => (
     {
@@ -124,10 +128,13 @@ export const toggleVisibility = layerId => {
   )
 }
 
+/**
+ *
+ * @param {*} layerIds array of layer ids
+ */
 export const setZIndices = layerIds => {
   if (!layerIds || layerIds.length === 0) return
   const shadow = []
-  /* layer at array pos 0 is the topmost layer */
   layerIds.forEach((layerId, index) => {
     const layer = layerById(layerId)
     shadow.push(layer)
@@ -140,14 +147,9 @@ export const setZIndices = layerIds => {
   )
 }
 
-/*
-  event based API
-*/
-
-
-
 export const register = reducer => {
   reducers = [...reducers, reducer]
+  // setImmediate(() => reducer({ type: 'basemapLayersChanged', value: getBasemapLayers() }))
   reducer({ type: 'basemapLayersChanged', value: getBasemapLayers() })
 }
 

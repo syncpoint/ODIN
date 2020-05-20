@@ -96,7 +96,7 @@ const BasemapListItem = (props) => {
     <ListItem ref={ref} className={classes.listItem} style={{ opacity }}>
       <DragHandle color={visible ? 'inherit' : 'disabled'}/>
       <Typography variant="button" color={visible ? 'initial' : 'textSecondary'}>{text}</Typography>
-      <ListItemSecondaryAction>
+      <ListItemSecondaryAction >
         <IconButton size="small" onClick={() => visibilityClicked(id)}>
           { visible ? <VisibilityIcon /> : <VisibilityOffIcon /> }
         </IconButton>
