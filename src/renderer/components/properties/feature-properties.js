@@ -21,6 +21,12 @@ providers.register(selected => {
   const properties = inputLayers.featureProperties(featureIds[0])
   const updateFeature = properties => inputLayers.updateFeatureProperties(featureIds[0], properties)
   const clazz = descriptors.featureClass(properties.sidc)
+  if (!clazz) {
+    console.log('feature class missing', properties.sidc)
+    // TODO: return generic 2525C properties panel
+    return null
+  }
+
   const key = featureIds[0]
   const props = { feature: properties, updateFeature }
   return (panelTypes[clazz] || (() => null))(key, props)

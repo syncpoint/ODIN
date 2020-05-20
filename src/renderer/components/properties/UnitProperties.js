@@ -2,11 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { Paper, TextField } from '@material-ui/core'
-import { SelectEchelon } from './SelectEchelon'
+import EchelonProperty from './EchelonProperty'
 import ReinforcedReduced from './ReinforcedReduced'
 import Modifier from './Modifier'
-import Hostility from './Hostility'
-import Status from './Status'
+import HostilityProperty from './HostilityProperty'
+import StatusGroup from './StatusGroup'
+import TextProperty from './TextProperty'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -27,7 +28,7 @@ const useStyles = makeStyles(theme => ({
 
 const UnitProperties = props => {
   const classes = useStyles()
-  const [feature, setFeature] = React.useState(props.feature)
+  const handleCommit = feature => props.updateFeature(feature)
 
   return (
     <Paper
@@ -35,29 +36,15 @@ const UnitProperties = props => {
       elevation={ 4 }
     >
       <TextField label={'Name'} className={ classes.fullwidth } />
-
-      {/*
-        TODO: hold temporary value
-        TODO: handle 'ESCAPE': reset to original value
-        TODO: handle 'ENTER': update feature
-        TODO: trim value
-       */}
-
-      <TextField
-        label={'Unique Designation'}
-        value={feature.t}
-        onChange={({ target }) => setFeature({ ...feature, t: target.value })}
-        onBlur={() => props.updateFeature(feature)}
-      />
-
-      <TextField label={'Higher Formation'} />
-      <TextField label={'Speed'} />
-      <TextField label={'Direction'} />
-      <TextField label={'Staff Comments'} className={ classes.fullwidth } />
-      <TextField label={'Special C2 HQ'} className={ classes.fullwidth } />
-      <Hostility/>
-      <SelectEchelon label={'Echelon'} />
-      <Status/>
+      <TextProperty label={'Unique Designation'} property={'t'} feature={props.feature} onCommit={handleCommit} />
+      <TextProperty label={'Higher Formation'} property={'m'} feature={props.feature} onCommit={handleCommit} />
+      <TextProperty label={'Speed'} property={'z'} feature={props.feature} onCommit={handleCommit} />
+      <TextProperty label={'Direction'} property={'q'} feature={props.feature} onCommit={handleCommit} />
+      <TextProperty label={'Staff Comments'} property={'g'} feature={props.feature} onCommit={handleCommit} />
+      <TextProperty label={'Special C2 HQ'} property={'aa'} feature={props.feature} onCommit={handleCommit} />
+      <HostilityProperty feature={props.feature} onCommit={handleCommit}/>
+      <EchelonProperty feature={props.feature} onCommit={handleCommit}/>
+      <StatusGroup feature={props.feature} onCommit={handleCommit}/>
       <Modifier/>
       <ReinforcedReduced/>
     </Paper>
