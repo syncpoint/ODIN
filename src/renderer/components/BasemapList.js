@@ -5,7 +5,7 @@ import ItemTypes from './basemap/DnDItemTypes'
 
 import BasemapListItem from './basemap/BasemapListItem'
 
-import { register, deregister, toggleVisibility, setZIndices } from '../map/basemapLayers'
+import { register, deregister, toggleVisibility, setZIndices } from '../map/basemap/group'
 
 import { Paper } from '@material-ui/core'
 

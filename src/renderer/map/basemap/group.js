@@ -1,62 +1,18 @@
 import LayerGroup from 'ol/layer/Group'
 import TileLayer from 'ol/layer/Tile'
-import OSM from 'ol/source/OSM'
-import XYZ from 'ol/source/XYZ'
-import WMTS, { optionsFromCapabilities } from 'ol/source/WMTS'
-import WMTSCapabilities from 'ol/format/WMTSCapabilities'
+import { from, listSourceDescriptors } from './tileSources'
 import preferences from '../../project/preferences'
-import { ipcRenderer } from 'electron'
+
 
 const KEYS = {
   ODIN_LAYER_ID: 'ODIN_LAYER_ID',
   ODIN_LAYER_NAME: 'ODIN_LAYER_NAME'
 }
 
-const DEFAULT_SOURCE_DESCRIPTOR = {
-  name: 'Open Street Map',
-  type: 'OSM',
-  id: '708b7f83-12a2-4a8b-a49d-9f2683586bcf'
-}
-
-/*
-  Internal event based API
-*/
-
 let reducers = []
 
 const emit = event => {
   reducers.forEach(reducer => setImmediate(() => reducer(event)))
-}
-
-const sources = {
-  OSM: descriptor => new OSM(descriptor.options),
-  XYZ: descriptor => new XYZ(descriptor.options),
-  WMTS: async descriptor => {
-    const response = await fetch(descriptor.options.url)
-    const capabilities = (new WMTSCapabilities()).read(await response.text())
-    const wmtsOptions = optionsFromCapabilities(capabilities, descriptor.options)
-    // wmtsOptions.tilePixelRatio = (highDPI ? 2 : 1)
-    return new WMTS(wmtsOptions)
-  }
-}
-
-const from = async descriptor => {
-  const fallbackSource = () => null
-  try {
-    return (sources[descriptor.type] || fallbackSource)(descriptor)
-  } catch (error) {
-    console.error(error)
-    return fallbackSource()
-  }
-}
-
-export const listSourceDescriptors = async () => {
-  /*
-    Handling the resources (file) required is done by the
-    main process via the 'main/ipc/sources' module.
-  */
-  const sourceDescriptors = await ipcRenderer.invoke('IPC_LIST_SOURCE_DESCRIPTORS')
-  return [...sourceDescriptors, ...[DEFAULT_SOURCE_DESCRIPTOR]]
 }
 
 const ACTIONS = {

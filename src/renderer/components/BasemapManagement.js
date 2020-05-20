@@ -7,7 +7,7 @@ import { Button } from '@material-ui/core'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 
-import { setBasemap, clearBasemap } from '../map/basemap'
+import { setBasemap, clearBasemap } from '../map/basemap/single'
 import * as ol from 'ol'
 import { fromLonLat } from 'ol/proj'
 import { boundingExtent } from 'ol/extent'

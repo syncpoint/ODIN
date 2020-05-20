@@ -7,7 +7,7 @@ import 'ol/ol.css'
 import { fromLonLat, toLonLat } from 'ol/proj'
 import { ScaleLine } from 'ol/control'
 import getGridLayerGroup from './grids/group'
-import basemapLayerGroup from './basemapLayers/index'
+import basemapLayerGroup from './basemap/group'
 
 import evented from '../evented'
 import preferences from '../project/preferences'
