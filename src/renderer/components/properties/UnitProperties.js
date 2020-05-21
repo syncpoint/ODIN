@@ -44,7 +44,7 @@ const UnitProperties = props => {
       <HostilityProperty properties={props.properties} onCommit={props.update}/>
       <EchelonProperty properties={props.properties} onCommit={props.update}/>
       <StatusGroupFull properties={props.properties} onCommit={props.update}/>
-      <ModifierProperty/>
+      <ModifierProperty properties={props.properties} onCommit={props.update}/>
       <ReinforcedReduced/>
     </Paper>
   )
