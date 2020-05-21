@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Paper, TextField } from '@material-ui/core'
 import EchelonProperty from './EchelonProperty'
 import ReinforcedReduced from './ReinforcedReduced'
-import Modifier from './Modifier'
+import ModifierProperty from './ModifierProperty'
 import HostilityProperty from './HostilityProperty'
 import StatusGroupFull from './StatusGroupFull'
 import TextProperty from './TextProperty'
@@ -44,7 +44,7 @@ const UnitProperties = props => {
       <HostilityProperty properties={props.properties} onCommit={props.update}/>
       <EchelonProperty properties={props.properties} onCommit={props.update}/>
       <StatusGroupFull properties={props.properties} onCommit={props.update}/>
-      <Modifier/>
+      <ModifierProperty/>
       <ReinforcedReduced/>
     </Paper>
   )

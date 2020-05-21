@@ -1,20 +1,19 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
-import { FormLabel, FormControlLabel, Checkbox } from '@material-ui/core'
+import { InputLabel, FormControlLabel, Checkbox } from '@material-ui/core'
 
 const useStyles = makeStyles(() => ({
-  modifierLabel: { gridColumn: '1 / span 2' },
-  modifier: { gridColumn: '1 / span 2' }
+  twoColumns: { gridColumn: '1 / span 2' }
 }))
 
-const Modifier = props => {
+const ModifierProperty = props => {
   const classes = useStyles()
 
   return (
     <>
-      <FormLabel component="legend" className={ classes.modifierLabel }>Modifier</FormLabel>
-      <div className={ classes.modifier }>
+      <InputLabel shrink>Modifer</InputLabel>
+      <div className={classes.twoColumns}>
         <FormControlLabel
           control={ <Checkbox color="secondary" /> }
           label="HQ"
@@ -38,4 +37,4 @@ const Modifier = props => {
   )
 }
 
-export default Modifier
+export default ModifierProperty
