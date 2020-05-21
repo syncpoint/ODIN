@@ -74,7 +74,10 @@ export default {
 
   featurepropertiesupdated: (prev, { featureId, properties }) => K({ ...prev })(next => {
     const layer = next[URI.layerId(featureId)]
-    layer.features[featureId] = { ...layer.features[featureId], ...properties }
+    layer.features[featureId] = {
+      ...layer.features[featureId],
+      name: properties.t || 'N/A'
+    }
   }),
 
   layerlocked: (prev, { layerId, locked }) => K({ ...prev })(next => {
