@@ -1,14 +1,18 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
-import { FormLabel } from '@material-ui/core'
+import { InputLabel } from '@material-ui/core'
 import StatusProperty from './StatusProperty'
 import OperationalStatusProperty from './OperationalStatusProperty'
 import SIDC from './SIDC'
 
 const useStyles = makeStyles(theme => ({
   twoColumns: { gridColumn: '1 / span 2' },
-  firstColumn: { gridColumn: 1 }
+  firstColumn: { gridColumn: 1 },
+  label: {
+    gridColumn: '1 / span 2',
+    marginBottom: 0
+  }
 }))
 
 const StatusGroupFull = props => {
@@ -24,7 +28,7 @@ const StatusGroupFull = props => {
 
   return (
     <>
-      <FormLabel component="legend" className={classes.twoColumns}>Status</FormLabel>
+      <InputLabel className={classes.label} shrink>Status</InputLabel>
       <StatusProperty value={status} onChange={handleChange}/>
       <OperationalStatusProperty value={status} onChange={handleChange}/>
     </>
