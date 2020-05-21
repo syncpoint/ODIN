@@ -525,6 +525,7 @@ const updateFeatureProperties = (featureId, properties) => {
   if (!feature) return null
 
   feature.setProperties(properties, true)
+  writeFeatures([feature])
   emit({ type: 'featurepropertiesupdated', featureId, properties })
 }
 
