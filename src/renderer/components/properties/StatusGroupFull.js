@@ -13,18 +13,18 @@ const useStyles = makeStyles(theme => ({
 
 const StatusGroupFull = props => {
   const classes = useStyles()
-  const { feature } = props
-  const [status, setStatus] = React.useState(feature.sidc[3])
+  const { properties } = props
+  const [status, setStatus] = React.useState(properties.sidc[3])
 
   const handleChange = ({ target }) => {
     setStatus(target.value)
-    feature.sidc = SIDC.replace(3, target.value)(feature.sidc)
-    props.onCommit(feature)
+    properties.sidc = SIDC.replace(3, target.value)(properties.sidc)
+    props.onCommit(properties)
   }
 
   return (
     <>
-      <FormLabel component="legend" className={ classes.twoColumns }>Status</FormLabel>
+      <FormLabel component="legend" className={classes.twoColumns}>Status</FormLabel>
       <StatusProperty value={status} onChange={handleChange}/>
       <OperationalStatusProperty value={status} onChange={handleChange}/>
     </>
@@ -32,7 +32,7 @@ const StatusGroupFull = props => {
 }
 
 StatusGroupFull.propTypes = {
-  feature: PropTypes.object.isRequired,
+  properties: PropTypes.object.isRequired,
   onCommit: PropTypes.func.isRequired
 }
 

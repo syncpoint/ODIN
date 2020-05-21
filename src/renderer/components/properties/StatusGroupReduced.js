@@ -6,31 +6,31 @@ import StatusProperty from './StatusProperty'
 import SIDC from './SIDC'
 
 const useStyles = makeStyles(theme => ({
-  statusLabel: { gridColumn: '1 / span 2' },
+  twoColumns: { gridColumn: '1 / span 2' },
   firstColumn: { gridColumn: 1 }
 }))
 
 const StatusGroupReduced = props => {
   const classes = useStyles()
-  const { feature } = props
-  const [status, setStatus] = React.useState(feature.sidc[3])
+  const { properties } = props
+  const [status, setStatus] = React.useState(properties.sidc[3])
 
   const handleChange = ({ target }) => {
     setStatus(target.value)
-    feature.sidc = SIDC.replace(3, target.value)(feature.sidc)
-    props.onCommit(feature)
+    properties.sidc = SIDC.replace(3, target.value)(properties.sidc)
+    props.onCommit(properties)
   }
 
   return (
     <>
-      <FormLabel component="legend" className={ classes.statusLabel }>Status</FormLabel>
+      <FormLabel component="legend" className={classes.twoColumns}>Status</FormLabel>
       <StatusProperty value={status} onChange={handleChange}/>
     </>
   )
 }
 
 StatusGroupReduced.propTypes = {
-  feature: PropTypes.object.isRequired,
+  properties: PropTypes.object.isRequired,
   onCommit: PropTypes.func.isRequired
 }
 

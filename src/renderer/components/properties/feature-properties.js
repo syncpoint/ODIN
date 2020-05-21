@@ -19,7 +19,7 @@ providers.register(selected => {
   if (featureIds.length !== 1) return null
 
   const properties = inputLayers.featureProperties(featureIds[0])
-  const updateFeature = properties => inputLayers.updateFeatureProperties(featureIds[0], properties)
+  const update = properties => inputLayers.updateFeatureProperties(featureIds[0], properties)
   const clazz = descriptors.featureClass(properties.sidc)
   if (!clazz) {
     console.log('feature class missing', properties.sidc)
@@ -28,6 +28,6 @@ providers.register(selected => {
   }
 
   const key = featureIds[0]
-  const props = { feature: properties, updateFeature }
+  const props = { properties, update }
   return (panelTypes[clazz] || (() => null))(key, props)
 })

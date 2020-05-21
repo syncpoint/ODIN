@@ -21,35 +21,34 @@ const useStyles = makeStyles(theme => ({
     gridAutoRows: 'min-content'
   },
 
-  fullwidth: { gridColumn: '1 / span 2' }
+  twoColumns: { gridColumn: '1 / span 2' }
 }))
 
 const LineProperties = props => {
   const classes = useStyles()
-  const handleCommit = feature => props.updateFeature(feature)
 
   return (
     <Paper
       className={ classes.paper }
       elevation={ 4 }
     >
-      <TextField label={'Name'} className={ classes.fullwidth } />
-      <TextProperty label={'Unique Designation'} property={'t'} feature={props.feature} onCommit={handleCommit} className={ classes.fullwidth } />
-      <TextProperty label={'Additional Information'} property={'h'} feature={props.feature} onCommit={handleCommit} className={ classes.fullwidth }/>
-      <HostilityProperty feature={props.feature} onCommit={handleCommit}/>
-      <EchelonProperty feature={props.feature} onCommit={handleCommit}/>
-      <StatusGroupReduced feature={props.feature} onCommit={handleCommit}/>
-      <TextProperty label={'Effective (from)'} property={'w'} feature={props.feature} onCommit={handleCommit} className={ classes.fullwidth } />
-      <TextProperty label={'Effective (to)'} property={'w1'} feature={props.feature} onCommit={handleCommit} className={ classes.fullwidth } />
-      <TextProperty label={'Altitude (from)'} property={'x'} feature={props.feature} onCommit={handleCommit} className={ classes.fullwidth } />
-      <TextProperty label={'Altitude (to)'} property={'x1'} feature={props.feature} onCommit={handleCommit} className={ classes.fullwidth } />
+      <TextField label={'Name'} className={ classes.twoColumns } />
+      <TextProperty label={'Unique Designation'} property={'t'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
+      <TextProperty label={'Additional Information'} property={'h'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns }/>
+      <HostilityProperty properties={props.properties} onCommit={props.update}/>
+      <EchelonProperty properties={props.properties} onCommit={props.update}/>
+      <StatusGroupReduced properties={props.properties} onCommit={props.update}/>
+      <TextProperty label={'Effective (from)'} property={'w'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
+      <TextProperty label={'Effective (to)'} property={'w1'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
+      <TextProperty label={'Altitude (from)'} property={'x'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
+      <TextProperty label={'Altitude (to)'} property={'x1'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
     </Paper>
   )
 }
 
 LineProperties.propTypes = {
-  feature: PropTypes.object.isRequired,
-  updateFeature: PropTypes.func.isRequired
+  properties: PropTypes.object.isRequired,
+  update: PropTypes.func.isRequired
 }
 
 

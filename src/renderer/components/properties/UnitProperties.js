@@ -23,28 +23,27 @@ const useStyles = makeStyles(theme => ({
     gridAutoRows: 'min-content'
   },
 
-  fullwidth: { gridColumn: '1 / span 2' }
+  twoColumns: { gridColumn: '1 / span 2' }
 }))
 
 const UnitProperties = props => {
   const classes = useStyles()
-  const handleCommit = feature => props.updateFeature(feature)
 
   return (
     <Paper
       className={ classes.paper }
       elevation={ 4 }
     >
-      <TextField label={'Name'} className={ classes.fullwidth } />
-      <TextProperty label={'Unique Designation'} property={'t'} feature={props.feature} onCommit={handleCommit} />
-      <TextProperty label={'Higher Formation'} property={'m'} feature={props.feature} onCommit={handleCommit} />
-      <TextProperty label={'Speed'} property={'z'} feature={props.feature} onCommit={handleCommit} />
-      <TextProperty label={'Direction'} property={'q'} feature={props.feature} onCommit={handleCommit} />
-      <TextProperty label={'Staff Comments'} property={'g'} feature={props.feature} onCommit={handleCommit} />
-      <TextProperty label={'Special C2 HQ'} property={'aa'} feature={props.feature} onCommit={handleCommit} />
-      <HostilityProperty feature={props.feature} onCommit={handleCommit}/>
-      <EchelonProperty feature={props.feature} onCommit={handleCommit}/>
-      <StatusGroupFull feature={props.feature} onCommit={handleCommit}/>
+      <TextField label={'Name'} className={classes.twoColumns} />
+      <TextProperty label={'Unique Designation'} property={'t'} properties={props.properties} onCommit={props.update} />
+      <TextProperty label={'Higher Formation'} property={'m'} properties={props.properties} onCommit={props.update} />
+      <TextProperty label={'Speed'} property={'z'} properties={props.properties} onCommit={props.update} />
+      <TextProperty label={'Direction'} property={'q'} properties={props.properties} onCommit={props.update} />
+      <TextProperty label={'Staff Comments'} property={'g'} className={classes.twoColumns} properties={props.properties} onCommit={props.update} />
+      <TextProperty label={'Special C2 HQ'} property={'aa'} className={classes.twoColumns} properties={props.properties} onCommit={props.update} />
+      <HostilityProperty properties={props.properties} onCommit={props.update}/>
+      <EchelonProperty properties={props.properties} onCommit={props.update}/>
+      <StatusGroupFull properties={props.properties} onCommit={props.update}/>
       <Modifier/>
       <ReinforcedReduced/>
     </Paper>
@@ -52,8 +51,8 @@ const UnitProperties = props => {
 }
 
 UnitProperties.propTypes = {
-  feature: PropTypes.object.isRequired,
-  updateFeature: PropTypes.func.isRequired
+  properties: PropTypes.object.isRequired,
+  update: PropTypes.func.isRequired
 }
 
 

@@ -4,14 +4,13 @@ import { Select, MenuItem } from '@material-ui/core'
 import SIDC from './SIDC'
 
 const EchelonProperty = props => {
-  const { feature } = props
-  const [value, setValue] = React.useState(feature.sidc[11])
+  const { properties } = props
+  const [value, setValue] = React.useState(properties.sidc[11])
 
   const handleChange = ({ target }) => {
     setValue(target.value)
-    feature.sidc = SIDC.replace(11, target.value)(feature.sidc)
-    console.log(feature.sidc)
-    props.onCommit(feature)
+    properties.sidc = SIDC.replace(11, target.value)(properties.sidc)
+    props.onCommit(properties)
   }
 
   return (
@@ -37,7 +36,7 @@ const EchelonProperty = props => {
 }
 
 EchelonProperty.propTypes = {
-  feature: PropTypes.object.isRequired,
+  properties: PropTypes.object.isRequired,
   onCommit: PropTypes.func.isRequired
 }
 

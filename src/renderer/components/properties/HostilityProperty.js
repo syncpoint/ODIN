@@ -4,13 +4,13 @@ import { Select, MenuItem } from '@material-ui/core'
 import SIDC from './SIDC'
 
 const HostilityProperty = props => {
-  const { feature } = props
-  const [value, setValue] = React.useState(feature.sidc[1])
+  const { properties } = props
+  const [value, setValue] = React.useState(properties.sidc[1])
 
   const handleChange = ({ target }) => {
     setValue(target.value)
-    feature.sidc = SIDC.replace(1, target.value)(feature.sidc)
-    props.onCommit(feature)
+    properties.sidc = SIDC.replace(1, target.value)(properties.sidc)
+    props.onCommit(properties)
   }
 
   return (
@@ -39,7 +39,7 @@ const HostilityProperty = props => {
 }
 
 HostilityProperty.propTypes = {
-  feature: PropTypes.object.isRequired,
+  properties: PropTypes.object.isRequired,
   onCommit: PropTypes.func.isRequired
 }
 
