@@ -8,12 +8,12 @@ const addFeatures = (next, features) =>
     const featureId = Feature.id(feature)
     next[layerId].features[featureId] = {
       id: featureId,
-      ...feature.getProperties()
+      name: feature.get('t') || 'N/A'
     }
   })
 
 const addLayer = (next, layer, features) => {
-  next[layer.id] = { ...layer, features: {} }
+  next[layer.id] = { id: layer.id, name: layer.name, features: {} }
   addFeatures(next, features)
 }
 
@@ -26,10 +26,32 @@ const elementById = next => id =>
 /**
  * Handle input layer events.
  * NOTE: Functions must be pure and must allow to be called twice for same event.
+ * State has the following structure:
+ *
+ *  {
+ *    layerId: {
+ *      id: string (layerId)
+ *      name: string
+ *      active: boolean
+ *      locked: boolean
+ *      hidden: boolean
+ *      expanded: boolean
+ *      selected: boolean
+ *      features: {
+ *        featureId: {
+ *          id: string (featureId)
+ *          name: string
+ *          selected: boolean
+ *        }
+ *      },
+ *      ...
+ *    },
+ *    ...
+ *  }
  */
 export default {
   snapshot: (prev, { layers, features }) => K({ ...prev })(next => {
-    layers.forEach(layer => (next[layer.id] = { ...layer, features: {} }))
+    layers.forEach(layer => (next[layer.id] = { id: layer.id, name: layer.name, features: {} }))
     addFeatures(next, features)
   }),
 
