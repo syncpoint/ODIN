@@ -31,21 +31,21 @@ const UnitProperties = props => {
 
   return (
     <Paper
-      className={ classes.paper }
-      elevation={ 4 }
+      className={classes.paper}
+      elevation={4}
     >
-      <TextField label={'Name'} className={classes.twoColumns} />
-      <TextProperty label={'Unique Designation'} property={'t'} properties={props.properties} onCommit={props.update} />
-      <TextProperty label={'Higher Formation'} property={'m'} properties={props.properties} onCommit={props.update} />
-      <TextProperty label={'Speed'} property={'z'} properties={props.properties} onCommit={props.update} />
-      <TextProperty label={'Direction'} property={'q'} properties={props.properties} onCommit={props.update} />
-      <TextProperty label={'Staff Comments'} property={'g'} className={classes.twoColumns} properties={props.properties} onCommit={props.update} />
-      <TextProperty label={'Special C2 HQ'} property={'aa'} className={classes.twoColumns} properties={props.properties} onCommit={props.update} />
+      <TextField label='Name' className={classes.twoColumns}/>
+      <TextProperty label='Unique Designation' property='t' properties={props.properties} onCommit={props.update}/>
+      <TextProperty label='Higher Formation' property='m' properties={props.properties} onCommit={props.update}/>
+      <TextProperty label='Speed' property='z' properties={props.properties} onCommit={props.update}/>
+      <TextProperty label='Direction' property='q' properties={props.properties} onCommit={props.update}/>
+      <TextProperty label='Staff Comments' property='g' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
+      <TextProperty label='Special C2 HQ' property='aa' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
       <HostilityProperty properties={props.properties} onCommit={props.update}/>
       <EchelonProperty properties={props.properties} onCommit={props.update}/>
       <StatusGroupFull properties={props.properties} onCommit={props.update}/>
       <ModifierProperty properties={props.properties} onCommit={props.update}/>
-      <ReinforcedReduced/>
+      <ReinforcedReduced property='f' properties={props.properties} onCommit={props.update}/>
     </Paper>
   )
 }
@@ -55,6 +55,4 @@ UnitProperties.propTypes = {
   update: PropTypes.func.isRequired
 }
 
-
 export default UnitProperties
-

@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { InputLabel, FormControlLabel, RadioGroup, Radio } from '@material-ui/core'
 
@@ -12,45 +13,58 @@ const useStyles = makeStyles(() => ({
   label: { marginBottom: 8 }
 }))
 
-
 const ReinforcedReduced = props => {
+  const { properties, onCommit } = props
   const classes = useStyles()
+  const [value, setValue] = React.useState(properties.f || '')
+
+  const handleChange = ({ target }) => {
+    properties.f = target.value
+    setValue(properties.f)
+    onCommit(properties)
+  }
 
   return (
-    <div className={ classes.twoColumns }>
+    <div className={classes.twoColumns}>
       <InputLabel className={classes.label} shrink>Reinforced/Reduced</InputLabel>
 
       <RadioGroup
-        onChange={ event => this.updateField('reinforcedReduced', event.target.value) }
-        className={ classes.reinforcedReducedGroup }
+        value={value}
+        onChange={handleChange}
+        className={classes.reinforcedReducedGroup}
       >
         <FormControlLabel
           value=""
-          control={ <Radio color="secondary" /> }
+          control={<Radio color="secondary"/>}
           label="None"
           labelPlacement="top"
         />
         <FormControlLabel
           value="(+)"
-          control={ <Radio color="secondary" /> }
+          control={<Radio color="secondary"/>}
           label="(+)"
           labelPlacement="top"
         />
         <FormControlLabel
-          value="(—)"
-          control={ <Radio color="secondary" /> }
-          label="(—)"
+          value="(-)"
+          control={<Radio color="secondary"/>}
+          label="(-)"
           labelPlacement="top"
         />
         <FormControlLabel
           value="(±)"
-          control={ <Radio color="secondary" /> }
+          control={<Radio color="secondary"/>}
           label="(±)"
           labelPlacement="top"
         />
       </RadioGroup>
     </div>
   )
+}
+
+ReinforcedReduced.propTypes = {
+  properties: PropTypes.object.isRequired,
+  onCommit: PropTypes.func.isRequired
 }
 
 export default ReinforcedReduced
