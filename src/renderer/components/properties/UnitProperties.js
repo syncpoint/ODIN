@@ -6,7 +6,7 @@ import EchelonProperty from './EchelonProperty'
 import ReinforcedReduced from './ReinforcedReduced'
 import Modifier from './Modifier'
 import HostilityProperty from './HostilityProperty'
-import StatusGroup from './StatusGroup'
+import StatusGroupFull from './StatusGroupFull'
 import TextProperty from './TextProperty'
 
 const useStyles = makeStyles(theme => ({
@@ -44,7 +44,7 @@ const UnitProperties = props => {
       <TextProperty label={'Special C2 HQ'} property={'aa'} feature={props.feature} onCommit={handleCommit} />
       <HostilityProperty feature={props.feature} onCommit={handleCommit}/>
       <EchelonProperty feature={props.feature} onCommit={handleCommit}/>
-      <StatusGroup feature={props.feature} onCommit={handleCommit}/>
+      <StatusGroupFull feature={props.feature} onCommit={handleCommit}/>
       <Modifier/>
       <ReinforcedReduced/>
     </Paper>

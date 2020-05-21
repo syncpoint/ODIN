@@ -8,10 +8,10 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const OperationalStatusProperty = props => {
-  const { status, onChange } = props
+  const { value, onChange } = props
   const classes = useStyles()
 
-  const select = () => status === 'A'
+  const select = () => value === 'A'
     ? <Select
       className={ classes.secondColumn }
       label={'Status'}
@@ -21,7 +21,7 @@ const OperationalStatusProperty = props => {
     : <Select
       className={ classes.secondColumn }
       label={'Status'}
-      value={status}
+      value={value}
       onChange={onChange}
     >
       <MenuItem value={'P'}>N/A</MenuItem>
@@ -35,7 +35,7 @@ const OperationalStatusProperty = props => {
 }
 
 OperationalStatusProperty.propTypes = {
-  status: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired
 }
 

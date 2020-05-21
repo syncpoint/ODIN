@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Paper, TextField } from '@material-ui/core'
 import EchelonProperty from './EchelonProperty'
 import HostilityProperty from './HostilityProperty'
-import StatusGroup from './StatusGroup'
+import StatusGroupReduced from './StatusGroupReduced'
 import TextProperty from './TextProperty'
 
 const useStyles = makeStyles(theme => ({
@@ -38,7 +38,7 @@ const LineProperties = props => {
       <TextProperty label={'Additional Information'} property={'h'} feature={props.feature} onCommit={handleCommit} className={ classes.fullwidth }/>
       <HostilityProperty feature={props.feature} onCommit={handleCommit}/>
       <EchelonProperty feature={props.feature} onCommit={handleCommit}/>
-      <StatusGroup feature={props.feature} onCommit={handleCommit}/>
+      <StatusGroupReduced feature={props.feature} onCommit={handleCommit}/>
       <TextProperty label={'Effective (from)'} property={'w'} feature={props.feature} onCommit={handleCommit} className={ classes.fullwidth } />
       <TextProperty label={'Effective (to)'} property={'w1'} feature={props.feature} onCommit={handleCommit} className={ classes.fullwidth } />
       <TextProperty label={'Altitude (from)'} property={'x'} feature={props.feature} onCommit={handleCommit} className={ classes.fullwidth } />
