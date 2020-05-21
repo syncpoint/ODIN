@@ -58,7 +58,7 @@ export default {
   featuresadded: (prev, { features }) => K({ ...prev })(next => {
     addFeatures(next, features)
 
-    // Update lock/hidden layer states.
+    // Update locked/hidden layer states.
     features
       .map(Feature.layerId)
       .filter(uniq)
