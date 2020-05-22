@@ -4,7 +4,7 @@ import { K } from '../../shared/combinators'
 
 const parameterizedSIDC =
   sidc =>
-    `${sidc[0]}*${sidc[2]}*${sidc.substring(4, 10)}*****`
+    `${sidc[0]}*${sidc[2]}*${sidc.substring(4, 11)}****`
 
 const features = descriptors.reduce((acc, descriptor) => K(acc)(acc => {
   acc[descriptor.sidc] = {
