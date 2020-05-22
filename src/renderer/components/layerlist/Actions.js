@@ -14,29 +14,29 @@ const withLayer = fn => {
   fn(selected[0])
 }
 
-const actionDescriptors = t => [
+const actionDescriptors = [
   {
     icon: <LayersPlus/>,
-    tooltip: t('layers.create'),
+    tooltip: 'layers.create',
     disabled: false,
     sticky: true, // cannot be disabled
     action: () => inputLayers.createLayer()
   },
   {
     icon: <LayersMinus/>,
-    tooltip: t('layers.delete'),
+    tooltip: 'layers.delete',
     disabled: true,
     action: () => withLayer(layerId => inputLayers.removeLayer(layerId))
   },
   {
     icon: <ContentDuplicate/>,
-    tooltip: t('layers.duplicate'),
+    tooltip: 'layers.duplicate',
     disabled: true,
     action: () => withLayer(layerId => inputLayers.duplicateLayer(layerId))
   },
   {
     icon: <ExportVariant/>,
-    tooltip: t('layers.share'),
+    tooltip: 'layers.share',
     disabled: true,
     action: noop
   }
@@ -52,7 +52,7 @@ const reducer = (prev) => K([...prev])(next => {
 
 export const Actions = (/* props */) => {
   const { t } = useTranslation()
-  const [actions, dispatch] = React.useReducer(reducer, actionDescriptors(t))
+  const [actions, dispatch] = React.useReducer(reducer, actionDescriptors)
 
   React.useEffect(() => {
     const handleEvent = () => dispatch()
@@ -66,7 +66,7 @@ export const Actions = (/* props */) => {
   }, [])
 
   return actions.map(({ icon, tooltip, disabled, action }, index) => (
-    <Tooltip key={index} title={tooltip}>
+    <Tooltip key={index} title={t(tooltip)}>
       {/* </span> needed for disabled </Tooltip> child. */}
       <span>
         <IconButton size='small' disabled={disabled} onClick={action}>
