@@ -1,20 +1,19 @@
 import { ipcRenderer } from 'electron'
-import { Tile as TileLayer } from 'ol/layer'
 import OSM from 'ol/source/OSM'
 import XYZ from 'ol/source/XYZ'
 import WMTS, { optionsFromCapabilities } from 'ol/source/WMTS'
 import WMTSCapabilities from 'ol/format/WMTSCapabilities'
 import { DEVICE_PIXEL_RATIO } from 'ol/has'
 
-import './epsg'
+import '../epsg'
 
 const highDPI = DEVICE_PIXEL_RATIO > 1
 
-const DEFAULT_SOURCE_DESCRIPTOR = {
+export const DEFAULT_SOURCE_DESCRIPTOR = Object.freeze({
   name: 'Open Street Map',
   type: 'OSM',
   id: '708b7f83-12a2-4a8b-a49d-9f2683586bcf'
-}
+})
 
 /*
   This is a factory function that takes a source descriptor and returns
@@ -33,7 +32,7 @@ const sources = {
   }
 }
 
-const from = async descriptor => {
+export const from = async descriptor => {
   const fallbackSource = () => new OSM(DEFAULT_SOURCE_DESCRIPTOR)
 
   if (!descriptor) return fallbackSource()
@@ -46,50 +45,6 @@ const from = async descriptor => {
   }
 }
 
-export const clearBasemap = map => {
-  if (!map) return
-  const layers = map.getLayers()
-  const rootLayer = layers.item(0)
-  if (rootLayer && rootLayer instanceof TileLayer) {
-    return map.getLayers().removeAt(0)
-  }
-}
-
-export const setBasemap = async (map, sourceDescriptor) => {
-  if (!map) return
-  const source = await from(sourceDescriptor)
-  const baseLayer = new TileLayer({ source: source })
-
-  /*
-    We need to verify if the basemap layer is already
-    present and replace or insert it. Our naive approach is
-    to assume that the basemap is an instance of TileLayer
-    (vs VectorLayer). As long as we do not support VectorTileLayer
-    this is sufficient.
-
-    Due to the lifecycle of the map and the project
-    this may be done twice:
-
-    When the map react component gets mounted for the first
-    time the constructor is called AND the project fires the
-    'OPEN' event.
-    We need to call 'fromPreferences()' in the constructor AND
-    on the project's 'open' event because when the map component
-    gets unmounted/remounted, the project stays open and will
-    not fire again.
-
-    TODO: Verify if this affects performance and we need to
-          add an additional check in order to skip this step
-          if the source has not changed.
-  */
-  const layers = map.getLayers()
-  const rootLayer = layers.item(0)
-  if (rootLayer && rootLayer instanceof TileLayer) {
-    return map.getLayers().setAt(0, baseLayer)
-  }
-  layers.insertAt(0, baseLayer)
-}
-
 export const listSourceDescriptors = async () => {
   /*
     Handling the resources (file) required is done by the
@@ -98,3 +53,29 @@ export const listSourceDescriptors = async () => {
   const sourceDescriptors = await ipcRenderer.invoke('IPC_LIST_SOURCE_DESCRIPTORS')
   return [...sourceDescriptors, ...[DEFAULT_SOURCE_DESCRIPTOR]]
 }
+
+
+/* event API */
+let reducers = []
+
+export const register = reducer => {
+  reducers = [...reducers, reducer]
+  listSourceDescriptors()
+    .then(sourceDescriptors => {
+      reducer({ type: 'sourceDescriptors', value: sourceDescriptors })
+    })
+}
+
+export const deregister = reducer => {
+  reducers = reducers.filter(x => x !== reducer)
+}
+
+const emit = event => {
+  reducers.forEach(reducer => reducer(event))
+}
+
+ipcRenderer.on('IPC_SOURCE_DESCRIPTORS_CHANGED', (event, sourceDescriptors) => {
+  emit({
+    type: 'sourceDescriptors', value: [...sourceDescriptors, ...[DEFAULT_SOURCE_DESCRIPTOR]]
+  })
+})

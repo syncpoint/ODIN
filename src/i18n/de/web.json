@@ -35,5 +35,18 @@
       "error": "Fehler",
       "missingProjections": "Für diese Projektionen fehlen die Definitionen"
     }
+  },
+  "activities": {
+    "tooltips": {
+      "map": "Basiskarten",
+      "layers": "Layer",
+      "symbols": "Symbol Palette",
+      "tools": "Werkzeuge",
+      "undo": "Rückgängig",
+      "redo": "Wiederherstellen",
+      "cut": "Ausschneiden",
+      "copy": "Kopieren",
+      "paste": "Einfügen"
+    }
   }
 }

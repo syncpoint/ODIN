@@ -35,5 +35,18 @@
       "error": "Error",
       "missingProjections": "Missing projection definitions for"
     }
+  },
+  "activities": {
+    "tooltips": {
+      "map": "Basemaps",
+      "layers": "Layers",
+      "symbols": "Symbol Palette",
+      "tools": "Measurement Tools",
+      "undo": "Undo",
+      "redo": "Redo",
+      "cut": "Cut",
+      "copy": "Copy",
+      "paste": "Paste"
+    }
   }
 }
