@@ -4,7 +4,6 @@ import { Select, MenuItem, FormControl, InputLabel } from '@material-ui/core'
 import SIDC from './SIDC'
 
 const HostilityProperty = props => {
-  console.log(props)
   const { properties } = props
   const [value, setValue] = React.useState(properties.sidc[1])
 
