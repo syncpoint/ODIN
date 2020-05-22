@@ -6,6 +6,7 @@ import inputLayers from '../../project/input-layers'
 import selection from '../../selection'
 import URI from '../../project/URI'
 import { K, noop } from '../../../shared/combinators'
+import { useTranslation } from 'react-i18next'
 
 const withLayer = fn => {
   const selected = selection.selected(URI.isLayerId)
@@ -13,29 +14,29 @@ const withLayer = fn => {
   fn(selected[0])
 }
 
-const actionDescriptors = [
+const actionDescriptors = t => [
   {
     icon: <LayersPlus/>,
-    tooltip: 'Create Layer',
+    tooltip: t('layers.create'),
     disabled: false,
     sticky: true, // cannot be disabled
     action: () => inputLayers.createLayer()
   },
   {
     icon: <LayersMinus/>,
-    tooltip: 'Delete Layer',
+    tooltip: t('layers.delete'),
     disabled: true,
     action: () => withLayer(layerId => inputLayers.removeLayer(layerId))
   },
   {
     icon: <ContentDuplicate/>,
-    tooltip: 'Duplicate Layer',
+    tooltip: t('layers.duplicate'),
     disabled: true,
     action: () => withLayer(layerId => inputLayers.duplicateLayer(layerId))
   },
   {
     icon: <ExportVariant/>,
-    tooltip: 'Share Layer',
+    tooltip: t('layers.share'),
     disabled: true,
     action: noop
   }
@@ -50,7 +51,8 @@ const reducer = (prev) => K([...prev])(next => {
 })
 
 export const Actions = (/* props */) => {
-  const [actions, dispatch] = React.useReducer(reducer, actionDescriptors)
+  const { t } = useTranslation()
+  const [actions, dispatch] = React.useReducer(reducer, actionDescriptors(t))
 
   React.useEffect(() => {
     const handleEvent = () => dispatch()

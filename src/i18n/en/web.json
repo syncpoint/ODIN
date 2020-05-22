@@ -48,5 +48,11 @@
       "copy": "Copy",
       "paste": "Paste"
     }
+  },
+  "layers": {
+    "create": "Create Layer",
+    "delete": "Delete Layer",
+    "duplicate": "Duplicate Layer",
+    "share": "Share Layer"
   }
 }
