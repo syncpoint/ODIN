@@ -2,7 +2,8 @@ import LayerGroup from 'ol/layer/Group'
 import TileLayer from 'ol/layer/Tile'
 import {
   from,
-  register as onSourcesChanged
+  register as onSourcesChanged,
+  DEFAULT_SOURCE_DESCRIPTOR
 } from './tileSources'
 
 import preferences from '../../project/preferences'
@@ -155,16 +156,22 @@ const init = async sourceDescriptors => {
   await addTileLayers(
     basemapLayerGroup,
     sourceDescriptors,
-    () => {}
+    ACTIONS.noop
   )
 
   const basemaps = preferences.get('basemaps') || []
-  if (basemaps.length === 0) return
-
-  setZIndices(basemaps.map(basemap => basemap.id), ACTIONS.noop)
-  basemaps.forEach(basemap => setVisibility(basemap.id, basemap.visible, ACTIONS.noop))
-
-  ACTIONS.emit()
+  if (basemaps.length > 0) {
+    setZIndices(basemaps.map(basemap => basemap.id), ACTIONS.noop)
+    basemaps.forEach(basemap => setVisibility(basemap.id, basemap.visible, ACTIONS.noop))
+    ACTIONS.emit()
+  } else {
+    /*
+      If there are no preferences (i.e. when we start a new project)
+      we should at least show the default layer.
+      This will trigger an implicit persist and emit event
+    */
+    setVisibility(DEFAULT_SOURCE_DESCRIPTOR.id, true)
+  }
 }
 
 onSourcesChanged(event => {

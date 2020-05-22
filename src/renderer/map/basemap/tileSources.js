@@ -9,11 +9,11 @@ import '../epsg'
 
 const highDPI = DEVICE_PIXEL_RATIO > 1
 
-const DEFAULT_SOURCE_DESCRIPTOR = {
+export const DEFAULT_SOURCE_DESCRIPTOR = Object.freeze({
   name: 'Open Street Map',
   type: 'OSM',
   id: '708b7f83-12a2-4a8b-a49d-9f2683586bcf'
-}
+})
 
 /*
   This is a factory function that takes a source descriptor and returns
