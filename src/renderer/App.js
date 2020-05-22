@@ -118,16 +118,18 @@ const App = (props) => {
   }
 
   return (
-    <Suspense fallback={<div>loading...</div>}>
+    <>
       <Map { ...mapProps }/>
       <div className={classes.overlay}>
         <OSD />
         <div className={classes.contentPanel}>
-          <Activities/>
+          <Suspense fallback={<div>loading...</div>}>
+            <Activities/>
+          </Suspense>
         </div>
       </div>
       { currentManagementTool() }
-    </Suspense>
+    </>
   )
 }
 
