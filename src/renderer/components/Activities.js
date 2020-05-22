@@ -12,6 +12,8 @@ import LayerList from './layerlist/LayerList'
 import undo from '../undo'
 import evented from '../evented'
 
+import { useTranslation } from 'react-i18next'
+
 const useStyles = makeStyles((/* theme */) => ({
   toolsPanel: {
     gridArea: 'L',
@@ -23,12 +25,12 @@ const useStyles = makeStyles((/* theme */) => ({
 // Activities for activity bar.
 // TODO: use dedicated components/panels for individual tools
 // TODO: see what icons MDI has to offer
-const initialActivities = classes => [
+const initialActivities = (classes, t) => [
   {
     id: 'map',
     type: 'activity',
     icon: <MapIcon/>,
-    tooltip: 'Show Map/Pictures',
+    tooltip: t('activities.tooltips.map'),
     panel: () => <BasemapList />
   },
   {
@@ -36,21 +38,21 @@ const initialActivities = classes => [
     type: 'activity',
     icon: <LayersTriple/>,
     panel: () => <LayerList/>,
-    tooltip: 'Show Layers'
+    tooltip: t('activities.tooltips.layers')
   },
   {
     id: 'palette',
     type: 'activity',
     icon: <Category/>,
-    tooltip: 'Show Symbol Palette',
-    panel: () => <Paper className={classes.toolsPanel} elevation={6}>Palette</Paper>
+    tooltip: t('activities.tooltips.symbols'),
+    panel: () => <Paper className={classes.toolsPanel} elevation={6}>{t('activities.tooltips.symbols')}</Paper>
   },
   {
     id: 'tools',
     type: 'activity',
     icon: <PermDataSettingIcon/>,
-    tooltip: 'Show Tools',
-    panel: () => <Paper className={classes.toolsPanel} elevation={6}>Measurement Tools</Paper>
+    tooltip: t('activities.tooltips.tools'),
+    panel: () => <Paper className={classes.toolsPanel} elevation={6}>{t('activities.tooltips.tools')}</Paper>
   },
   {
     type: 'divider'
@@ -59,14 +61,14 @@ const initialActivities = classes => [
     id: 'undo',
     type: 'action',
     icon: <Undo/>,
-    tooltip: 'Undo',
+    tooltip: t('activities.tooltips.undo'),
     action: undo.undo
   },
   {
     id: 'redo',
     type: 'action',
     icon: <Redo/>,
-    tooltip: 'Redo',
+    tooltip: t('activities.tooltips.redo'),
     action: undo.redo
   },
   {
@@ -76,55 +78,44 @@ const initialActivities = classes => [
     id: 'cut',
     type: 'action',
     icon: <ContentCut/>,
-    tooltip: 'Cut',
+    tooltip: t('activities.tooltips.cut'),
     action: () => evented.emit('EDIT_CUT')
   },
   {
     id: 'copy',
     type: 'action',
     icon: <ContentCopy/>,
-    tooltip: 'Copy',
+    tooltip: t('activities.tooltips.copy'),
     action: () => evented.emit('EDIT_COPY')
   },
   {
     id: 'paste',
     type: 'action',
     icon: <ContentPaste/>,
-    tooltip: 'Paste',
+    tooltip: t('activities.tooltips.paste'),
     action: () => evented.emit('EDIT_PASTE')
   }
 ]
 
 const Activities = (/* props */) => {
   const classes = useStyles()
-  const [activities, setActivities] = React.useState(initialActivities(classes))
+  const { t } = useTranslation()
+  const activities = initialActivities(classes, t)
   const [activeTool, setActiveTool] = React.useState(null)
 
-  const handleActivitySelected = id => {
-    // TODO: immutable.js?
-    const [...shadows] = activities
-    shadows.forEach(activity => {
-      if (activity.id !== id) activity.selected = false
-      else {
-        if (activity.selected && !activeTool) setActiveTool(activity)
-        else if (activity.selected && activeTool) {
-          setActiveTool(null)
-          activity.selected = false
-        } else {
-          setActiveTool(activity)
-          activity.selected = true
-        }
-      }
-    })
-
-    setActivities(shadows)
+  const handleActivitySelected = activity => {
+    if (!activeTool) {
+      setActiveTool(activity)
+    } else {
+      setActiveTool(activeTool.id !== activity.id ? activity : null)
+    }
   }
 
   const toolPanel = () => activeTool ? activeTool.panel() : null
 
   return (
     <>
-      <ActivityBar activities={activities} onActivitySelected={handleActivitySelected}/>
+      <ActivityBar activities={activities} activeTool={activeTool} onActivitySelected={handleActivitySelected}/>
       { toolPanel() }
     </>
   )
