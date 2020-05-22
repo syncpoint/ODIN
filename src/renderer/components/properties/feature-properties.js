@@ -8,13 +8,15 @@ import AreaProperties from './AreaProperties'
 import LineProperties from './LineProperties'
 import EquipmentProperties from './EquipmentProperties'
 import StabilityOperationsProperties from './StabilityOperationsProperties'
+import PointProperties from './PointProperties'
 
 const panelTypes = {
   U: (key, props) => <UnitProperties key={key} { ...props }/>,
   A: (key, props) => <AreaProperties key={key} { ...props }/>,
   L: (key, props) => <LineProperties key={key} { ...props }/>,
   E: (key, props) => <EquipmentProperties key={key} { ...props }/>,
-  SO: (key, props) => <StabilityOperationsProperties key={key} { ...props }/>
+  SO: (key, props) => <StabilityOperationsProperties key={key} { ...props }/>,
+  P: (key, props) => <PointProperties key={key} { ...props }/>
 }
 
 providers.register(selected => {
