@@ -4,6 +4,7 @@ import { Select, MenuItem, FormControl, InputLabel } from '@material-ui/core'
 import SIDC from './SIDC'
 
 const HostilityProperty = props => {
+  console.log(props)
   const { properties } = props
   const [value, setValue] = React.useState(properties.sidc[1])
 
@@ -14,7 +15,7 @@ const HostilityProperty = props => {
   }
 
   return (
-    <FormControl>
+    <FormControl className={props.className}>
       <InputLabel shrink id="label">
         Hostility
       </InputLabel>
@@ -45,7 +46,8 @@ const HostilityProperty = props => {
 
 HostilityProperty.propTypes = {
   properties: PropTypes.object.isRequired,
-  onCommit: PropTypes.func.isRequired
+  onCommit: PropTypes.func.isRequired,
+  className: PropTypes.string // optional, used when provided.
 }
 
 export default HostilityProperty
