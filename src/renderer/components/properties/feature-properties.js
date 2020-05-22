@@ -6,11 +6,13 @@ import descriptors from '../feature-descriptors'
 import UnitProperties from './UnitProperties'
 import AreaProperties from './AreaProperties'
 import LineProperties from './LineProperties'
+import EquipmentProperties from './EquipmentProperties'
 
 const panelTypes = {
   U: (key, props) => <UnitProperties key={key} { ...props }/>,
   A: (key, props) => <AreaProperties key={key} { ...props }/>,
-  L: (key, props) => <LineProperties key={key} { ...props }/>
+  L: (key, props) => <LineProperties key={key} { ...props }/>,
+  E: (key, props) => <EquipmentProperties key={key} { ...props }/>
 }
 
 providers.register(selected => {
@@ -21,9 +23,15 @@ providers.register(selected => {
   const properties = inputLayers.featureProperties(featureIds[0])
   const update = properties => inputLayers.updateFeatureProperties(featureIds[0], properties)
   const clazz = descriptors.featureClass(properties.sidc)
+
   if (!clazz) {
     console.log('feature class missing', properties.sidc)
     // TODO: return generic 2525C properties panel
+    return null
+  }
+
+  if (!panelTypes[clazz]) {
+    console.log('properties missing for class', clazz)
     return null
   }
 
