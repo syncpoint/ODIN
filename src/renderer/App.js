@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import 'typeface-roboto'
 
@@ -117,16 +117,17 @@ const App = (props) => {
     }
   }
 
-  return (<>
-    <Map { ...mapProps }/>
-    <div className={classes.overlay}>
-      <OSD />
-      <div className={classes.contentPanel}>
-        <Activities/>
+  return (
+    <Suspense fallback={<div>loading...</div>}>
+      <Map { ...mapProps }/>
+      <div className={classes.overlay}>
+        <OSD />
+        <div className={classes.contentPanel}>
+          <Activities/>
+        </div>
       </div>
-    </div>
-    { currentManagementTool() }
-  </>
+      { currentManagementTool() }
+    </Suspense>
   )
 }
 
