@@ -230,23 +230,34 @@ const clearSelection = () => {
  * Move selected features between feature layer and selection layer.
  */
 
-selection.on('selected', ids => featuresById(ids)
-  .filter(Feature.showing)
-  .filter(Feature.unlocked)
-  .forEach(feature => {
+selection.on('selected', ids => {
 
-    // If triggered from the outside, chances are that
-    // the feature is not already contained in
-    // selected feature collection.
-    // NOTE: Respect uniqueness.
+  // Deselect any hidden features:
+  const hidden = featuresById(selection.selected(URI.isFeatureId))
+    .filter(Feature.hidden)
+    .map(Feature.id)
+    .filter(id => !ids.includes(id))
+  selection.deselect(hidden)
 
-    if (selectedFeatures.getArray().indexOf(feature) === -1) {
-      selectedFeatures.push(feature)
-    }
+  // Move selected features to dedicated source/layer:
+  featuresById(ids)
+    .filter(Feature.showing)
+    .filter(Feature.unlocked)
+    .forEach(feature => {
 
-    geometrySource(feature).removeFeature(feature)
-    selectionSource.addFeature(feature)
-  }))
+      // If triggered from the outside, chances are that
+      // the feature is not already contained in
+      // selected feature collection.
+      // NOTE: Respect uniqueness.
+
+      if (selectedFeatures.getArray().indexOf(feature) === -1) {
+        selectedFeatures.push(feature)
+      }
+
+      geometrySource(feature).removeFeature(feature)
+      selectionSource.addFeature(feature)
+    })
+})
 
 selection.on('deselected', ids => featuresById(ids)
   .forEach(feature => {
