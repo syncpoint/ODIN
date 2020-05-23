@@ -51,7 +51,7 @@ const elementById = next => id =>
  */
 export default {
   snapshot: (prev, { layers, features }) => K({ ...prev })(next => {
-    layers.forEach(layer => (next[layer.id] = { id: layer.id, name: layer.name, features: {} }))
+    layers.forEach(layer => (next[layer.id] = { ...layer, features: {} }))
     addFeatures(next, features)
   }),
 
