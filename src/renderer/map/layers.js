@@ -232,13 +232,6 @@ const clearSelection = () => {
 
 selection.on('selected', ids => {
 
-  // Deselect any hidden features:
-  const hidden = featuresById(selection.selected(URI.isFeatureId))
-    .filter(Feature.hidden)
-    .map(Feature.id)
-    .filter(id => !ids.includes(id))
-  selection.deselect(hidden)
-
   // Move selected features to dedicated source/layer:
   featuresById(ids)
     .filter(Feature.showing)

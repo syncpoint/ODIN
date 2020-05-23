@@ -625,6 +625,24 @@ clipboard.registerHandler(URI.SCHEME_LAYER, {
   }
 })
 
+/**
+ * specialSelection :: () => [string]
+ * Id of selected features which aere hidden or locked.
+ * NOTE: Hidden and locked features can be selected in layer list,
+ * but not in the map.
+ */
+const specialSelection = () =>
+  selection
+    .selected(URI.isFeatureId)
+    .map(id => featureList[id])
+    .filter(Feature.hiddenOrLocked)
+    .map(Feature.id)
+
+/**
+ * Unconditionally deselect 'special selection' on map click.
+ */
+evented.on('MAP_CLICKED', () => selection.deselect(specialSelection()))
+
 export default {
   register,
   deregister,

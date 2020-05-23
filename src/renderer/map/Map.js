@@ -49,6 +49,8 @@ const effect = props => () => {
     controls: [scaleLine],
     layers: [basemapLayerGroup(), getGridLayerGroup()]
   })
+
+  map.on('click', () => evented.emit('MAP_CLICKED'))
   map.on('moveend', viewportChanged(view))
   map.on('pointermove', event => {
     const lonLatCooridinate = toLonLat(event.coordinate)
