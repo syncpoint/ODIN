@@ -4,15 +4,21 @@ import { TextField } from '@material-ui/core'
 
 const TextProperty = props => {
   const { properties } = props
+  const property = () => (properties[props.property] || '').toString()
+  const [value, setValue] = React.useState(property())
 
-  // TODO: handle 'ESCAPE': reset to original value
-  // TODO: handle 'ENTER': update feature
-  // TODO: trim value
-
-  const [value, setValue] = React.useState(properties[props.property] || '')
-  const handleBlur = () => {
-    properties[props.property] = value
+  const commit = () => {
+    const cleanValue = value.toString().trim()
+    properties[props.property] = cleanValue
+    setValue(cleanValue)
     props.onCommit(properties)
+  }
+
+  const handleKeyDown = event => {
+    switch (event.key) {
+      case 'Escape': return setValue(property())
+      case 'Enter': return commit()
+    }
   }
 
   return (
@@ -21,7 +27,8 @@ const TextProperty = props => {
       label={props.label}
       value={value}
       onChange={({ target }) => setValue(target.value)}
-      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      onBlur={commit}
     />
   )
 }
