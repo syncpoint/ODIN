@@ -1,15 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Select, MenuItem, FormControl, InputLabel } from '@material-ui/core'
-import SIDC from './SIDC'
+import { mobilityPart } from '../SIDC'
 
 const MobilityProperty = props => {
   const { properties } = props
-  const [value, setValue] = React.useState(properties.sidc.substring(10, 12))
+  const [value, setValue] = React.useState(mobilityPart.value(properties.sidc))
 
   const handleChange = ({ target }) => {
     setValue(target.value)
-    properties.sidc = SIDC.replace(10, target.value)(properties.sidc)
+    properties.sidc = mobilityPart.replace(properties.sidc)((target.value))
     props.onCommit(properties)
   }
 

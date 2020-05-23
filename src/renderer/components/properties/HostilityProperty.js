@@ -1,15 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Select, MenuItem, FormControl, InputLabel } from '@material-ui/core'
-import SIDC from './SIDC'
+import { hostilityPart } from '../SIDC'
 
 const HostilityProperty = props => {
   const { properties } = props
-  const [value, setValue] = React.useState(properties.sidc[1])
+  const [value, setValue] = React.useState(hostilityPart.value(properties.sidc))
 
   const handleChange = ({ target }) => {
     setValue(target.value)
-    properties.sidc = SIDC.replace(1, target.value)(properties.sidc)
+    properties.sidc = hostilityPart.replace(properties.sidc)((target.value))
     props.onCommit(properties)
   }
 
@@ -23,7 +23,7 @@ const HostilityProperty = props => {
         value={value}
         onChange={handleChange}
       >
-        <MenuItem value={'*'}>N/A</MenuItem>
+        <MenuItem value={'-'}>N/A</MenuItem>
         <MenuItem value={'F'}>Friend</MenuItem>
         <MenuItem value={'A'}>Assumed Friend</MenuItem>
         <MenuItem value={'H'}>Hostile</MenuItem>

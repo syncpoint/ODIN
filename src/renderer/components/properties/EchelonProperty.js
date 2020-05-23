@@ -1,15 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Select, MenuItem, InputLabel, FormControl } from '@material-ui/core'
-import SIDC from './SIDC'
+import { echelonPart } from '../SIDC'
+
 
 const EchelonProperty = props => {
   const { properties } = props
-  const [value, setValue] = React.useState(properties.sidc[11])
+  const [value, setValue] = React.useState(echelonPart.value(properties.sidc))
 
   const handleChange = ({ target }) => {
     setValue(target.value)
-    properties.sidc = SIDC.replace(11, target.value)(properties.sidc)
+    properties.sidc = echelonPart.replace(properties.sidc)(target.value)
     props.onCommit(properties)
   }
 

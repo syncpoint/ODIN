@@ -1,17 +1,10 @@
 import * as R from 'ramda'
 import descriptors from './feature-descriptors.json'
 import { K } from '../../shared/combinators'
-
-/**
- * parameterizedSIDC :: string -> string
- * NOTE: Parameterized SIDC is limited to first 10 characters.
- */
-const parameterizedSIDC =
-  sidc =>
-    `${sidc[0]}*${sidc[2]}*${sidc.substring(4, 10)}`
+import { parameterized } from './SIDC'
 
 const features = descriptors.reduce((acc, descriptor) => K(acc)(acc => {
-  acc[parameterizedSIDC(descriptor.sidc)] = {
+  acc[parameterized(descriptor.sidc)] = {
     class: descriptor.class,
     geometry: descriptor.geometry,
     hierarchy: R.drop(1, descriptor.hierarchy).join(', ')
@@ -19,7 +12,7 @@ const features = descriptors.reduce((acc, descriptor) => K(acc)(acc => {
 }), {})
 
 const featureClass = sidc => {
-  const feature = features[parameterizedSIDC(sidc)]
+  const feature = features[parameterized(sidc)]
   return feature ? feature.class : undefined
 }
 

@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { InputLabel } from '@material-ui/core'
 import StatusProperty from './StatusProperty'
 import OperationalStatusProperty from './OperationalStatusProperty'
-import SIDC from './SIDC'
+import { statusPart } from '../SIDC'
 
 const useStyles = makeStyles(theme => ({
   twoColumns: { gridColumn: '1 / span 2' },
@@ -18,11 +18,11 @@ const useStyles = makeStyles(theme => ({
 const StatusGroupFull = props => {
   const classes = useStyles()
   const { properties } = props
-  const [status, setStatus] = React.useState(properties.sidc[3])
+  const [status, setStatus] = React.useState(statusPart.value(properties.sidc))
 
   const handleChange = ({ target }) => {
     setStatus(target.value)
-    properties.sidc = SIDC.replace(3, target.value)(properties.sidc)
+    properties.sidc = statusPart.replace(properties.sidc)(target.value)
     props.onCommit(properties)
   }
 

@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { InputLabel, FormControlLabel, Checkbox } from '@material-ui/core'
-import SIDC from './SIDC'
+import { modifierPart } from '../SIDC'
 
 
 const useStyles = makeStyles(() => ({
@@ -11,7 +11,7 @@ const useStyles = makeStyles(() => ({
 }))
 
 const decode = sidc => {
-  switch (sidc[10]) {
+  switch (modifierPart.value(sidc)) {
     case '-': return { modifierHQ: false, modifierTF: false, modifierFD: false }
     case '*': return { modifierHQ: false, modifierTF: false, modifierFD: false }
     case 'F': return { modifierHQ: false, modifierTF: false, modifierFD: true }
@@ -45,7 +45,7 @@ const ModifierProperty = props => {
     const nextState = { ...state }
     nextState[property] = target.checked
     setState(nextState)
-    properties.sidc = SIDC.replace(10, encode(nextState))(properties.sidc)
+    properties.sidc = modifierPart.replace(properties.sidc)((encode(nextState)))
     onCommit(properties)
   }
 
