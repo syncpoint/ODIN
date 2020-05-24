@@ -22,7 +22,7 @@ const sortedList = descriptors
     geometry: descriptor.geometry,
     name: descriptor.hierarchy[descriptor.hierarchy.length - 1],
     hierarchy: R.take(descriptor.hierarchy.length - 2, R.drop(1, descriptor.hierarchy)).join(', '),
-    sortkey: descriptor.hierarchy.join(', ')
+    sortkey: descriptor.hierarchy.join(', ').toLowerCase()
   }))
   .sort((a, b) => a.sortkey.localeCompare(b.sortkey))
 
