@@ -8,12 +8,12 @@ const addFeatures = (next, features) =>
     const featureId = Feature.id(feature)
     next[layerId].features[featureId] = {
       id: featureId,
-      name: feature.getProperties().t
+      name: feature.get('t') || 'N/A'
     }
   })
 
 const addLayer = (next, layer, features) => {
-  next[layer.id] = { ...layer, features: {} }
+  next[layer.id] = { id: layer.id, name: layer.name, features: {} }
   addFeatures(next, features)
 }
 
@@ -26,6 +26,28 @@ const elementById = next => id =>
 /**
  * Handle input layer events.
  * NOTE: Functions must be pure and must allow to be called twice for same event.
+ * State has the following structure:
+ *
+ *  {
+ *    layerId: {
+ *      id: string (layerId)
+ *      name: string
+ *      active: boolean
+ *      locked: boolean
+ *      hidden: boolean
+ *      expanded: boolean
+ *      selected: boolean
+ *      features: {
+ *        featureId: {
+ *          id: string (featureId)
+ *          name: string
+ *          selected: boolean
+ *        }
+ *      },
+ *      ...
+ *    },
+ *    ...
+ *  }
  */
 export default {
   snapshot: (prev, { layers, features }) => K({ ...prev })(next => {
@@ -36,7 +58,7 @@ export default {
   featuresadded: (prev, { features }) => K({ ...prev })(next => {
     addFeatures(next, features)
 
-    // Update lock/hidden layer states.
+    // Update locked/hidden layer states.
     features
       .map(Feature.layerId)
       .filter(uniq)
@@ -48,6 +70,14 @@ export default {
 
   featuresremoved: (prev, { ids }) => K({ ...prev })(next => {
     ids.forEach(id => delete next[URI.layerId(id)].features[id])
+  }),
+
+  featurepropertiesupdated: (prev, { featureId, properties }) => K({ ...prev })(next => {
+    const layer = next[URI.layerId(featureId)]
+    layer.features[featureId] = {
+      ...layer.features[featureId],
+      name: properties.t || 'N/A'
+    }
   }),
 
   layerlocked: (prev, { layerId, locked }) => K({ ...prev })(next => {
