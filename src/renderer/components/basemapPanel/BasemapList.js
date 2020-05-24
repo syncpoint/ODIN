@@ -4,6 +4,7 @@ import { useDrop } from 'react-dnd'
 import ItemTypes from './DnDItemTypes'
 
 import BasemapListItem from './BasemapListItem'
+import Opacity from './Opacity'
 
 import { register, deregister, toggleVisibility, setZIndices } from '../../map/basemap/group'
 
@@ -14,7 +15,8 @@ const useStyles = makeStyles(theme => ({
     gridArea: 'L',
     pointerEvents: 'auto',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    position: 'relative'
   },
   listContainer: {
     height: '100%',
@@ -25,6 +27,16 @@ const useStyles = makeStyles(theme => ({
   },
   itemListActive: {
     listStyleType: 'none', padding: '4px', backgroundColor: theme.palette.action.hover
+  },
+  controls: {
+    position: 'absolute',
+    bottom: 0,
+    width: '90%',
+    paddingInlineStart: '0px',
+    margin: theme.spacing(1.5)
+  },
+  control: {
+    listStyleType: 'none', padding: '4px', margin: '4px', paddingInlineStart: 0
   }
 }))
 
@@ -94,7 +106,11 @@ const BasemapList = props => {
             )).reverse()
           }
         </ul>
+        <ul className={classes.controls}>
+          <Opacity />
+        </ul>
       </div>
+
     </Paper>
 
   )
