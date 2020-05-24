@@ -10,6 +10,7 @@ import Map from './map/Map'
 import ProjectManagement from './components/ProjectManagement'
 import BasemapManagement from './components/BasemapManagement'
 import Activities from './components/Activities'
+import PropertyPanel from './components/properties/PropertyPanel'
 
 import { ipcRenderer, remote } from 'electron'
 
@@ -35,7 +36,7 @@ const useStyles = makeStyles((/* theme */) => ({
     display: 'grid',
 
     // Activity Bar width: 40px = 24px icon + 2 x 8px padding
-    gridTemplateColumns: '48px 20em auto 20em',
+    gridTemplateColumns: '48px 20em auto 26em',
     gridGap: '0.5em',
 
     // A: activity bar (buttons to show specific tool panel),
@@ -118,16 +119,19 @@ const App = (props) => {
   }
 
   return (
-    <Suspense fallback={<div>loading...</div>}>
+    <>
       <Map { ...mapProps }/>
       <div className={classes.overlay}>
         <OSD />
         <div className={classes.contentPanel}>
-          <Activities/>
+          <Suspense fallback={<div>loading...</div>}>
+            <Activities/>
+          </Suspense>
+          <PropertyPanel/>
         </div>
       </div>
       { currentManagementTool() }
-    </Suspense>
+    </>
   )
 }
 

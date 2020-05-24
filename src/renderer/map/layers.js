@@ -230,23 +230,27 @@ const clearSelection = () => {
  * Move selected features between feature layer and selection layer.
  */
 
-selection.on('selected', ids => featuresById(ids)
-  .filter(Feature.showing)
-  .filter(Feature.unlocked)
-  .forEach(feature => {
+selection.on('selected', ids => {
 
-    // If triggered from the outside, chances are that
-    // the feature is not already contained in
-    // selected feature collection.
-    // NOTE: Respect uniqueness.
+  // Move selected features to dedicated source/layer:
+  featuresById(ids)
+    .filter(Feature.showing)
+    .filter(Feature.unlocked)
+    .forEach(feature => {
 
-    if (selectedFeatures.getArray().indexOf(feature) === -1) {
-      selectedFeatures.push(feature)
-    }
+      // If triggered from the outside, chances are that
+      // the feature is not already contained in
+      // selected feature collection.
+      // NOTE: Respect uniqueness.
 
-    geometrySource(feature).removeFeature(feature)
-    selectionSource.addFeature(feature)
-  }))
+      if (selectedFeatures.getArray().indexOf(feature) === -1) {
+        selectedFeatures.push(feature)
+      }
+
+      geometrySource(feature).removeFeature(feature)
+      selectionSource.addFeature(feature)
+    })
+})
 
 selection.on('deselected', ids => featuresById(ids)
   .forEach(feature => {
@@ -407,6 +411,13 @@ const eventHandlers = {
   },
   featuresremoved: ({ ids }) => {
     ids.map(featureById).forEach(removeFeature)
+  },
+  featurepropertiesupdated: ({ featureId, properties }) => {
+    const feature = featureById(featureId)
+    if (!feature) return
+
+    feature.setStyle(null)
+    feature.setProperties(properties)
   },
   layerhidden: ({ layerId, hidden }) => {
     const toggle = hidden ? hideFeature : unhideFeature

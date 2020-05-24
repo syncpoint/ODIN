@@ -7,12 +7,12 @@ import 'ol/ol.css'
 import { fromLonLat, toLonLat } from 'ol/proj'
 import { ScaleLine } from 'ol/control'
 import getGridLayerGroup from './grids/group'
+import basemapLayerGroup from './basemap/group'
 
 import evented from '../evented'
 import preferences from '../project/preferences'
 import coordinateFormat from '../../shared/coord-format'
 import layers from './layers'
-import { setBasemap } from './basemap'
 import './style/scalebar.css'
 import disposable from '../../shared/disposable'
 
@@ -47,8 +47,10 @@ const effect = props => () => {
     view,
     target: id,
     controls: [scaleLine],
-    layers: [getGridLayerGroup()]
+    layers: [basemapLayerGroup(), getGridLayerGroup()]
   })
+
+  map.on('click', () => evented.emit('MAP_CLICKED'))
   map.on('moveend', viewportChanged(view))
   map.on('pointermove', event => {
     const lonLatCooridinate = toLonLat(event.coordinate)
@@ -91,13 +93,6 @@ const effect = props => () => {
     const { center, zoom } = preferences.viewport
     view.setCenter(fromLonLat(center))
     view.setZoom(zoom)
-    setBasemap(map, preferences.basemap)
-  })
-
-  // change basemap triggered by setting the preferences
-  preferences.register(({ type, key, value }) => {
-    if (type !== 'set' || key !== 'basemap') return
-    setBasemap(map, value)
   })
 }
 

@@ -7,7 +7,7 @@ import MapIcon from '@material-ui/icons/Map'
 import { LayersTriple, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 'mdi-material-ui'
 
 import ActivityBar from './ActivityBar'
-import BasemapList from './BasemapList'
+import BasemapPanel from './basemapPanel/BasemapPanel'
 import LayerList from './layerlist/LayerList'
 import undo from '../undo'
 import evented from '../evented'
@@ -31,7 +31,7 @@ const initialActivities = (classes, t) => [
     type: 'activity',
     icon: <MapIcon/>,
     tooltip: t('activities.tooltips.map'),
-    panel: () => <BasemapList />
+    panel: () => <BasemapPanel />
   },
   {
     id: 'layers',

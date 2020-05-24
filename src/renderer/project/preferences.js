@@ -69,5 +69,6 @@ export default {
   register,
   deregister,
   set,
-  unset
+  unset,
+  get: key => key ? preferences[key] : preferences
 }

@@ -11,5 +11,6 @@ export default {
   hide: feature => feature.set('hidden', true),
   unhide: feature => feature.unset('hidden'),
   lock: feature => feature.set('locked', true),
-  unlock: feature => feature.unset('locked')
+  unlock: feature => feature.unset('locked'),
+  hiddenOrLocked: feature => feature.get('hidden') || feature.get('locked')
 }
