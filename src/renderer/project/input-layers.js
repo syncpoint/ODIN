@@ -13,6 +13,12 @@ import * as clipboard from '../clipboard'
 import selection from '../selection'
 
 /**
+ * Properties excluded from regular properties.
+ */
+const internalProperties = ['layerId', 'geometry', 'locked', 'hidden']
+
+
+/**
  * Project layer/feature model.
  * Model is updated through public functions.
  * Updates are propagated as events to registered reducers.
@@ -511,6 +517,42 @@ const duplicateLayer = layerId => {
 }
 
 /**
+ * featureProperties :: string -> (string ~> string)
+ * Return properties except internal properties.
+ */
+const featureProperties = featureId => {
+  if (!featureId) return null
+  const feature = featureList[featureId]
+  if (!feature) return null
+  const properties = feature.clone().getProperties()
+  internalProperties.forEach(property => delete properties[property])
+  return properties
+}
+
+/**
+ * updateFeatureProperties :: (string, string ~> string) -> unit
+ * Update (incl. delete) a subset of feature properties excluding the
+ * following (internal) properties: layerId, geometry, locked, hidden.
+ */
+const updateFeatureProperties = (featureId, properties) => {
+  if (!featureId) return null
+  const feature = featureList[featureId]
+  if (!feature) return null
+
+  // Update existing properties and remove
+  // properties no longer supplied.
+  const silent = true // don't push update events on feature
+  feature.setProperties(properties, silent)
+  feature.getKeys()
+    .filter(key => !internalProperties.includes(key))
+    .filter(key => !properties[key])
+    .forEach(key => feature.unset(key, silent))
+
+  writeFeatures([feature])
+  emit({ type: 'featurepropertiesupdated', featureId, properties })
+}
+
+/**
  * Featre clipboard ops.
  */
 clipboard.registerHandler(URI.SCHEME_FEATURE, {
@@ -583,6 +625,24 @@ clipboard.registerHandler(URI.SCHEME_LAYER, {
   }
 })
 
+/**
+ * specialSelection :: () => [string]
+ * Id of selected features which aere hidden or locked.
+ * NOTE: Hidden and locked features can be selected in layer list,
+ * but not in the map.
+ */
+const specialSelection = () =>
+  selection
+    .selected(URI.isFeatureId)
+    .map(id => featureList[id])
+    .filter(Feature.hiddenOrLocked)
+    .map(Feature.id)
+
+/**
+ * Unconditionally deselect 'special selection' on map click.
+ */
+evented.on('MAP_CLICKED', () => selection.deselect(specialSelection()))
+
 export default {
   register,
   deregister,
@@ -596,5 +656,7 @@ export default {
   renameLayer,
   removeLayer,
   createLayer,
-  duplicateLayer
+  duplicateLayer,
+  featureProperties,
+  updateFeatureProperties
 }
