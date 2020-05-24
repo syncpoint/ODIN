@@ -5,6 +5,7 @@ import ItemTypes from './DnDItemTypes'
 
 import VisibilityIcon from '@material-ui/icons/Visibility'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
+import TuneIcon from '@material-ui/icons/Tune'
 import DragHandle from '@material-ui/icons/DragHandle'
 
 import { makeStyles } from '@material-ui/core/styles'
@@ -26,7 +27,7 @@ const useStyle = makeStyles(theme => ({
 const BasemapListItem = (props) => {
 
   const { id, text, index, visible } = props
-  const { moveBasemapItem, visibilityClicked, onDrop } = props
+  const { moveBasemapItem, visibilityClicked, tuneClicked, onDrop } = props
 
   const classes = useStyle()
   const ref = React.useRef(null)
@@ -93,11 +94,14 @@ const BasemapListItem = (props) => {
   drag(drop(ref))
 
   return (
-    <ListItem ref={ref} className={classes.listItem} style={{ opacity }}>
+    <ListItem ref={ref} className={classes.listItem} style={{ opacity }} selected={props.selected}>
       <DragHandle color={visible ? 'inherit' : 'disabled'}/>
       <Typography variant="button" color={visible ? 'initial' : 'textSecondary'}>{text}</Typography>
       { opacity === 1
         ? <ListItemSecondaryAction >
+          <IconButton onClick={() => tuneClicked(id)}>
+            <TuneIcon size="small" />
+          </IconButton>
           <IconButton size="small" onClick={() => visibilityClicked(id)}>
             { visible ? <VisibilityIcon /> : <VisibilityOffIcon /> }
           </IconButton>
@@ -113,8 +117,10 @@ BasemapListItem.propTypes = {
   text: PropTypes.string,
   index: PropTypes.number,
   visible: PropTypes.bool,
+  selected: PropTypes.bool,
   moveBasemapItem: PropTypes.func,
   visibilityClicked: PropTypes.func,
+  tuneClicked: PropTypes.func,
   onDrop: PropTypes.func
 }
 

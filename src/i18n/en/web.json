@@ -54,5 +54,8 @@
     "delete": "Delete Layer",
     "duplicate": "Duplicate Layer",
     "share": "Share Layer"
+  },
+  "basemaps": {
+    "opacity": "Opacity"
   }
 }
