@@ -9,6 +9,7 @@ import { LayersTriple, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 
 import ActivityBar from './ActivityBar'
 import BasemapPanel from './basemapPanel/BasemapPanel'
 import LayerList from './layerlist/LayerList'
+import FeaturePalette from './palette/FeaturePalette'
 import undo from '../undo'
 import evented from '../evented'
 
@@ -23,8 +24,6 @@ const useStyles = makeStyles((/* theme */) => ({
 }))
 
 // Activities for activity bar.
-// TODO: use dedicated components/panels for individual tools
-// TODO: see what icons MDI has to offer
 const initialActivities = (classes, t) => [
   {
     id: 'map',
@@ -45,7 +44,7 @@ const initialActivities = (classes, t) => [
     type: 'activity',
     icon: <Category/>,
     tooltip: t('activities.tooltips.symbols'),
-    panel: () => <Paper className={classes.toolsPanel} elevation={6}>{t('activities.tooltips.symbols')}</Paper>
+    panel: () => <FeaturePalette/>
   },
   {
     id: 'tools',
