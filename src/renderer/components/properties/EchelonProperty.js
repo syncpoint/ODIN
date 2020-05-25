@@ -10,7 +10,7 @@ const EchelonProperty = props => {
 
   const handleChange = ({ target }) => {
     setValue(target.value)
-    properties.sidc = echelonPart.replace(properties.sidc)(target.value)
+    properties.sidc = echelonPart.replace(target.value)(properties.sidc)
     props.onCommit(properties)
   }
 

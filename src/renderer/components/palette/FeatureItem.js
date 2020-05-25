@@ -18,8 +18,7 @@ const placeholderSymbol = new ms.Symbol('')
 
 const FeatureItem = props => {
   const classes = useStyles()
-  const sidc = `${props.sidc[0]}F${props.sidc[2]}P${props.sidc.substring(4)}`
-  const symbol = new ms.Symbol(sidc)
+  const symbol = new ms.Symbol(props.sidc)
   const extended = false
   const url = symbol.isValid(extended)
     ? symbol.asCanvas().toDataURL()

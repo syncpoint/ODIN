@@ -1,7 +1,7 @@
 import * as R from 'ramda'
 import descriptors from './feature-descriptors.json'
 import { K } from '../../shared/combinators'
-import { parameterized } from './SIDC'
+import { parameterized, hostilityPart, statusPart, installationPart } from './SIDC'
 
 
 const lookup = descriptors.reduce((acc, descriptor) => K(acc)(acc => {
@@ -38,7 +38,31 @@ const featureClass = sidc => {
 /**
  * featureDescriptors :: () => [object]
  */
-const featureDescriptors = () => sortedList
+const featureDescriptors = (filter, preset = {}) => {
+  if (!filter || filter.length < 3) return []
+
+  const hostlility = preset.hostility || 'F'
+  const status = preset.status || 'P'
+  const installation = preset.installation || '-'
+
+  const filterMatch = descr => descr.sortkey.includes(filter.toLowerCase())
+  const installationMatch = descr => [installation, '*'].includes(installationPart.value(descr.sidc))
+  const match = descr => filterMatch(descr) && installationMatch(descr)
+
+  const installationModifier = sidc => installationPart.value(sidc) !== '*'
+    ? sidc
+    : installationPart.replace(installation)(sidc)
+
+  const sidc = R.compose(
+    installationModifier,
+    hostilityPart.replace(hostlility),
+    statusPart.replace(status)
+  )
+
+  const updateSIDC = descriptor => ({ ...descriptor, sidc: sidc(descriptor.sidc) })
+  const matches = sortedList.filter(match).map(updateSIDC)
+  return R.take(50, matches)
+}
 
 export default {
   featureClass,
