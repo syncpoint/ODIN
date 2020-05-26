@@ -5,7 +5,6 @@ import ItemTypes from './DnDItemTypes'
 
 import VisibilityIcon from '@material-ui/icons/Visibility'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
-import TuneIcon from '@material-ui/icons/Tune'
 import DragHandle from '@material-ui/icons/DragHandle'
 
 import { makeStyles } from '@material-ui/core/styles'
@@ -14,12 +13,17 @@ import { ListItem, ListItemSecondaryAction, Typography, IconButton } from '@mate
 const useStyle = makeStyles(theme => ({
   listItem: {
     margin: theme.spacing(0.25),
-    border: '1px solid #cccccc',
+    border: `1px solid ${theme.palette.grey['400']}`,
     borderRadius: '2px',
     padding: theme.spacing(1)
   },
-  actions: {
-    float: 'right'
+  clickable: {
+    cursor: 'pointer',
+    width: '75%',
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover
+    },
+    padding: theme.spacing(0.5)
   }
 }))
 
@@ -94,14 +98,15 @@ const BasemapListItem = (props) => {
   drag(drop(ref))
 
   return (
-    <ListItem ref={ref} className={classes.listItem} style={{ opacity }} selected={props.selected}>
-      <DragHandle color={visible ? 'inherit' : 'disabled'}/>
-      <Typography variant="button" color={visible ? 'initial' : 'textSecondary'}>{text}</Typography>
+    <ListItem ref={ref} className={classes.listItem} style={{ opacity }} selected={props.selected}
+      onClick={() => tuneClicked(id)}
+    >
+      <DragHandle color={visible ? 'inherit' : 'disabled'} style={{ cursor: 'grab' }}/>
+      <div className={classes.clickable}>
+        <Typography variant="button" color={visible ? 'initial' : 'textSecondary'}>{text}</Typography>
+      </div>
       { opacity === 1
         ? <ListItemSecondaryAction >
-          <IconButton onClick={() => tuneClicked(id)}>
-            <TuneIcon size="small" />
-          </IconButton>
           <IconButton size="small" onClick={() => visibilityClicked(id)}>
             { visible ? <VisibilityIcon /> : <VisibilityOffIcon /> }
           </IconButton>
