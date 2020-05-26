@@ -2,11 +2,13 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import List from '@material-ui/core/List'
+
 import Search from './Search'
 import descriptors from '../feature-descriptors'
 import FeatureItem from './FeatureItem'
 import Presets from './Presets'
 import evented from '../../evented'
+import preferences from '../../project/preferences'
 
 const useStyles = makeStyles((theme) => ({
   panel: {
@@ -44,7 +46,7 @@ const FeaturePalette = (/* props */) => {
   const classes = useStyles()
   const [showing, setShowing] = React.useState(true)
   const [filter, setFilter] = React.useState('')
-  const [preset, setPreset] = React.useState({
+  const [presets, setPresets] = React.useState({
     installation: null,
     status: 'P',
     hostility: 'F'
@@ -63,10 +65,32 @@ const FeaturePalette = (/* props */) => {
     }
   }, [])
 
+  React.useEffect(() => {
+    const memento = preferences.get('paletteMemento')
+    if (!memento) return
+    const { filter, presets } = memento
+    if (filter) setFilter(filter)
+    if (presets) setPresets(presets)
+  }, [])
+
+  const updateFilter = filter => {
+    setFilter(filter)
+    const memento = preferences.get('paletteMemento') || {}
+    memento.filter = filter
+    preferences.set('paletteMemento', memento)
+  }
+
+  const updatePresets = presets => {
+    setPresets(presets)
+    const memento = preferences.get('paletteMemento') || {}
+    memento.presets = presets
+    preferences.set('paletteMemento', memento)
+  }
+
   const listItems = () => {
     if (!filter || filter.length < 3) return []
     return descriptors
-      .featureDescriptors(filter, preset)
+      .featureDescriptors(filter, presets)
       .map(descriptor => <FeatureItem key={descriptor.sortkey} {...descriptor}/>)
   }
 
@@ -77,9 +101,9 @@ const FeaturePalette = (/* props */) => {
       style={{ display: showing ? 'flex' : 'none' }}
     >
       <div className={classes.buttons}>
-        <Presets value={preset} onChange={setPreset}/>
+        <Presets value={presets} onChange={updatePresets}/>
       </div>
-      <Search value={filter} onChange={setFilter}/>
+      <Search value={filter} onChange={updateFilter}/>
       <div className={classes.listContainer}>
         <List className={classes.list}>
           {listItems(filter)}
