@@ -6,6 +6,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import Avatar from '@material-ui/core/Avatar'
 import ListItemText from '@material-ui/core/ListItemText'
 import ms from 'milsymbol'
+import evented from '../../evented'
 
 const useStyles = makeStyles((/* theme */) => ({
   root: {
@@ -24,12 +25,15 @@ const FeatureItem = props => {
     ? symbol.asCanvas().toDataURL()
     : placeholderSymbol.asCanvas().toDataURL()
 
+  const handleClick = () => evented.emit('MAP_DRAW', props)
+
   return (
     <ListItem
       className={classes.root}
+      alignItems="flex-start"
       button
       key={props.sortkey}
-      alignItems="flex-start"
+      onClick={handleClick}
     >
       <ListItemAvatar style={{ width: '10%' }}>
         <Avatar

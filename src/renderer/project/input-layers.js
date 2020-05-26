@@ -374,7 +374,7 @@ const removeFeatures = featureIds => {
 }
 
 /**
- * addFeatures :: [[string, string]] -> unit
+ * addFeatures :: [[string]] -> unit
  */
 const addFeatures = content => {
   const additions = content.map(json => geoJSON.readFeature(json))
@@ -385,6 +385,7 @@ const addFeatures = content => {
     additions.forEach(feature => feature.set('layerId', activeLayer[0]))
   }
 
+  // FIXME: crashes with undefined feature.layerId
   undo.applyAndPush(insertFeaturesCommand(additions))
 }
 

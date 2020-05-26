@@ -435,17 +435,20 @@ const eventHandlers = {
 }
 
 export default map => {
+  const addLayer = map.addLayer.bind(map)
+  const addInteraction = map.addInteraction.bind(map)
+
   layers = createLayers()
-  Object.values(layers).forEach(map.addLayer)
+  Object.values(layers).forEach(addLayer)
 
   // Selection source and layer.
   selectionLayer = new VectorLayer({ style, source: selectionSource })
-  map.addLayer(selectionLayer)
+  addLayer(selectionLayer)
 
-  map.addInteraction(createSelect())
-  map.addInteraction(createTranslate())
-  map.addInteraction(createModify())
-  map.addInteraction(createBoxSelect())
+  addInteraction(createSelect())
+  addInteraction(createTranslate())
+  addInteraction(createModify())
+  addInteraction(createBoxSelect())
 
   inputLayers.register(event => (eventHandlers[event.type] || noop)(event))
 }

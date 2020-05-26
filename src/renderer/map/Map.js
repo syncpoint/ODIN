@@ -13,8 +13,8 @@ import evented from '../evented'
 import preferences from '../project/preferences'
 import coordinateFormat from '../../shared/coord-format'
 import layers from './layers'
+import draw from './draw'
 import './style/scalebar.css'
-import disposable from '../../shared/disposable'
 
 const zoom = view => view.getZoom()
 const center = view => toLonLat(view.getCenter())
@@ -43,6 +43,7 @@ const effect = props => () => {
     text: true,
     minWidth: 140
   })
+
   const map = new ol.Map({
     view,
     target: id,
@@ -60,32 +61,8 @@ const effect = props => () => {
     evented.emit('OSD_MESSAGE', { message: currentCoordinate, slot: 'C2' })
   })
 
-  // Provide layer/interaction cleanup.
-  let disposables = disposable.of()
-
-  const addLayer = layer => {
-    map.addLayer(layer)
-    disposables.addDisposable(() => map.removeLayer(layer))
-  }
-
-  const addInteraction = interaction => {
-    map.addInteraction(interaction)
-    disposables.addDisposable(() => map.removeInteraction(interaction))
-  }
-
-  const dispose = () => {
-    disposables.dispose()
-    disposables = disposable.of()
-  }
-
-  // Delegate layer management.
-  // Note: We don't directly expose complete Map API,
-  // but only essential operations.
-  layers({
-    addLayer,
-    addInteraction,
-    dispose
-  })
+  layers(map)
+  draw(map)
 
   // Set viewport and basemap from preferences.
   preferences.register(({ type, preferences }) => {
