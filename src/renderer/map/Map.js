@@ -6,6 +6,7 @@ import * as ol from 'ol'
 import 'ol/ol.css'
 import { fromLonLat, toLonLat } from 'ol/proj'
 import { ScaleLine } from 'ol/control'
+import { defaults as defaultInteractions } from 'ol/interaction'
 import getGridLayerGroup from './grids/group'
 import basemapLayerGroup from './basemap/group'
 
@@ -48,7 +49,10 @@ const effect = props => () => {
     view,
     target: id,
     controls: [scaleLine],
-    layers: [basemapLayerGroup(), getGridLayerGroup()]
+    layers: [basemapLayerGroup(), getGridLayerGroup()],
+    interactions: defaultInteractions({
+      doubleClickZoom: false
+    })
   })
 
   map.on('click', () => evented.emit('MAP_CLICKED'))
