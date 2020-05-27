@@ -1,16 +1,16 @@
-import { remote } from 'electron'
 import path from 'path'
 import fs from 'fs'
 import { GeoJSON } from 'ol/format'
 import * as ol from 'ol'
 
-import { K, I, uniq, noop } from '../../shared/combinators'
+import { K, I, uniq } from '../../shared/combinators'
 import undo from '../undo'
 import Feature from './Feature'
 import URI from './URI'
 import evented from '../evented'
 import * as clipboard from '../clipboard'
 import selection from '../selection'
+import * as io from './io'
 
 /**
  * Properties excluded from regular properties.
@@ -34,6 +34,10 @@ const internalProperties = ['layerId', 'geometry', 'locked', 'hidden']
 // SECTION: In-memory state: layer file names and features.
 
 const layerList = {}
+
+const layerName =
+  layerId =>
+    layerList[layerId].name
 
 /**
  * features :: string ~> ol/Feature
@@ -102,8 +106,6 @@ const disambiguateLayerName = basename => {
 // --
 // SECTION: Input layer I/O.
 
-const projectPath = () => remote.getCurrentWindow().path
-const layerPath = name => path.join(projectPath(), 'layers', `${name}.json`)
 
 /**
  * readFeatures :: (string, string) -> [ol/Feature]
@@ -128,15 +130,6 @@ const loadFeatures = async (layerId, filename) => {
 }
 
 /**
- * writeLayer :: string -> unit
- */
-const writeLayerFile = layerId => {
-  const filename = layerList[layerId].filename
-  const features = layerFeatures(layerId)
-  fs.writeFile(filename, geoJSON.writeFeatures(features), noop)
-}
-
-/**
  * writeFeatures :: a (ol/Feature | featureId | layerId) => [a] -> unit
  */
 const writeFeatures = xs =>
@@ -144,17 +137,9 @@ const writeFeatures = xs =>
     .map(x => x instanceof ol.Feature ? Feature.layerId(x) : x)
     .map(s => URI.isFeatureId(s) ? URI.layerId(s) : s)
     .filter(uniq)
-    .forEach(writeLayerFile)
-
-/**
- * readLayerFile :: string -> { string, string }
- * Read file contents of existing layer.
- */
-const readLayerFile = layerId => {
-  const filename = layerList[layerId].filename
-  const contents = fs.readFileSync(filename, 'utf8')
-  return { filename, contents }
-}
+    .map(layerId => ({ name: layerName(layerId), features: layerFeatures(layerId) }))
+    .map(({ name, features }) => ({ name, contents: geoJSON.writeFeatures(features) }))
+    .forEach(({ name, contents }) => io.writeLayer(name, contents))
 
 
 /**
@@ -193,21 +178,11 @@ const emit = event => reducers.forEach(reducer => setImmediate(() => reducer(eve
 // SECTION: Initialization.
 // NOTE: Currently, project lifecycle is bound to renderer window.
 
-/**
- * Read (absolute) layer file names from open project.
- */
-const layerFiles = () => {
-  const dir = path.join(projectPath(), 'layers')
-  if (!fs.existsSync(dir)) return []
-  return fs.readdirSync(dir)
-    .filter(filename => filename.endsWith('.json'))
-    .map(filename => path.join(dir, filename))
-}
 
 /**
  * Load layers from project.
  */
-;(() => layerFiles().forEach(async filename => {
+;(() => io.layerFilenames().forEach(async filename => {
   const layerId = URI.layerId()
 
   layerList[layerId] = {
@@ -291,11 +266,10 @@ const updateGeometriesCommand = (initial, current) => ({
 const renameLayerCommand = (layerId, prevName, nextName) => ({
   inverse: () => renameLayerCommand(layerId, nextName, prevName),
   apply: () => {
-    fs.renameSync(layerPath(prevName), layerPath(nextName))
+    io.renameLayer(prevName, nextName)
     layerList[layerId] = {
       ...layerList[layerId],
-      name: nextName,
-      filename: layerPath(nextName)
+      name: nextName
     }
 
     emit({ type: 'layerrenamed', layerId, name: nextName })
@@ -307,12 +281,13 @@ const renameLayerCommand = (layerId, prevName, nextName) => ({
  * Delete JSON input layer file.
  */
 const unlinkLayerCommand = layerId => {
-  const { filename, contents } = readLayerFile(layerId)
+  const name = layerName(layerId)
+  const contents = io.readLayer(name)
 
   return {
-    inverse: () => writeLayerCommand(layerId, filename, contents),
+    inverse: () => writeLayerCommand(layerId, name, contents),
     apply: () => {
-      fs.unlink(filename, noop)
+      io.deleteLayer(name)
       deactivateLayer(layerId)
 
       const featureIds = layerFeatures(layerId).map(Feature.id)
@@ -328,22 +303,19 @@ const unlinkLayerCommand = layerId => {
 }
 
 /**
- * writeLayerCommand :: (string, string) -> command
+ * writeLayerCommand :: (string, string, string) -> command
  * Write new JSON input layer file with given contents.
  */
-const writeLayerCommand = (layerId, filename, contents) => {
-  const basename = path.basename(filename, '.json')
+const writeLayerCommand = (layerId, basename, contents) => {
 
   return {
     inverse: () => unlinkLayerCommand(layerId),
     apply: () => {
       const name = disambiguateLayerName(basename)
-      const filename = layerPath(name)
-      fs.writeFileSync(filename, contents)
+      io.writeLayer(name, contents)
       layerList[layerId] = {
         id: layerId,
-        filename,
-        name: path.basename(filename, '.json'),
+        name,
         active: false
       }
 
@@ -461,7 +433,7 @@ const activateLayer = layerId => {
   Object.values(layerList).forEach(layer => (layer.active = false))
   layerList[layerId].active = true
   emit({ type: 'layeractivated', layerId })
-  evented.emit('OSD_MESSAGE', { message: layerList[layerId].name, slot: 'A2' })
+  evented.emit('OSD_MESSAGE', { message: layerName(layerId), slot: 'A2' })
 }
 
 /**
@@ -481,15 +453,15 @@ const deactivateLayer = layerId => {
  * Rename layer and file to new name.
  */
 const renameLayer = (layerId, name) => {
-  undo.applyAndPush(renameLayerCommand(layerId, layerList[layerId].name, name))
+  undo.applyAndPush(renameLayerCommand(layerId, layerName(layerId), name))
 }
 
 /**
  * removeLayer :: string -> unit
  */
-const removeLayer = layerId => {
-  undo.applyAndPush(unlinkLayerCommand(layerId))
-}
+const removeLayer =
+  layerId =>
+    undo.applyAndPush(unlinkLayerCommand(layerId))
 
 /**
  * createLayer :: () -> unit
@@ -500,20 +472,19 @@ const createLayer = () => {
 
   undo.applyAndPush(writeLayerCommand(
     URI.layerId(),
-    layerPath(name),
-    contents)
-  )
+    name,
+    contents
+  ))
 }
 
 const duplicateLayer = layerId => {
-  const { filename, contents } = readLayerFile(layerId)
-  const basename = path.basename(filename, '.json')
-  const name = disambiguateLayerName(basename)
+  const name = layerName(layerId)
+  const contents = io.readLayer(name)
   undo.applyAndPush(writeLayerCommand(
     URI.layerId(),
-    layerPath(name),
-    contents)
-  )
+    disambiguateLayerName(name),
+    contents
+  ))
 }
 
 /**
@@ -594,33 +565,40 @@ clipboard.registerHandler(URI.SCHEME_LAYER, {
   copy: () => {
     const selected = selection.selected(URI.isLayerId)
     if (!selected.length) return []
-    return [readLayerFile(selected[0])]
+
+    const layerId = selected[0]
+    const name = layerName(layerId)
+    return [{ name, contents: io.readLayer(name) }]
   },
 
   paste: layers => {
+    console.log('layers', layers)
     if (!layers || !layers.length) return
-    layers.forEach(({ filename, contents }) => {
-      const basename = path.basename(filename, '.json')
-      const name = disambiguateLayerName(basename)
+
+    layers.forEach(({ name, contents }) => {
       undo.applyAndPush(writeLayerCommand(
         URI.layerId(),
-        layerPath(name),
-        contents)
-      )
+        disambiguateLayerName(name),
+        contents
+      ))
     })
   },
 
   cut: () => {
     const selected = selection.selected(URI.isLayerId)
     if (!selected.length) return []
-    const content = [readLayerFile(selected[0])]
-    removeLayer(selected[0])
+
+    const layerId = selected[0]
+    const name = layerName(layerId)
+    const content = [{ name, contents: io.readLayer(name) }]
+    removeLayer(layerId)
     return content
   },
 
   delete: () => {
     const selected = selection.selected(URI.isLayerId)
     if (!selected.length) return
+
     removeLayer(selected[0])
   }
 })
