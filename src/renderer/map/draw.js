@@ -52,6 +52,7 @@ const setInteraction = map => descriptor => {
   })
 
   map.addInteraction(interaction)
+  map.getTargetElement().focus()
 }
 
 export default map => {

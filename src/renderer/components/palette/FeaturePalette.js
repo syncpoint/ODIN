@@ -9,6 +9,7 @@ import FeatureItem from './FeatureItem'
 import Presets from './Presets'
 import evented from '../../evented'
 import preferences from '../../project/preferences'
+import selection from '../../selection'
 
 const useStyles = makeStyles((theme) => ({
   panel: {
@@ -87,11 +88,20 @@ const FeaturePalette = (/* props */) => {
     preferences.set('paletteMemento', memento)
   }
 
+  const itemSelected = descriptor => () => {
+    selection.deselect()
+    evented.emit('MAP_DRAW', descriptor)
+  }
+
   const listItems = () => {
     if (!filter || filter.length < 3) return []
     return descriptors
       .featureDescriptors(filter, presets)
-      .map(descriptor => <FeatureItem key={descriptor.sortkey} {...descriptor}/>)
+      .map(descriptor => <FeatureItem
+        {...descriptor}
+        key={descriptor.sortkey}
+        onClick={itemSelected(descriptor)}
+      />)
   }
 
   return (
