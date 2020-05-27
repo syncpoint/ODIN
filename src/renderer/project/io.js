@@ -1,7 +1,7 @@
 import { remote } from 'electron'
 import path from 'path'
 import fs from 'fs'
-import { noop } from '../../shared/combinators'
+import { noop, K } from '../../shared/combinators'
 
 const projectPath = () => remote.getCurrentWindow().path
 
@@ -11,7 +11,18 @@ const projectPath = () => remote.getCurrentWindow().path
 export const loadPreferences = defaults => {
   const location = path.join(projectPath(), 'preferences.json')
   if (!fs.existsSync(location)) return defaults
-  return JSON.parse(fs.readFileSync(location))
+
+  return K(JSON.parse(fs.readFileSync(location)))(preferences => {
+
+    // Upgrade existing preferences:
+    //    activeLayer :: string [name of active aka target layer]
+    if (!preferences.activeLayer) {
+      const name = 'Default Layer' // TODO: i18n
+      preferences.activeLayer = name
+      const contents = '{"type":"FeatureCollection","features":[]}'
+      writeLayer(name, contents)
+    }
+  })
 }
 
 /**

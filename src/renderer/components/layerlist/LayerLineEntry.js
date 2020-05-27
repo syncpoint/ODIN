@@ -12,6 +12,7 @@ import VisibilityIcon from '@material-ui/icons/Visibility'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 
 import inputLayers from '../../project/input-layers'
+import preferences from '../../project/preferences'
 import { FeatureItem } from './FeatureItem'
 
 const collatorOptions = { numeric: true, sensitivity: 'base' }
@@ -38,12 +39,17 @@ export const LayerLineEntry = props => {
   const classes = useStyles()
   const actionsDisabled = Object.keys(props.features).length === 0
 
+  const handleDoubleClick = () => {
+    inputLayers.activateLayer(props.id)
+    preferences.set('activeLayer', props.name)
+  }
+
   return (
     <div key={props.id}>
       <ListItem
         button
         className={classes.item}
-        onDoubleClick={() => inputLayers.activateLayer(props.id)}
+        onDoubleClick={handleDoubleClick}
         onClick={props.selectLayer}
         selected={props.selected}
       >

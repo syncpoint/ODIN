@@ -9,6 +9,7 @@ import evented from '../evented'
 import * as clipboard from '../clipboard'
 import selection from '../selection'
 import * as io from './io'
+import preferences from './preferences'
 
 /**
  * Properties excluded from regular properties.
@@ -171,15 +172,17 @@ const emit = event => reducers.forEach(reducer => setImmediate(() => reducer(eve
 /**
  * Load layers from project.
  */
-;(() => io.loadLayers()
-  .forEach(({ name, contents }) => {
+;(() => {
+  const activeLayer = preferences.get('activeLayer')
+
+  io.loadLayers().forEach(({ name, contents }) => {
     const id = URI.layerId()
-    layerList[id] = { id, name, active: false }
+    layerList[id] = { id, name, active: activeLayer === name }
     const additions = readFeatures(id, contents)
     additions.forEach(feature => (featureList[Feature.id(feature)] = feature))
     emit({ type: 'featuresadded', features: additions, selected: false })
   })
-)()
+})()
 
 
 // --
@@ -253,6 +256,10 @@ const renameLayerCommand = (layerId, prevName, nextName) => ({
     layerList[layerId] = {
       ...layerList[layerId],
       name: nextName
+    }
+
+    if (layerList[layerId].active) {
+      preferences.set('activeLayer', layerList[layerId].name)
     }
 
     emit({ type: 'layerrenamed', layerId, name: nextName })
@@ -436,7 +443,8 @@ const deactivateLayer = layerId => {
  * Rename layer and file to new name.
  */
 const renameLayer = (layerId, name) => {
-  undo.applyAndPush(renameLayerCommand(layerId, layerName(layerId), name))
+  const command = renameLayerCommand(layerId, layerName(layerId), name)
+  undo.applyAndPush(command)
 }
 
 /**
@@ -582,7 +590,10 @@ clipboard.registerHandler(URI.SCHEME_LAYER, {
     const selected = selection.selected(URI.isLayerId)
     if (!selected.length) return
 
-    removeLayer(selected[0])
+    const layerId = selected[0]
+    if (layerList[layerId].active) return
+
+    removeLayer(layerId)
   }
 })
 
