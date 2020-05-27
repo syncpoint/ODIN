@@ -1,5 +1,3 @@
-import path from 'path'
-import fs from 'fs'
 import { GeoJSON } from 'ol/format'
 import * as ol from 'ol'
 
@@ -119,15 +117,6 @@ const readFeatures = (layerId, contents) => {
   }))
 }
 
-/**
- * loadFeatures :: (string, string) -> Promise<[ol/Feature]>
- * Load features for a layer. Features are assigned unique ids
- * and a property identifying the containing layer.
- */
-const loadFeatures = async (layerId, filename) => {
-  const contents = await fs.promises.readFile(filename, 'utf8')
-  return readFeatures(layerId, contents)
-}
 
 /**
  * writeFeatures :: a (ol/Feature | featureId | layerId) => [a] -> unit
@@ -182,21 +171,15 @@ const emit = event => reducers.forEach(reducer => setImmediate(() => reducer(eve
 /**
  * Load layers from project.
  */
-;(() => io.layerFilenames().forEach(async filename => {
-  const layerId = URI.layerId()
-
-  layerList[layerId] = {
-    id: layerId,
-    filename,
-    name: path.basename(filename, '.json'),
-    active: false
-  }
-
-  // Asynchronously load input layers:
-  const additions = await loadFeatures(layerId, filename)
-  additions.forEach(feature => (featureList[Feature.id(feature)] = feature))
-  emit({ type: 'featuresadded', features: additions, selected: false })
-}))()
+;(() => io.loadLayers()
+  .forEach(({ name, contents }) => {
+    const id = URI.layerId()
+    layerList[id] = { id, name, active: false }
+    const additions = readFeatures(id, contents)
+    additions.forEach(feature => (featureList[Feature.id(feature)] = feature))
+    emit({ type: 'featuresadded', features: additions, selected: false })
+  })
+)()
 
 
 // --

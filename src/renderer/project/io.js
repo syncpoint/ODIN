@@ -34,7 +34,7 @@ const layerPath =
  * layerFilenames :: () -> [string]
  * Read (absolute) layer file names from open project.
  */
-export const layerFilenames = () => {
+const layerFilenames = () => {
   const dir = path.join(projectPath(), 'layers')
   if (!fs.existsSync(dir)) return []
   return fs.readdirSync(dir)
@@ -49,6 +49,11 @@ export const renameLayer =
 export const readLayer =
   name =>
     fs.readFileSync(layerPath(name), 'utf8')
+
+export const loadLayers = () =>
+  layerFilenames()
+    .map(filename => path.basename(filename, '.json'))
+    .map(name => ({ name, contents: readLayer(name) }))
 
 export const writeLayer =
   (name, contents) =>
