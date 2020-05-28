@@ -468,6 +468,9 @@ const createLayer = () => {
   ))
 }
 
+/**
+ * duplicateLayer :: string -> unit()
+ */
 const duplicateLayer = layerId => {
   const name = layerName(layerId)
   const contents = io.readLayer(name)
@@ -477,6 +480,11 @@ const duplicateLayer = layerId => {
     contents
   ))
 }
+
+/**
+ * layerProperties :: string -> string ~> string
+ */
+const layerProperties = layerId => ({ ...layerList[layerId] })
 
 /**
  * featureProperties :: string -> (string ~> string)
@@ -629,6 +637,7 @@ export default {
   removeLayer,
   createLayer,
   duplicateLayer,
+  layerProperties,
   featureProperties,
   updateFeatureProperties
 }
