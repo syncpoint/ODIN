@@ -35,6 +35,8 @@ const featureClass = sidc => {
   return feature ? feature.class : undefined
 }
 
+const supportedGeometries = ['point', 'polygon', 'line', 'line-2pt']
+
 /**
  * featureDescriptors :: () => [object]
  */
@@ -48,6 +50,7 @@ const featureDescriptors = (filter, preset = {}) => {
   const filterMatch = descr => descr.sortkey.includes(filter.toLowerCase())
   const installationMatch = descr => [installation, '*'].includes(installationPart.value(descr.sidc))
   const match = descr => filterMatch(descr) && installationMatch(descr)
+  const supported = descr => supportedGeometries.includes(descr.geometry)
 
   const installationModifier = sidc => installationPart.value(sidc) !== '*'
     ? sidc
@@ -60,7 +63,10 @@ const featureDescriptors = (filter, preset = {}) => {
   )
 
   const updateSIDC = descriptor => ({ ...descriptor, sidc: sidc(descriptor.sidc) })
-  const matches = sortedList.filter(match).map(updateSIDC)
+  const matches = sortedList
+    .filter(supported)
+    .filter(match)
+    .map(updateSIDC)
   return R.take(50, matches)
 }
 
