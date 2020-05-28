@@ -5,7 +5,8 @@ import Tooltip from '../Tooltip.js'
 import inputLayers from '../../project/input-layers'
 import selection from '../../selection'
 import URI from '../../project/URI'
-import { K, noop } from '../../../shared/combinators'
+import { noop } from '../../../shared/combinators'
+import { useTranslation } from 'react-i18next'
 
 const withLayer = fn => {
   const selected = selection.selected(URI.isLayerId)
@@ -13,47 +14,45 @@ const withLayer = fn => {
   fn(selected[0])
 }
 
-const actionDescriptors = [
+const actions = [
   {
     icon: <LayersPlus/>,
-    tooltip: 'Create Layer',
-    disabled: false,
+    tooltip: 'layers.create',
+    disabled: () => false,
     sticky: true, // cannot be disabled
     action: () => inputLayers.createLayer()
   },
   {
     icon: <LayersMinus/>,
-    tooltip: 'Delete Layer',
-    disabled: true,
+    tooltip: 'layers.delete',
+    disabled: layer => !layer || layer.active,
     action: () => withLayer(layerId => inputLayers.removeLayer(layerId))
   },
   {
     icon: <ContentDuplicate/>,
-    tooltip: 'Duplicate Layer',
-    disabled: true,
+    tooltip: 'layers.duplicate',
+    disabled: layer => !layer,
     action: () => withLayer(layerId => inputLayers.duplicateLayer(layerId))
   },
   {
     icon: <ExportVariant/>,
-    tooltip: 'Share Layer',
-    disabled: true,
+    tooltip: 'layers.share',
+    disabled: layer => !layer,
     action: noop
   }
 ]
 
-const reducer = (prev) => K([...prev])(next => {
-  const selected = selection.selected(URI.isLayerId)
-  next
-    .filter(action => action.action !== noop)
-    .filter(action => !action.sticky)
-    .forEach(action => (action.disabled = !selected.length))
-})
-
 export const Actions = (/* props */) => {
-  const [actions, dispatch] = React.useReducer(reducer, actionDescriptors)
+  const { t } = useTranslation()
+  const [layer, setLayer] = React.useState(null)
 
   React.useEffect(() => {
-    const handleEvent = () => dispatch()
+    const handleEvent = () => {
+      const selected = selection.selected(URI.isLayerId)
+      if (selected.length === 0) setLayer(null)
+      else setLayer(inputLayers.layerProperties(selected[0]))
+    }
+
     selection.on('selected', handleEvent)
     selection.on('deselected', handleEvent)
 
@@ -64,10 +63,10 @@ export const Actions = (/* props */) => {
   }, [])
 
   return actions.map(({ icon, tooltip, disabled, action }, index) => (
-    <Tooltip key={index} title={tooltip}>
+    <Tooltip key={index} title={t(tooltip)}>
       {/* </span> needed for disabled </Tooltip> child. */}
       <span>
-        <IconButton size='small' disabled={disabled} onClick={action}>
+        <IconButton size='small' disabled={disabled(layer)} onClick={action}>
           { icon }
         </IconButton>
       </span>

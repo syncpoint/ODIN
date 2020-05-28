@@ -405,6 +405,9 @@ const createBoxSelect = () => {
 
 
 const eventHandlers = {
+  snapshot: ({ features }) => {
+    features.forEach(addFeature)
+  },
   featuresadded: ({ features, selected }) => {
     features.forEach(addFeature)
     if (selected) replaceSelection(features)
@@ -429,7 +432,7 @@ const eventHandlers = {
   layerremoved: ({ layerId }) => {
     layerFeatures(layerId).forEach(removeFeature)
   },
-  layeradded: ({ _, features }) => {
+  layeradded: ({ features }) => {
     features.forEach(addFeature)
   }
 }

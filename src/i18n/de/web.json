@@ -48,5 +48,14 @@
       "copy": "Kopieren",
       "paste": "Einfügen"
     }
+  },
+  "layers": {
+    "create": "Layer erstellen",
+    "delete": "Layer löschen",
+    "duplicate": "Layer duplizieren",
+    "share": "Layer teilen"
+  },
+  "basemaps": {
+    "opacity": "Deckkraft"
   }
 }

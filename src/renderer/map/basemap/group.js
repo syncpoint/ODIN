@@ -118,6 +118,14 @@ export const toggleVisibility = (layerId, onSuccess = ACTIONS.persistAndEmit) =>
   setVisibility(layerId, !layer.getVisible(), onSuccess)
 }
 
+export const setOpacity = (layerId, opacity, onSuccess = ACTIONS.persistAndEmit) => {
+  if (!layerId || opacity === undefined) return
+  const layer = layerById(layerId)
+  if (!layer) return
+  layer.setOpacity(opacity)
+  onSuccess()
+}
+
 /**
  *
  * @param {*} layerIds array of layer ids that define the order of the tile layers
@@ -162,7 +170,10 @@ const init = async sourceDescriptors => {
   const basemaps = preferences.get('basemaps') || []
   if (basemaps.length > 0) {
     setZIndices(basemaps.map(basemap => basemap.id), ACTIONS.noop)
-    basemaps.forEach(basemap => setVisibility(basemap.id, basemap.visible, ACTIONS.noop))
+    basemaps.forEach(basemap => {
+      setVisibility(basemap.id, basemap.visible, ACTIONS.noop)
+      setOpacity(basemap.id, basemap.opacity, ACTIONS.noop)
+    })
     ACTIONS.emit()
   } else {
     /*

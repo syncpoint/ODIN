@@ -12,6 +12,7 @@ import VisibilityIcon from '@material-ui/icons/Visibility'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 
 import inputLayers from '../../project/input-layers'
+import preferences from '../../project/preferences'
 import { FeatureItem } from './FeatureItem'
 
 const collatorOptions = { numeric: true, sensitivity: 'base' }
@@ -37,27 +38,34 @@ const useStyles = makeStyles((/* theme */) => ({
 export const LayerLineEntry = props => {
   const classes = useStyles()
   const actionsDisabled = Object.keys(props.features).length === 0
+  const lockToggleDisabled = actionsDisabled
+  const hideToggleDisabled = actionsDisabled || props.active
+
+  const handleDoubleClick = () => {
+    inputLayers.activateLayer(props.id)
+    preferences.set('activeLayer', props.name)
+  }
 
   return (
     <div key={props.id}>
       <ListItem
         button
         className={classes.item}
-        onDoubleClick={() => inputLayers.activateLayer(props.id)}
+        onDoubleClick={handleDoubleClick}
         onClick={props.selectLayer}
         selected={props.selected}
       >
         { props.active ? <b>{props.name}</b> : props.name }
         <ListItemSecondaryAction>
           <IconButton
-            disabled={actionsDisabled}
+            disabled={lockToggleDisabled}
             size='small'
             onClick={() => inputLayers.toggleLayerLock(props.id)}
           >
             {props.locked ? <LockIcon/> : <LockOpenIcon/>}
           </IconButton>
           <IconButton
-            disabled={actionsDisabled}
+            disabled={hideToggleDisabled}
             size='small'
             onClick={() => inputLayers.toggleLayerShow(props.id)}
           >

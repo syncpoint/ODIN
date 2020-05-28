@@ -1,6 +1,4 @@
-import { remote } from 'electron'
-import path from 'path'
-import fs from 'fs'
+import { loadPreferences, writePreferences } from './io'
 
 const DEFAULT_PREFERENCES = {
   viewport: {
@@ -12,7 +10,6 @@ const DEFAULT_PREFERENCES = {
   }
 }
 
-const projectPath = () => remote.getCurrentWindow().path
 
 let reducers = []
 
@@ -20,29 +17,12 @@ const emit = event => {
   reducers.forEach(reducer => setImmediate(() => reducer(event)))
 }
 
-/**
- * Load preferences for open project.
- */
-const loadPreferences = () => {
-  const location = path.join(projectPath(), 'preferences.json')
-  if (!fs.existsSync(location)) return DEFAULT_PREFERENCES
-  return JSON.parse(fs.readFileSync(location))
-}
-
-/**
- * Update in-memory preferences and sync to file.
- * @param {object} args partial preference values
- */
-const writePreferences = preferences => {
-  const location = path.join(projectPath(), 'preferences.json')
-  fs.writeFileSync(location, JSON.stringify(preferences, null, 2))
-}
 
 /**
  * Preferences (in-memory).
  * Should always be in sync with file: preferences.json
  */
-const preferences = loadPreferences()
+const preferences = loadPreferences(DEFAULT_PREFERENCES)
 
 const set = (key, value) => {
   preferences[key] = value

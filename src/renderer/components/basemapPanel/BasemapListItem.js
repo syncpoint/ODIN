@@ -13,12 +13,17 @@ import { ListItem, ListItemSecondaryAction, Typography, IconButton } from '@mate
 const useStyle = makeStyles(theme => ({
   listItem: {
     margin: theme.spacing(0.25),
-    border: '1px solid #cccccc',
+    border: `1px solid ${theme.palette.grey['400']}`,
     borderRadius: '2px',
     padding: theme.spacing(1)
   },
-  actions: {
-    float: 'right'
+  clickable: {
+    cursor: 'pointer',
+    width: '75%',
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover
+    },
+    padding: theme.spacing(0.5)
   }
 }))
 
@@ -26,7 +31,7 @@ const useStyle = makeStyles(theme => ({
 const BasemapListItem = (props) => {
 
   const { id, text, index, visible } = props
-  const { moveBasemapItem, visibilityClicked, onDrop } = props
+  const { moveBasemapItem, visibilityClicked, tuneClicked, onDrop } = props
 
   const classes = useStyle()
   const ref = React.useRef(null)
@@ -93,9 +98,13 @@ const BasemapListItem = (props) => {
   drag(drop(ref))
 
   return (
-    <ListItem ref={ref} className={classes.listItem} style={{ opacity }}>
-      <DragHandle color={visible ? 'inherit' : 'disabled'}/>
-      <Typography variant="button" color={visible ? 'initial' : 'textSecondary'}>{text}</Typography>
+    <ListItem ref={ref} className={classes.listItem} style={{ opacity }} selected={props.selected}
+      onClick={() => tuneClicked(id)}
+    >
+      <DragHandle color={visible ? 'inherit' : 'disabled'} style={{ cursor: 'grab' }}/>
+      <div className={classes.clickable}>
+        <Typography variant="button" color={visible ? 'initial' : 'textSecondary'}>{text}</Typography>
+      </div>
       { opacity === 1
         ? <ListItemSecondaryAction >
           <IconButton size="small" onClick={() => visibilityClicked(id)}>
@@ -113,8 +122,10 @@ BasemapListItem.propTypes = {
   text: PropTypes.string,
   index: PropTypes.number,
   visible: PropTypes.bool,
+  selected: PropTypes.bool,
   moveBasemapItem: PropTypes.func,
   visibilityClicked: PropTypes.func,
+  tuneClicked: PropTypes.func,
   onDrop: PropTypes.func
 }
 
