@@ -571,7 +571,6 @@ clipboard.registerHandler(URI.SCHEME_LAYER, {
   },
 
   paste: layers => {
-    console.log('layers', layers)
     if (!layers || !layers.length) return
 
     layers.forEach(({ name, contents }) => {
@@ -588,9 +587,9 @@ clipboard.registerHandler(URI.SCHEME_LAYER, {
     if (!selected.length) return []
 
     const layerId = selected[0]
-    const name = layerName(layerId)
-    const content = [{ name, contents: io.readLayer(name) }]
-    removeLayer(layerId)
+    const layer = layerList[layerId]
+    const content = [{ name: layer.name, contents: io.readLayer(layer.name) }]
+    if (!layer.active) removeLayer(layerId)
     return content
   },
 
