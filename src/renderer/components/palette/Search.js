@@ -28,7 +28,7 @@ const Search = props => {
   return (
     <InputBase
       className={classes.search}
-      placeholder={'Search...'}
+      placeholder={'Search for units etc.'}
       autoFocus
       value={props.value}
       onChange={({ target }) => props.onChange(target.value)}

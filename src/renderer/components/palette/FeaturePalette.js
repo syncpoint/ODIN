@@ -61,7 +61,7 @@ const FeaturePalette = (/* props */) => {
     evented.on('MAP_DRAWEND', show)
 
     return () => {
-      evented.off('MAP_DRAWSTART', hide)
+      evented.off('MAP_DRAW', hide)
       evented.off('MAP_DRAWEND', show)
     }
   }, [])
@@ -93,16 +93,17 @@ const FeaturePalette = (/* props */) => {
     evented.emit('MAP_DRAW', descriptor)
   }
 
-  const listItems = () => {
-    if (!filter || filter.length < 3) return []
-    return descriptors
-      .featureDescriptors(filter, presets)
-      .map(descriptor => <FeatureItem
-        {...descriptor}
-        key={descriptor.sortkey}
-        onClick={itemSelected(descriptor)}
-      />)
-  }
+  const listItems = descriptors
+    .featureDescriptors(filter, presets)
+    .map(descriptor => <FeatureItem
+      {...descriptor}
+      key={descriptor.sortkey}
+      onClick={itemSelected(descriptor)}
+    />)
+
+  const content = listItems.length
+    ? listItems
+    : <div style={{ marginLeft: 8 }}>Recently used features will appear here.</div>
 
   return (
     <Paper
@@ -116,7 +117,7 @@ const FeaturePalette = (/* props */) => {
       <Search value={filter} onChange={updateFilter}/>
       <div className={classes.listContainer}>
         <List className={classes.list}>
-          {listItems(filter)}
+          {content}
         </List>
       </div>
     </Paper>

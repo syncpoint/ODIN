@@ -33,7 +33,6 @@ const unsetInteraction = map => {
 
 const drawstart = descriptor => ({ feature }) => {
   feature.set('sidc', descriptor.sidc)
-  evented.emit('MAP_DRAWSTART')
 }
 
 const drawend = map => ({ feature }) => {
