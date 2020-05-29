@@ -9,7 +9,7 @@ const HostilityProperty = props => {
 
   const handleChange = ({ target }) => {
     setValue(target.value)
-    properties.sidc = hostilityPart.replace(properties.sidc)((target.value))
+    properties.sidc = hostilityPart.replace(target.value)(properties.sidc)
     props.onCommit(properties)
   }
 
