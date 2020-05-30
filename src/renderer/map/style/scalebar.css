@@ -5,5 +5,7 @@
 }
 .ol-scale-bar-inner div:nth-child(6) div{
     background-color: red !important;
-
+}
+.ol-scale-singlebar {
+  box-sizing: border-box;
 }
