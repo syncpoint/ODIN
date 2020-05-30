@@ -57,5 +57,15 @@
   },
   "basemaps": {
     "opacity": "Opacity"
+  },
+  "palette": {
+    "presets": {
+      "installation": "Installation",
+      "hostility": "Hostility: Friendly, Hostile, Neutral, Unknown",
+      "status": "Status: Present, Anticipated/Planned"
+    },
+    "search": {
+      "placeholder": "Search for unit, radar, missile, ..."
+    }
   }
 }

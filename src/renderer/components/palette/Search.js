@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { InputBase } from '@material-ui/core'
+import { useTranslation } from 'react-i18next'
 
 const useStyles = makeStyles((theme) => ({
   search: {
@@ -18,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Search = props => {
   const classes = useStyles()
-
+  const { t } = useTranslation()
   const handleKeyDown = event => {
     switch (event.key) {
       case 'Escape': return props.onChange('')
@@ -28,7 +29,7 @@ const Search = props => {
   return (
     <InputBase
       className={classes.search}
-      placeholder={'Search for units etc.'}
+      placeholder={t('palette.search.placeholder')}
       autoFocus
       value={props.value}
       onChange={({ target }) => props.onChange(target.value)}
