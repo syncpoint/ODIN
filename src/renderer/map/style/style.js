@@ -4,7 +4,7 @@ import ms from 'milsymbol'
 import { K } from '../../../shared/combinators'
 import defaultStyle from './style-default'
 import selection from '../../selection'
-
+import { polygonStyle } from './style-polygon'
 
 
 /**
@@ -102,6 +102,7 @@ const geometryType = feature => {
 export default (feature, resolution) => {
   const provider = R.cond([
     [R.equals('Point'), R.always(symbolStyle)],
+    [R.equals('Polygon'), R.always(polygonStyle)],
     [R.T, R.always(defaultStyle)]
   ])
 
@@ -110,10 +111,7 @@ export default (feature, resolution) => {
   const style = provider(type)(feature, resolution)
   const selected = selection.isSelected(feature.getId())
   const hidden = feature.get('hidden')
-
-  if (!selected && !hidden) {
-    feature.setStyle(style)
-  }
+  if (!selected && !hidden) feature.setStyle(style)
 
   return style
 }
