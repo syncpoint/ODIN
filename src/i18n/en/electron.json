@@ -44,10 +44,10 @@
     "close": "Close",
     "zoom": "Zoom"
   },
-  "exportProject": {
-    "title": "Export project {{name}}",
-    "succeeded": "Export of project {{name}} succeeded",
-    "failed": "Export of project {{name}} failed",
+  "export": {
+    "title": "Export {{name}}",
+    "succeeded": "Export succeeded: {{name}}",
+    "failed": "Export failed: {{name}}",
     "clickToOpen": "Open: {{path}}"
   },
   "importProject": {

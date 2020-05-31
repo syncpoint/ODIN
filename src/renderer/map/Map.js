@@ -15,6 +15,7 @@ import preferences from '../project/preferences'
 import coordinateFormat from '../../shared/coord-format'
 import layers from './layers'
 import draw from './draw'
+import share from './share'
 import './style/scalebar.css'
 
 const zoom = view => view.getZoom()
@@ -67,6 +68,7 @@ const effect = props => () => {
 
   layers(map)
   draw(map)
+  share(map)
 
   // Set viewport and basemap from preferences.
   preferences.register(({ type, preferences }) => {
