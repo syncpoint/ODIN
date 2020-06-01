@@ -4983,6 +4983,7 @@
   },
   {
     "sidc": "G*G*PC----*****",
+    "class": "P",
     "geometry": "polygon",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -5012,6 +5013,7 @@
   },
   {
     "sidc": "G*G*PM----*****",
+    "class": "P",
     "geometry": "polygon",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -5032,6 +5034,7 @@
   },
   {
     "sidc": "G*G*PY----*****",
+    "class": "P",
     "geometry": "polygon",
     "hierarchy": [
       "TACTICAL GRAPHICS",

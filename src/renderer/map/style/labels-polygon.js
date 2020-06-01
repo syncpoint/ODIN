@@ -67,7 +67,11 @@ export const directionalPlacements = polygon => {
     }
   }
 
-  return { center, ...hIntersect(), ...vIntersect(), ...northEW() }
+  const footer = () => ({
+    footer: new geom.Point([C[0], box[1]])
+  })
+
+  return { center, ...hIntersect(), ...vIntersect(), ...northEW(), ...footer() }
 }
 
 const textStyle = ({ geometry, text, options }) => new style.Style({
@@ -86,13 +90,18 @@ const axisLabels = (axes, options = {}) => lines => feature => {
 
   return axes
     .map(axis => ({ text, geometry: placements[axis], options }))
-    .filter(({ geometry }) => geometry)
+    .filter(({ geometry }) => {
+      if (!geometry) console.log('no geometry', feature)
+      return geometry
+    })
     .map(textStyle)
 }
 
 export const nsewLabel = axisLabels(['north', 'south', 'east', 'west'])
 export const ewLabels = axisLabels(['east', 'west'])
+export const nsLabels = axisLabels(['north', 'south'])
 export const southLabel = axisLabels(['south'])
 export const northLabel = axisLabels(['north'])
 export const centerLabel = axisLabels(['center'])
 export const nwLabel = axisLabels(['northWest'], { textAlign: 'right', offsetX: -20 })
+export const footerLabel = axisLabels(['footer'], { offsetY: 20 })

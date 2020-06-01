@@ -13,7 +13,6 @@ const HostilityProperty = props => {
     if (target.value === 'H') properties.n = 'ENY'
     else delete properties.n
     props.onCommit(properties)
-    console.log(properties, target.value)
   }
 
   return (

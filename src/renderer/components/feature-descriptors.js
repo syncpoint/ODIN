@@ -25,8 +25,6 @@ const sortedList = descriptors
   }))
   .sort((a, b) => a.sortkey.localeCompare(b.sortkey))
 
-console.log(sortedList)
-
 /**
  * featureClass :: string -> string
  */

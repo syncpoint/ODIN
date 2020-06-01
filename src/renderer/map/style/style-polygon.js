@@ -1,26 +1,19 @@
-/* eslint-disable */
 import defaultStyle from './style-default'
-import { nsewLabel, centerLabel, nwLabel, northLabel, ewLabels } from './labels-polygon'
+import { nsewLabel, centerLabel, nwLabel, northLabel, ewLabels, footerLabel, nsLabels } from './labels-polygon'
 import { parameterized } from '../../components/SIDC'
 
-const optLine = p => p ? p : null
 
 const templates = {}
 
-// TACGRP.FSUPP.ARS.C2ARS.TBA
-// c: title / t
-// nw: w / w1
 templates['G*F*ACBI--'] = title => [
   nwLabel(props => [props.w, props.w1]),
   centerLabel(props => [title, props.t])
 ]
 
-// TACGRP.FSUPP.ARS.C2ARS.ACA.IRR
-// c: title / t / x / x1 / w / w1
 templates['G*F*ACAI--'] = title => [
   centerLabel(props => [
     title,
-    props.t ? props.t : null,
+    props.t,
     props.x ? 'MIN ALT: ' + props.x : null,
     props.x1 ? 'MAX ALT: ' + props.x1 : null,
     props.w ? 'TIME FROM: ' + props.w : null,
@@ -28,8 +21,6 @@ templates['G*F*ACAI--'] = title => [
   ])
 ]
 
-// TACGRP.FSUPP.ARS.C2ARS.FFA.IRR
-// c: title / t / w - w1
 templates['G*F*ACFI--'] = title => {
   const W = props => (props.w && props.w1)
     ? props.w + '-' + props.w1
@@ -37,28 +28,11 @@ templates['G*F*ACFI--'] = title => {
   return [centerLabel(props => [title, props.t, W(props)])]
 }
 
-// TACGRP.FSUPP.ARS.C2ARS.FSA
-// c: title t
-// nw: w / w1
 templates['G*F*ACSI--'] = title => [
   nwLabel(props => [props.w, props.w1]),
   centerLabel(props => [title + (props.t ? ' ' + props.t : '')])
 ]
 
-// TACGRP.FSUPP.ARS.C2ARS.TGMF
-// c: title
-templates['G*F*ACT---'] = title => [centerLabel(() => [title])]
-
-// TACGRP.FSUPP.ARS.ARATGT
-// c: t
-templates['G*F*AT----'] = [centerLabel(props => [props.t])]
-
-// TACGRP.FSUPP.ARS.ARATGT.SGTGT
-// n: t
-templates['G*F*ATG---'] = [northLabel(props => [props.t])]
-
-// TACGRP.FSUPP.ARS.ARATGT.SMK
-// c: title / w - w1
 templates['G*F*ATS---'] = title => {
   const W = props => (props.w && props.w1)
     ? props.w + '-' + props.w1
@@ -66,8 +40,6 @@ templates['G*F*ATS---'] = title => {
   return [centerLabel(props => [title, W(props)])]
 }
 
-// TACGRP.C2GM.AVN.ARS.WFZ
-// c: title / t / w / w1
 templates['G*F*AAW---'] = title => [
   centerLabel(props => [
     title,
@@ -77,45 +49,21 @@ templates['G*F*AAW---'] = title => [
   ])
 ]
 
-// TACGRP.C2GM.DEF.ARS.BTLPSN
-// c: title? t
-// ew: 'ENY'
 templates['G*G*DAB---'] = title => [
   centerLabel(props => [title ? title + ' ' + (props.t || '') : props.t]),
   ewLabels(props => [props.n])
 ]
 
-// TACGRP.C2GM.DEF.ARS.EMTARA
-// c: title t
-templates['G*G*DAE---'] = title => [
-  centerLabel(props => [title + (props.t ? ' ' + props.t : '')])
-]
-
-// TACGRP.C2GM.GNL.ARS.ABYARA
-// c: title / t
-// ew: 'ENY'
-templates['G*G*GAA---'] = title => [
-  centerLabel(props => [title, props.t]),
-  ewLabels(props => [props.n])
-]
-
-// TACGRP.C2GM.GNL.ARS.LAARA
-// c: h (additional information)
-templates['G*G*GAY---'] = [
-  centerLabel(props => [props.h])
-]
-
-// TACGRP.C2GM.OFF.ARS
-// c: title / ... / t
-templates['G*G*OAA---'] = titles => [
-  centerLabel(props => [...titles, props.t])
-]
-
-// TACGRP.C2GM.SPL.ARA.NAI
-// c: title / t
-templates['G*G*GAA---'] = title => [
-  centerLabel(props => [title, props.t])
-]
+templates['G*F*ACT---'] = title => [centerLabel(() => [title])]
+templates['G*F*AT----'] = [centerLabel(props => [props.t])]
+templates['G*F*ATG---'] = [northLabel(props => [props.t])]
+templates['G*G*DAE---'] = title => [centerLabel(props => [title + (props.t ? ' ' + props.t : '')])]
+templates['G*G*GAA---'] = title => [centerLabel(props => [title, props.t]), ewLabels(props => [props.n])]
+templates['G*G*GAY---'] = [centerLabel(props => [props.h])]
+templates['G*G*OAA---'] = titles => [centerLabel(props => [...titles, props.t])]
+templates['G*G*SAN---'] = title => [centerLabel(props => [title, props.t])]
+templates['G*G*GAF---'] = [ewLabels(props => [props.n])]
+templates['G*G*PC----'] = [ewLabels(props => [props.n]), nsLabels(props => [props.h])]
 
 const labels = {}
 labels['G*F*ACBI--'] = templates['G*F*ACBI--']('TBA')
@@ -152,29 +100,39 @@ labels['G*G*DAE---'] = templates['G*G*DAE---']('EA')
 labels['G*G*GAA---'] = templates['G*G*GAA---']('AA')
 labels['G*G*GAD---'] = templates['G*G*GAA---']('DZ')
 labels['G*G*GAE---'] = templates['G*G*GAA---']('EA')
-// TODO: G*G*GAF---
+labels['G*G*GAF---'] = templates['G*G*GAF---']
 labels['G*G*GAG---'] = templates['G*G*GAA---']()
 labels['G*G*GAL---'] = templates['G*G*GAA---']('LZ')
 labels['G*G*GAP---'] = templates['G*G*GAA---']('PZ')
 labels['G*G*GAX---'] = templates['G*G*GAA---']('EZ')
 labels['G*G*GAY---'] = templates['G*G*GAY---'] // TODO: fill pattern
-// TODO: G*G*GAZ---
+labels['G*G*GAZ---'] = templates['G*G*GAF---']
 labels['G*G*OAA---'] = templates['G*G*OAA---'](['ASLT', 'PSN'])
 labels['G*G*OAK---'] = templates['G*G*DAE---']('ATK')
 labels['G*G*OAO---'] = templates['G*G*DAE---']('OBJ')
-// TODO: G*G*PC----
-// TODO: G*G*PM----
-// TODO: G*GPPY----
-// TODO: G*G*SAA---
-// TODO: G*GPSAE---
-labels['G*G*SAN---'] = templates['G*G*GAA---']('NAI')
+labels['G*G*PC----'] = templates['G*G*PC----']
+labels['G*G*PM----'] = [nsewLabel(() => ['M'])] // TODO: 'ENY'
+labels['G*G*PY----'] = [nsewLabel(() => ['M'])] // TODO: 'ENY', 'X'
+labels['G*G*SAA---'] = [footerLabel(({ t }) => ['AIRHEAD LINE', `(PL${t ? (' ' + t) : ''})`])]
+labels['G*G*SAE---'] = templates['G*G*GAF---']
+labels['G*G*SAN---'] = templates['G*G*SAN---']('NAI')
 labels['G*G*SAO---'] = templates['G*G*DAE---']('AO')
-labels['G*G*SAT---'] = templates['G*G*GAA---']('TAI')
-// TODO: G*MPNB----
-// TODO: G*MPNC----
-// TODO: G*MPNL----
-// TODO: G*MPNR----
+labels['G*G*SAT---'] = templates['G*G*SAN---']('TAI')
+labels['G*M*OFA---'] = [nsewLabel(() => ['M'])]
+labels['G*M*OU----'] = [ewLabels(() => ['UXO'])]
+labels['G*M*OGF---'] = templates['G*F*ACFI--']('FREE')
+labels['G*M*OGR---'] = templates['G*F*ACFI--']()
+labels['G*M*OGZ---'] = templates['G*F*AT----']
+labels['G*M*SP----'] = templates['G*F*AT----'] // TODO: echelon (south)
+labels['G*S*AD----'] = templates['G*G*OAA---'](['DETAINEE', 'HOLDING', 'AREA'])
+labels['G*S*AE----'] = templates['G*G*OAA---'](['EPW', 'HOLDING', 'AREA'])
+labels['G*S*AH----'] = templates['G*G*OAA---'](['REFUGEE', 'HOLDING', 'AREA'])
+labels['G*S*AR----'] = templates['G*G*GAA---'](['FARP'])
+labels['G*S*ASB---'] = templates['G*G*SAN---'](['BSA'])
+labels['G*S*ASD---'] = templates['G*G*SAN---'](['DSA'])
+labels['G*S*ASR---'] = templates['G*G*SAN---'](['RSA'])
 
+// TODO: G*MPNB----, G*MPNC----, G*MPNL----, G*MPNR----, G*MPOFD---
 
 export const polygonStyle = (feature, resolution) => {
   const sidc = parameterized(feature.getProperties().sidc)
