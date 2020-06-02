@@ -2,9 +2,9 @@ import * as R from 'ramda'
 import { Style, Icon } from 'ol/style'
 import ms from 'milsymbol'
 import { K } from '../../../shared/combinators'
-import defaultStyle from './style-default'
 import selection from '../../selection'
-import { polygonStyle } from './style-polygon'
+import defaultStyle from './default-style'
+import { polygonStyle } from './polygon-style'
 import { lineStyle } from './line-style'
 
 

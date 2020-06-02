@@ -1,4 +1,4 @@
-import defaultStyle from './style-default'
+import defaultStyle from './default-style'
 import {
   nsewLabel as nsew,
   centerLabel as c,
@@ -7,7 +7,7 @@ import {
   ewLabels as ew,
   footerLabel as f,
   nsLabels as ns
-} from './labels-polygon'
+} from './polygon-labels'
 import { parameterized } from '../../components/SIDC'
 
 const when = s => fn => s ? fn(s) : null

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import defaultStyle from './style-default'
+import defaultStyle from './default-style'
 import { parameterized } from '../../components/SIDC'
 import lineLabels from './line-labels'
 
