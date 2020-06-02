@@ -1,3 +1,4 @@
+/* eslint-disable */
 import * as R from 'ramda'
 import * as geom from 'ol/geom'
 import * as style from 'ol/style'
@@ -13,8 +14,11 @@ const segmentAngle = R.compose(normalizeAngle, atan2, vector)
 const head = xs => xs[0]
 const last = xs => xs[xs.length - 1]
 
+const defaultStroke = new style.Stroke({ color: 'white', width: 3 })
+
 export default lines => feature => {
-  const points = feature.getGeometry().getCoordinates()
+  const geometry = feature.getGeometry()
+  const points = geometry.getCoordinates()
   const segments = R.aperture(2, points)
 
   const α1 = segmentAngle(head(segments))
@@ -22,32 +26,121 @@ export default lines => feature => {
   const flip = α => α > _HALF_PI && α < 3 * _HALF_PI
   const xOffset = 20
 
-  const text = lines(feature.getProperties()).filter(x => x).join('\n')
+  const fraction = 0.5
+  const α = segmentAngle([geometry.getCoordinateAt(fraction - 0.05), geometry.getCoordinateAt(fraction + 0.05)])
 
-  return [
-    new style.Style({
+  const placement = {
+    start: text => new style.Style({
       geometry: new geom.Point(head(points)),
       text: new style.Text({
         text,
         font: defaultFont,
-        // TODO: convert to singleton
-        stroke: new style.Stroke({ color: 'white', width: 3 }),
+        stroke: defaultStroke,
         rotation: flip(α1) ? α1 - _PI : α1,
         textAlign: flip(α1) ? 'end' : 'start',
         offsetX: flip(α1) ? xOffset : -xOffset
       })
     }),
-    new style.Style({
+    end: text => new style.Style({
       geometry: new geom.Point(last(points)),
       text: new style.Text({
         text,
         font: defaultFont,
-        // TODO: convert to singleton
-        stroke: new style.Stroke({ color: 'white', width: 3 }),
+        stroke: defaultStroke,
         rotation: flip(αn) ? αn - _PI : αn,
         textAlign: flip(αn) ? 'start' : 'end',
         offsetX: flip(αn) ? -xOffset : xOffset
       })
+    }),
+    baseline: text => new style.Style({
+      geometry: new geom.Point(geometry.getCoordinateAt(fraction)),
+      text: new style.Text({
+        text,
+        font: defaultFont,
+        stroke: defaultStroke,
+        rotation: flip(α) ? α - _PI : α,
+      })
+    }),
+    above: text => new style.Style({
+      geometry: new geom.Point(geometry.getCoordinateAt(fraction)),
+      text: new style.Text({
+        text,
+        font: defaultFont,
+        stroke: defaultStroke,
+        rotation: flip(α) ? α - _PI : α,
+        offsetY: -25
+      })
+    }),
+    below: text => new style.Style({
+      geometry: new geom.Point(geometry.getCoordinateAt(fraction)),
+      text: new style.Text({
+        text,
+        font: defaultFont,
+        stroke: defaultStroke,
+        rotation: flip(α) ? α - _PI : α,
+        offsetY: 25
+      })
+    }),
+    aboveStart: text => new style.Style({
+      geometry: new geom.Point(head(points)),
+      text: new style.Text({
+        text,
+        font: defaultFont,
+        stroke: defaultStroke,
+        rotation: flip(α1) ? α1 - _PI : α1,
+        textAlign: flip(αn) ? 'end' : 'start',
+        offsetX: flip(α1) ? -25 : 25,
+        offsetY: -25
+      })
+    }),
+    belowStart: text => new style.Style({
+      geometry: new geom.Point(head(points)),
+      text: new style.Text({
+        text,
+        font: defaultFont,
+        stroke: defaultStroke,
+        rotation: flip(α1) ? α1 - _PI : α1,
+        textAlign: flip(αn) ? 'end' : 'start',
+        offsetX: flip(α1) ? -25 : 25,
+        offsetY: 25
+      })
+    }),
+    aboveEnd: text => new style.Style({
+      geometry: new geom.Point(last(points)),
+      text: new style.Text({
+        text,
+        font: defaultFont,
+        stroke: defaultStroke,
+        rotation: flip(αn) ? αn - _PI : αn,
+        textAlign: flip(αn) ? 'start' : 'end',
+        offsetX: flip(αn) ? 25 : -25,
+        offsetY: -25
+      })
+    }),
+    belowEnd: text => new style.Style({
+      geometry: new geom.Point(last(points)),
+      text: new style.Text({
+        text,
+        font: defaultFont,
+        stroke: defaultStroke,
+        rotation: flip(αn) ? αn - _PI : αn,
+        textAlign: flip(αn) ? 'start' : 'end',
+        offsetX: flip(αn) ? 25 : -25,
+        offsetY: 25,
+      })
     })
+  }
+
+  const text = lines(feature.getProperties()).filter(x => x).join('\n')
+  return [
+    placement.start(text),
+    placement.end(text),
+    placement.baseline('BASELINE') ,
+    placement.above('CFL 54ID (M)'),
+    placement.below(['110800Zfeb20-', '041200Zfeb20'].join('\n')),
+    placement.belowStart('ABC'),
+    placement.aboveStart('XYZ'),
+    placement.belowEnd('ABC'),
+    placement.aboveEnd('XYZ')
   ]
 }
