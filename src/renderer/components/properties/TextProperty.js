@@ -35,7 +35,7 @@ const TextProperty = props => {
 
 TextProperty.propTypes = {
   className: PropTypes.string,
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string,
   property: PropTypes.string.isRequired,
   properties: PropTypes.object.isRequired,
   onCommit: PropTypes.func.isRequired
