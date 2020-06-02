@@ -15,7 +15,7 @@ const pngExport = async map => {
       mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity)
       const transform = canvas.style.transform
       // Get the transform parameters from the style's transform matrix
-      const matrix = transform.match(/^matrix\(([^\(]*)\)$/)[1].split(',').map(Number)
+      const matrix = transform.match(/^matrix\(([^(]*)\)$/)[1].split(',').map(Number)
       // Apply the transform to the export map context
       CanvasRenderingContext2D.prototype.setTransform.apply(mapContext, matrix)
       mapContext.drawImage(canvas, 0, 0)
