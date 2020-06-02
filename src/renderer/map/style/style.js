@@ -5,6 +5,7 @@ import { K } from '../../../shared/combinators'
 import defaultStyle from './style-default'
 import selection from '../../selection'
 import { polygonStyle } from './style-polygon'
+import { lineStyle } from './line-style'
 
 
 /**
@@ -103,6 +104,7 @@ export default (feature, resolution) => {
   const provider = R.cond([
     [R.equals('Point'), R.always(symbolStyle)],
     [R.equals('Polygon'), R.always(polygonStyle)],
+    [R.equals('LineString'), R.always(lineStyle)],
     [R.T, R.always(defaultStyle)]
   ])
 
