@@ -2275,7 +2275,7 @@
   {
     "sidc": "G*F*ACPR--*****",
     "class": "A",
-    "geometry": "unsupported",
+    "geometry": "polygon",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
@@ -18987,6 +18987,3765 @@
       "WARFIGHTING SYMBOLS",
       "SUBSURFACE TRACK",
       "UNEXPLODED ORDNANCE AREA"
+    ]
+  },
+  {
+    "sidc": "WA-DBAD-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "BOUNDED AREAS OF WEATHER",
+      "DUST OR SAND"
+    ]
+  },
+  {
+    "sidc": "WA-DBAFF----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "BOUNDED AREAS OF WEATHER",
+      "OPERATOR-DEFINED FREEFORM"
+    ]
+  },
+  {
+    "sidc": "WA-DBAFG----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "BOUNDED AREAS OF WEATHER",
+      "FOG"
+    ]
+  },
+  {
+    "sidc": "WA-DBAFP----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "BOUNDED AREAS OF WEATHER",
+      "FREEZING / FROZEN PRECIPITATION"
+    ]
+  },
+  {
+    "sidc": "WA-DBAI-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "BOUNDED AREAS OF WEATHER",
+      "ICING"
+    ]
+  },
+  {
+    "sidc": "WA-DBAIF----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "BOUNDED AREAS OF WEATHER",
+      "INSTRUMENT FLIGHT RULE (IFR)"
+    ]
+  },
+  {
+    "sidc": "WA-DBALPC---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "BOUNDED AREAS OF WEATHER",
+      "LIQUID PRECIPITATION - NON-CONVECTIVE CONTINUOUS OR INTERMITTENT",
+      "LIQUID PRECIPITATION - CONVECTIVE"
+    ]
+  },
+  {
+    "sidc": "WA-DBALPNC--A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "BOUNDED AREAS OF WEATHER",
+      "LIQUID PRECIPITATION - NON-CONVECTIVE CONTINUOUS OR INTERMITTENT"
+    ]
+  },
+  {
+    "sidc": "WA-DBAMV----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "BOUNDED AREAS OF WEATHER",
+      "MARGINAL VISUAL FLIGHT RULE (MVFR)"
+    ]
+  },
+  {
+    "sidc": "WA-DBAT-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "BOUNDED AREAS OF WEATHER",
+      "THUNDERSTORMS"
+    ]
+  },
+  {
+    "sidc": "WA-DBATB----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "BOUNDED AREAS OF WEATHER",
+      "TURBULENCE"
+    ]
+  },
+  {
+    "sidc": "WA-DIPCO---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "ISOPLETHS",
+      "CONTOUR - UPPER AIR"
+    ]
+  },
+  {
+    "sidc": "WA-DIPFF---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "ISOPLETHS",
+      "OPERATOR-DEFINED FREEFORM"
+    ]
+  },
+  {
+    "sidc": "WA-DIPIB---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "ISOPLETHS",
+      "ISOBAR - SURFACE"
+    ]
+  },
+  {
+    "sidc": "WA-DIPID---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "ISOPLETHS",
+      "ISODROSOTHERM"
+    ]
+  },
+  {
+    "sidc": "WA-DIPIS---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "ISOPLETHS",
+      "ISOTHERM"
+    ]
+  },
+  {
+    "sidc": "WA-DIPIT---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "ISOPLETHS",
+      "ISOTACH"
+    ]
+  },
+  {
+    "sidc": "WA-DIPTH---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "ISOPLETHS",
+      "THICKNESS"
+    ]
+  },
+  {
+    "sidc": "WA-DPFC----L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "FRONTAL SYSTEMS",
+      "COLD FRONT"
+    ]
+  },
+  {
+    "sidc": "WA-DPFC-FG-L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "FRONTAL SYSTEMS",
+      "COLD FRONTOGENESIS"
+    ]
+  },
+  {
+    "sidc": "WA-DPFC-FY-L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "FRONTAL SYSTEMS",
+      "COLD FRONTOLYSIS"
+    ]
+  },
+  {
+    "sidc": "WA-DPFCU---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "FRONTAL SYSTEMS",
+      "COLD FRONT UPPER COLD FRONT"
+    ]
+  },
+  {
+    "sidc": "WA-DPFO----L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "FRONTAL SYSTEMS",
+      "OCCLUDED FRONT"
+    ]
+  },
+  {
+    "sidc": "WA-DPFO-FY-L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "FRONTAL SYSTEMS",
+      "OCCLUDED FRONTOLYSIS"
+    ]
+  },
+  {
+    "sidc": "WA-DPFOU---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "FRONTAL SYSTEMS",
+      "UPPER OCCLUDED FRONT"
+    ]
+  },
+  {
+    "sidc": "WA-DPFS----L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "FRONTAL SYSTEMS",
+      "STATIONARY FRONT"
+    ]
+  },
+  {
+    "sidc": "WA-DPFS-FG-L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "FRONTAL SYSTEMS",
+      "STATIONARY FRONTOGENESIS"
+    ]
+  },
+  {
+    "sidc": "WA-DPFS-FY-L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "FRONTAL SYSTEMS",
+      "STATIONARY FRONTOLYSIS"
+    ]
+  },
+  {
+    "sidc": "WA-DPFSU---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "FRONTAL SYSTEMS",
+      "UPPER STATIONARY FRONT"
+    ]
+  },
+  {
+    "sidc": "WA-DPFW----L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "FRONTAL SYSTEMS",
+      "WARM FRONT"
+    ]
+  },
+  {
+    "sidc": "WA-DPFW-FG-L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "FRONTAL SYSTEMS",
+      "WARM FRONTOGENESIS"
+    ]
+  },
+  {
+    "sidc": "WA-DPFW-FY-L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "FRONTAL SYSTEMS",
+      "WARM FRONTOLYSIS"
+    ]
+  },
+  {
+    "sidc": "WA-DPFWU---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "FRONTAL SYSTEMS",
+      "WARM FRONT UPPER WARM FRONT"
+    ]
+  },
+  {
+    "sidc": "WA-DPXCV---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "LINES",
+      "CONVERGANCE LINE"
+    ]
+  },
+  {
+    "sidc": "WA-DPXIL---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "LINES",
+      "INSTABILITY LINE"
+    ]
+  },
+  {
+    "sidc": "WA-DPXITCZ-L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "LINES",
+      "INTER-TROPICAL CONVERGANCE ZONE"
+    ]
+  },
+  {
+    "sidc": "WA-DPXITD--L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "LINES",
+      "INTER-TROPICAL DISCONTINUITY"
+    ]
+  },
+  {
+    "sidc": "WA-DPXR----L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "LINES",
+      "RIDGE AXIS"
+    ]
+  },
+  {
+    "sidc": "WA-DPXSH---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "LINES",
+      "SHEAR LINE"
+    ]
+  },
+  {
+    "sidc": "WA-DPXSQ---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "LINES",
+      "SEVERE SQUALL LINE"
+    ]
+  },
+  {
+    "sidc": "WA-DPXT----L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "LINES",
+      "TROUGH AXIS"
+    ]
+  },
+  {
+    "sidc": "WA-DWJ-----L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WINDS",
+      "JET STREAM"
+    ]
+  },
+  {
+    "sidc": "WA-DWS-----L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WINDS",
+      "STREAM LINE"
+    ]
+  },
+  {
+    "sidc": "WA-DWSTSWA--A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "TROPICAL STORM SYSTEMS",
+      "TROPICAL STORM WIND AREAS AND DATE / TIME LABELS"
+    ]
+  },
+  {
+    "sidc": "WAS-CCCSBCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "CLOUD COVERAGE SYMBOLS",
+      "BROKEN COVERAGE"
+    ]
+  },
+  {
+    "sidc": "WAS-CCCSCSP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "CLOUD COVERAGE SYMBOLS",
+      "CLEAR SKY"
+    ]
+  },
+  {
+    "sidc": "WAS-CCCSFCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "CLOUD COVERAGE SYMBOLS",
+      "FEW COVERAGE"
+    ]
+  },
+  {
+    "sidc": "WAS-CCCSOBP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "CLOUD COVERAGE SYMBOLS",
+      "SKY TOTALLY OR PARTIALLY OBSCURED"
+    ]
+  },
+  {
+    "sidc": "WAS-CCCSOCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "CLOUD COVERAGE SYMBOLS",
+      "OVERCAST COVERAGE"
+    ]
+  },
+  {
+    "sidc": "WAS-CCCSSCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "CLOUD COVERAGE SYMBOLS",
+      "SCATTERED COVERAGE"
+    ]
+  },
+  {
+    "sidc": "WAS-GND-NCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITHOUT SNOW OR MEASURABLE ICE COVER",
+      "SURFACE DRY WITHOUT CRACKS OR APPRECIABLE DUST OR LOOSE SAND"
+    ]
+  },
+  {
+    "sidc": "WAS-GNDEWCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITHOUT SNOW OR MEASURABLE ICE COVER",
+      "EXTREMELY DRY WITH CRACKS"
+    ]
+  },
+  {
+    "sidc": "WAS-GNFL--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITHOUT SNOW OR MEASURABLE ICE COVER",
+      "SURFACE FLOODED"
+    ]
+  },
+  {
+    "sidc": "WAS-GNFZ--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITHOUT SNOW OR MEASURABLE ICE COVER",
+      "SURFACE FROZEN"
+    ]
+  },
+  {
+    "sidc": "WAS-GNG-TIP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITHOUT SNOW OR MEASURABLE ICE COVER",
+      "GLAZE (THIN ICE) ON GROUND"
+    ]
+  },
+  {
+    "sidc": "WAS-GNLDMCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITHOUT SNOW OR MEASURABLE ICE COVER",
+      "MODERATE / THICK LOOSE DRY DUST OR SAND COVERING GROUND COMPLETELY"
+    ]
+  },
+  {
+    "sidc": "WAS-GNLDN-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITHOUT SNOW OR MEASURABLE ICE COVER",
+      "LOOSE DRY DUST OR SAND NOT COVERING GROUND COMPLETELY"
+    ]
+  },
+  {
+    "sidc": "WAS-GNLDTCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITHOUT SNOW OR MEASURABLE ICE COVER",
+      "THIN LOOSE DRY DUST OR SAND COVERING GROUND COMPLETELY"
+    ]
+  },
+  {
+    "sidc": "WAS-GNM---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITHOUT SNOW OR MEASURABLE ICE COVER",
+      "SURFACE MOIST"
+    ]
+  },
+  {
+    "sidc": "WAS-GNW-SWP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITHOUT SNOW OR MEASURABLE ICE COVER",
+      "SURFACE WET, STANDING WATER IN SMALL OR LARGE POOLS"
+    ]
+  },
+  {
+    "sidc": "WAS-GSI---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITH SNOW OR MEASURABLE ICE COVER",
+      "PREDOMINATELY ICE COVERED"
+    ]
+  },
+  {
+    "sidc": "WAS-GSSCCEP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITH SNOW OR MEASURABLE ICE COVER",
+      "EVEN LAYER OF COMPACT OR WET SNOW COVERING GROUND COMPLETELY"
+    ]
+  },
+  {
+    "sidc": "WAS-GSSCCUP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITH SNOW OR MEASURABLE ICE COVER",
+      "UNEVEN LAYER OF COMPACT OR WET SNOW COVERING GROUND COMPLETELY"
+    ]
+  },
+  {
+    "sidc": "WAS-GSSCH-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITH SNOW OR MEASURABLE ICE COVER",
+      "COMPACT OR WET SNOW (WITH OR WITHOUT ICE) COVERING AT LEAST ONE-HALF GROUND, BUT GROUND NOT COMPLETELY COVERED"
+    ]
+  },
+  {
+    "sidc": "WAS-GSSCL-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITH SNOW OR MEASURABLE ICE COVER",
+      "COMPACT OR WET SNOW (WITH OR WITHOUT ICE) COVERING LESS THAN ONE-HALF OF GROUND"
+    ]
+  },
+  {
+    "sidc": "WAS-GSSDC-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITH SNOW OR MEASURABLE ICE COVER",
+      "SNOW COVERING GROUND COMPLETELY; DEEP DRIFTS"
+    ]
+  },
+  {
+    "sidc": "WAS-GSSLCEP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITH SNOW OR MEASURABLE ICE COVER",
+      "EVEN LAYER OF LOOSE DRY SNOW COVERING GROUND COMPLETELY"
+    ]
+  },
+  {
+    "sidc": "WAS-GSSLCUP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITH SNOW OR MEASURABLE ICE COVER",
+      "UNEVEN LAYER OFLOOSE DRY SNOW COVERING GROUND COMPLETELY"
+    ]
+  },
+  {
+    "sidc": "WAS-GSSLH-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITH SNOW OR MEASURABLE ICE COVER",
+      "LOOSE DRY SNOW COVERING AT LEAST ONE-HALF GROUND, BUT GROUND NOT COMPLETELY COVERED"
+    ]
+  },
+  {
+    "sidc": "WAS-GSSLL-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "STATE OF THE GROUND",
+      "WITH SNOW OR MEASURABLE ICE COVER",
+      "LOOSE DRY SNOW COVERING LESS THAN ONE-HALF OF GROUND"
+    ]
+  },
+  {
+    "sidc": "WAS-ICL---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "CLEAR ICING - LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-ICM---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "CLEAR ICING - MODERATE"
+    ]
+  },
+  {
+    "sidc": "WAS-ICS---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "CLEAR ICING - SEVERE"
+    ]
+  },
+  {
+    "sidc": "WAS-IML---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "MIXED ICING - LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-IMM---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "MIXED ICING - MODERATE"
+    ]
+  },
+  {
+    "sidc": "WAS-IMS---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "MIXED ICING - SEVERE"
+    ]
+  },
+  {
+    "sidc": "WAS-IRL---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "RIME ICING - LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-IRM---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "RIME ICING - MODERATE"
+    ]
+  },
+  {
+    "sidc": "WAS-IRS---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "RIME ICING - SEVERE"
+    ]
+  },
+  {
+    "sidc": "WAS-PA----P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "HIGH PRESSURE CENTER",
+      "ANTICYCLONE CENTER"
+    ]
+  },
+  {
+    "sidc": "WAS-PC----P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "LOW PRESSURE CENTER",
+      "CYCLONE CENTER"
+    ]
+  },
+  {
+    "sidc": "WAS-PH----P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "HIGH PRESSURE CENTER"
+    ]
+  },
+  {
+    "sidc": "WAS-PHT---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "HIGH PRESSURE CENTER",
+      "TROPOPAUSE HIGH"
+    ]
+  },
+  {
+    "sidc": "WAS-PL----P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "LOW PRESSURE CENTER"
+    ]
+  },
+  {
+    "sidc": "WAS-PLT---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "PRESSURE SYSTEMS",
+      "LOW PRESSURE CENTER",
+      "TROPOPAUSE LOW"
+    ]
+  },
+  {
+    "sidc": "WAS-T-MW--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "TURBULENCE",
+      "MOUNTAIN WAVES"
+    ]
+  },
+  {
+    "sidc": "WAS-TE----P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "TURBULENCE - EXTREME"
+    ]
+  },
+  {
+    "sidc": "WAS-TL----P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "TURBULENCE - LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-TM----P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "TURBULENCE - MODERATE"
+    ]
+  },
+  {
+    "sidc": "WAS-TS----P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "TURBULENCE - SEVERE"
+    ]
+  },
+  {
+    "sidc": "WAS-WC----P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "CALM WINDS"
+    ]
+  },
+  {
+    "sidc": "WAS-WP----P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WINDS",
+      "WIND PLOT"
+    ]
+  },
+  {
+    "sidc": "WAS-WSBR--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "MIST"
+    ]
+  },
+  {
+    "sidc": "WAS-WSD-HCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "DRIZZLE - INTERMITTENT HEAVY",
+      "DRIZZLE - CONTINUOUS HEAVY"
+    ]
+  },
+  {
+    "sidc": "WAS-WSD-HIP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "DRIZZLE - INTERMITTENT HEAVY"
+    ]
+  },
+  {
+    "sidc": "WAS-WSD-LCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "DRIZZLE - INTERMITTENT LIGHT",
+      "DRIZZLE - CONTINUOUS LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-WSD-LIP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "DRIZZLE - INTERMITTENT LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-WSD-MCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "DRIZZLE - INTERMITTENT MODERATE",
+      "DRIZZLE - CONTINUOUS MODERATE"
+    ]
+  },
+  {
+    "sidc": "WAS-WSD-MIP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "DRIZZLE - INTERMITTENT MODERATE"
+    ]
+  },
+  {
+    "sidc": "WAS-WSDB--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "BLOWING DUST OR SAND"
+    ]
+  },
+  {
+    "sidc": "WAS-WSDD--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "DUST OR SAND",
+      "DUST DEVIL"
+    ]
+  },
+  {
+    "sidc": "WAS-WSDFL-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "FREEZING DRIZZLE - LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-WSDFMHP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "FREEZING DRIZZLE - MODERATE / HEAVY"
+    ]
+  },
+  {
+    "sidc": "WAS-WSDSLMP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "DUST OR SAND",
+      "DUST / SAND STORM - LIGHT TO MODERATE"
+    ]
+  },
+  {
+    "sidc": "WAS-WSDSS-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "DUST OR SAND",
+      "DUST / SAND STORM - SEVERE"
+    ]
+  },
+  {
+    "sidc": "WAS-WSF-LVP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "FREEZING LEVEL"
+    ]
+  },
+  {
+    "sidc": "WAS-WSFGCSP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "FOG - SHALLOW CONTINUOUS"
+    ]
+  },
+  {
+    "sidc": "WAS-WSFGFOP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "FOG - FREEZING, SKY NOT VISIBLE"
+    ]
+  },
+  {
+    "sidc": "WAS-WSFGFVP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "FOG - FREEZING, SKY VISIBLE"
+    ]
+  },
+  {
+    "sidc": "WAS-WSFGP-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "FOG - PATCHY"
+    ]
+  },
+  {
+    "sidc": "WAS-WSFGPSP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "FOG - SHALLOW PATCHES"
+    ]
+  },
+  {
+    "sidc": "WAS-WSFGSOP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "FOG - SKY OBSCURED"
+    ]
+  },
+  {
+    "sidc": "WAS-WSFGSVP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "FOG - SKY VISIBLE"
+    ]
+  },
+  {
+    "sidc": "WAS-WSFU--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "SMOKE"
+    ]
+  },
+  {
+    "sidc": "WAS-WSGRL-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "HAIL - LIGHT NOT ASSOCIATED WITH THUNDER"
+    ]
+  },
+  {
+    "sidc": "WAS-WSGRMHP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "HAIL - MODERATE / HEAVY NOT ASSOCIATED WITH THUNDER"
+    ]
+  },
+  {
+    "sidc": "WAS-WSHZ--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "HAZE"
+    ]
+  },
+  {
+    "sidc": "WAS-WSIC--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "ICE CRYSTALS (DIAMOND DUST)"
+    ]
+  },
+  {
+    "sidc": "WAS-WSM-L-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "RAIN AND SNOW MIXED",
+      "RAIN OR DRIZZLE AND SNOW - LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-WSM-MHP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "RAIN AND SNOW MIXED",
+      "RAIN OR DRIZZLE AND SNOW - MODERATE / HEAVY"
+    ]
+  },
+  {
+    "sidc": "WAS-WSMSL-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "RAIN AND SNOW MIXED",
+      "RAIN AND SNOW SHOWERS - LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-WSMSMHP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "RAIN AND SNOW MIXED",
+      "RAIN AND SNOW SHOWERS - MODERATE / HEAVY"
+    ]
+  },
+  {
+    "sidc": "WAS-WSPLH-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "ICE PELLETS (SLEET)",
+      "ICE PELLETS - HEAVY"
+    ]
+  },
+  {
+    "sidc": "WAS-WSPLL-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "ICE PELLETS (SLEET)",
+      "ICE PELLETS - LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-WSPLM-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "ICE PELLETS (SLEET)",
+      "ICE PELLETS - MODERATE"
+    ]
+  },
+  {
+    "sidc": "WAS-WSR-HCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "RAIN - INTERMITTENT HEAVY",
+      "RAIN - CONTINUOUS HEAVY"
+    ]
+  },
+  {
+    "sidc": "WAS-WSR-HIP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "RAIN - INTERMITTENT HEAVY"
+    ]
+  },
+  {
+    "sidc": "WAS-WSR-LCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "RAIN - INTERMITTENT LIGHT",
+      "RAIN - CONTINUOUS LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-WSR-LIP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "RAIN - INTERMITTENT LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-WSR-MCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "RAIN - INTERMITTENT MODERATE",
+      "RAIN - CONTINUOUS MODERATE"
+    ]
+  },
+  {
+    "sidc": "WAS-WSR-MIP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "RAIN - INTERMITTENT MODERATE"
+    ]
+  },
+  {
+    "sidc": "WAS-WSRFL-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "FREEZING RAIN - LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-WSRFMHP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "FREEZING RAIN - MODERATE / HEAVY"
+    ]
+  },
+  {
+    "sidc": "WAS-WSRSL-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "RAIN SHOWERS - LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-WSRSMHP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "RAIN SHOWERS - MODERATE / HEAVY"
+    ]
+  },
+  {
+    "sidc": "WAS-WSRST-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "RAIN SHOWERS - TORRENTIAL"
+    ]
+  },
+  {
+    "sidc": "WAS-WSS-HCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "SNOW - INTERMITTENT HEAVY",
+      "SNOW - CONTINUOUS HEAVY"
+    ]
+  },
+  {
+    "sidc": "WAS-WSS-HIP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "SNOW - INTERMITTENT HEAVY"
+    ]
+  },
+  {
+    "sidc": "WAS-WSS-LCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "SNOW - INTERMITTENT LIGHT",
+      "SNOW - CONTINUOUS LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-WSS-LIP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "SNOW - INTERMITTENT LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-WSS-MCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "SNOW - INTERMITTENT MODERATE",
+      "SNOW - CONTINUOUS MODERATE"
+    ]
+  },
+  {
+    "sidc": "WAS-WSS-MIP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "SNOW - INTERMITTENT MODERATE"
+    ]
+  },
+  {
+    "sidc": "WAS-WSSBH-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "BLOWING SNOW - HEAVY"
+    ]
+  },
+  {
+    "sidc": "WAS-WSSBLMP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "SNOW BLOWING SNOW - LIGHT / MODERATE"
+    ]
+  },
+  {
+    "sidc": "WAS-WSSG--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "SNOW GRAINS"
+    ]
+  },
+  {
+    "sidc": "WAS-WSSSL-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "SNOW SHOWERS - LIGHT"
+    ]
+  },
+  {
+    "sidc": "WAS-WSSSMHP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "SNOW SHOWERS - MODERATE / HEAVY"
+    ]
+  },
+  {
+    "sidc": "WAS-WST-FCP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "STORMS",
+      "FUNNEL CLOUD (TORNADO / WATERSPOUT)"
+    ]
+  },
+  {
+    "sidc": "WAS-WST-LGP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "STORMS",
+      "LIGHTNING"
+    ]
+  },
+  {
+    "sidc": "WAS-WST-LVP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "TROPOPAUSE LEVEL"
+    ]
+  },
+  {
+    "sidc": "WAS-WST-NPP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "STORMS",
+      "THUNDERSTORM - NO PRECIPITATION"
+    ]
+  },
+  {
+    "sidc": "WAS-WST-SQP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "STORMS",
+      "SQUALL"
+    ]
+  },
+  {
+    "sidc": "WAS-WSTHH-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "STORMS",
+      "THUNDERSTORM HEAVY - WITH HAIL"
+    ]
+  },
+  {
+    "sidc": "WAS-WSTHR-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "STORMS",
+      "THUNDERSTORM HEAVY WITH RAIN / SNOW - NO HAIL"
+    ]
+  },
+  {
+    "sidc": "WAS-WSTMH-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "STORMS",
+      "THUNDERSTORM LIGHT TO MODERATE - WITH HAIL"
+    ]
+  },
+  {
+    "sidc": "WAS-WSTMR-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "STORMS",
+      "THUNDERSTORM LIGHT TO MODERATE WITH RAIN / SNOW - NO HAIL"
+    ]
+  },
+  {
+    "sidc": "WAS-WSTSD-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "TROPICAL STORM SYSTEMS",
+      "TROPICAL DEPRESSION"
+    ]
+  },
+  {
+    "sidc": "WAS-WSTSH-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "TROPICAL STORM SYSTEMS",
+      "HURRICANE / TYPHOON"
+    ]
+  },
+  {
+    "sidc": "WAS-WSTSS-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "TROPICAL STORM SYSTEMS",
+      "TROPICAL STORM"
+    ]
+  },
+  {
+    "sidc": "WAS-WSUKP-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "PRECIPITATION OF UNKNOWN TYPE AND INTENSITY"
+    ]
+  },
+  {
+    "sidc": "WAS-WSVA--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "VOLCANIC ERUPTION",
+      "VOLCANIC ASH"
+    ]
+  },
+  {
+    "sidc": "WAS-WSVE--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "ATMOSPHERIC",
+      "WEATHER SYMBOLS",
+      "VOLCANIC ERUPTION"
+    ]
+  },
+  {
+    "sidc": "WO-DBSF-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "OCEANOGRAPHY",
+      "BEACH SLOPE",
+      "FLAT"
+    ]
+  },
+  {
+    "sidc": "WO-DBSG-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "OCEANOGRAPHY",
+      "BEACH SLOPE",
+      "GENTLE"
+    ]
+  },
+  {
+    "sidc": "WO-DBSM-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "OCEANOGRAPHY",
+      "BEACH SLOPE",
+      "MODERATE"
+    ]
+  },
+  {
+    "sidc": "WO-DBST-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "OCEANOGRAPHY",
+      "BEACH SLOPE",
+      "STEEP"
+    ]
+  },
+  {
+    "sidc": "WO-DGMBCA---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW BOTTOM CATEGORY",
+      "A"
+    ]
+  },
+  {
+    "sidc": "WO-DGMBCB---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW BOTTOM CATEGORY",
+      "B"
+    ]
+  },
+  {
+    "sidc": "WO-DGMBCC---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW BOTTOM CATEGORY",
+      "C"
+    ]
+  },
+  {
+    "sidc": "WO-DGMBTA---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW BOTTOM TYPE",
+      "A1"
+    ]
+  },
+  {
+    "sidc": "WO-DGMBTB---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW BOTTOM TYPE",
+      "A2"
+    ]
+  },
+  {
+    "sidc": "WO-DGMBTC---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW BOTTOM TYPE",
+      "A3"
+    ]
+  },
+  {
+    "sidc": "WO-DGMBTD---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW BOTTOM TYPE",
+      "B1"
+    ]
+  },
+  {
+    "sidc": "WO-DGMBTE---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW BOTTOM TYPE",
+      "B2"
+    ]
+  },
+  {
+    "sidc": "WO-DGMBTF---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW BOTTOM TYPE",
+      "B3"
+    ]
+  },
+  {
+    "sidc": "WO-DGMBTG---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW BOTTOM TYPE",
+      "C1"
+    ]
+  },
+  {
+    "sidc": "WO-DGMBTH---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW BOTTOM TYPE",
+      "C2"
+    ]
+  },
+  {
+    "sidc": "WO-DGMBTI---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW BOTTOM TYPE",
+      "C3"
+    ]
+  },
+  {
+    "sidc": "WO-DGMCH----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "CLUTTER (BOTTOM)",
+      "HIGH"
+    ]
+  },
+  {
+    "sidc": "WO-DGMCL----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "CLUTTER (BOTTOM)",
+      "LOW"
+    ]
+  },
+  {
+    "sidc": "WO-DGMCM----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "CLUTTER (BOTTOM)",
+      "MEDIUM"
+    ]
+  },
+  {
+    "sidc": "WO-DGMIBA---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "IMPACT BURIAL",
+      "0%"
+    ]
+  },
+  {
+    "sidc": "WO-DGMIBB---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "IMPACT BURIAL",
+      "0-10%"
+    ]
+  },
+  {
+    "sidc": "WO-DGMIBC---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "IMPACT BURIAL",
+      "10-20%"
+    ]
+  },
+  {
+    "sidc": "WO-DGMIBD---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "IMPACT BURIAL",
+      "20-75%"
+    ]
+  },
+  {
+    "sidc": "WO-DGMIBE---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "IMPACT BURIAL",
+      ">75%"
+    ]
+  },
+  {
+    "sidc": "WO-DGML-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "LAND"
+    ]
+  },
+  {
+    "sidc": "WO-DGMN-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "NO DATA"
+    ]
+  },
+  {
+    "sidc": "WO-DGMRM----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "BOTTOM ROUGHNESS",
+      "MODERATE"
+    ]
+  },
+  {
+    "sidc": "WO-DGMRR----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "BOTTOM ROUGHNESS",
+      "ROUGH"
+    ]
+  },
+  {
+    "sidc": "WO-DGMRS----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "BOTTOM ROUGHNESS",
+      "SMOOTH"
+    ]
+  },
+  {
+    "sidc": "WO-DGMS-CO--A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "COBBLES, OYSTER SHELLS"
+    ]
+  },
+  {
+    "sidc": "WO-DGMS-PH--A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "PEBBLES, SHELLS"
+    ]
+  },
+  {
+    "sidc": "WO-DGMS-SH--A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "SAND AND SHELLS"
+    ]
+  },
+  {
+    "sidc": "WO-DGMSB----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "BOULDERS"
+    ]
+  },
+  {
+    "sidc": "WO-DGMSC----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "CLAY"
+    ]
+  },
+  {
+    "sidc": "WO-DGMSIC---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "COARSE SILT"
+    ]
+  },
+  {
+    "sidc": "WO-DGMSIF---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "FINE SILT"
+    ]
+  },
+  {
+    "sidc": "WO-DGMSIM---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "MEDIUM SILT"
+    ]
+  },
+  {
+    "sidc": "WO-DGMSIVF--A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "VERY FINE SILT"
+    ]
+  },
+  {
+    "sidc": "WO-DGMSR----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "SOLID ROCK"
+    ]
+  },
+  {
+    "sidc": "WO-DGMSSC---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "COARSE SAND"
+    ]
+  },
+  {
+    "sidc": "WO-DGMSSF---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "FINE SAND"
+    ]
+  },
+  {
+    "sidc": "WO-DGMSSM---A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "MEDIUM SAND"
+    ]
+  },
+  {
+    "sidc": "WO-DGMSSVF--A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "VERY FINE SAND"
+    ]
+  },
+  {
+    "sidc": "WO-DGMSSVS--A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "GEOPHYSICS / ACOUSTICS",
+      "MINE WARFARE BOTTOM DESCRIPTORS",
+      "MIW-BOTTOM SEDIMENTS",
+      "VERY COARSE SAND"
+    ]
+  },
+  {
+    "sidc": "WO-DHABP----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "AIDS TO NAVIGATION",
+      "PERCHES / STAKES"
+    ]
+  },
+  {
+    "sidc": "WO-DHALLA--L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "AIDS TO NAVIGATION",
+      "LEADING LINE"
+    ]
+  },
+  {
+    "sidc": "WO-DHCB-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "COASTAL HYDROGRAPHY",
+      "BEACH"
+    ]
+  },
+  {
+    "sidc": "WO-DHCC----L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "COASTAL HYDROGRAPHY",
+      "COASTLINE"
+    ]
+  },
+  {
+    "sidc": "WO-DHCF-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "COASTAL HYDROGRAPHY",
+      "FORESHORE"
+    ]
+  },
+  {
+    "sidc": "WO-DHCF----L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "COASTAL HYDROGRAPHY",
+      "FORESHORE"
+    ]
+  },
+  {
+    "sidc": "WO-DHCI-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "COASTAL HYDROGRAPHY",
+      "ISLAND"
+    ]
+  },
+  {
+    "sidc": "WO-DHCW-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "COASTAL HYDROGRAPHY",
+      "WATER"
+    ]
+  },
+  {
+    "sidc": "WO-DHDDA----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DEPTH AREA"
+    ]
+  },
+  {
+    "sidc": "WO-DHDDC---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DEPTH CONTOUR"
+    ]
+  },
+  {
+    "sidc": "WO-DHDDL---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DEPTH CURVE"
+    ]
+  },
+  {
+    "sidc": "WO-DHHD-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DANGERS / HAZARDS",
+      "UNDERWATER DANGER / HAZARD"
+    ]
+  },
+  {
+    "sidc": "WO-DHHDB---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DANGERS / HAZARDS",
+      "BREAKERS"
+    ]
+  },
+  {
+    "sidc": "WO-DHHDD----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DANGERS / HAZARDS",
+      "DISCOLORED WATER"
+    ]
+  },
+  {
+    "sidc": "WO-DHHDF----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DANGERS / HAZARDS",
+      "FOUL GROUND"
+    ]
+  },
+  {
+    "sidc": "WO-DHHDK----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DANGERS / HAZARDS",
+      "KELP / SEAWEED"
+    ]
+  },
+  {
+    "sidc": "WO-DHHDK--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DANGERS / HAZARDS",
+      "KELP / SEAWEED"
+    ]
+  },
+  {
+    "sidc": "WO-DHPBA----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "PORTS",
+      "ANCHORAGE"
+    ]
+  },
+  {
+    "sidc": "WO-DHPBA---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "PORTS",
+      "ANCHORAGE"
+    ]
+  },
+  {
+    "sidc": "WO-DHPBP---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "PORTS",
+      "PIER / WHARF / QUAY"
+    ]
+  },
+  {
+    "sidc": "WO-DHPMD----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "FACILITIES",
+      "DRYDOCK"
+    ]
+  },
+  {
+    "sidc": "WO-DHPMO----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "FACILITIES",
+      "OFFSHORE LOADING FACILITY"
+    ]
+  },
+  {
+    "sidc": "WO-DHPMO---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "FACILITIES",
+      "OFFSHORE LOADING FACILITY"
+    ]
+  },
+  {
+    "sidc": "WO-DHPMO--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "FACILITIES",
+      "OFFSHORE LOADING FACILITY"
+    ]
+  },
+  {
+    "sidc": "WO-DHPMRA--L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "FACILITIES",
+      "RAMP (ABOVE WATER)"
+    ]
+  },
+  {
+    "sidc": "WO-DHPMRB--L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "FACILITIES",
+      "RAMP (BELOW WATER)"
+    ]
+  },
+  {
+    "sidc": "WO-DHPSPA--L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "SHORELINE PROTECTION",
+      "BREAKWATER / GROIN / JETTY (ABOVE WATER)"
+    ]
+  },
+  {
+    "sidc": "WO-DHPSPB--L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "SHORELINE PROTECTION",
+      "BREAKWATER / GROIN / JETTY (BELOW WATER)"
+    ]
+  },
+  {
+    "sidc": "WO-DHPSPS--L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "SHORELINE PROTECTION",
+      "SEAWALL"
+    ]
+  },
+  {
+    "sidc": "WO-DIDID---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "DYNAMIC PROCESSES",
+      "ICE DRIFT (DIRECTION)"
+    ]
+  },
+  {
+    "sidc": "WO-DILIEE--L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "LIMITS",
+      "ESTIMATED ICE EDGE OR BOUNDARY"
+    ]
+  },
+  {
+    "sidc": "WO-DILIEO--L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "LIMITS",
+      "OBSERVED ICE EDGE OR BOUNDARY"
+    ]
+  },
+  {
+    "sidc": "WO-DILIER--L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "LIMITS",
+      "ICE EDGE OR BOUNDARY FROM RADAR"
+    ]
+  },
+  {
+    "sidc": "WO-DILOR---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "LIMITS",
+      "LIMIT OF RADAR OBSERVATION"
+    ]
+  },
+  {
+    "sidc": "WO-DILOV---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "LIMITS",
+      "LIMIT OF VISUAL OBSERVATION"
+    ]
+  },
+  {
+    "sidc": "WO-DILUC---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "LIMITS",
+      "LIMIT OF UNDERCAST"
+    ]
+  },
+  {
+    "sidc": "WO-DIOC----L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "OPENINGS IN THE ICE",
+      "CRACKS"
+    ]
+  },
+  {
+    "sidc": "WO-DIOCS---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "OPENINGS IN THE ICE",
+      "CRACKS AT A SPECIFIC LOCATION"
+    ]
+  },
+  {
+    "sidc": "WO-DIOL----L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "OPENINGS IN THE ICE",
+      "LEAD"
+    ]
+  },
+  {
+    "sidc": "WO-DIOLF---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "OPENINGS IN THE ICE",
+      "FROZEN LEAD"
+    ]
+  },
+  {
+    "sidc": "WO-DL-MA----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "LIMITS",
+      "MARITIME AREA"
+    ]
+  },
+  {
+    "sidc": "WO-DL-ML---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "LIMITS",
+      "MARITIME LIMIT BOUNDARY"
+    ]
+  },
+  {
+    "sidc": "WO-DL-O-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "LIMITS",
+      "OPERATOR-DEFINED"
+    ]
+  },
+  {
+    "sidc": "WO-DL-RA---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "LIMITS",
+      "RESTRICTED AREA"
+    ]
+  },
+  {
+    "sidc": "WO-DL-SA----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "LIMITS",
+      "SWEPT AREA"
+    ]
+  },
+  {
+    "sidc": "WO-DL-TA----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "LIMITS",
+      "TRAINING AREA"
+    ]
+  },
+  {
+    "sidc": "WO-DMCA----L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "MAN-MADE STRUCTURES",
+      "SUBMARINE CABLE"
+    ]
+  },
+  {
+    "sidc": "WO-DMCC-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "MAN-MADE STRUCTURES",
+      "SUBMERGED CRIB"
+    ]
+  },
+  {
+    "sidc": "WO-DMCD----L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "MAN-MADE STRUCTURES",
+      "CANAL"
+    ]
+  },
+  {
+    "sidc": "WO-DMOA-----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "MAN-MADE STRUCTURES",
+      "OIL / GAS RIG FIELD"
+    ]
+  },
+  {
+    "sidc": "WO-DMPA----L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "MAN-MADE STRUCTURES",
+      "PIPELINES / PIPE"
+    ]
+  },
+  {
+    "sidc": "WO-DOBVA----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "OCEANOGRAPHY",
+      "BIOLUMINESCENCE",
+      "VDR LEVEL 1-2"
+    ]
+  },
+  {
+    "sidc": "WO-DOBVB----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "OCEANOGRAPHY",
+      "BIOLUMINESCENCE",
+      "VDR LEVEL 2-3"
+    ]
+  },
+  {
+    "sidc": "WO-DOBVC----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "OCEANOGRAPHY",
+      "BIOLUMINESCENCE",
+      "VDR LEVEL 3-4"
+    ]
+  },
+  {
+    "sidc": "WO-DOBVD----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "OCEANOGRAPHY",
+      "BIOLUMINESCENCE",
+      "VDR LEVEL 4-5"
+    ]
+  },
+  {
+    "sidc": "WO-DOBVE----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "OCEANOGRAPHY",
+      "BIOLUMINESCENCE",
+      "VDR LEVEL 5-6"
+    ]
+  },
+  {
+    "sidc": "WO-DOBVF----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "OCEANOGRAPHY",
+      "BIOLUMINESCENCE",
+      "VDR LEVEL 6-7"
+    ]
+  },
+  {
+    "sidc": "WO-DOBVG----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "OCEANOGRAPHY",
+      "BIOLUMINESCENCE",
+      "VDR LEVEL 7-8"
+    ]
+  },
+  {
+    "sidc": "WO-DOBVH----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "OCEANOGRAPHY",
+      "BIOLUMINESCENCE",
+      "VDR LEVEL 8-9"
+    ]
+  },
+  {
+    "sidc": "WO-DOBVI----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "OCEANOGRAPHY",
+      "BIOLUMINESCENCE",
+      "VDR LEVEL 9-10"
+    ]
+  },
+  {
+    "sidc": "WO-DTCCCFE-L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "TIDE AND CURRENT",
+      "CURRENT FLOW - EBB"
+    ]
+  },
+  {
+    "sidc": "WO-DTCCCFF-L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "TIDE AND CURRENT",
+      "CURRENT FLOW - FLOOD"
+    ]
+  },
+  {
+    "sidc": "WOS-BFC-CBP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "BOTTOM FEATURES",
+      "BOTTOM CHARACTERISTICS",
+      "COBBLES"
+    ]
+  },
+  {
+    "sidc": "WOS-BFC-CLP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "BOTTOM FEATURES",
+      "BOTTOM CHARACTERISTICS",
+      "CLAY"
+    ]
+  },
+  {
+    "sidc": "WOS-BFC-COP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "BOTTOM FEATURES",
+      "BOTTOM CHARACTERISTICS",
+      "CORAL"
+    ]
+  },
+  {
+    "sidc": "WOS-BFC-G-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "BOTTOM FEATURES",
+      "BOTTOM CHARACTERISTICS",
+      "GRAVEL"
+    ]
+  },
+  {
+    "sidc": "WOS-BFC-M-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "BOTTOM FEATURES",
+      "BOTTOM CHARACTERISTICS",
+      "MUD"
+    ]
+  },
+  {
+    "sidc": "WOS-BFC-P-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "BOTTOM FEATURES",
+      "BOTTOM CHARACTERISTICS",
+      "PEBBLES"
+    ]
+  },
+  {
+    "sidc": "WOS-BFC-R-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "BOTTOM FEATURES",
+      "BOTTOM CHARACTERISTICS",
+      "ROCK"
+    ]
+  },
+  {
+    "sidc": "WOS-BFC-S-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "BOTTOM FEATURES",
+      "BOTTOM CHARACTERISTICS",
+      "SAND"
+    ]
+  },
+  {
+    "sidc": "WOS-BFC-SHP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "BOTTOM FEATURES",
+      "BOTTOM CHARACTERISTICS",
+      "SHELL"
+    ]
+  },
+  {
+    "sidc": "WOS-BFC-SIP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "BOTTOM FEATURES",
+      "BOTTOM CHARACTERISTICS",
+      "SILT"
+    ]
+  },
+  {
+    "sidc": "WOS-BFC-STP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "BOTTOM FEATURES",
+      "BOTTOM CHARACTERISTICS",
+      "STONES"
+    ]
+  },
+  {
+    "sidc": "WOS-BFQ-C-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "BOTTOM FEATURES",
+      "QUALIFYING TERMS",
+      "COARSE"
+    ]
+  },
+  {
+    "sidc": "WOS-BFQ-F-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "BOTTOM FEATURES",
+      "QUALIFYING TERMS",
+      "FINE"
+    ]
+  },
+  {
+    "sidc": "WOS-BFQ-M-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "BOTTOM FEATURES",
+      "QUALIFYING TERMS",
+      "MEDIUM"
+    ]
+  },
+  {
+    "sidc": "WOS-HABA--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "AIDS TO NAVIGATION",
+      "BEACON"
+    ]
+  },
+  {
+    "sidc": "WOS-HABB--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "AIDS TO NAVIGATION",
+      "BUOY DEFAULT"
+    ]
+  },
+  {
+    "sidc": "WOS-HABM--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "AIDS TO NAVIGATION",
+      "MARKER"
+    ]
+  },
+  {
+    "sidc": "WOS-HABP--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "AIDS TO NAVIGATION",
+      "PERCHES / STAKES"
+    ]
+  },
+  {
+    "sidc": "WOS-HAL---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "AIDS TO NAVIGATION",
+      "LIGHT"
+    ]
+  },
+  {
+    "sidc": "WOS-HALH--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "AIDS TO NAVIGATION",
+      "LIGHTHOUSE"
+    ]
+  },
+  {
+    "sidc": "WOS-HALV--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "AIDS TO NAVIGATION",
+      "LIGHT VESSEL / LIGHTSHIP"
+    ]
+  },
+  {
+    "sidc": "WOS-HDS---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DEPTH",
+      "SOUNDINGS"
+    ]
+  },
+  {
+    "sidc": "WOS-HHDE--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DANGERS / HAZARDS",
+      "EDDIES / OVERFALLS / TIDE RIPS"
+    ]
+  },
+  {
+    "sidc": "WOS-HHDF--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DANGERS / HAZARDS",
+      "FOUL GROUND"
+    ]
+  },
+  {
+    "sidc": "WOS-HHDMDBP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DANGERS / HAZARDS",
+      "MINE-NAVAL (DOUBTFUL)"
+    ]
+  },
+  {
+    "sidc": "WOS-HHDMDFP---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DANGERS / HAZARDS",
+      "MINE-NAVAL (DEFINITE)"
+    ]
+  },
+  {
+    "sidc": "WOS-HHDR---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DANGERS / HAZARDS",
+      "REEF"
+    ]
+  },
+  {
+    "sidc": "WOS-HHDS--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DANGERS / HAZARDS",
+      "SNAGS / STUMPS"
+    ]
+  },
+  {
+    "sidc": "WOS-HHDWA-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DANGERS / HAZARDS",
+      "WRECK (UNCOVERS)"
+    ]
+  },
+  {
+    "sidc": "WOS-HHDWB-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DANGERS / HAZARDS",
+      "WRECK (SUBMERGED)"
+    ]
+  },
+  {
+    "sidc": "WOS-HHRA--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DANGERS / HAZARDS",
+      "ROCK AWASHED"
+    ]
+  },
+  {
+    "sidc": "WOS-HHRS--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "DANGERS / HAZARDS",
+      "ROCK SUBMERGERED"
+    ]
+  },
+  {
+    "sidc": "WOS-HPB-A-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "PORTS",
+      "BERTHS (ANCHOR)"
+    ]
+  },
+  {
+    "sidc": "WOS-HPB-O-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "PORTS",
+      "BERTHS (ONSHORE)"
+    ]
+  },
+  {
+    "sidc": "WOS-HPBA--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "PORTS",
+      "ANCHORAGE"
+    ]
+  },
+  {
+    "sidc": "WOS-HPCP--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "PORTS",
+      "CALL IN POINT"
+    ]
+  },
+  {
+    "sidc": "WOS-HPD---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "FACILITIES",
+      "DOLPHIN"
+    ]
+  },
+  {
+    "sidc": "WOS-HPFF----A-*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "FISHING",
+      "FISH STAKES / TRAPS / WEIRS"
+    ]
+  },
+  {
+    "sidc": "WOS-HPFH--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "FISHING HARBOR"
+    ]
+  },
+  {
+    "sidc": "WOS-HPFS---L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "FISHING",
+      "FISH STAKES"
+    ]
+  },
+  {
+    "sidc": "WOS-HPFS--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "FISHING",
+      "FISH STAKES / TRAPS / WEIRS"
+    ]
+  },
+  {
+    "sidc": "WOS-HPM-CC-L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "FACILITIES",
+      "CABLE FERRY CROSSING"
+    ]
+  },
+  {
+    "sidc": "WOS-HPM-FC-L--*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "FACILITIES",
+      "FERRY CROSSING"
+    ]
+  },
+  {
+    "sidc": "WOS-HPM-R-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "FACILITIES",
+      "LANDING RING"
+    ]
+  },
+  {
+    "sidc": "WOS-HPML--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "PORTS AND HARBORS",
+      "FACILITIES",
+      "LANDING PLACE"
+    ]
+  },
+  {
+    "sidc": "WOS-IB----P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "ICEBERGS"
+    ]
+  },
+  {
+    "sidc": "WOS-IBBB--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "ICEBERGS",
+      "BERGY BIT"
+    ]
+  },
+  {
+    "sidc": "WOS-IBBBM-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "ICEBERGS",
+      "MANY BERGY BITS"
+    ]
+  },
+  {
+    "sidc": "WOS-IBBS--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "ICEBERGS",
+      "BELTS AND STRIPS"
+    ]
+  },
+  {
+    "sidc": "WOS-IBF---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "ICEBERGS",
+      "FLOEBERG"
+    ]
+  },
+  {
+    "sidc": "WOS-IBG---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "ICEBERGS",
+      "ICEBERG - GENERAL"
+    ]
+  },
+  {
+    "sidc": "WOS-IBGL--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "ICEBERGS",
+      "GROWLER"
+    ]
+  },
+  {
+    "sidc": "WOS-IBGLM-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "ICEBERGS",
+      "MANY GROWLERS"
+    ]
+  },
+  {
+    "sidc": "WOS-IBII--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "ICEBERGS",
+      "ICE ISLAND"
+    ]
+  },
+  {
+    "sidc": "WOS-IBM---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "MANY ICEBERGS"
+    ]
+  },
+  {
+    "sidc": "WOS-IBMG--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "MANY ICEBERGS - GENERAL"
+    ]
+  },
+  {
+    "sidc": "WOS-ICIF--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "ICE CONCENTRATION",
+      "ICE FREE"
+    ]
+  },
+  {
+    "sidc": "WOS-ICWB--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "ICE CONCENTRATION",
+      "BERGY WATER"
+    ]
+  },
+  {
+    "sidc": "WOS-ICWR--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "ICE CONCENTRATION",
+      "WATER WITH RADAR TARGETS"
+    ]
+  },
+  {
+    "sidc": "WOS-IDC---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "DYNAMIC PROCESSES",
+      "CONVERGENCE"
+    ]
+  },
+  {
+    "sidc": "WOS-IDD---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "DYNAMIC PROCESSES",
+      "DIVERGENCE"
+    ]
+  },
+  {
+    "sidc": "WOS-IDS---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "DYNAMIC PROCESSES",
+      "SHEARING OR SHEAR ZONE"
+    ]
+  },
+  {
+    "sidc": "WOS-II----P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "SEA ICE"
+    ]
+  },
+  {
+    "sidc": "WOS-IIP---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "SEA ICE",
+      "MELT PUDDLES OR FLOODED ICE"
+    ]
+  },
+  {
+    "sidc": "WOS-IITE--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "SEA ICE",
+      "ICE THICKNESS (ESTIMATED)"
+    ]
+  },
+  {
+    "sidc": "WOS-IITM--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "SEA ICE",
+      "ICE THICKNESS (OBSERVED)"
+    ]
+  },
+  {
+    "sidc": "WOS-ISC---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "SNOW COVER"
+    ]
+  },
+  {
+    "sidc": "WOS-ISS---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "SNOW COVER",
+      "SASTRUGI (WITH ORIENTATION)"
+    ]
+  },
+  {
+    "sidc": "WOS-ITBB--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "TOPOGRAPHICAL FEATURES",
+      "JAMMED BRASH BARRIER"
+    ]
+  },
+  {
+    "sidc": "WOS-ITR---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "TOPOGRAPHICAL FEATURES",
+      "RAFTING"
+    ]
+  },
+  {
+    "sidc": "WOS-ITRH--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "ICE SYSTEMS",
+      "TOPOGRAPHICAL FEATURES",
+      "RIDGES OR HUMMOCKS"
+    ]
+  },
+  {
+    "sidc": "WOS-MF----P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "MAN-MADE STRUCTURES",
+      "FORD"
+    ]
+  },
+  {
+    "sidc": "WOS-ML----P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "MAN-MADE STRUCTURES",
+      "LOCK"
+    ]
+  },
+  {
+    "sidc": "WOS-MOA---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "MAN-MADE STRUCTURES",
+      "OIL / GAS RIG"
+    ]
+  },
+  {
+    "sidc": "WOS-MPA---P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "MAN-MADE STRUCTURES",
+      "PILE / PILING / POST"
+    ]
+  },
+  {
+    "sidc": "WOS-TCCTD-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "TIDE AND CURRENT",
+      "TIDE DATA POINT"
+    ]
+  },
+  {
+    "sidc": "WOS-TCCTG-P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "TIDE AND CURRENT",
+      "TIDE GAUGE"
+    ]
+  },
+  {
+    "sidc": "WOS-TCCW--P---*",
+    "geometry": "point",
+    "hierarchy": [
+      "METOC",
+      "OCEANIC",
+      "HYDROGRAPHY",
+      "TIDE AND CURRENT",
+      "WATER TURBULENCE"
     ]
   }
 ]
