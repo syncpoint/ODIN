@@ -17,8 +17,8 @@ export const exportProject = async (event, projectPath) => {
       await projects.exportProject(projectPath, result.filePath)
       if (!Notification.isSupported()) return
       const n = new Notification({
-        title: i18n.t('exportProject.succeeded', { name: project.metadata.name }),
-        body: i18n.t('exportProject.clickToOpen', { path: result.filePath })
+        title: i18n.t('export.succeeded', { name: project.metadata.name }),
+        body: i18n.t('export.clickToOpen', { path: result.filePath })
       })
       n.on('click', () => {
         shell.showItemInFolder(result.filePath)
@@ -26,7 +26,7 @@ export const exportProject = async (event, projectPath) => {
       n.show()
     } catch (error) {
       const n = new Notification({
-        title: i18n.t('exportProject.failed', { name: project.metadata.title }),
+        title: i18n.t('export.failed', { name: project.metadata.title }),
         body: error.message
       })
       n.show()

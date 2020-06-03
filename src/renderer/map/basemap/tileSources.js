@@ -28,6 +28,7 @@ const sources = {
     const capabilities = (new WMTSCapabilities()).read(await response.text())
     const wmtsOptions = optionsFromCapabilities(capabilities, descriptor.options)
     wmtsOptions.tilePixelRatio = (highDPI ? 2 : 1)
+    wmtsOptions.crossOrigin = 'anonymous'
     return new WMTS(wmtsOptions)
   }
 }

@@ -46,7 +46,8 @@
       "redo": "Redo",
       "cut": "Cut",
       "copy": "Copy",
-      "paste": "Paste"
+      "paste": "Paste",
+      "share": "Share (PNG)"
     }
   },
   "layers": {

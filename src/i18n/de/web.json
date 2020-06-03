@@ -46,7 +46,8 @@
       "redo": "Wiederherstellen",
       "cut": "Ausschneiden",
       "copy": "Kopieren",
-      "paste": "Einfügen"
+      "paste": "Einfügen",
+      "share": "Teilen (PNG)"
     }
   },
   "layers": {
