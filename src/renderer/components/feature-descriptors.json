@@ -2275,7 +2275,7 @@
   {
     "sidc": "G*F*ACPR--*****",
     "class": "A",
-    "geometry": "unsupported",
+    "geometry": "polygon",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
@@ -3093,7 +3093,7 @@
   {
     "sidc": "G*G*DLF---*****",
     "class": "L",
-    "geometry": "line",
+    "geometry": "line-2pt",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "COMMAND AND CONTROL AND GENERAL MANEUVER",
@@ -4900,7 +4900,7 @@
   {
     "sidc": "G*G*OLKGM-*****",
     "class": "L",
-    "geometry": "line",
+    "geometry": "line-2pt",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "COMMAND AND CONTROL AND GENERAL MANEUVER",
@@ -4913,7 +4913,7 @@
   {
     "sidc": "G*G*OLKGS-*****",
     "class": "L",
-    "geometry": "line",
+    "geometry": "line-2pt",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "COMMAND AND CONTROL AND GENERAL MANEUVER",
