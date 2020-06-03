@@ -15,7 +15,9 @@ const doubleDTG = lift(cloneLines(
   ]
 ))
 
-const topTitle = title => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [t ? `${t} ${title}` : null])
+const topTitle = title => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [`${title}${t ? ' ' + t : ''}`])
+const topTitleReverse = title => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [t ? `${t} ${title}` : null])
+const topTitleSubtitle = (title, subtitle) => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [`${title}${t ? ' ' + t : ''}`, subtitle])
 const middleTitle = title => label({ textAlign: 0.5, verticalAlign: MIDDLE })(() => [title])
 
 const doubleTitle = title => lift(cloneLines(
@@ -51,7 +53,7 @@ const phaseLine = title => lift(cloneLines(
 ))
 
 const labels = {
-  'G*F*LCC---': [topTitle('CFL'), centerDTG],
+  'G*F*LCC---': [topTitleReverse('CFL'), centerDTG],
   'G*F*LCF---': [doubleDTG, doubleTitle('FSCL'), lineEndsT1('PL')],
   'G*F*LCM---': [middleTitle('MFP'), startDTG],
   'G*F*LCN---': [phaseLine('NFL')],
@@ -63,7 +65,17 @@ const labels = {
   'G*G*GLL---': [phaseLine('LL')],
   'G*G*GLP---': [lineEndsT('PL')],
   'G*G*OLC---': [phaseLine('LD/LC')],
-  'G*G*OLF---': [phaseLine('FINAL CL')]
+  'G*G*OLF---': [phaseLine('FINAL CL')],
+  'G*G*OLL---': [phaseLine('LOA')],
+  'G*G*OLP---': [phaseLine('PLD')],
+  'G*G*OLT---': [phaseLine('LD')],
+  'G*G*SLH---': [phaseLine('HOLDING LINE')],
+  'G*G*SLR---': [phaseLine('RL')],
+  'G*S*LRA---': [topTitle('ASR')],
+  'G*S*LRM---': [topTitle('MSR')],
+  'G*S*LRO---': [topTitleSubtitle('MSR', '(ONE-WAY TRAFFIC)')],
+  'G*S*LRT---': [topTitleSubtitle('MSR', '(ALTERNATING TRAFFIC)')],
+  'G*S*LRW---': [topTitleSubtitle('MSR', '(TWO-WAY TRAFFIC)')]
 }
 
 export const lineStyle = (feature, resolution) => {
