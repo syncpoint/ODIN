@@ -37,7 +37,7 @@ const actions = [
   {
     icon: <ExportVariant/>,
     tooltip: 'layers.share',
-    disabled: layer => !layer,
+    disabled: () => true,
     action: noop
   }
 ]
