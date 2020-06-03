@@ -3,7 +3,6 @@ import descriptors from './feature-descriptors.json'
 import { K } from '../../shared/combinators'
 import { parameterized, hostilityPart, statusPart, installationPart } from './SIDC'
 
-
 const lookup = descriptors.reduce((acc, descriptor) => K(acc)(acc => {
   const sidc = parameterized(descriptor.sidc)
   acc[sidc] = {
@@ -25,7 +24,6 @@ const sortedList = descriptors
     sortkey: descriptor.hierarchy.join(', ').toLowerCase()
   }))
   .sort((a, b) => a.sortkey.localeCompare(b.sortkey))
-
 
 /**
  * featureClass :: string -> string
