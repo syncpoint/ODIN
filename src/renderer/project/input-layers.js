@@ -239,7 +239,10 @@ const updateGeometriesCommand = (initial, current) => ({
   apply: () => {
     const features = Object.entries(initial)
       .map(([id, geometry]) => [featureList[id], geometry])
-      .map(([feature, geometry]) => K(feature)(feature => (feature.setGeometry(geometry))))
+      .map(([feature, geometry]) => K(feature)(feature => {
+        feature.setGeometry(geometry)
+        feature.setStyle(null)
+      }))
 
     writeFeatures(features)
   }
