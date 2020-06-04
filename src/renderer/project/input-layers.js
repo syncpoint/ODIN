@@ -33,9 +33,17 @@ const internalProperties = ['layerId', 'geometry', 'locked', 'hidden']
 
 const layerList = {}
 
-const layerName =
-  layerId =>
-    layerList[layerId].name
+/**
+ * layerName :: string -> string
+ */
+const layerName = layerId =>
+  layerList[layerId].name
+
+/**
+ * activeLayer :: () => (string ~> string)
+ */
+const activeLayer = () =>
+  Object.values(layerList).find(layer => layer.active)
 
 /**
  * features :: string ~> ol/Feature
@@ -280,7 +288,6 @@ const unlinkLayerCommand = layerId => {
     inverse: () => writeLayerCommand(layerId, name, contents),
     apply: () => {
       io.deleteLayer(name)
-      deactivateLayer(layerId)
 
       const featureIds = layerFeatures(layerId).map(Feature.id)
       selection.deselect(featureIds)
@@ -327,6 +334,23 @@ const writeLayerCommand = (layerId, basename, contents) => {
   }
 }
 
+/**
+ * activateLayerCommand :: string -> string -> unit
+ */
+const activateLayerCommand = (current, next) => ({
+  inverse: () => activateLayerCommand(next, current),
+  apply: () => {
+    // Implicitly unlock and show layer.
+    showLayer(next)
+    unlockLayer(next)
+
+    Object.values(layerList).forEach(layer => (layer.active = false))
+    layerList[next].active = true
+    emit({ type: 'layeractivated', layerId: next })
+    evented.emit('OSD_MESSAGE', { message: layerName(next), slot: 'A2' })
+  }
+})
+
 // --
 // SECTION: Public API.
 
@@ -344,11 +368,7 @@ const addFeatures = content => {
   const additions = content.map(json => geoJSON.readFeature(json))
 
   // Add features to active layer if defined.
-  const activeLayer = Object.entries(layerList).find(([_, layer]) => layer.active)
-  if (activeLayer) {
-    additions.forEach(feature => feature.set('layerId', activeLayer[0]))
-  }
-
+  additions.forEach(feature => feature.set('layerId', activeLayer().id))
   undo.applyAndPush(insertFeaturesCommand(additions))
 }
 
@@ -368,46 +388,67 @@ const updateGeometries = (initial, features) => {
 }
 
 /**
- * toggleLayerLock :: string -> unit
- * Lock/unlock layer.
- * NOTE: Lock state is stored in features:
- * One locked feature locks layer.
+ * lockLacker :: string -> unit
  */
-const toggleLayerLock = layerId => {
+const lockLayer = layerId => {
+  // Cannot lock active layer:
+  if (layerList[layerId].active) return
+
   const features = layerFeatures(layerId)
   const locked = features.some(Feature.locked)
-  const toggle = locked ? Feature.unlock : Feature.lock
-  features.forEach(toggle)
+  if (locked) return
 
-  if (!locked) {
-    deactivateLayer(layerId)
-    selection.deselect(features.map(Feature.id))
-  }
-
+  features.forEach(Feature.lock)
+  selection.deselect(features.map(Feature.id))
   writeFeatures(features)
-  emit({ type: 'layerlocked', layerId, locked: !locked })
+
+  emit({ type: 'layerlocked', layerId, locked: true })
 }
 
 /**
- * toggleLayerShow :: string -> unit
- * Hide/show layer.
- * NOTE: Hidden state is stored in features:
- * One hidden feature hides layer.
+ * unlockLayer :: string -> unit
  */
-const toggleLayerShow = layerId => {
+const unlockLayer = layerId => {
+  const features = layerFeatures(layerId)
+  const locked = features.some(Feature.locked)
+  if (!locked) return
+
+  features.forEach(Feature.unlock)
+  writeFeatures(features)
+
+  emit({ type: 'layerlocked', layerId, locked: false })
+}
+
+/**
+ * hideLayer :: string -> unit
+ */
+const hideLayer = layerId => {
+  // Cannot hide active layer:
+  if (layerList[layerId].active) return
+
   const features = layerFeatures(layerId)
   const hidden = features.some(Feature.hidden)
-  const toggle = hidden ? Feature.unhide : Feature.hide
-  features.forEach(toggle)
+  if (hidden) return
 
-  if (!hidden) {
-    deactivateLayer(layerId)
-    selection.deselect(features.map(Feature.id))
-  }
-
-
+  features.forEach(Feature.hide)
+  selection.deselect(features.map(Feature.id))
   writeFeatures(features)
-  emit({ type: 'layerhidden', layerId, hidden: !hidden })
+
+  emit({ type: 'layerhidden', layerId, hidden: true })
+}
+
+/**
+ * showLayer :: string -> unit
+ */
+const showLayer = layerId => {
+  const features = layerFeatures(layerId)
+  const hidden = features.some(Feature.hidden)
+  if (!hidden) return
+
+  features.forEach(Feature.unhide)
+  writeFeatures(features)
+
+  emit({ type: 'layerhidden', layerId, hidden: false })
 }
 
 /**
@@ -415,29 +456,8 @@ const toggleLayerShow = layerId => {
  * Set layer as 'active layer'.
  */
 const activateLayer = layerId => {
-
-  // Ignore if layer is hidden or locked.
-  const features = layerFeatures(layerId)
-  const hidden = features.some(Feature.hidden)
-  const locked = features.some(Feature.locked)
-  if (hidden || locked) return
-
-  Object.values(layerList).forEach(layer => (layer.active = false))
-  layerList[layerId].active = true
-  emit({ type: 'layeractivated', layerId })
-  evented.emit('OSD_MESSAGE', { message: layerName(layerId), slot: 'A2' })
-}
-
-/**
- * deactivateLayer :: string -> unit
- * Unset layer as 'active layer'.
- */
-const deactivateLayer = layerId => {
-  if (layerList[layerId] && layerList[layerId].active) {
-    delete layerList[layerId].active
-    emit({ type: 'layerdeactivated', layerId })
-    evented.emit('OSD_MESSAGE', { message: '', slot: 'A2' })
-  }
+  const command = activateLayerCommand(activeLayer().id, layerId)
+  undo.applyAndPush(command)
 }
 
 /**
@@ -630,10 +650,11 @@ export default {
   removeFeatures,
   addFeatures,
   updateGeometries,
-  toggleLayerLock,
-  toggleLayerShow,
+  lockLayer,
+  unlockLayer,
+  hideLayer,
+  showLayer,
   activateLayer,
-  deactivateLayer,
   renameLayer,
   removeLayer,
   createLayer,
