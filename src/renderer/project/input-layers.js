@@ -628,7 +628,7 @@ clipboard.registerHandler(URI.SCHEME_LAYER, {
 
 /**
  * specialSelection :: () => [string]
- * Id of selected features which aere hidden or locked.
+ * Id of selected features which are hidden or locked.
  * NOTE: Hidden and locked features can be selected in layer list,
  * but not in the map.
  */
