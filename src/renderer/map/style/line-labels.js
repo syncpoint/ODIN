@@ -104,28 +104,51 @@ export const label = options => lines => feature => {
   })
 }
 
-export const lift = labels => feature => labels.map(label => label(feature))
-export const cloneLines = (lines, options) => options.map(options => label(options)(lines))
+// Combinators.
 
-export default feature => {
+const lift = labels => feature => labels.map(label => label(feature))
+const cloneLines = (lines, options) => options.map(options => label(options)(lines))
+const cross = (textAlign, verticalAlign) => textAlign.map(textAlign => ({ textAlign, verticalAlign }))
 
-  return [
-    label({ textAlign: LEFT, verticalAlign: TOP })(() => 'LEFT/TOP')(feature),
-    label({ textAlign: START, verticalAlign: TOP })(() => 'START/TOP')(feature),
-    label({ textAlign: 0.45, verticalAlign: TOP })(() => 'CENTER/TOP')(feature),
-    label({ textAlign: END, verticalAlign: TOP })(() => 'END/TOP')(feature),
-    label({ textAlign: RIGHT, verticalAlign: TOP })(() => 'RIGHT/TOP')(feature),
 
-    label({ textAlign: LEFT, verticalAlign: MIDDLE })(() => 'LEFT/BASELINE')(feature),
-    label({ textAlign: START, verticalAlign: MIDDLE })(() => 'START/BASELINE')(feature),
-    label({ textAlign: 0.5, verticalAlign: MIDDLE })(() => 'CENTER/BASELINE')(feature),
-    label({ textAlign: END, verticalAlign: MIDDLE })(() => 'END/BASELINE')(feature),
-    label({ textAlign: RIGHT, verticalAlign: MIDDLE })(() => 'RIGHT/BASELINE')(feature),
+// Templates.
 
-    label({ textAlign: LEFT, verticalAlign: BOTTOM })(() => 'LEFT/BOTTOM')(feature),
-    label({ textAlign: START, verticalAlign: BOTTOM })(() => 'START/BOTTOM')(feature),
-    label({ textAlign: 0.55, verticalAlign: BOTTOM })(() => 'CENTER/BOTTOM')(feature),
-    label({ textAlign: END, verticalAlign: BOTTOM })(() => 'END/BOTTOM')(feature),
-    label({ textAlign: RIGHT, verticalAlign: BOTTOM })(() => 'RIGHT/BOTTOM')(feature)
-  ]
+const topTitle = title => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [`${title}${t ? ' ' + t : ''}`])
+const topTitleReverse = title => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [t ? `${t} ${title}` : null])
+const topTitleSubtitle = (title, subtitle) => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [`${title}${t ? ' ' + t : ''}`, subtitle])
+const middleTitle = title => label({ textAlign: 0.5, verticalAlign: MIDDLE })(() => [title])
+const doubleTitle = title => lift(cloneLines(({ t }) => [t ? `${t} ${title}` : `${title}`], cross([START, END], TOP)))
+const centerDTG = label({ textAlign: 0.5, verticalAlign: BOTTOM })(({ w, w1 }) => [w, w1])
+const startDTG = label({ textAlign: START, verticalAlign: BOTTOM })(({ w, w1 }) => [w, w1])
+const doubleDTG = lift(cloneLines(({ w, w1 }) => [w, w1], cross([START, END], BOTTOM)))
+const lineEndsT1 = title => lift(cloneLines(({ t1 }) => [t1 ? `${title} ${t1} ` : null], cross([LEFT, RIGHT], MIDDLE)))
+const lineEndsT = title => lift(cloneLines(({ t }) => [t ? `${title} ${t} ` : null], cross([LEFT, RIGHT], MIDDLE)))
+const phaseLine = title => lift(cloneLines(({ t }) => [title, t ? `(PL ${t})` : ''], cross([LEFT, RIGHT], MIDDLE)))
+
+// Specific labels.
+
+export const labels = {
+  'G*F*LCC---': [topTitleReverse('CFL'), centerDTG],
+  'G*F*LCF---': [doubleDTG, doubleTitle('FSCL'), lineEndsT1('PL')],
+  'G*F*LCM---': [middleTitle('MFP'), startDTG],
+  'G*F*LCN---': [phaseLine('NFL')],
+  'G*F*LCR---': [doubleDTG, doubleTitle('RFL'), lineEndsT1('PL')],
+  // TODO: G*G*DLF---
+  // TODO: G*G*GLB---
+  // TODO: G*G*GLC---
+  // TODO: G*G*GLF---
+  'G*G*GLL---': [phaseLine('LL')],
+  'G*G*GLP---': [lineEndsT('PL')],
+  'G*G*OLC---': [phaseLine('LD/LC')],
+  'G*G*OLF---': [phaseLine('FINAL CL')],
+  'G*G*OLL---': [phaseLine('LOA')],
+  'G*G*OLP---': [phaseLine('PLD')],
+  'G*G*OLT---': [phaseLine('LD')],
+  'G*G*SLH---': [phaseLine('HOLDING LINE')],
+  'G*G*SLR---': [phaseLine('RL')],
+  'G*S*LRA---': [topTitle('ASR')],
+  'G*S*LRM---': [topTitle('MSR')],
+  'G*S*LRO---': [topTitleSubtitle('MSR', '(ONE-WAY TRAFFIC)')],
+  'G*S*LRT---': [topTitleSubtitle('MSR', '(ALTERNATING TRAFFIC)')],
+  'G*S*LRW---': [topTitleSubtitle('MSR', '(TWO-WAY TRAFFIC)')]
 }
