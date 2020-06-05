@@ -116,6 +116,9 @@ const cross = (textAlign, verticalAlign) => textAlign.map(textAlign => ({ textAl
 const topTitle = title => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [`${title}${t ? ' ' + t : ''}`])
 const topTitleReverse = title => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [t ? `${t} ${title}` : null])
 const topTitleSubtitle = (title, subtitle) => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [`${title}${t ? ' ' + t : ''}`, subtitle])
+const topT = label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [t])
+const bottomTitle = title => label({ textAlign: 0.5, verticalAlign: BOTTOM })(() => [title])
+const bottomT1 = title => label({ textAlign: 0.5, verticalAlign: BOTTOM })(({ t1 }) => [title, t1])
 const middleTitle = title => label({ textAlign: 0.5, verticalAlign: MIDDLE })(() => [title])
 const doubleTitle = title => lift(cloneLines(({ t }) => [t ? `${t} ${title}` : `${title}`], cross([START, END], TOP)))
 const centerDTG = label({ textAlign: 0.5, verticalAlign: BOTTOM })(({ w, w1 }) => [w, w1])
@@ -133,6 +136,9 @@ export const labels = {
   'G*F*LCM---': [middleTitle('MFP'), startDTG],
   'G*F*LCN---': [phaseLine('NFL')],
   'G*F*LCR---': [doubleDTG, doubleTitle('RFL'), lineEndsT1('PL')],
+  'G*F*LT----': [topT],
+  'G*F*LTS---': [topT, bottomTitle('SMOKE')],
+  'G*F*LTF---': [topT, bottomT1('FPF')],
   // TODO: G*G*DLF---
   // TODO: G*G*GLB---
   // TODO: G*G*GLC---

@@ -14,6 +14,7 @@ import inputLayers from '../project/input-layers'
 import Feature from '../project/Feature'
 import URI from '../project/URI'
 import selection from '../selection'
+import { featureGeometry } from '../components/feature-descriptors'
 
 
 // --
@@ -309,7 +310,15 @@ const createModify = () => {
     hitTolerance,
     features: selectedFeatures,
     // Allow translate while editing (with shift key pressed):
-    condition: conjunction(primaryAction, noShiftKey)
+    condition: conjunction(primaryAction, noShiftKey),
+    insertVertexCondition: () => {
+      const [geometry] = selection.selected(URI.isFeatureId)
+        .map(featureById)
+        .map(feature => feature.get('sidc'))
+        .map(sidc => featureGeometry(sidc))
+
+      return !['line-2pt'].includes(geometry)
+    }
   })
 
   interaction.on('modifystart', ({ features }) => {

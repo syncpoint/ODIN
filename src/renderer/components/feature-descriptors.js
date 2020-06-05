@@ -28,9 +28,14 @@ const sortedList = descriptors
 /**
  * featureClass :: string -> string
  */
-const featureClass = sidc => {
+export const featureClass = sidc => {
   const feature = lookup[parameterized(sidc)]
   return feature ? feature.class : undefined
+}
+
+export const featureGeometry = sidc => {
+  const feature = lookup[parameterized(sidc)]
+  return feature ? feature.geometry : undefined
 }
 
 const supportedGeometries = ['point', 'polygon', 'line', 'line-2pt']
@@ -38,7 +43,7 @@ const supportedGeometries = ['point', 'polygon', 'line', 'line-2pt']
 /**
  * featureDescriptors :: () => [object]
  */
-const featureDescriptors = (filter, preset = {}) => {
+export const featureDescriptors = (filter, preset = {}) => {
   if (!filter || filter.length < 3) return []
 
   const hostlility = preset.hostility || 'F'
@@ -66,9 +71,4 @@ const featureDescriptors = (filter, preset = {}) => {
     .filter(match)
     .map(updateSIDC)
   return R.take(50, matches)
-}
-
-export default {
-  featureClass,
-  featureDescriptors
 }
