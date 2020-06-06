@@ -14,7 +14,6 @@ const lookup = descriptors.reduce((acc, descriptor) => K(acc)(acc => {
 }), {})
 
 const sortedList = descriptors
-  .filter(descriptor => descriptor.class)
   .map(descriptor => ({
     sidc: descriptor.sidc,
     class: descriptor.class,

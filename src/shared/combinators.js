@@ -6,6 +6,11 @@
 export const K = value => fn => { fn(value); return value }
 
 /**
+ * Thrush aka applyTo.
+ */
+export const T = value => fn => fn(value)
+
+/**
  * I :: a -> a
  * Identity.
  */

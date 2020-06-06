@@ -119,12 +119,14 @@ const topTitleSubtitle = (title, subtitle) => label({ textAlign: 0.5, verticalAl
 const topT = label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [t])
 const bottomTitle = title => label({ textAlign: 0.5, verticalAlign: BOTTOM })(() => [title])
 const bottomT1 = title => label({ textAlign: 0.5, verticalAlign: BOTTOM })(({ t1 }) => [title, t1])
-const middleTitle = title => label({ textAlign: 0.5, verticalAlign: MIDDLE })(() => [title])
+const middleTitle = (title, textAlign = 0.5) => label({ textAlign, verticalAlign: MIDDLE })(() => [title])
+const middleT = textAlign => label({ textAlign, verticalAlign: MIDDLE })(({ t }) => [t])
 const doubleTitle = title => lift(cloneLines(({ t }) => [t ? `${t} ${title}` : `${title}`], cross([START, END], TOP)))
 const centerDTG = label({ textAlign: 0.5, verticalAlign: BOTTOM })(({ w, w1 }) => [w, w1])
 const startDTG = label({ textAlign: START, verticalAlign: BOTTOM })(({ w, w1 }) => [w, w1])
 const doubleDTG = lift(cloneLines(({ w, w1 }) => [w, w1], cross([START, END], BOTTOM)))
-const lineEndsT1 = title => lift(cloneLines(({ t1 }) => [t1 ? `${title} ${t1} ` : null], cross([LEFT, RIGHT], MIDDLE)))
+const lineEndsTitle = title => lift(cloneLines(() => [title], cross([LEFT, RIGHT], MIDDLE)))
+const lineEndsT1 = title => lift(cloneLines(({ t1 }) => [t1 ? `${title} ${t1}` : null], cross([LEFT, RIGHT], MIDDLE)))
 const lineEndsT = title => lift(cloneLines(({ t }) => [t ? `${title} ${t} ` : null], cross([LEFT, RIGHT], MIDDLE)))
 const phaseLine = title => lift(cloneLines(({ t }) => [title, t ? `(PL ${t})` : ''], cross([LEFT, RIGHT], MIDDLE)))
 
@@ -139,7 +141,7 @@ export const labels = {
   'G*F*LT----': [topT],
   'G*F*LTS---': [topT, bottomTitle('SMOKE')],
   'G*F*LTF---': [topT, bottomT1('FPF')],
-  // TODO: G*G*DLF---
+  'G*G*DLF---': [lineEndsTitle('FEBA')],
   // TODO: G*G*GLB---
   // TODO: G*G*GLC---
   // TODO: G*G*GLF---
@@ -148,13 +150,22 @@ export const labels = {
   'G*G*OLC---': [phaseLine('LD/LC')],
   'G*G*OLF---': [phaseLine('FINAL CL')],
   'G*G*OLL---': [phaseLine('LOA')],
+  'G*G*OLKA--': [centerDTG, middleT(0.75)],
+  'G*G*OLKGM-': [centerDTG, middleT(0.75)],
+  'G*G*OLKGS-': [centerDTG, middleT(0.75)],
   'G*G*OLP---': [phaseLine('PLD')],
   'G*G*OLT---': [phaseLine('LD')],
+  'G*G*PF----': [topT],
   'G*G*SLH---': [phaseLine('HOLDING LINE')],
   'G*G*SLR---': [phaseLine('RL')],
+  'G*O*BA----': [middleTitle('A')],
+  'G*O*BE----': [middleTitle('E')],
+  'G*O*BO----': [middleTitle('O')],
+  'G*O*BT----': [middleTitle('T')],
   'G*S*LRA---': [topTitle('ASR')],
   'G*S*LRM---': [topTitle('MSR')],
   'G*S*LRO---': [topTitleSubtitle('MSR', '(ONE-WAY TRAFFIC)')],
   'G*S*LRT---': [topTitleSubtitle('MSR', '(ALTERNATING TRAFFIC)')],
-  'G*S*LRW---': [topTitleSubtitle('MSR', '(TWO-WAY TRAFFIC)')]
+  'G*S*LRW---': [topTitleSubtitle('MSR', '(TWO-WAY TRAFFIC)')],
+  'G*T*F-----': [middleTitle('F', 0.1)]
 }
