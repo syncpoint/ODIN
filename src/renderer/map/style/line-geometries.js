@@ -1,9 +1,8 @@
 import * as geom from 'ol/geom'
 import { getTransform } from 'ol/proj'
 import * as R from 'ramda'
-import { K, T } from '../../../shared/combinators'
 import LatLon from 'geodesy/latlon-spherical.js'
-
+import { K, T } from '../../../shared/combinators'
 import defaultStyle from './default-style'
 
 const toEPSG4326 = getTransform('EPSG:3857', 'EPSG:4326')
@@ -25,7 +24,7 @@ const translateLine =
 
 const coordinates = feature => feature.getGeometry().getCoordinates()
 
-const simpleArrow = (line, resolution, widthFactor = 15, bearing = 145) => {
+const simpleArrowEnd = (line, resolution, widthFactor = 15, bearing = 145) => {
   const [finalBearing] = bearings(line).reverse()
   const arrowWidth = resolution * widthFactor
   const PA = line[1].destinationPoint(arrowWidth, finalBearing - bearing)
@@ -33,13 +32,30 @@ const simpleArrow = (line, resolution, widthFactor = 15, bearing = 145) => {
   return [PA, line[1], PB]
 }
 
-const closedArrow = (line, resolution, widthFactor = 15, bearing = 145) => {
+const simpleArrowStart = (line, resolution, widthFactor = 15, bearing = 145) => {
+  const [initialBearing] = bearings(line)
+  const arrowWidth = resolution * widthFactor
+  const PA = line[0].destinationPoint(arrowWidth, initialBearing - bearing + 180)
+  const PB = line[0].destinationPoint(arrowWidth, initialBearing + bearing - 180)
+  return [PA, line[0], PB]
+}
+
+const closedArrowEnd = (line, resolution, widthFactor = 15, bearing = 145) => {
   const [finalBearing] = bearings(line).reverse()
   const arrowWidth = resolution * widthFactor
   const PA = line[1].destinationPoint(arrowWidth, finalBearing - bearing)
   const PB = line[1].destinationPoint(arrowWidth, finalBearing + bearing)
   const I = LatLon.intersection(line[0], finalBearing, PA, finalBearing + 90)
   return [PA, line[1], PB, I, PA]
+}
+
+const closedArrowStart = (line, resolution, widthFactor = 15, bearing = 145) => {
+  const [initialBearing] = bearings(line)
+  const arrowWidth = resolution * widthFactor
+  const PA = line[0].destinationPoint(arrowWidth, initialBearing - bearing + 180)
+  const PB = line[0].destinationPoint(arrowWidth, initialBearing + bearing - 180)
+  const I = LatLon.intersection(line[0], initialBearing, PA, initialBearing - 90)
+  return [PA, line[0], PB, I, PA]
 }
 
 const doubleArrow = (line, resolution) => {
@@ -98,7 +114,7 @@ geometries['G*G*OLKA--'] = (feature, resolution) => {
   const PB2 = PB.destinationPoint(resolution * 5, initialBearing - 90)
   return lineStyle(feature, multiLineString([
     [line[0], PA], [PB, line[1]],
-    simpleArrow(line, resolution),
+    simpleArrowEnd(line, resolution),
     [PA1, PA2, PB1, PB2, PA1]
   ]))
 }
@@ -111,7 +127,7 @@ geometries['G*G*OLKGM-'] = (feature, resolution) => {
 
 geometries['G*G*OLKGS-'] = (feature, resolution) => {
   const line = coordinates(feature).map(toLatLon)
-  return lineStyle(feature, multiLineString([line, simpleArrow(line, resolution)]))
+  return lineStyle(feature, multiLineString([line, simpleArrowEnd(line, resolution)]))
 }
 
 geometries['G*G*PF----'] = (feature, resolution) => {
@@ -121,18 +137,47 @@ geometries['G*G*PF----'] = (feature, resolution) => {
 
   const s1 = lineStyle(feature, multiLineString([
     [line[0], PB],
-    simpleArrow([line[0], PB], resolution, 20, 130)
+    simpleArrowEnd([line[0], PB], resolution, 20, 130)
   ]))
 
-  const s2 = lineStyle(feature, multiLineString([simpleArrow(line, resolution, 20, 130)]))
+  const s2 = lineStyle(feature, multiLineString([simpleArrowEnd(line, resolution, 20, 130)]))
     .map(s => K(s)(s => s.getStroke().setLineDash([10, 7])))
 
   return s1.concat(s2)
 }
 
-// TODO: G*M*BCF---
-// TODO: G*M*BCL---
-// TODO: G*M*BCR---
+geometries['G*M*BCF---'] = (feature, resolution) => {
+  const line = coordinates(feature).map(toLatLon)
+  const arrowEnd = closedArrowEnd(line, resolution)
+  const arrowStart = closedArrowStart(line, resolution)
+  return lineStyle(feature, multiLineString([
+    [arrowStart[3], arrowEnd[3]],
+    arrowEnd,
+    arrowStart
+  ]))
+}
+
+geometries['G*M*BCL---'] = (feature, resolution) => {
+  const line = coordinates(feature).map(toLatLon)
+  const arrowEnd = simpleArrowEnd(line, resolution, 15, -35)
+  const arrowStart = simpleArrowStart(line, resolution, 15, -35)
+  return lineStyle(feature, multiLineString([
+    line,
+    arrowEnd,
+    arrowStart
+  ]))
+}
+
+geometries['G*M*BCR---'] = (feature, resolution) => {
+  const line = coordinates(feature).map(toLatLon)
+  const arrowEnd = simpleArrowEnd(line, resolution, 25, -60)
+  const arrowStart = simpleArrowStart(line, resolution, 25, -60)
+  return lineStyle(feature, multiLineString([
+    line,
+    arrowEnd,
+    arrowStart
+  ]))
+}
 
 geometries['G*M*OEF---'] = (feature, resolution) => {
   const line = coordinates(feature).map(toLatLon)
@@ -140,18 +185,12 @@ geometries['G*M*OEF---'] = (feature, resolution) => {
   const length = distance(line)
   const PA = line[0].destinationPoint(length * 0.2, initialBearing)
   const PB = line[1].destinationPoint(length * 0.2, finalBearing - 180)
-  const arrow = closedArrow(line, resolution)
+  const arrow = closedArrowEnd(line, resolution)
   return lineStyle(feature, multiLineString([
     [line[0], PA, ...zigzag([PA, PB], resolution), PB, arrow[3]],
     arrow
   ]))
 }
-
-// TODO: G*O*HN----
-// TODO: G*S*LCH---
-// TODO: G*S*LCM---
-// TODO: G*T*A-----
-// TODO: G*T*AS----
 
 geometries['G*M*SW----'] = (feature, resolution) => {
   const line = coordinates(feature).map(toLatLon)
@@ -159,6 +198,20 @@ geometries['G*M*SW----'] = (feature, resolution) => {
   const [PA1, PA2] = translateLine(width, +90)(line)
   return lineStyle(feature, multiLineString([[PA1, ...line, PA2]]))
 }
+
+geometries['G*O*HN----'] = (feature, resolution) => {
+  const line = coordinates(feature).map(toLatLon)
+  const [initialBearing, finalBearing] = bearings(line)
+  const width = resolution * 25
+  const PA = line[1].destinationPoint(width, finalBearing + 120)
+  const PB = line[0].destinationPoint(width, initialBearing - 60)
+  return lineStyle(feature, multiLineString([[PB, ...line, PA]]))
+}
+
+// TODO: G*S*LCH---
+// TODO: G*S*LCM---
+// TODO: G*T*A-----
+// TODO: G*T*AS----
 
 geometries['G*T*F-----'] = (feature, resolution) => {
   const line = coordinates(feature).map(toLatLon)
@@ -168,6 +221,6 @@ geometries['G*T*F-----'] = (feature, resolution) => {
   const PB = line[1].destinationPoint(length * 0.2, finalBearing - 180)
   return lineStyle(feature, multiLineString([
     [line[0], PA, ...zigzag([PA, PB], resolution), PB, line[1]],
-    simpleArrow(line, resolution)
+    simpleArrowEnd(line, resolution)
   ]))
 }
