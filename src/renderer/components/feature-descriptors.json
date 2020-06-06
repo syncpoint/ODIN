@@ -6681,6 +6681,7 @@
   },
   {
     "sidc": "G*T*A-----*****",
+    "class": "L",
     "geometry": "line-2pt",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -6690,6 +6691,7 @@
   },
   {
     "sidc": "G*T*AS----*****",
+    "class": "L",
     "geometry": "line-2pt",
     "hierarchy": [
       "TACTICAL GRAPHICS",

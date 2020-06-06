@@ -58,14 +58,14 @@ const closedArrowStart = (line, resolution, widthFactor = 15, bearing = 145) => 
   return [PA, line[0], PB, I, PA]
 }
 
-const doubleArrow = (line, resolution) => {
+const doubleArrow = (line, resolution, widthFactor = 15, bearing = 145) => {
   const [finalBearing] = bearings(line).reverse()
-  const arrowWidth = resolution * 15
-  const C = line[1].destinationPoint(resolution * 4, -finalBearing)
-  const PA = line[1].destinationPoint(arrowWidth, finalBearing - 145)
-  const PB = line[1].destinationPoint(arrowWidth, finalBearing + 145)
-  const PC = C.destinationPoint(arrowWidth, finalBearing - 145)
-  const PD = C.destinationPoint(arrowWidth, finalBearing + 145)
+  const arrowWidth = resolution * widthFactor
+  const C = line[1].destinationPoint(resolution * 5, -finalBearing)
+  const PA = line[1].destinationPoint(arrowWidth, finalBearing - bearing)
+  const PB = line[1].destinationPoint(arrowWidth, finalBearing + bearing)
+  const PC = C.destinationPoint(arrowWidth, finalBearing - bearing)
+  const PD = C.destinationPoint(arrowWidth, finalBearing + bearing)
   return [PA, line[1], PB, PD, C, PC, PA]
 }
 
@@ -208,10 +208,51 @@ geometries['G*O*HN----'] = (feature, resolution) => {
   return lineStyle(feature, multiLineString([[PB, ...line, PA]]))
 }
 
+geometries['G*T*A-----'] = (feature, resolution) => {
+  const line = coordinates(feature).map(toLatLon)
+  const [initialBearing] = bearings(line)
+  const length = distance(line)
+  const arrow = doubleArrow(line, resolution, 40, 140)
+  const width = resolution * 15
+  const PB1 = line[0].destinationPoint(width, initialBearing + 90)
+  const PB2 = PB1.destinationPoint(length / 3, initialBearing)
+  const PB5 = line[0].destinationPoint(width, initialBearing - 90)
+  const PB4 = PB5.destinationPoint(length / 3, initialBearing)
+  const PB3 = line[0].destinationPoint(width + length / 3, initialBearing)
+
+  const s1 = lineStyle(feature, multiLineString([[PB3, arrow[4]]]))
+    .map(s => K(s)(s => s.getStroke().setLineDash([10, 7])))
+
+  const s2 = lineStyle(feature, multiLineString([
+    arrow,
+    [PB1, PB2, PB3, PB4, PB5, PB1]
+  ]))
+
+  return s1.concat(s2)
+}
+
+geometries['G*T*AS----'] = (feature, resolution) => {
+  const line = coordinates(feature).map(toLatLon)
+  const [initialBearing] = bearings(line)
+  const length = distance(line)
+  const arrow = closedArrowEnd(line, resolution, 30, 160)
+  const width = resolution * 15
+  const PB0 = line[0].destinationPoint(width, initialBearing)
+  const PB1 = line[0].destinationPoint(width, initialBearing + 90)
+  const PB2 = PB1.destinationPoint(length / 3, initialBearing)
+  const PB5 = line[0].destinationPoint(width, initialBearing - 90)
+  const PB4 = PB5.destinationPoint(length / 3, initialBearing)
+  const PB3 = line[0].destinationPoint(width + length / 3, initialBearing)
+
+  return lineStyle(feature, multiLineString([
+    [PB3, arrow[3]],
+    arrow,
+    [PB1, PB2, PB3, PB4, PB5, PB0, PB1]
+  ]))
+}
+
 // TODO: G*S*LCH---
 // TODO: G*S*LCM---
-// TODO: G*T*A-----
-// TODO: G*T*AS----
 
 geometries['G*T*F-----'] = (feature, resolution) => {
   const line = coordinates(feature).map(toLatLon)
