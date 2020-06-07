@@ -85,15 +85,27 @@ const zigzag = (line, resolution) => {
 const multiLineString = lines =>
   new geom.MultiLineString(lines.map(line => line.map(fromLatLon)))
 
-const lineStyle = (feature, geometry) =>
-  K(defaultStyle(feature))(xs => xs.forEach(s => s.setGeometry(geometry)))
+const lineStyle = (feature, lines) => {
+  const styles = defaultStyle(feature)
+
+  // It is quite possible that feature's extent is too small
+  // to construct a valid geometry. Use default style in this case.
+
+  try {
+    const geometry = multiLineString(lines)
+    return K(styles)(xs => xs.forEach(s => s.setGeometry(geometry)))
+  } catch (err) {
+    return styles
+  }
+}
+
 
 const linearTarget = (feature, resolution) => {
   const line = coordinates(feature).map(toLatLon)
   const width = resolution * 10
   const [PA1, PA2] = translateLine(width, +90)(line)
   const [PB1, PB2] = translateLine(width, -90)(line)
-  return lineStyle(feature, multiLineString([line, [PA1, PB1], [PA2, PB2]]))
+  return lineStyle(feature, [line, [PA1, PB1], [PA2, PB2]])
 }
 
 export const geometries = {
@@ -112,22 +124,22 @@ geometries['G*G*OLKA--'] = (feature, resolution) => {
   const PA2 = PA.destinationPoint(resolution * 5, initialBearing - 90)
   const PB1 = PB.destinationPoint(resolution * 5, initialBearing + 90)
   const PB2 = PB.destinationPoint(resolution * 5, initialBearing - 90)
-  return lineStyle(feature, multiLineString([
+  return lineStyle(feature, [
     [line[0], PA], [PB, line[1]],
     simpleArrowEnd(line, resolution),
     [PA1, PA2, PB1, PB2, PA1]
-  ]))
+  ])
 }
 
 geometries['G*G*OLKGM-'] = (feature, resolution) => {
   const line = coordinates(feature).map(toLatLon)
   const arrow = doubleArrow(line, resolution)
-  return lineStyle(feature, multiLineString([[line[0], arrow[4]], arrow]))
+  return lineStyle(feature, [[line[0], arrow[4]], arrow])
 }
 
 geometries['G*G*OLKGS-'] = (feature, resolution) => {
   const line = coordinates(feature).map(toLatLon)
-  return lineStyle(feature, multiLineString([line, simpleArrowEnd(line, resolution)]))
+  return lineStyle(feature, [line, simpleArrowEnd(line, resolution)])
 }
 
 geometries['G*G*PF----'] = (feature, resolution) => {
@@ -135,12 +147,12 @@ geometries['G*G*PF----'] = (feature, resolution) => {
   const [finalBearing] = bearings(line).reverse()
   const PB = line[1].destinationPoint(resolution * -8, finalBearing)
 
-  const s1 = lineStyle(feature, multiLineString([
+  const s1 = lineStyle(feature, [
     [line[0], PB],
     simpleArrowEnd([line[0], PB], resolution, 20, 130)
-  ]))
+  ])
 
-  const s2 = lineStyle(feature, multiLineString([simpleArrowEnd(line, resolution, 20, 130)]))
+  const s2 = lineStyle(feature, [simpleArrowEnd(line, resolution, 20, 130)])
     .map(s => K(s)(s => s.getStroke().setLineDash([10, 7])))
 
   return s1.concat(s2)
@@ -150,33 +162,33 @@ geometries['G*M*BCF---'] = (feature, resolution) => {
   const line = coordinates(feature).map(toLatLon)
   const arrowEnd = closedArrowEnd(line, resolution)
   const arrowStart = closedArrowStart(line, resolution)
-  return lineStyle(feature, multiLineString([
+  return lineStyle(feature, [
     [arrowStart[3], arrowEnd[3]],
     arrowEnd,
     arrowStart
-  ]))
+  ])
 }
 
 geometries['G*M*BCL---'] = (feature, resolution) => {
   const line = coordinates(feature).map(toLatLon)
   const arrowEnd = simpleArrowEnd(line, resolution, 15, -35)
   const arrowStart = simpleArrowStart(line, resolution, 15, -35)
-  return lineStyle(feature, multiLineString([
+  return lineStyle(feature, [
     line,
     arrowEnd,
     arrowStart
-  ]))
+  ])
 }
 
 geometries['G*M*BCR---'] = (feature, resolution) => {
   const line = coordinates(feature).map(toLatLon)
   const arrowEnd = simpleArrowEnd(line, resolution, 25, -60)
   const arrowStart = simpleArrowStart(line, resolution, 25, -60)
-  return lineStyle(feature, multiLineString([
+  return lineStyle(feature, [
     line,
     arrowEnd,
     arrowStart
-  ]))
+  ])
 }
 
 geometries['G*M*OEF---'] = (feature, resolution) => {
@@ -186,17 +198,17 @@ geometries['G*M*OEF---'] = (feature, resolution) => {
   const PA = line[0].destinationPoint(length * 0.2, initialBearing)
   const PB = line[1].destinationPoint(length * 0.2, finalBearing - 180)
   const arrow = closedArrowEnd(line, resolution)
-  return lineStyle(feature, multiLineString([
+  return lineStyle(feature, [
     [line[0], PA, ...zigzag([PA, PB], resolution), PB, arrow[3]],
     arrow
-  ]))
+  ])
 }
 
 geometries['G*M*SW----'] = (feature, resolution) => {
   const line = coordinates(feature).map(toLatLon)
   const width = resolution * 20
   const [PA1, PA2] = translateLine(width, +90)(line)
-  return lineStyle(feature, multiLineString([[PA1, ...line, PA2]]))
+  return lineStyle(feature, [[PA1, ...line, PA2]])
 }
 
 geometries['G*O*HN----'] = (feature, resolution) => {
@@ -205,7 +217,7 @@ geometries['G*O*HN----'] = (feature, resolution) => {
   const width = resolution * 25
   const PA = line[1].destinationPoint(width, finalBearing + 120)
   const PB = line[0].destinationPoint(width, initialBearing - 60)
-  return lineStyle(feature, multiLineString([[PB, ...line, PA]]))
+  return lineStyle(feature, [[PB, ...line, PA]])
 }
 
 geometries['G*T*A-----'] = (feature, resolution) => {
@@ -220,13 +232,13 @@ geometries['G*T*A-----'] = (feature, resolution) => {
   const PB4 = PB5.destinationPoint(length / 3, initialBearing)
   const PB3 = line[0].destinationPoint(width + length / 3, initialBearing)
 
-  const s1 = lineStyle(feature, multiLineString([[PB3, arrow[4]]]))
+  const s1 = lineStyle(feature, [[PB3, arrow[4]]])
     .map(s => K(s)(s => s.getStroke().setLineDash([10, 7])))
 
-  const s2 = lineStyle(feature, multiLineString([
+  const s2 = lineStyle(feature, [
     arrow,
     [PB1, PB2, PB3, PB4, PB5, PB1]
-  ]))
+  ])
 
   return s1.concat(s2)
 }
@@ -244,11 +256,11 @@ geometries['G*T*AS----'] = (feature, resolution) => {
   const PB4 = PB5.destinationPoint(length / 3, initialBearing)
   const PB3 = line[0].destinationPoint(width + length / 3, initialBearing)
 
-  return lineStyle(feature, multiLineString([
+  return lineStyle(feature, [
     [PB3, arrow[3]],
     arrow,
     [PB1, PB2, PB3, PB4, PB5, PB0, PB1]
-  ]))
+  ])
 }
 
 // TODO: G*S*LCH---
@@ -260,8 +272,8 @@ geometries['G*T*F-----'] = (feature, resolution) => {
   const length = distance(line)
   const PA = line[0].destinationPoint(length * 0.2, initialBearing)
   const PB = line[1].destinationPoint(length * 0.2, finalBearing - 180)
-  return lineStyle(feature, multiLineString([
+  return lineStyle(feature, [
     [line[0], PA, ...zigzag([PA, PB], resolution), PB, line[1]],
     simpleArrowEnd(line, resolution)
-  ]))
+  ])
 }
