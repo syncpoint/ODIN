@@ -263,8 +263,32 @@ geometries['G*T*AS----'] = (feature, resolution) => {
   ])
 }
 
-// TODO: G*S*LCH---
-// TODO: G*S*LCM---
+geometries['G*S*LCH---'] = (feature, resolution) => {
+  const line = coordinates(feature).map(toLatLon)
+  const [finalBearing] = bearings(line).reverse()
+  const width = resolution * 25
+  const PB1 = line[1].destinationPoint(-width, finalBearing)
+  const PB2 = line[1].destinationPoint(width, finalBearing + 90)
+  const PB3 = line[1].destinationPoint(width, finalBearing - 90)
+  const [PA1, PA2] = translateLine(width / 1.5, +90)([line[0], PB1])
+  const [PA4, PA3] = translateLine(width / 1.5, -90)([line[0], PB1])
+  return lineStyle(feature, [
+    [PA1, PA2, PA3, PA4, PA1],
+    [PB1, PB2, PB3, PB1]
+  ])
+}
+
+geometries['G*S*LCM---'] = (feature, resolution) => {
+  const line = coordinates(feature).map(toLatLon)
+  const [finalBearing] = bearings(line).reverse()
+  const width = resolution * 25
+  const PB1 = line[1].destinationPoint(-width, finalBearing)
+  const PB2 = PB1.destinationPoint(width, finalBearing + 90)
+  const PB3 = PB1.destinationPoint(width, finalBearing - 90)
+  const [PA1, PA2] = translateLine(width / 1.5, +90)([line[0], PB1])
+  const [PA4, PA3] = translateLine(width / 1.5, -90)([line[0], PB1])
+  return lineStyle(feature, [[PA3, PA4, PA1, PA2, PB2, line[1], PB3, PA3]])
+}
 
 geometries['G*T*F-----'] = (feature, resolution) => {
   const line = coordinates(feature).map(toLatLon)
