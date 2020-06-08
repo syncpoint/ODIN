@@ -4,7 +4,7 @@ import Paper from '@material-ui/core/Paper'
 import List from '@material-ui/core/List'
 
 import Search from './Search'
-import descriptors from '../feature-descriptors'
+import { featureDescriptors } from '../feature-descriptors'
 import FeatureItem from './FeatureItem'
 import Presets from './Presets'
 import evented from '../../evented'
@@ -93,8 +93,7 @@ const FeaturePalette = (/* props */) => {
     evented.emit('MAP_DRAW', descriptor)
   }
 
-  const listItems = descriptors
-    .featureDescriptors(filter, presets)
+  const listItems = featureDescriptors(filter, presets)
     .map(descriptor => <FeatureItem
       {...descriptor}
       key={descriptor.sortkey}

@@ -3093,7 +3093,7 @@
   {
     "sidc": "G*G*DLF---*****",
     "class": "L",
-    "geometry": "line-2pt",
+    "geometry": "line",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "COMMAND AND CONTROL AND GENERAL MANEUVER",
@@ -5003,6 +5003,7 @@
   },
   {
     "sidc": "G*G*PF----*****",
+    "class": "L",
     "geometry": "line-2pt",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -6680,6 +6681,7 @@
   },
   {
     "sidc": "G*T*A-----*****",
+    "class": "L",
     "geometry": "line-2pt",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -6689,6 +6691,7 @@
   },
   {
     "sidc": "G*T*AS----*****",
+    "class": "L",
     "geometry": "line-2pt",
     "hierarchy": [
       "TACTICAL GRAPHICS",
