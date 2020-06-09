@@ -74,7 +74,9 @@ const addTileLayers = async (group, sources, onSuccess = ACTIONS.emit) => {
   await Promise
     .all(sources.map(buildLayerFromSource))
     .then(tileLayers => {
-      tileLayers.forEach(layer => layers.push(layer))
+      tileLayers
+        .filter(layer => !!layer)
+        .forEach(layer => layers.push(layer))
     })
     .then(() => onSuccess())
     .catch(error => {
