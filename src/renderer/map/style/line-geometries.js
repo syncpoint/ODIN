@@ -61,7 +61,7 @@ const closedArrowStart = (line, resolution, widthFactor = 15, bearing = 145) => 
 const doubleArrow = (line, resolution, widthFactor = 15, bearing = 145) => {
   const [finalBearing] = bearings(line).reverse()
   const arrowWidth = resolution * widthFactor
-  const C = line[1].destinationPoint(resolution * 5, -finalBearing)
+  const C = line[1].destinationPoint(-resolution * 5, finalBearing)
   const PA = line[1].destinationPoint(arrowWidth, finalBearing - bearing)
   const PB = line[1].destinationPoint(arrowWidth, finalBearing + bearing)
   const PC = C.destinationPoint(arrowWidth, finalBearing - bearing)
