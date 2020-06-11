@@ -6015,7 +6015,7 @@
   },
   {
     "sidc": "G*O*B-----*****",
-    "geometry": "bearing-line",
+    "geometry": "line-2pt",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "OTHER",

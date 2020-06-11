@@ -158,6 +158,7 @@ export const labels = {
   'G*G*PF----': [topT],
   'G*G*SLH---': [phaseLine('HOLDING LINE')],
   'G*G*SLR---': [phaseLine('RL')],
+  'G*O*B-----': [middleTitle('B')],
   'G*O*BA----': [middleTitle('A')],
   'G*O*BE----': [middleTitle('E')],
   'G*O*BO----': [middleTitle('O')],
