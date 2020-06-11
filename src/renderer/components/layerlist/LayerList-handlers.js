@@ -8,7 +8,7 @@ const addFeatures = (next, features) =>
     const featureId = Feature.id(feature)
     next[layerId].features[featureId] = {
       id: featureId,
-      name: feature.get('t') || 'N/A'
+      name: feature.get('name') || feature.get('t') || 'N/A'
     }
   })
 
@@ -76,7 +76,7 @@ export default {
     const layer = next[URI.layerId(featureId)]
     layer.features[featureId] = {
       ...layer.features[featureId],
-      name: properties.t || 'N/A'
+      name: properties.name || properties.t || 'N/A'
     }
   }),
 

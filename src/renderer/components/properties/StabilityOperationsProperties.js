@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
-import { Paper, TextField } from '@material-ui/core'
+import { Paper } from '@material-ui/core'
 import EchelonProperty from './EchelonProperty'
 import ModifierProperty from './ModifierProperty'
 import HostilityProperty from './HostilityProperty'
@@ -37,7 +37,7 @@ const StabilityOperationsProperties = props => {
       className={classes.paper}
       elevation={4}
     >
-      <TextField label='Name' className={classes.twoColumns}/>
+      <TextProperty label='Name' property='name' properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
       <TextProperty label='Unique Designation' property='t' properties={props.properties} onCommit={props.update}/>
       <TextProperty label='Higher Formation' property='m' properties={props.properties} onCommit={props.update}/>
       <TextProperty label='Speed' property='z' properties={props.properties} onCommit={props.update}/>
