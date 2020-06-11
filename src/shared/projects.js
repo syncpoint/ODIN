@@ -25,9 +25,16 @@ const exists = projectPath => fs.existsSync(projectPath)
 const createProject = async (name = uuid()) => {
   const projectPath = path.join(ODIN_PROJECTS, name)
   if (exists(projectPath)) return
+
   /* create subfolder structure, too */
   await fs.promises.mkdir(path.join(projectPath, ODIN_LAYERS), { recursive: true })
   await fs.promises.writeFile(path.join(projectPath, ODIN_METADATA), JSON.stringify(ODIN_DEFAULT_METADATA()))
+
+  /* create empty default layer */
+  const contents = '{"type":"FeatureCollection","features":[]}'
+  const layerPath = path.join(projectPath, ODIN_LAYERS, 'Default Layer.json') // TODO: i18n
+  await fs.promises.writeFile(layerPath, contents)
+
   return projectPath
 }
 

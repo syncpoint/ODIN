@@ -1,6 +1,7 @@
 import { loadPreferences, writePreferences } from './io'
 
 const DEFAULT_PREFERENCES = {
+  activeLayer: 'Default Layer',
   viewport: {
     zoom: 10.29344451062811,
     center: [
