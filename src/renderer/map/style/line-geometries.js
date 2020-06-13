@@ -1,28 +1,17 @@
 import * as geom from 'ol/geom'
-import { getTransform } from 'ol/proj'
 import * as R from 'ramda'
 import LatLon from 'geodesy/latlon-spherical.js'
-import { K, T } from '../../../shared/combinators'
+import { K } from '../../../shared/combinators'
 import defaultStyle from './default-style'
+import {
+  bearings,
+  translateLine,
+  distance,
+  coordinates,
+  toLatLon,
+  fromLatLon
+} from './geodesy'
 
-const toEPSG4326 = getTransform('EPSG:3857', 'EPSG:4326')
-const toEPSG3857 = getTransform('EPSG:4326', 'EPSG:3857')
-const toLatLon = p => T(toEPSG4326(p))(([lon, lat]) => new LatLon(lat, lon))
-const fromLatLon = ({ lat, lon }) => toEPSG3857([lon, lat])
-
-const bearings = ([a, b]) => ([a.initialBearingTo(b), a.finalBearingTo(b)])
-const distance = ([a, b]) => a.distanceTo(b)
-
-const destinationPoint =
-  (distance, bearing) => ([point, deltaBearing]) =>
-    point.destinationPoint(distance, deltaBearing + bearing)
-
-const translateLine =
-  (distance, bearing) => line =>
-    R.zip(line, bearings(line))
-      .map(destinationPoint(distance, bearing))
-
-const coordinates = feature => feature.getGeometry().getCoordinates()
 
 const simpleArrowEnd = (line, resolution, widthFactor = 15, bearing = 145) => {
   const [finalBearing] = bearings(line).reverse()

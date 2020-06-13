@@ -6,6 +6,7 @@ import selection from '../../selection'
 import defaultStyle from './default-style'
 import { polygonStyle } from './polygon-style'
 import { lineStyle } from './line-style'
+import { fanStyle } from './fan-style'
 import { featureGeometry } from '../../components/feature-descriptors'
 
 /**
@@ -86,13 +87,19 @@ const symbolStyle = (feature, resolution) => {
 
 const geometryType = feature => {
   const type = feature.getGeometry().getType()
+  const specificType = featureGeometry(feature.get('sidc'))
 
   /* eslint-disable camelcase */
   switch (type) {
     case 'LineString': {
-      const specificType = featureGeometry(feature.get('sidc'))
       switch (specificType) {
         case 'line-2pt': return 'Line'
+        default: return type
+      }
+    }
+    case 'Point': {
+      switch (specificType) {
+        case 'fan': return 'Fan'
         default: return type
       }
     }
@@ -110,6 +117,7 @@ export default (feature, resolution) => {
     [R.equals('Polygon'), R.always(polygonStyle)],
     [R.equals('Line'), R.always(lineStyle)],
     [R.equals('LineString'), R.always(lineStyle)],
+    [R.equals('Fan'), R.always(fanStyle)],
     [R.T, R.always(defaultStyle)]
   ])
 
@@ -118,7 +126,7 @@ export default (feature, resolution) => {
   const style = provider(type)(feature, resolution)
   const selected = selection.isSelected(feature.getId())
   const hidden = feature.get('hidden')
-  const cacheDisabled = ['Line'].includes(type)
+  const cacheDisabled = ['Line', 'Fan'].includes(type)
   if (!cacheDisabled && !selected && !hidden) feature.setStyle(style)
 
   return style
