@@ -40,7 +40,6 @@ const closedArrowEnd = (line, resolution, widthFactor = 10, bearing = 145) => {
   return [PA, line[1], PB, I, PA]
 }
 
-
 const geometries = {}
 geometries['G*G*GAS---'] = (feature, resolution) => {
   // TODO: check geometry type (Point)

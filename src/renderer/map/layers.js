@@ -1,3 +1,4 @@
+/* eslint-disable */
 import * as R from 'ramda'
 
 import Collection from 'ol/Collection'
@@ -15,7 +16,7 @@ import Feature from '../project/Feature'
 import URI from '../project/URI'
 import selection from '../selection'
 import { featureGeometry } from '../components/feature-descriptors'
-
+import { ModifyFan } from './interaction/ModifyFan'
 
 // --
 // SECTION: Module-global (utility) functions.
@@ -306,7 +307,7 @@ const createSelect = () => {
 const createModify = () => {
   let initial = {} // Cloned geometries BEFORE modify.
 
-  const interaction = new Modify({
+  const interaction = new ModifyFan({
     hitTolerance,
     features: selectedFeatures,
     // Allow translate while editing (with shift key pressed):
@@ -328,18 +329,6 @@ const createModify = () => {
   interaction.on('modifyend', ({ features }) => {
     inputLayers.updateGeometries(initial, features.getArray())
   })
-
-  // Activate Modify interaction only for single-select:
-  const activate = () => {
-    const features = selection.selected(URI.isFeatureId)
-      .map(featureById)
-      .filter(Feature.showing)
-
-    interaction.setActive(features.length === 1)
-  }
-
-  selection.on('selected', activate)
-  selection.on('deselected', activate)
 
   return interaction
 }
@@ -449,6 +438,7 @@ const eventHandlers = {
 export default map => {
   const addLayer = map.addLayer.bind(map)
   const addInteraction = map.addInteraction.bind(map)
+  const removeInteraction = map.removeInteraction.bind(map)
 
   layers = createLayers()
   Object.values(layers).forEach(addLayer)
@@ -459,8 +449,30 @@ export default map => {
 
   addInteraction(createSelect())
   addInteraction(createTranslate())
-  addInteraction(createModify())
   addInteraction(createBoxSelect())
+
+  const singleton = (attach, detach) => {
+    let current
+    return next => {
+      if (current && next !== current) detach(current)
+      if (next !== null) attach(next)
+      current = next
+    }
+  }
+
+  const modify = singleton(addInteraction, removeInteraction)
+
+  const activateModify = () => {
+    // Activate Modify interaction only for single-select:
+    const features = selection.selected(URI.isFeatureId)
+      .map(featureById)
+      .filter(Feature.showing)
+
+    modify(features.length === 1 ? createModify() : null)
+  }
+
+  selection.on('selected', activateModify)
+  selection.on('deselected', activateModify)
 
   inputLayers.register(event => (eventHandlers[event.type] || noop)(event))
 }
