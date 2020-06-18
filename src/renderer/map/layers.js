@@ -5,7 +5,7 @@ import Collection from 'ol/Collection'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
 import * as ol from 'ol'
-import { Select, Modify, Translate, DragBox } from 'ol/interaction'
+import { Select, Translate, DragBox } from 'ol/interaction'
 import { click, primaryAction, platformModifierKeyOnly } from 'ol/events/condition'
 import Style from 'ol/style/Style'
 
@@ -448,7 +448,7 @@ export default map => {
   addLayer(selectionLayer)
 
   addInteraction(createSelect())
-  addInteraction(createTranslate())
+  // addInteraction(createTranslate())
   addInteraction(createBoxSelect())
 
   const singleton = (attach, detach) => {

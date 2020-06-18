@@ -21,3 +21,8 @@ export const translateLine =
       .map(destinationPoint(distance, bearing))
 
 export const coordinates = feature => feature.getGeometry().getCoordinates()
+
+export const wrap360 = degrees => {
+  if (degrees >= 0 && degrees < 360) return degrees
+  return (degrees % 360 + 360) % 360 // sawtooth wave p:360, a:360
+}
