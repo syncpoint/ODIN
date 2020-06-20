@@ -1,12 +1,33 @@
+import * as R from 'ramda'
 import { Interaction } from 'ol/interaction'
 import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import Collection from 'ol/Collection'
-import Point from 'ol/geom/Point'
+import * as geom from 'ol/geom'
 import Feature from 'ol/Feature'
 import { distance } from 'ol/coordinate'
-import { Fill, Stroke, Circle, Style } from 'ol/style'
+import * as style from 'ol/style'
+import Event from 'ol/events/Event'
 import { coordinates, toLatLon, fromLatLon, wrap360 } from '../style/geodesy'
+
+/**
+ * Modify event with same interface as ol/interaction/Modify.
+ */
+
+const MODIFYSTART = 'modifystart'
+const MODIFYEND = 'modifyend'
+
+class ModifyEvent extends Event {
+  constructor (type, features, event) {
+    super(type)
+    this.features = features
+    this.mapBrowserEvent = event
+  }
+}
+
+/**
+ * Control handle styles.
+ */
 
 const white = [255, 255, 255, 1]
 const blue = [0, 153, 255, 1]
@@ -14,218 +35,227 @@ const red = [255, 0, 0, 1]
 const width = 3
 
 const pointStyle = fillColor => [
-  new Style({
-    image: new Circle({
+  new style.Style({
+    image: new style.Circle({
       radius: width * 2,
-      fill: new Fill({ color: fillColor }),
-      stroke: new Stroke({ color: white, width: width / 2 })
+      fill: new style.Fill({ color: fillColor }),
+      stroke: new style.Stroke({ color: white, width: width / 2 })
     }),
     zIndex: Infinity
   })
 ]
 
-const sourceFeatures = source => new Collection(source.getFeatures())
+/**
+ * point :: [number, number] -> ol/geom/Point
+ * EPSG:3857 point geometry from EPSG:4326 coordinate.
+ */
+const point = latLon => new geom.Point(fromLatLon(latLon))
 
+/**
+ * createFrame :: ol/Feature -> Frame
+ * Immutable geometry parameters (control points, angles and ranges).
+ */
 const createFrame = feature => {
+  const bearingLine = (A, B) => [A.initialBearingTo(B), A.distanceTo(B)]
   const create = current => {
-    const { center, orientation, size, rangeO, rangeS } = current
-    const normalizedOrientation = wrap360(Number.parseFloat(orientation))
-    const normalizedSize = wrap360(Number.parseFloat(size))
+    const { C, angleA, rangeA, angleB, rangeB } = current
+    const normA = wrap360(Number.parseFloat(angleA))
+    const normB = wrap360(Number.parseFloat(angleB))
+    const A = C.destinationPoint(rangeA, normA)
+    const B = C.destinationPoint(rangeB, normB)
 
     return {
-      copy: properties => create({ ...current, ...properties }),
-      C: center,
-      O: center.destinationPoint(rangeO, normalizedOrientation),
-      S: center.destinationPoint(rangeS, normalizedOrientation + normalizedSize),
-      orientation: normalizedOrientation,
-      size: normalizedSize,
-      rangeO,
-      rangeS
+      points: [C, A, B],
+      angleA: normA,
+      rangeA,
+      angleB: normB,
+      rangeB,
+      bearingLine: X => bearingLine(C, X),
+      copy: properties => create({ ...current, ...properties })
     }
   }
 
-  const {
-    fan_area_orient_angle: orientation,
-    fan_area_sctr_size_angle: size,
-    fan_area_mnm_range_dim: rangeO,
-    fan_area_max_range_dim: rangeS
-  } = feature.getProperties()
-
-  const center = toLatLon(coordinates(feature))
-  return create({ center, orientation, size, rangeO, rangeS })
+  const [C, A, B] = coordinates(feature).map(toLatLon)
+  const [angleA, rangeA] = bearingLine(C, A)
+  const [angleB, rangeB] = bearingLine(C, B)
+  return create({ C, angleA, rangeA, angleB, rangeB })
 }
 
-const controlVertexes = feature => {
-  let frame = createFrame(feature)
+/**
+ * handle :: [ol/geom/Geometry, fn] -> ol/Feature
+ */
+const handle = ([geometry, pointerdrag]) =>
+  new Feature({ geometry, pointerdrag })
 
-  const handle = (geometry, drag) => {
-    const feature = new Feature(geometry)
-    feature.set('pointerdrag', drag)
-    return feature
+/**
+ * handledrag :: [(Frame, ol/MapBrowserEvent) -> Frame]
+ * Handle pointer drag event handlers.
+ */
+const handledrag = [
+  (frame, { coordinate }) => {
+    return frame.copy({ C: toLatLon(coordinate) })
+  },
+  (frame, { originalEvent, coordinate }) => {
+    const [angleA, rangeA] = frame.bearingLine(toLatLon(coordinate))
+    const rangeB = originalEvent.ctrlKey ? rangeA : frame.rangeB
+    return frame.copy({ angleA, rangeA, rangeB })
+  },
+  (frame, { originalEvent, coordinate }) => {
+    const [angleB, rangeB] = frame.bearingLine(toLatLon(coordinate))
+    const rangeA = originalEvent.ctrlKey ? rangeB : frame.rangeA
+    return frame.copy({ rangeA, angleB, rangeB })
   }
+]
 
-  // Update feature and handles from next frame.
-  const update = nextFrame => {
-    frame = nextFrame
-    handles.C.setGeometry(new Point(fromLatLon(frame.C)))
-    handles.O.setGeometry(new Point(fromLatLon(frame.O)))
-    handles.S.setGeometry(new Point(fromLatLon(frame.S)))
-    feature.setGeometry(new Point(fromLatLon(frame.C)))
-    feature.set('fan_area_orient_angle', frame.orientation)
-    feature.set('fan_area_sctr_size_angle', frame.size)
-    feature.set('fan_area_mnm_range_dim', frame.rangeO)
-    feature.set('fan_area_max_range_dim', frame.rangeS)
-  }
-
-  // Named handles (vertexes), C = Center, O = Orientation, S = Size.
-  const handles = {
-    C: handle(new Point(fromLatLon(frame.C)), event => {
-      update(frame.copy({ center: toLatLon(event.coordinate) }))
-    }),
-    O: handle(new Point(fromLatLon(frame.O)), event => {
-      const { originalEvent } = event
-      const O = toLatLon(event.coordinate)
-      const bearing = frame.C.initialBearingTo(O)
-      const distance = frame.C.distanceTo(O)
-
-      const rangeS = originalEvent.ctrlKey
-        ? distance
-        : frame.rangeS
-
-      update(frame.copy({ orientation: bearing, rangeS, rangeO: distance }))
-    }),
-    S: handle(new Point(fromLatLon(frame.S)), event => {
-      const { originalEvent } = event
-      const S = toLatLon(event.coordinate)
-      const bearing = frame.C.initialBearingTo(S)
-      const distance = frame.C.distanceTo(S)
-
-      const rangeO = originalEvent.ctrlKey
-        ? distance
-        : frame.rangeO
-
-      update(frame.copy({ size: bearing - frame.orientation, rangeO, rangeS: distance }))
-    })
-  }
-
-  return Object.values(handles)
-}
+/**
+ * controlFeatures :: Frame -> [ol/Feature]
+ */
+const controlFeatures = frame =>
+  R.zip(frame.points.map(point), handledrag).map(handle)
 
 
 const DONT_PROPAGATE = false
 const PROPAGATE = true
 
-// Available events:
-//   click, singleclick, dblclick,
-//   pointerdown, pointerup,
-//   pointermove, pointerdrag.
-//   wheel
-
-const sortByDistance = (a, b) => a.get('distance') - b.get('distance')
-
-const candidateVertex = (event, source, pixelTolerance) => {
-  const { map, pixel } = event
-  source.forEachFeature(feature => {
-    const vertexCoodinate = feature.getGeometry().getCoordinates()
+/**
+ * candidate :: (ol/MapBrowserEvent, [ol/Feature], number) -> ol/Feature
+ * Handle under pointer (within given pixel tolerance).
+ */
+const candidate = ({ map, pixel }, [...handles], pixelTolerance) => {
+  handles.forEach(feature => {
+    const vertexCoodinate = coordinates(feature)
     const vertexPixel = map.getPixelFromCoordinate(vertexCoodinate)
     feature.set('distance', distance(pixel, vertexPixel))
   })
 
-  const candidate = source.getFeatures().sort(sortByDistance)[0]
+  const sortByDistance = (a, b) => a.get('distance') - b.get('distance')
+  const candidate = handles.sort(sortByDistance)[0]
   return candidate.get('distance') <= pixelTolerance ? candidate : null
 }
 
+// Behavior :: { string -> (ol/MapBrowserEvent -> boolean)}
+// DFA states (behaviors).
+// Note: Event handlers are bound to modify interaction instance (execution context).
 
-const pointerUp = source => {
-  source.forEachFeature(feature => feature.setStyle(pointStyle(red)))
+/**
+ * pointerUp :: [ol/Feature] -> Behavior
+ * Detect focused handle under pointer.
+ */
+const pointerUp = handles => {
+  handles.forEach(feature => feature.setStyle(pointStyle(red)))
 
   return {
     pointermove (event) {
-      const candidate = candidateVertex(event, source, this.pixelTolerance)
-      if (!candidate) return PROPAGATE
-      this.become(focusVertex(source, candidate))
-      return DONT_PROPAGATE
+      const handle = candidate(event, handles, this.pixelTolerance)
+      return handle
+        ? this.become(focusHandle(handles, handle), DONT_PROPAGATE)
+        : PROPAGATE
     }
   }
 }
 
-const focusVertex = (source, vertex) => {
-  vertex.setStyle(pointStyle(blue))
+/**
+ * focusHandle :: ([ol/Feature], ol/Feature) -> Behavior
+ * Initiate drag sequence for focused handle on pointer down.
+ */
+const focusHandle = (handles, handle) => {
+  handle.setStyle(pointStyle(blue))
 
   return {
     pointermove (event) {
-      const candidate = candidateVertex(event, source, this.pixelTolerance)
-      if (!candidate) {
-        this.become(pointerUp(source))
-        return PROPAGATE
-      }
-
-      this.become(focusVertex(source, candidate))
-      return DONT_PROPAGATE
+      const handle = candidate(event, handles, this.pixelTolerance)
+      return handle
+        ? this.become(focusHandle(handles, handle), DONT_PROPAGATE)
+        : this.become(pointerUp(handles), PROPAGATE)
     },
 
     pointerdown () {
-      this.become(dragVertex(source, vertex))
+      return this.become(dragHandle(handles, handle), DONT_PROPAGATE)
+    }
+  }
+}
+
+/**
+ * dragHandle :: ([ol/Feature], ol/Feature) -> Behavior
+ * Delegate point drag to event handler of control handle,
+ * thus updating geometry frame.
+ */
+const dragHandle = (handles, handle) => {
+  const pointerdrag = handle.get('pointerdrag')
+
+  return {
+    pointerup (event) {
+      // Dispatch MODIFYEND.
+      delete this.modified
+      const modifyEvent = new ModifyEvent(MODIFYEND, this.features, event)
+      this.dispatchEvent(modifyEvent)
+      this.become(focusHandle(handles, handle))
+      return DONT_PROPAGATE
+    },
+
+    pointerdrag (event) {
+      // Delegate event and update frame, feature and handle geometries.
+      this.frame = pointerdrag(this.frame, event)
+      this.frame.points.forEach((p, i) => this.handles[i].setGeometry(point(p)))
+      const coordinates = this.frame.points.map(fromLatLon)
+      this.feature.getGeometry().setCoordinates(coordinates)
+
+      // Dispatch MODIFYSTART once.
+      if (!this.modified) {
+        this.modified = true
+        const modifyEvent = new ModifyEvent(MODIFYSTART, this.features, event)
+        this.dispatchEvent(modifyEvent)
+      }
+
       return DONT_PROPAGATE
     }
   }
 }
 
-const dragVertex = (source, vertex) => ({
-  pointerup () {
-    this.become(focusVertex(source, vertex))
-    return DONT_PROPAGATE
-  },
+/** Extract pixel tolerance from options (default: 10) */
+const pixelTolerance = options =>
+  options.pixelTolerance !== undefined
+    ? options.pixelTolerance
+    : 10
 
-  pointerdrag (event) {
-    vertex.get('pointerdrag')(event)
-    return DONT_PROPAGATE
-  }
-})
+/** Extract feature collection from options source or collection. */
+const featureCollection = options => {
+  const features = options.source
+    ? new Collection(options.source.getFeatures())
+    : options.features
 
+  // We expect exactly one feature (of correct type).
+  if (!features) throw new Error('The modify interaction requires features or a source')
+  if (features.getLength() !== 1) throw new Error('The modify interaction requires exactly one feature')
+  return features
+}
+
+/**
+ * Modify interaction specific to fan areas.
+ * Note: Interaction is implemented as DFA.
+ */
 export class ModifyFan extends Interaction {
 
   constructor (options) {
     super(options)
 
-    /**
-     * @type {number}
-     * @private
-     */
-    this.pixelTolerance = options.pixelTolerance !== undefined
-      ? options.pixelTolerance
-      : 10
-
-
-    // We expect exactly one feature (of correct type).
-
-    const features = options.source ? sourceFeatures(options.source) : options.features
-
-    if (!features) {
-      throw new Error('The modify interaction requires features or a source')
-    }
-
-    if (features.getLength() !== 1) {
-      throw new Error('The modify interaction requires exactly one feature')
-    }
-
-    const feature = features.getArray()[0]
-
+    this.pixelTolerance = pixelTolerance(options)
+    this.features = featureCollection(options)
+    this.feature = this.features.getArray()[0]
 
     // Setup dedicated vector layer for control features.
+    this.frame = createFrame(this.feature)
+    this.handles = controlFeatures(this.frame)
 
     this.overlay = new VectorLayer({
       source: new VectorSource({
-        features: controlVertexes(feature),
+        features: this.handles,
         useSpatialIndex: false, // default: true
         wrapX: !!options.wrapX
-      }),
-      // style: options.style ? options.style : getDefaultStyleFunction(),
-      updateWhileAnimating: false, // default: false
-      updateWhileInteracting: false // default: false
+      })
     })
 
-    this.behavior = pointerUp(this.overlay.getSource())
+    this.behavior = pointerUp(this.handles)
   }
 
   /**
@@ -240,15 +270,17 @@ export class ModifyFan extends Interaction {
     return handler.bind(this)(event)
   }
 
-  /**
-   * @inheritDoc
-   */
   setMap (map) {
     this.overlay.setMap(map)
     super.setMap(map)
   }
 
-  become (behavior) {
+  /**
+   * become :: (Behavior, boolean) -> boolean
+   * Set new current behavior.
+   */
+  become (behavior, result) {
     this.behavior = behavior
+    return result
   }
 }

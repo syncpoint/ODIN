@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as geom from 'ol/geom'
 import LatLon from 'geodesy/latlon-spherical.js'
 import defaultStyle from './default-style'
@@ -7,8 +6,6 @@ import { parameterized } from '../../components/SIDC'
 
 import {
   bearings,
-  translateLine,
-  distance,
   coordinates,
   toLatLon,
   fromLatLon
@@ -42,20 +39,10 @@ const closedArrowEnd = (line, resolution, widthFactor = 10, bearing = 145) => {
 
 const geometries = {}
 geometries['G*G*GAS---'] = (feature, resolution) => {
-  // TODO: check geometry type (Point)
-  const {
-    fan_area_orient_angle: alpha,
-    fan_area_sctr_size_angle: deltaAlpha,
-    fan_area_mnm_range_dim: rangeA,
-    fan_area_max_range_dim: rangeB
-  } = feature.getProperties()
-
-  const C = toLatLon(coordinates(feature))
-  const A = C.destinationPoint(rangeA, alpha)
-  const B = C.destinationPoint(rangeB, alpha + deltaAlpha)
-  const arrowA = closedArrowEnd([C, A], resolution)
-  const arrowB = closedArrowEnd([C, B], resolution)
-  const lines = [[C, arrowA[3]], [C, arrowB[3]], arrowA, arrowB]
+  const [C, O, S] = coordinates(feature).map(toLatLon)
+  const arrowO = closedArrowEnd([C, O], resolution)
+  const arrowS = closedArrowEnd([C, S], resolution)
+  const lines = [[C, arrowO[3]], [C, arrowS[3]], arrowO, arrowS]
   return lineStyle(feature, lines)
 }
 

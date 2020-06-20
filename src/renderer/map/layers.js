@@ -5,7 +5,7 @@ import Collection from 'ol/Collection'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
 import * as ol from 'ol'
-import { Select, Translate, DragBox } from 'ol/interaction'
+import { Select, Modify, Translate, DragBox } from 'ol/interaction'
 import { click, primaryAction, platformModifierKeyOnly } from 'ol/events/condition'
 import Style from 'ol/style/Style'
 
@@ -210,7 +210,7 @@ const replaceSelection = features => {
 }
 
 /**
- * removeSelection :: [Feature] => unit
+ * removeSelection :: [ol/Feature] => unit
  * Update selection and remove features from collection.
  */
 const removeSelection = features => {

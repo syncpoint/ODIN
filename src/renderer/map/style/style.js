@@ -97,12 +97,6 @@ const geometryType = feature => {
         default: return type
       }
     }
-    case 'Point': {
-      switch (specificType) {
-        case 'fan': return 'Fan'
-        default: return type
-      }
-    }
     default: return type
   }
 }
@@ -117,17 +111,18 @@ export default (feature, resolution) => {
     [R.equals('Polygon'), R.always(polygonStyle)],
     [R.equals('Line'), R.always(lineStyle)],
     [R.equals('LineString'), R.always(lineStyle)],
-    [R.equals('Fan'), R.always(fanStyle)],
+    [R.equals('MultiPoint'), R.always(fanStyle)],
     [R.T, R.always(defaultStyle)]
   ])
 
   // Only cache style when not selected and not hidden.
   const type = geometryType(feature)
   const style = provider(type)(feature, resolution)
-  const selected = selection.isSelected(feature.getId())
-  const hidden = feature.get('hidden')
-  const cacheDisabled = ['Line', 'Fan'].includes(type)
-  if (!cacheDisabled && !selected && !hidden) feature.setStyle(style)
+
+  // const selected = selection.isSelected(feature.getId())
+  // const hidden = feature.get('hidden')
+  // const cacheDisabled = ['Line', 'Fan'].includes(type)
+  // if (!cacheDisabled && !selected && !hidden) feature.setStyle(style)
 
   return style
 }
