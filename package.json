@@ -77,6 +77,7 @@
     "geographiclib": "^1.50.0",
     "i18next": "^19.3.4",
     "immutable": "^4.0.0-rc.12",
+    "lodash.throttle": "^4.1.1",
     "luxon": "^1.22.2",
     "mathjs": "^6.6.2",
     "mdi-material-ui": "^6.13.0",
