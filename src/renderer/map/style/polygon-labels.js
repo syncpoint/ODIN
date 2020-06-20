@@ -90,10 +90,7 @@ const axisLabels = (axes, options = {}) => lines => feature => {
 
   return axes
     .map(axis => ({ text, geometry: placements[axis], options }))
-    .filter(({ geometry }) => {
-      if (!geometry) console.log('no geometry', feature)
-      return geometry
-    })
+    .filter(({ geometry }) => geometry)
     .map(textStyle)
 }
 

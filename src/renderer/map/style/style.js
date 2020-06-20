@@ -7,7 +7,6 @@ import defaultStyle from './default-style'
 import { polygonStyle } from './polygon-style'
 import { lineStyle } from './line-style'
 import { fanStyle } from './fan-style'
-import { featureGeometry } from '../../components/feature-descriptors'
 
 /**
  * normalizeSIDC :: String -> String
@@ -85,22 +84,6 @@ const symbolStyle = (feature, resolution) => {
 }
 
 
-const geometryType = feature => {
-  const type = feature.getGeometry().getType()
-  const specificType = featureGeometry(feature.get('sidc'))
-
-  /* eslint-disable camelcase */
-  switch (type) {
-    case 'LineString': {
-      switch (specificType) {
-        case 'line-2pt': return 'Line'
-        default: return type
-      }
-    }
-    default: return type
-  }
-}
-
 /**
  * FEATURE STYLE FUNCTION.
  */
@@ -109,20 +92,11 @@ export default (feature, resolution) => {
   const provider = R.cond([
     [R.equals('Point'), R.always(symbolStyle)],
     [R.equals('Polygon'), R.always(polygonStyle)],
-    [R.equals('Line'), R.always(lineStyle)],
     [R.equals('LineString'), R.always(lineStyle)],
     [R.equals('MultiPoint'), R.always(fanStyle)],
     [R.T, R.always(defaultStyle)]
   ])
 
-  // Only cache style when not selected and not hidden.
-  const type = geometryType(feature)
-  const style = provider(type)(feature, resolution)
-
-  // const selected = selection.isSelected(feature.getId())
-  // const hidden = feature.get('hidden')
-  // const cacheDisabled = ['Line', 'Fan'].includes(type)
-  // if (!cacheDisabled && !selected && !hidden) feature.setStyle(style)
-
-  return style
+  const type = feature.getGeometry().getType()
+  return provider(type)(feature, resolution)
 }

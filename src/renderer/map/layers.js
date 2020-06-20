@@ -307,7 +307,13 @@ const createSelect = () => {
 const createModify = () => {
   let initial = {} // Cloned geometries BEFORE modify.
 
-  const interaction = new ModifyFan({
+  // For now, fan areas are the only MultiPoint geometries.
+  const featureType = selectedFeatures.getArray()[0].getGeometry().getType()
+  const ctor = options => featureType === 'MultiPoint'
+    ? new ModifyFan(options)
+    : new Modify(options)
+
+  const interaction = ctor({
     hitTolerance,
     features: selectedFeatures,
     // Allow translate while editing (with shift key pressed):
@@ -448,7 +454,7 @@ export default map => {
   addLayer(selectionLayer)
 
   addInteraction(createSelect())
-  // addInteraction(createTranslate())
+  addInteraction(createTranslate())
   addInteraction(createBoxSelect())
 
   const singleton = (attach, detach) => {
