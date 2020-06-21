@@ -305,11 +305,12 @@ const createSelect = () => {
  * Modify interaction.
  */
 const createModify = () => {
+  const feature = selectedFeatures.getArray()[0]
+  const geometry = featureGeometry(feature.get('sidc'))
+  console.log(geometry)
   let initial = {} // Cloned geometries BEFORE modify.
 
-  // For now, fan areas are the only MultiPoint geometries.
-  const featureType = selectedFeatures.getArray()[0].getGeometry().getType()
-  const ctor = options => featureType === 'MultiPoint'
+  const ctor = options => geometry.layout === 'fan'
     ? new ModifyFan(options)
     : new Modify(options)
 
@@ -318,14 +319,8 @@ const createModify = () => {
     features: selectedFeatures,
     // Allow translate while editing (with shift key pressed):
     condition: conjunction(primaryAction, noShiftKey),
-    insertVertexCondition: () => {
-      const [geometry] = selection.selected(URI.isFeatureId)
-        .map(featureById)
-        .map(feature => feature.get('sidc'))
-        .map(sidc => featureGeometry(sidc))
-
-      return !['line-2pt'].includes(geometry)
-    }
+    insertVertexCondition: () => !geometry.maxPoints,
+    ...geometry
   })
 
   interaction.on('modifystart', ({ features }) => {

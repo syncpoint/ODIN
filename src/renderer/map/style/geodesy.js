@@ -10,6 +10,7 @@ export const fromLatLon = ({ lat, lon }) => toEPSG3857([lon, lat])
 
 export const bearings = ([a, b]) => ([a.initialBearingTo(b), a.finalBearingTo(b)])
 export const distance = ([a, b]) => a.distanceTo(b)
+export const bearingLine = ([a, b]) => [a.initialBearingTo(b), a.distanceTo(b)]
 
 export const destinationPoint =
   (distance, bearing) => ([point, deltaBearing]) =>

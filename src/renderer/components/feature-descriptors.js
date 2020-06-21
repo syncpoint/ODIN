@@ -8,7 +8,10 @@ const lookup = descriptors.reduce((acc, descriptor) => K(acc)(acc => {
   acc[sidc] = {
     sidc,
     class: descriptor.class,
-    geometry: descriptor.geometry,
+    geometry: {
+      type: descriptor.geometry,
+      ...descriptor.parameters
+    },
     hierarchy: R.drop(1, descriptor.hierarchy).join(', ')
   }
 }), {})
@@ -37,7 +40,7 @@ export const featureGeometry = sidc => {
   return feature ? feature.geometry : undefined
 }
 
-const supportedGeometries = ['point', 'polygon', 'line', 'line-2pt']
+const supportedGeometries = ['Point', 'Polygon', 'Line', 'MultiPoint']
 
 /**
  * featureDescriptors :: () => [object]

@@ -8,7 +8,7 @@ import Feature from 'ol/Feature'
 import { distance } from 'ol/coordinate'
 import * as style from 'ol/style'
 import Event from 'ol/events/Event'
-import { coordinates, toLatLon, fromLatLon, wrap360 } from '../style/geodesy'
+import * as G from '../style/geodesy'
 
 /**
  * Modify event with same interface as ol/interaction/Modify.
@@ -49,36 +49,59 @@ const pointStyle = fillColor => [
  * point :: [number, number] -> ol/geom/Point
  * EPSG:3857 point geometry from EPSG:4326 coordinate.
  */
-const point = latLon => new geom.Point(fromLatLon(latLon))
+const point = latLon => new geom.Point(G.fromLatLon(latLon))
+
+const create2PointFrame = current => {
+  const { C, angleA, rangeA, angleB } = current
+  const normA = G.wrap360(Number.parseFloat(angleA))
+  const A = C.destinationPoint(rangeA, normA)
+
+  return {
+    points: [C, A],
+    angleA: normA,
+    rangeA,
+    angleB,
+    bearingLine: X => G.bearingLine([C, X]),
+    copy: properties => create2PointFrame({ ...current, ...properties })
+  }
+}
+
+const create3PointFrame = current => {
+  const { C, angleA, rangeA, angleB, rangeB } = current
+  const normA = G.wrap360(Number.parseFloat(angleA))
+  const normB = G.wrap360(Number.parseFloat(angleB))
+  const A = C.destinationPoint(rangeA, normA)
+  const B = C.destinationPoint(rangeB, normB)
+
+  return {
+    points: [C, A, B],
+    angleA: normA,
+    rangeA,
+    angleB: normB,
+    rangeB,
+    bearingLine: X => G.bearingLine([C, X]),
+    copy: properties => create3PointFrame({ ...current, ...properties })
+  }
+}
 
 /**
  * createFrame :: ol/Feature -> Frame
  * Immutable geometry parameters (control points, angles and ranges).
  */
-const createFrame = feature => {
-  const bearingLine = (A, B) => [A.initialBearingTo(B), A.distanceTo(B)]
-  const create = current => {
-    const { C, angleA, rangeA, angleB, rangeB } = current
-    const normA = wrap360(Number.parseFloat(angleA))
-    const normB = wrap360(Number.parseFloat(angleB))
-    const A = C.destinationPoint(rangeA, normA)
-    const B = C.destinationPoint(rangeB, normB)
+const createFrame = (feature, options) => {
+  const maxPoints = Number.parseInt(options.maxPoints)
 
-    return {
-      points: [C, A, B],
-      angleA: normA,
-      rangeA,
-      angleB: normB,
-      rangeB,
-      bearingLine: X => bearingLine(C, X),
-      copy: properties => create({ ...current, ...properties })
-    }
+  if (maxPoints === 3) {
+    const [C, A, B] = G.coordinates(feature).map(G.toLatLon)
+    const [angleA, rangeA] = G.bearingLine([C, A])
+    const [angleB, rangeB] = G.bearingLine([C, B])
+    return create3PointFrame({ C, angleA, rangeA, angleB, rangeB })
+  } else {
+    const [C, A] = G.coordinates(feature).map(G.toLatLon)
+    const [angleA, rangeA] = G.bearingLine([C, A])
+    const angleB = Number.parseInt(options.arc)
+    return create2PointFrame({ C, angleA, rangeA, angleB })
   }
-
-  const [C, A, B] = coordinates(feature).map(toLatLon)
-  const [angleA, rangeA] = bearingLine(C, A)
-  const [angleB, rangeB] = bearingLine(C, B)
-  return create({ C, angleA, rangeA, angleB, rangeB })
 }
 
 /**
@@ -93,15 +116,15 @@ const handle = ([geometry, pointerdrag]) =>
  */
 const handledrag = [
   (frame, { coordinate }) => {
-    return frame.copy({ C: toLatLon(coordinate) })
+    return frame.copy({ C: G.toLatLon(coordinate) })
   },
   (frame, { originalEvent, coordinate }) => {
-    const [angleA, rangeA] = frame.bearingLine(toLatLon(coordinate))
+    const [angleA, rangeA] = frame.bearingLine(G.toLatLon(coordinate))
     const rangeB = originalEvent.ctrlKey ? rangeA : frame.rangeB
     return frame.copy({ angleA, rangeA, rangeB })
   },
   (frame, { originalEvent, coordinate }) => {
-    const [angleB, rangeB] = frame.bearingLine(toLatLon(coordinate))
+    const [angleB, rangeB] = frame.bearingLine(G.toLatLon(coordinate))
     const rangeA = originalEvent.ctrlKey ? rangeB : frame.rangeA
     return frame.copy({ rangeA, angleB, rangeB })
   }
@@ -123,7 +146,7 @@ const PROPAGATE = true
  */
 const candidate = ({ map, pixel }, [...handles], pixelTolerance) => {
   handles.forEach(feature => {
-    const vertexCoodinate = coordinates(feature)
+    const vertexCoodinate = G.coordinates(feature)
     const vertexPixel = map.getPixelFromCoordinate(vertexCoodinate)
     feature.set('distance', distance(pixel, vertexPixel))
   })
@@ -194,10 +217,9 @@ const dragHandle = (handles, handle) => {
     },
 
     pointerdrag (event) {
-      // Delegate event and update frame, feature and handle geometries.
+      // Delegate event and update frame and feature geometry.
       this.frame = pointerdrag(this.frame, event)
-      this.frame.points.forEach((p, i) => this.handles[i].setGeometry(point(p)))
-      const coordinates = this.frame.points.map(fromLatLon)
+      const coordinates = this.frame.points.map(G.fromLatLon)
       this.feature.getGeometry().setCoordinates(coordinates)
 
       // Dispatch MODIFYSTART once.
@@ -218,7 +240,7 @@ const pixelTolerance = options =>
     ? options.pixelTolerance
     : 10
 
-/** Extract feature collection from options source or collection. */
+/** Extract feature collection from options source or feature collection. */
 const featureCollection = options => {
   const features = options.source
     ? new Collection(options.source.getFeatures())
@@ -243,8 +265,20 @@ export class ModifyFan extends Interaction {
     this.features = featureCollection(options)
     this.feature = this.features.getArray()[0]
 
+    this.featureChanged = () => {
+      // NOTE: Re-creating frame is only necessary when update was triggered
+      // from the 'outside', i.e. Translate interaction.
+      // TODO: disable Translate for fan areas and similar?
+      this.frame = createFrame(this.feature, options)
+
+      // Update handle geometries as a result of updated feature geometry.
+      this.frame.points.forEach((p, i) => this.handles[i].setGeometry(point(p)))
+    }
+
+    this.feature.on('change', this.featureChanged)
+
     // Setup dedicated vector layer for control features.
-    this.frame = createFrame(this.feature)
+    this.frame = createFrame(this.feature, options)
     this.handles = controlFeatures(this.frame)
 
     this.overlay = new VectorLayer({
@@ -270,14 +304,26 @@ export class ModifyFan extends Interaction {
     return handler.bind(this)(event)
   }
 
+  /**
+   * Remove the interaction from its current map and attach it to the new map.
+   * Subclasses may set up event handlers to get notified about changes to
+   * the map here.
+   *
+   * NOTE: Also called with null paramater when interaction is
+   * removed from map. It is thus suitable to trigger cleanup code.
+   *
+   * @param {import("../PluggableMap.js").default} map Map.
+   */
   setMap (map) {
+    if (!map) this.feature.un('change', this.featureChanged)
     this.overlay.setMap(map)
     super.setMap(map)
+
   }
 
   /**
    * become :: (Behavior, boolean) -> boolean
-   * Set new current behavior.
+   * Set new/current behavior.
    */
   become (behavior, result) {
     this.behavior = behavior

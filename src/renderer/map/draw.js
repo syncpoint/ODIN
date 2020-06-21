@@ -18,10 +18,13 @@ const options = geometry => {
     case 'polygon': return { type: GeometryType.POLYGON }
     case 'line': return { type: GeometryType.LINE_STRING }
     case 'line-2pt': return { type: GeometryType.LINE_STRING, maxPoints: 2 }
+    // FIXME: min/max points seem not to be supported for MULTI_POINT
+    case 'fan': return { type: GeometryType.MULTI_POINT, minPoints: 3, maxPoints: 3 }
     default: console.log('unsupported geometry', geometry)
   }
 }
 
+// TODO: check if singleton could be of use (layers.js:460)
 let interaction = null
 
 const unsetInteraction = map => {
@@ -36,6 +39,7 @@ const drawstart = descriptor => ({ feature }) => {
 }
 
 const drawend = map => ({ feature }) => {
+  // TODO: use feature-specific function to complete geometry
   const content = [feature].map(feature => geoJSON.writeFeature(feature))
   inputLayers.addFeatures(content)
   unsetInteraction(map)
@@ -45,6 +49,7 @@ const setInteraction = map => descriptor => {
   unsetInteraction(map)
 
   interaction = K(new Draw(options(descriptor.geometry)))(interaction => {
+    if (!interaction) return console.log('undefined draw interaction', descriptor.geometry)
     interaction.on('drawabort', () => unsetInteraction(map))
     interaction.on('drawstart', drawstart(descriptor))
     interaction.on('drawend', drawend(map))
