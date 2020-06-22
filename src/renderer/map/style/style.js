@@ -7,6 +7,7 @@ import defaultStyle from './default-style'
 import { polygonStyle } from './polygon-style'
 import { lineStyle } from './line-style'
 import { fanStyle } from './fan-style'
+import { collectionStyle } from './collection-style'
 
 /**
  * normalizeSIDC :: String -> String
@@ -94,6 +95,8 @@ export default (feature, resolution) => {
     [R.equals('Polygon'), R.always(polygonStyle)],
     [R.equals('LineString'), R.always(lineStyle)],
     [R.equals('MultiPoint'), R.always(fanStyle)],
+    [R.equals('GeometryCollection'), R.always(collectionStyle)],
+
     [R.T, R.always(defaultStyle)]
   ])
 

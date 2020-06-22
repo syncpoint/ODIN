@@ -50,6 +50,11 @@ const simpleCrossEnd = (line, resolution, widthFactor = 10) => {
   return [[PA0, PA1], [PB0, PB1]]
 }
 
+const arc = (C, radius, angle, circumference, quads = 48) =>
+  R.range(0, quads + 1)
+    .map(i => angle + i * (circumference / quads))
+    .map(offset => C.destinationPoint(radius, offset))
+
 
 const geometries = {}
 
@@ -63,11 +68,6 @@ geometries['G*G*GAS---'] = (feature, resolution) => {
   const lines = [[C, arrowA[3]], [C, arrowB[3]], arrowA, arrowB]
   return lineStyle(feature, lines)
 }
-
-const arc = (C, radius, angle, circumference, quads = 48) =>
-  R.range(0, quads + 1)
-    .map(i => angle + i * (circumference / quads))
-    .map(offset => C.destinationPoint(radius, offset))
 
 // TODO: label 'I'
 geometries['G*T*E-----'] = (feature, resolution) => {

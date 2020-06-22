@@ -1,5 +1,6 @@
 import * as R from 'ramda'
 import { getTransform } from 'ol/proj'
+import Feature from 'ol/Feature'
 import LatLon from 'geodesy/latlon-spherical.js'
 import { T } from '../../../shared/combinators'
 
@@ -9,6 +10,8 @@ export const toLatLon = p => T(toEPSG4326(p))(([lon, lat]) => new LatLon(lat, lo
 export const fromLatLon = ({ lat, lon }) => toEPSG3857([lon, lat])
 
 export const bearings = ([a, b]) => ([a.initialBearingTo(b), a.finalBearingTo(b)])
+export const initialBearing = ([a, b]) => a.initialBearingTo(b)
+export const finalBearing = ([a, b]) => a.finalBearingTo(b)
 export const distance = ([a, b]) => a.distanceTo(b)
 export const bearingLine = ([a, b]) => [a.initialBearingTo(b), a.distanceTo(b)]
 
@@ -21,7 +24,10 @@ export const translateLine =
     R.zip(line, bearings(line))
       .map(destinationPoint(distance, bearing))
 
-export const coordinates = feature => feature.getGeometry().getCoordinates()
+export const coordinates = object =>
+  object instanceof Feature
+    ? coordinates(object.getGeometry())
+    : object.getCoordinates()
 
 export const wrap360 = degrees => {
   if (degrees >= 0 && degrees < 360) return degrees
