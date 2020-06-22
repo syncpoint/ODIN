@@ -6,12 +6,11 @@ import WMXLayerTable from './WMXLayerTable'
 
 import { get as getProjection } from 'ol/proj'
 import { firstOrDefault } from './tools'
-import wms from './wms'
 
 import { useTranslation } from 'react-i18next'
 
-const WMSOptions = props => {
-  const { merge, onValidation } = props
+const WMXOptions = props => {
+  const { provider, merge, onValidation } = props
 
   const { t, i18n } = useTranslation()
   const collator = Intl.Collator(i18n.language)
@@ -34,7 +33,7 @@ const WMSOptions = props => {
         if (!response.ok) { throw new Error(response.statusText) }
 
         const content = await response.text()
-        const caps = wms.capabilitiesFromContent(content)
+        const caps = provider.capabilitiesFromContent(content)
         if (!caps) { throw new Error(t('basemapManagement.invalidResponse')) }
         setCapabilities(caps)
       } catch (error) {
@@ -49,7 +48,7 @@ const WMSOptions = props => {
   // triggered by changes to the WMTS capabilities or by selecting a layer
   React.useEffect(() => {
     if (!capabilities || !selectedLayerId) return
-    const providedCRS = wms.crs(capabilities, selectedLayerId)
+    const providedCRS = provider.crs(capabilities, selectedLayerId)
       .map(crs => ({
         Identifier: crs.Identifier,
         SupportedCRS: crs.SupportedCRS,
@@ -57,7 +56,7 @@ const WMSOptions = props => {
       }))
     const missingDefinitions = providedCRS.filter(crs => !getProjection(crs.CRSCode))
     if (missingDefinitions.length === providedCRS.length) {
-      /* Oops, seems like we do not support any CRS provided by the WMS source */
+      /* Oops, seems like we do not support any CRS provided by the source */
       setMissingProjectionDefinitions(missingDefinitions)
       onValidation(false)
     } else {
@@ -70,7 +69,7 @@ const WMSOptions = props => {
   const layers = React.useMemo(() => {
 
     if (!capabilities) return []
-    const l = wms.layers(capabilities)
+    const l = provider.layers(capabilities)
     return l.sort((left, right) => collator.compare(left.Name, right.Name))
   }, [capabilities])
 
@@ -78,14 +77,14 @@ const WMSOptions = props => {
   const handleLayerSelected = layerId => {
     setSelectedLayerId(layerId)
     if (layerId) {
-      const providedCRS = wms.crs(capabilities, layerId)
+      const providedCRS = provider.crs(capabilities, layerId)
       const p = (providedCRS.some(c => c.Identifier === 'EPSG:3857')
         ? 'EPSG:3857'
         : firstOrDefault(providedCRS.filter(crs => getProjection(crs.CRSCode)), null)
       )
       merge({
         layer: layerId,
-        wgs84BoundingBox: wms.wgs84BoundingBox(capabilities, layerId),
+        wgs84BoundingBox: provider.wgs84BoundingBox(capabilities, layerId),
         projection: p
       })
     }
@@ -145,10 +144,11 @@ const WMSOptions = props => {
     </>
   )
 }
-WMSOptions.propTypes = {
+WMXOptions.propTypes = {
+  provider: PropTypes.object,
   options: PropTypes.object,
   merge: PropTypes.func,
   onValidation: PropTypes.func
 }
 
-export default WMSOptions
+export default WMXOptions
