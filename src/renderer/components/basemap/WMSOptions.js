@@ -3,9 +3,11 @@ import { PropTypes } from 'prop-types'
 import { Card, CardContent, Typography, CircularProgress } from '@material-ui/core'
 
 import WMXLayerTable from './WMXLayerTable'
-import WMSCapabilities from 'ol/format/WMSCapabilities'
+
 import { get as getProjection } from 'ol/proj'
-import { wmsLayer, flattenLayers, firstOrDefault } from './tools'
+import { firstOrDefault } from './tools'
+import wms from './wms'
+
 import { useTranslation } from 'react-i18next'
 
 const WMSOptions = props => {
@@ -31,11 +33,9 @@ const WMSOptions = props => {
         const response = await fetch(props.options.url, { signal })
         if (!response.ok) { throw new Error(response.statusText) }
 
-        /* We need to check if the request was OK beyond the http status code */
         const content = await response.text()
-        const caps = (new WMSCapabilities()).read(content)
-        if (!caps || !caps.Service || !caps.Capability) throw new Error(t('basemapManagement.invalidResponse'))
-        console.dir(caps)
+        const caps = wms.capabilitiesFromContent(content)
+        if (!caps) { throw new Error(t('basemapManagement.invalidResponse')) }
         setCapabilities(caps)
       } catch (error) {
         setError(error.message)
@@ -49,7 +49,7 @@ const WMSOptions = props => {
   // triggered by changes to the WMTS capabilities or by selecting a layer
   React.useEffect(() => {
     if (!capabilities || !selectedLayerId) return
-    const providedCRS = crs(capabilities, selectedLayerId)
+    const providedCRS = wms.crs(capabilities, selectedLayerId)
       .map(crs => ({
         Identifier: crs.Identifier,
         SupportedCRS: crs.SupportedCRS,
@@ -61,7 +61,7 @@ const WMSOptions = props => {
       setMissingProjectionDefinitions(missingDefinitions)
       onValidation(false)
     } else {
-      /* phew, we do support at least on provided CRS */
+      /* phew, we do support at least one provided CRS */
       onValidation(true)
     }
   }, [capabilities, selectedLayerId])
@@ -70,36 +70,22 @@ const WMSOptions = props => {
   const layers = React.useMemo(() => {
 
     if (!capabilities) return []
-    const l = wmsLayer(capabilities.Capability.Layer.Layer)
+    const l = wms.layers(capabilities)
     return l.sort((left, right) => collator.compare(left.Name, right.Name))
   }, [capabilities])
-
-  const wgs84BoundingBox = (wmtsCapabilites, layerId) => {
-    const layer = flattenLayers(wmtsCapabilites.Capability.Layer.Layer).find(l => l.Name === layerId)
-    if (!layer) return null
-    return layer.EX_GeographicBoundingBox
-  }
-
-  const crs = (caps, layerId) => {
-    const layer = flattenLayers(caps.Capability.Layer.Layer).find(l => l.Name === layerId)
-    if (!layer) return []
-    return layer.CRS
-      .filter(crs => crs.startsWith('EPSG'))
-      .map(crs => ({ Identifier: crs, SupportedCRS: crs }))
-  }
 
   /* functions */
   const handleLayerSelected = layerId => {
     setSelectedLayerId(layerId)
     if (layerId) {
-      const providedCRS = crs(capabilities, layerId)
+      const providedCRS = wms.crs(capabilities, layerId)
       const p = (providedCRS.some(c => c.Identifier === 'EPSG:3857')
         ? 'EPSG:3857'
         : firstOrDefault(providedCRS.filter(crs => getProjection(crs.CRSCode)), null)
       )
       merge({
         layer: layerId,
-        wgs84BoundingBox: wgs84BoundingBox(capabilities, layerId),
+        wgs84BoundingBox: wms.wgs84BoundingBox(capabilities, layerId),
         projection: p
       })
     }
