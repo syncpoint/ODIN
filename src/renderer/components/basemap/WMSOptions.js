@@ -5,7 +5,7 @@ import { Card, CardContent, Typography, CircularProgress } from '@material-ui/co
 import WMTSLayerTable from './WMTSLayerTable'
 import WMSCapabilities from 'ol/format/WMSCapabilities'
 import { get as getProjection } from 'ol/proj'
-
+import { wmsLayer, flattenLayers } from './tools'
 import { useTranslation } from 'react-i18next'
 
 const WMSOptions = props => {
@@ -62,39 +62,20 @@ const WMSOptions = props => {
 
   /* increases performance */
   const layers = React.useMemo(() => {
-    /*  Depending on the WMTS provider the abstract may be lengthy. In order
-        to avoid information overflow we cut off the abstract at a given length.
-    */
-    const MAX_ABSTRACT_LENGTH = 140
-
-    const getAbstract = layer => {
-      if (!layer.Abstract) return ''
-      return layer.Abstract.length > MAX_ABSTRACT_LENGTH
-        ? `${layer.Abstract.substring(0, MAX_ABSTRACT_LENGTH)} ...`
-        : layer.Abstract
-    }
-
 
     if (!capabilities) return []
-    return capabilities.Capability.Layer.Layer
-      .map(layer =>
-        ({
-          Identifier: layer.Name,
-          Title: layer.Title,
-          Abstract: getAbstract(layer)
-        })
-      )
-      .sort((left, right) => collator.compare(left.Name, right.Name))
+    const l = wmsLayer(capabilities.Capability.Layer.Layer)
+    return l.sort((left, right) => collator.compare(left.Name, right.Name))
   }, [capabilities])
 
   const wgs84BoundingBox = (wmtsCapabilites, layerId) => {
-    const layer = wmtsCapabilites.Capability.Layer.Layer.find(l => l.Name === layerId)
+    const layer = flattenLayers(wmtsCapabilites.Capability.Layer.Layer).find(l => l.Name === layerId)
     if (!layer) return null
     return layer.EX_GeographicBoundingBox
   }
 
   const crs = (caps, layerId) => {
-    const layer = caps.Capability.Layer.Layer.find(l => l.Name === layerId)
+    const layer = flattenLayers(caps.Capability.Layer.Layer).find(l => l.Name === layerId)
     if (!layer) return []
     return layer.CRS
       .filter(crs => crs.startsWith('EPSG'))
