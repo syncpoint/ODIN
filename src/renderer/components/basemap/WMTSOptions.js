@@ -2,7 +2,7 @@ import React from 'react'
 import { PropTypes } from 'prop-types'
 import { Card, CardContent, Typography, CircularProgress } from '@material-ui/core'
 
-import WMTSLayerTable from './WMTSLayerTable'
+import WMXLayerTable from './WMXLayerTable'
 import WMTSCapabilities from 'ol/format/WMTSCapabilities'
 import { get as getProjection } from 'ol/proj'
 
@@ -146,7 +146,7 @@ const WMTSOptions = props => {
           </Typography>
         </CardContent>
       </Card>
-      <WMTSLayerTable
+      <WMXLayerTable
         layers={layers}
         selectedLayerIdentifier={selectedLayerId}
         onLayerSelected={handleLayerSelected}
