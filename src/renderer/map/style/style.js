@@ -96,7 +96,6 @@ export default (feature, resolution) => {
     [R.equals('LineString'), R.always(lineStyle)],
     [R.equals('MultiPoint'), R.always(fanStyle)],
     [R.equals('GeometryCollection'), R.always(collectionStyle)],
-
     [R.T, R.always(defaultStyle)]
   ])
 

@@ -17,6 +17,7 @@ import URI from '../project/URI'
 import selection from '../selection'
 import { featureGeometry } from '../components/feature-descriptors'
 import { ModifyFan } from './interaction/ModifyFan'
+import { ModifyCorridor } from './interaction/ModifyCorridor'
 
 // --
 // SECTION: Module-global (utility) functions.
@@ -310,9 +311,11 @@ const createModify = () => {
   console.log(geometry)
   let initial = {} // Cloned geometries BEFORE modify.
 
-  const ctor = options => geometry.layout === 'fan'
-    ? new ModifyFan(options)
-    : new Modify(options)
+  const ctor = R.cond([
+    [R.equals('fan'), R.always(options => new ModifyFan(options))],
+    [R.equals('corridor'), R.always(options => new ModifyCorridor(options))],
+    [R.T, R.always(options => new Modify(options))]
+  ])(geometry ? geometry.layout : null)
 
   const interaction = ctor({
     hitTolerance,

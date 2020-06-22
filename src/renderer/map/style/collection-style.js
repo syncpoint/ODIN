@@ -92,10 +92,11 @@ geometries['G*T*H-----'] = (feature, resolution) => {
 geometries['G*T*J-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
+  const bearing = G.finalBearing(linePoints)
   const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
   const arrow = simpleArrowEnd(linePoints, resolution)
-  const outerArc = arc(linePoints[1], halfWidth, -180, 180, 24)
-  const innerArc = arc(linePoints[1], halfWidth * 0.8, -180, 180, 24)
+  const outerArc = arc(linePoints[1], halfWidth, bearing - 90, 180, 24)
+  const innerArc = arc(linePoints[1], halfWidth * 0.8, bearing - 90, 180, 24)
   const spikes = R.range(0, outerArc.length)
     .filter(i => i % 2 === 0)
     .map(i => [outerArc[i], innerArc[i]])
