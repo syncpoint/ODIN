@@ -18,3 +18,9 @@ export const wmsLayer = layers => {
     Abstract: layerAbstract(layer)
   }))
 }
+
+export const firstOrDefault = (someArray, defaultValue) => {
+  if (!Array.isArray(someArray)) return defaultValue
+  if (someArray.length > 0) return someArray[0]
+  return defaultValue
+}

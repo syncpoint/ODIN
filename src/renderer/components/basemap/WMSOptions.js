@@ -5,7 +5,7 @@ import { Card, CardContent, Typography, CircularProgress } from '@material-ui/co
 import WMTSLayerTable from './WMTSLayerTable'
 import WMSCapabilities from 'ol/format/WMSCapabilities'
 import { get as getProjection } from 'ol/proj'
-import { wmsLayer, flattenLayers } from './tools'
+import { wmsLayer, flattenLayers, firstOrDefault } from './tools'
 import { useTranslation } from 'react-i18next'
 
 const WMSOptions = props => {
@@ -35,6 +35,7 @@ const WMSOptions = props => {
         const content = await response.text()
         const caps = (new WMSCapabilities()).read(content)
         if (!caps || !caps.Service || !caps.Capability) throw new Error(t('basemapManagement.invalidResponse'))
+        console.dir(caps)
         setCapabilities(caps)
       } catch (error) {
         setError(error.message)
@@ -48,16 +49,21 @@ const WMSOptions = props => {
   // triggered by changes to the WMTS capabilities or by selecting a layer
   React.useEffect(() => {
     if (!capabilities || !selectedLayerId) return
-    const missingDefinitions = crs(capabilities, selectedLayerId)
+    const providedCRS = crs(capabilities, selectedLayerId)
       .map(crs => ({
         Identifier: crs.Identifier,
         SupportedCRS: crs.SupportedCRS,
         CRSCode: crs.SupportedCRS.replace(/urn:ogc:def:crs:(\w+):(.*:)?(\w+)$/, '$1:$3')
       }))
-      .filter(crs => !getProjection(crs.CRSCode))
-
-    setMissingProjectionDefinitions(missingDefinitions)
-    onValidation(missingDefinitions.length === 0)
+    const missingDefinitions = providedCRS.filter(crs => !getProjection(crs.CRSCode))
+    if (missingDefinitions.length === providedCRS.length) {
+      /* Oops, seems like we do not support any CRS provided by the WMS source */
+      setMissingProjectionDefinitions(missingDefinitions)
+      onValidation(false)
+    } else {
+      /* phew, we do support at least on provided CRS */
+      onValidation(true)
+    }
   }, [capabilities, selectedLayerId])
 
   /* increases performance */
@@ -86,9 +92,15 @@ const WMSOptions = props => {
   const handleLayerSelected = layerId => {
     setSelectedLayerId(layerId)
     if (layerId) {
+      const providedCRS = crs(capabilities, layerId)
+      const p = (providedCRS.some(c => c.Identifier === 'EPSG:3857')
+        ? 'EPSG:3857'
+        : firstOrDefault(providedCRS.filter(crs => getProjection(crs.CRSCode)), null)
+      )
       merge({
         layer: layerId,
-        wgs84BoundingBox: wgs84BoundingBox(capabilities, layerId)
+        wgs84BoundingBox: wgs84BoundingBox(capabilities, layerId),
+        projection: p
       })
     }
   }
