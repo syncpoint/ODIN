@@ -3,8 +3,9 @@ import { PropTypes } from 'prop-types'
 import { Card, CardContent, Typography, CircularProgress } from '@material-ui/core'
 
 import WMXLayerTable from './WMXLayerTable'
-import WMTSCapabilities from 'ol/format/WMTSCapabilities'
+
 import { get as getProjection } from 'ol/proj'
+import wmts from './wmts'
 
 import { useTranslation } from 'react-i18next'
 
@@ -29,8 +30,11 @@ const WMTSOptions = props => {
       try {
         const response = await fetch(props.options.url, { signal })
         if (!response.ok) { throw new Error(response.statusText) }
-        const caps = (new WMTSCapabilities()).read(await response.text())
-        setCapabilities(caps)
+
+        const content = await response.text()
+        const capabilities = wmts.capabilitiesFromContent(content)
+        if (!capabilities) { throw new Error(t('basemapManagement.invalidResponse')) }
+        setCapabilities(capabilities)
       } catch (error) {
         setError(error.message)
       }
@@ -43,7 +47,7 @@ const WMTSOptions = props => {
   // triggered by changes to the WMTS capabilities or by selecting a layer
   React.useEffect(() => {
     if (!capabilities || !selectedLayerId) return
-    const missingDefinitions = crs(capabilities, selectedLayerId)
+    const missingDefinitions = wmts.crs(capabilities, selectedLayerId)
       .map(crs => ({
         Identifier: crs.Identifier,
         SupportedCRS: crs.SupportedCRS,
@@ -60,44 +64,10 @@ const WMTSOptions = props => {
     /*  Depending on the WMTS provider the abstract may be lengthy. In order
         to avoid information overflow we cut off the abstract at a given length.
     */
-    const MAX_ABSTRACT_LENGTH = 140
-
-    const getAbstract = layer => {
-      if (!layer.Abstract) return ''
-      return layer.Abstract.length > MAX_ABSTRACT_LENGTH
-        ? `${layer.Abstract.substring(0, MAX_ABSTRACT_LENGTH)} ...`
-        : layer.Abstract
-    }
 
     if (!capabilities) return []
-    return capabilities.Contents.Layer.map(layer => {
-      return {
-        Identifier: layer.Identifier,
-        Title: layer.Title,
-        Abstract: getAbstract(layer)
-      }
-    })
+    return wmts.layers(capabilities)
   }, [capabilities])
-
-  const wgs84BoundingBox = (wmtsCapabilites, layerId) => {
-    const layer = wmtsCapabilites.Contents.Layer.find(l => l.Identifier === layerId)
-    if (!layer) return null
-    return layer.WGS84BoundingBox
-  }
-
-  const crs = (caps, layerId) => {
-    let providedCRS = []
-    const layer = caps.Contents.Layer.find(l => l.Identifier === layerId)
-    if (!layer) return providedCRS
-    layer.TileMatrixSetLink.forEach(link => {
-      providedCRS = providedCRS.concat(
-        caps.Contents.TileMatrixSet
-          .filter(tms => tms.Identifier === link.TileMatrixSet)
-          .map(matrixSet => ({ Identifier: matrixSet.Identifier, SupportedCRS: matrixSet.SupportedCRS }))
-      )
-    })
-    return providedCRS
-  }
 
   /* functions */
   const handleLayerSelected = layerId => {
@@ -105,7 +75,7 @@ const WMTSOptions = props => {
     if (layerId) {
       merge({
         layer: layerId,
-        wgs84BoundingBox: wgs84BoundingBox(capabilities, layerId)
+        wgs84BoundingBox: wmts.wgs84BoundingBox(capabilities, layerId)
       })
     }
   }
