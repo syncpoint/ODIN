@@ -34,7 +34,8 @@
     "wmts": {
       "error": "Error",
       "missingProjections": "Missing projection definitions for"
-    }
+    },
+    "invalidResponse": "The server sent invalid data. Please verify the URL!"
   },
   "activities": {
     "tooltips": {
