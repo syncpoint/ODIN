@@ -15,6 +15,7 @@ import SaveIcon from '@material-ui/icons/Save'
 import Url from './Url'
 import XYZOptions from './XYZOptions'
 import WMTSOptions from './WMTSOptions'
+import WMSOptions from './WMSOptions'
 import Name from './Name'
 
 const SourceDescriptorDetails = props => {
@@ -66,6 +67,7 @@ const SourceDescriptorDetails = props => {
   const Options = props => {
     switch (metadata.type) {
       case 'XYZ': return <XYZOptions options={props.options}/>
+      case 'WMS': return <WMSOptions options={props.options}/>
       case 'WMTS': return <WMTSOptions options={props.options}/>
       default: return <Typography>{t('basemapManagement.unknownSource')}</Typography>
     }
@@ -110,6 +112,7 @@ const SourceDescriptorDetails = props => {
         // eslint-disable-next-line react/prop-types
         switch (metadata.type) {
           case 'XYZ': return <XYZOptions options={options} merge={mergeOptions}/>
+          case 'WMS': return <WMSOptions options={options} merge={mergeOptions} onValidation={setAllowNextStep}/>
           case 'WMTS': return <WMTSOptions options={options} merge={mergeOptions} onValidation={setAllowNextStep}/>
           default: return <div>UNKNOWN SOURCE TYPE</div>
         }

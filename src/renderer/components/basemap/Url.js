@@ -24,6 +24,7 @@ const Url = props => {
   const xyzType = /\{z\}.*\{x\}.*\{-?y\}/i
   // TODO: improve detection!
   const wmtsType = /WMTS/i
+  const wmsType = /WMS/i
 
   const handlePropertyChanged = event => {
     setUrl(event.target.value)
@@ -38,6 +39,7 @@ const Url = props => {
     let urlType = t('basemapManagement.unknownSource')
     if (xyzType.test(url)) urlType = 'XYZ'
     else if (wmtsType.test(url)) urlType = 'WMTS'
+    else if (wmsType.test(url)) urlType = 'WMS'
     setPredictedURLType(urlType)
     props.onTypePrediction(urlType)
   }, [url])
