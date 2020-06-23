@@ -38,19 +38,9 @@ providers.register(selected => {
     return clazz
   }
 
-  const clazz = featureClass(properties)
-  if (!clazz) {
-    console.log('feature class missing', properties.sidc)
-    // TODO: return generic 2525C properties panel
-    return null
-  }
-
-  if (!panelTypes[clazz]) {
-    console.log('properties missing for class', clazz)
-    return null
-  }
-
+  // Fall back to area when undefined.
+  const clazz = featureClass(properties) || 'A'
   const key = featureIds[0]
   const props = { properties, update }
-  return (panelTypes[clazz] || (() => null))(key, props)
+  return panelTypes[clazz](key, props)
 })

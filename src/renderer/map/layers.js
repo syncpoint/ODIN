@@ -308,7 +308,6 @@ const createSelect = () => {
 const createModify = () => {
   const feature = selectedFeatures.getArray()[0]
   const geometry = featureGeometry(feature.get('sidc'))
-  console.log(geometry)
   let initial = {} // Cloned geometries BEFORE modify.
 
   const ctor = R.cond([

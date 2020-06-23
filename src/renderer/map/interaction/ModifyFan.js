@@ -55,14 +55,16 @@ const create2PointFrame = current => {
   const { C, angleA, rangeA, angleB } = current
   const normA = G.wrap360(Number.parseFloat(angleA))
   const A = C.destinationPoint(rangeA, normA)
+  const points = [C, A]
 
   return {
-    points: [C, A],
+    points,
     angleA: normA,
     rangeA,
     angleB,
     bearingLine: X => G.bearingLine([C, X]),
-    copy: properties => create2PointFrame({ ...current, ...properties })
+    copy: properties => create2PointFrame({ ...current, ...properties }),
+    geometry: () => new geom.MultiPoint(points.map(G.fromLatLon))
   }
 }
 
@@ -72,15 +74,17 @@ const create3PointFrame = current => {
   const normB = G.wrap360(Number.parseFloat(angleB))
   const A = C.destinationPoint(rangeA, normA)
   const B = C.destinationPoint(rangeB, normB)
+  const points = [C, A, B]
 
   return {
-    points: [C, A, B],
+    points,
     angleA: normA,
     rangeA,
     angleB: normB,
     rangeB,
     bearingLine: X => G.bearingLine([C, X]),
-    copy: properties => create3PointFrame({ ...current, ...properties })
+    copy: properties => create3PointFrame({ ...current, ...properties }),
+    geometry: () => new geom.MultiPoint(points.map(G.fromLatLon))
   }
 }
 
@@ -219,8 +223,7 @@ const dragHandle = (handles, handle) => {
     pointerdrag (event) {
       // Delegate event and update frame and feature geometry.
       this.frame = pointerdrag(this.frame, event)
-      const coordinates = this.frame.points.map(G.fromLatLon)
-      this.feature.getGeometry().setCoordinates(coordinates)
+      this.feature.setGeometry(this.frame.geometry())
 
       // Dispatch MODIFYSTART once.
       if (!this.modified) {

@@ -5524,16 +5524,6 @@
     ]
   },
   {
-    "sidc": "G*M*NM----*****",
-    "geometry": "point",
-    "hierarchy": [
-      "TACTICAL GRAPHICS",
-      "MOBILITY / SURVIVABILITY",
-      "CHEMICAL, BIOLOGICAL, RADIOLOGICAL, AND NUCLEAR",
-      "MINIMUM SAFE DISTANCE ZONES"
-    ]
-  },
-  {
     "sidc": "G*M*NR----*****",
     "class": "A",
     "geometry": "Polygon",

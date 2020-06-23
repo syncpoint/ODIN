@@ -1,7 +1,5 @@
-/* eslint-disable */
 import * as R from 'ramda'
 import * as geom from 'ol/geom'
-import LatLon from 'geodesy/latlon-spherical.js'
 import defaultStyle from './default-style'
 import { K } from '../../../shared/combinators'
 import { parameterized } from '../../components/SIDC'
@@ -22,15 +20,6 @@ const lineStyle = (feature, lines) => {
   } catch (err) {
     return styles
   }
-}
-
-const closedArrowEnd = (line, resolution, widthFactor = 10, bearing = 145) => {
-  const [finalBearing] = G.bearings(line).reverse()
-  const arrowWidth = resolution * widthFactor
-  const PA = line[1].destinationPoint(arrowWidth, finalBearing - bearing)
-  const PB = line[1].destinationPoint(arrowWidth, finalBearing + bearing)
-  const I = LatLon.intersection(line[0], finalBearing, PA, finalBearing + 90)
-  return [PA, line[1], PB, I, PA]
 }
 
 const simpleArrowEnd = (line, resolution, widthFactor = 10, bearing = 145) => {
@@ -56,6 +45,16 @@ const arc = (C, radius, angle, circumference, quads = 48) =>
 
 
 const geometries = {}
+
+geometries['G*M*OEB---'] = (feature, resolution) => {
+  const [line, point] = feature.getGeometry().getGeometries()
+  const linePoints = G.coordinates(line).map(G.toLatLon)
+  const bearing = G.initialBearing(linePoints)
+  const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
+  const A = linePoints[0].destinationPoint(halfWidth, bearing + 90)
+  const B = linePoints[0].destinationPoint(halfWidth, bearing - 90)
+  return lineStyle(feature, [linePoints, [A, B]])
+}
 
 geometries['G*T*B-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
@@ -102,6 +101,17 @@ geometries['G*T*J-----'] = (feature, resolution) => {
     .map(i => [outerArc[i], innerArc[i]])
 
   return lineStyle(feature, [linePoints, arrow, outerArc, ...spikes])
+}
+
+geometries['G*T*P-----'] = (feature, resolution) => {
+  const [line, point] = feature.getGeometry().getGeometries()
+  const linePoints = G.coordinates(line).map(G.toLatLon)
+  const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
+  const bearing = G.finalBearing(linePoints)
+  const A = linePoints[1].destinationPoint(halfWidth, bearing + 90)
+  const B = linePoints[1].destinationPoint(halfWidth, bearing - 90)
+  const arrowC = simpleArrowEnd(linePoints, resolution)
+  return lineStyle(feature, [[A, B], linePoints, arrowC])
 }
 
 geometries['G*T*X-----'] = (feature, resolution) => {

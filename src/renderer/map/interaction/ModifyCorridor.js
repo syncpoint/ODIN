@@ -52,19 +52,19 @@ const pointStyle = fillColor => [
 const point = latLon => new geom.Point(G.fromLatLon(latLon))
 
 const createCorridorFrame = current => {
-  const { A, B, width } = current
+  const { A, B, width, orientation } = current
   const bearing = G.initialBearing(([A, B]))
-  const C = A.destinationPoint(width, bearing + 90)
+  const C = A.destinationPoint(width, bearing + (orientation * 90))
 
   return {
     points: [C, A, B],
     A,
     B,
+    copy: properties => createCorridorFrame({ ...current, ...properties }),
     geometry: () => new geom.GeometryCollection([
       new geom.LineString([G.fromLatLon(A), G.fromLatLon(B)]),
       new geom.Point(G.fromLatLon(C))
-    ]),
-    copy: properties => createCorridorFrame({ ...current, ...properties })
+    ])
   }
 }
 
@@ -76,7 +76,9 @@ const createFrame = (feature, options) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const [A, B] = G.coordinates(line).map(G.toLatLon)
   const C = G.toLatLon(G.coordinates(point))
-  return createCorridorFrame({ A, B, width: A.distanceTo(C) })
+  const width = A.distanceTo(C)
+  const orientation = Math.sign(C.crossTrackDistanceTo(A, B))
+  return createCorridorFrame({ A, B, width, orientation })
 }
 
 /**
@@ -92,7 +94,8 @@ const handle = ([geometry, pointerdrag]) =>
 const handledrag = [
   (frame, { _, coordinate }) => {
     const C = G.toLatLon(coordinate)
-    return frame.copy({ width: frame.A.distanceTo(C) })
+    const orientation = Math.sign(C.crossTrackDistanceTo(frame.A, frame.B))
+    return frame.copy({ width: frame.A.distanceTo(C), orientation })
   },
   (frame, { coordinate }) => frame.copy({ A: G.toLatLon(coordinate) }),
   (frame, { coordinate }) => frame.copy({ B: G.toLatLon(coordinate) })
