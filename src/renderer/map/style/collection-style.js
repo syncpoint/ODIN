@@ -109,7 +109,8 @@ const withdrawLike = (feature, resolution) => {
   const A = G.toLatLon(G.coordinates(point))
   const [bearing, width] = G.bearingLine([linePoints[0], A])
   const C = linePoints[0].destinationPoint(width / 2, bearing)
-  const arcPoints = arc(C, width / 2, bearing, 180)
+  const orientation = G.orientation(A, linePoints)
+  const arcPoints = arc(C, width / 2, bearing, orientation * 180)
   const arrow = simpleArrowEnd(linePoints, resolution)
   return lineStyle(feature, [linePoints, arcPoints, arrow])
 }
@@ -131,7 +132,8 @@ geometries['G*T*R-----'] = (feature, resolution) => {
   ]
 
   const C = lineA[1].destinationPoint(width / 2, bearing)
-  const arcPoints = arc(C, width / 2, bearing, 180)
+  const orientation = G.orientation(A, lineA)
+  const arcPoints = arc(C, width / 2, bearing, -orientation * 180)
   const arrowA = simpleArrowEnd(lineA, resolution)
   const arrowB = simpleArrowEnd(lineB.reverse(), resolution)
   return lineStyle(feature, [lineA, lineB, arcPoints, arrowA, arrowB])

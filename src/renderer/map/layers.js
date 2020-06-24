@@ -18,6 +18,7 @@ import selection from '../selection'
 import { featureGeometry } from '../components/feature-descriptors'
 import { ModifyFan } from './interaction/ModifyFan'
 import { ModifyCorridor } from './interaction/ModifyCorridor'
+import { ModifyOrbit } from './interaction/ModifyOrbit'
 
 // --
 // SECTION: Module-global (utility) functions.
@@ -313,6 +314,7 @@ const createModify = () => {
   const ctor = R.cond([
     [R.equals('fan'), R.always(options => new ModifyFan(options))],
     [R.equals('corridor'), R.always(options => new ModifyCorridor(options))],
+    [R.equals('orbit'), R.always(options => new ModifyOrbit(options))],
     [R.T, R.always(options => new Modify(options))]
   ])(geometry ? geometry.layout : null)
 

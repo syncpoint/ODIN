@@ -14,6 +14,7 @@ export const initialBearing = ([a, b]) => a.initialBearingTo(b)
 export const finalBearing = ([a, b]) => a.finalBearingTo(b)
 export const distance = ([a, b]) => a.distanceTo(b)
 export const bearingLine = ([a, b]) => [a.initialBearingTo(b), a.distanceTo(b)]
+export const orientation = (x, [a, b]) => Math.sign(x.crossTrackDistanceTo(a, b))
 
 export const destinationPoint =
   (distance, bearing) => ([point, deltaBearing]) =>
