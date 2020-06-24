@@ -23,7 +23,7 @@ const lineStyle = (feature, lines) => {
 }
 
 const simpleArrowEnd = (line, resolution, widthFactor = 10, bearing = 145) => {
-  const [finalBearing] = G.bearings(line).reverse()
+  const finalBearing = G.finalBearing(line)
   const arrowWidth = resolution * widthFactor
   const PA = line[1].destinationPoint(arrowWidth, finalBearing - bearing)
   const PB = line[1].destinationPoint(arrowWidth, finalBearing + bearing)
@@ -101,6 +101,40 @@ geometries['G*T*J-----'] = (feature, resolution) => {
     .map(i => [outerArc[i], innerArc[i]])
 
   return lineStyle(feature, [linePoints, arrow, outerArc, ...spikes])
+}
+
+const withdrawLike = (feature, resolution) => {
+  const [line, point] = feature.getGeometry().getGeometries()
+  const linePoints = G.coordinates(line).map(G.toLatLon)
+  const A = G.toLatLon(G.coordinates(point))
+  const [bearing, width] = G.bearingLine([linePoints[0], A])
+  const C = linePoints[0].destinationPoint(width / 2, bearing)
+  const arcPoints = arc(C, width / 2, bearing, 180)
+  const arrow = simpleArrowEnd(linePoints, resolution)
+  return lineStyle(feature, [linePoints, arcPoints, arrow])
+}
+
+geometries['G*T*L-----'] = withdrawLike // TODO: label 'D', W
+geometries['G*T*M-----'] = withdrawLike // TODO: label 'R'
+geometries['G*T*W-----'] = withdrawLike // TODO: label 'W'
+geometries['G*T*WP----'] = withdrawLike // TODO: label 'WP'
+
+// TODO: label 'RIP'
+geometries['G*T*R-----'] = (feature, resolution) => {
+  const [line, point] = feature.getGeometry().getGeometries()
+  const A = G.toLatLon(G.coordinates(point))
+  const lineA = G.coordinates(line).map(G.toLatLon)
+  const [bearing, width] = G.bearingLine([lineA[0], A])
+  const lineB = [
+    lineA[0].destinationPoint(width, bearing),
+    lineA[1].destinationPoint(width, bearing)
+  ]
+
+  const C = lineA[1].destinationPoint(width / 2, bearing)
+  const arcPoints = arc(C, width / 2, bearing, 180)
+  const arrowA = simpleArrowEnd(lineA, resolution)
+  const arrowB = simpleArrowEnd(lineB.reverse(), resolution)
+  return lineStyle(feature, [lineA, lineB, arcPoints, arrowA, arrowB])
 }
 
 geometries['G*T*P-----'] = (feature, resolution) => {
