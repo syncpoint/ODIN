@@ -4,8 +4,8 @@ import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import Collection from 'ol/Collection'
 import * as geom from 'ol/geom'
-import Feature from 'ol/Feature'
 import { distance } from 'ol/coordinate'
+import Feature from 'ol/Feature'
 import * as style from 'ol/style'
 import Event from 'ol/events/Event'
 import * as G from '../style/geodesy'
@@ -51,95 +51,11 @@ const pointStyle = fillColor => [
  */
 const point = latLon => new geom.Point(G.fromLatLon(latLon))
 
-const create2PointFrame = current => {
-  const { C, angleA, rangeA, angleB } = current
-  const normA = G.wrap360(Number.parseFloat(angleA))
-  const A = C.destinationPoint(rangeA, normA)
-  const points = [C, A]
-
-  return {
-    points,
-    angleA: normA,
-    rangeA,
-    angleB,
-    bearingLine: X => G.bearingLine([C, X]),
-    copy: properties => create2PointFrame({ ...current, ...properties }),
-    geometry: () => new geom.MultiPoint(points.map(G.fromLatLon))
-  }
-}
-
-const create3PointFrame = current => {
-  const { C, angleA, rangeA, angleB, rangeB } = current
-  const normA = G.wrap360(Number.parseFloat(angleA))
-  const normB = G.wrap360(Number.parseFloat(angleB))
-  const A = C.destinationPoint(rangeA, normA)
-  const B = C.destinationPoint(rangeB, normB)
-  const points = [C, A, B]
-
-  return {
-    points,
-    angleA: normA,
-    rangeA,
-    angleB: normB,
-    rangeB,
-    bearingLine: X => G.bearingLine([C, X]),
-    copy: properties => create3PointFrame({ ...current, ...properties }),
-    geometry: () => new geom.MultiPoint(points.map(G.fromLatLon))
-  }
-}
-
-/**
- * createFrame :: ol/Feature -> Frame
- * Immutable geometry parameters (control points, angles and ranges).
- */
-const createFrame = (feature, options) => {
-  const maxPoints = Number.parseInt(options.maxPoints)
-
-  if (maxPoints === 3) {
-    const [C, A, B] = G.coordinates(feature).map(G.toLatLon)
-    const [angleA, rangeA] = G.bearingLine([C, A])
-    const [angleB, rangeB] = G.bearingLine([C, B])
-    return create3PointFrame({ C, angleA, rangeA, angleB, rangeB })
-  } else {
-    const [C, A] = G.coordinates(feature).map(G.toLatLon)
-    const [angleA, rangeA] = G.bearingLine([C, A])
-    const angleB = Number.parseInt(options.arc)
-    return create2PointFrame({ C, angleA, rangeA, angleB })
-  }
-}
-
 /**
  * handle :: [ol/geom/Geometry, fn] -> ol/Feature
  */
 const handle = ([geometry, pointerdrag]) =>
   new Feature({ geometry, pointerdrag })
-
-/**
- * handledrag :: [(Frame, ol/MapBrowserEvent) -> Frame]
- * Handle pointer drag event handlers.
- */
-const handledrag = [
-  (frame, { coordinate }) => {
-    return frame.copy({ C: G.toLatLon(coordinate) })
-  },
-  (frame, { originalEvent, coordinate }) => {
-    const [angleA, rangeA] = frame.bearingLine(G.toLatLon(coordinate))
-    const rangeB = originalEvent.ctrlKey ? rangeA : frame.rangeB
-    return frame.copy({ angleA, rangeA, rangeB })
-  },
-  (frame, { originalEvent, coordinate }) => {
-    const [angleB, rangeB] = frame.bearingLine(G.toLatLon(coordinate))
-    const rangeA = originalEvent.ctrlKey ? rangeB : frame.rangeA
-    return frame.copy({ rangeA, angleB, rangeB })
-  }
-]
-
-/**
- * controlFeatures :: Frame -> [ol/Feature]
- */
-const controlFeatures = frame =>
-  R.zip(frame.points.map(point), handledrag).map(handle)
-
 
 const DONT_PROPAGATE = false
 const PROPAGATE = true
@@ -243,6 +159,7 @@ const pixelTolerance = options =>
     ? options.pixelTolerance
     : 10
 
+
 /** Extract feature collection from options source or feature collection. */
 const featureCollection = options => {
   const features = options.source
@@ -255,11 +172,12 @@ const featureCollection = options => {
   return features
 }
 
+
 /**
  * Modify interaction specific to fan areas.
  * Note: Interaction is implemented as DFA.
  */
-export class ModifyFan extends Interaction {
+export class ModifyCustom extends Interaction {
 
   constructor (options) {
     super(options)
@@ -272,7 +190,7 @@ export class ModifyFan extends Interaction {
       // NOTE: Re-creating frame is only necessary when update was triggered
       // from the 'outside', i.e. Translate interaction.
       // TODO: disable Translate for fan areas and similar?
-      this.frame = createFrame(this.feature, options)
+      this.frame = options.frame(this.feature, options)
 
       // Update handle geometries as a result of updated feature geometry.
       this.frame.points.forEach((p, i) => this.handles[i].setGeometry(point(p)))
@@ -281,8 +199,9 @@ export class ModifyFan extends Interaction {
     this.feature.on('change', this.featureChanged)
 
     // Setup dedicated vector layer for control features.
-    this.frame = createFrame(this.feature, options)
-    this.handles = controlFeatures(this.frame)
+    this.frame = options.frame(this.feature, options)
+    const points = this.frame.points.map(point)
+    this.handles = R.zip(points, options.handledrag).map(handle)
 
     this.overlay = new VectorLayer({
       source: new VectorSource({
@@ -321,7 +240,6 @@ export class ModifyFan extends Interaction {
     if (!map) this.feature.un('change', this.featureChanged)
     this.overlay.setMap(map)
     super.setMap(map)
-
   }
 
   /**

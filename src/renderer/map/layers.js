@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as R from 'ramda'
 
 import Collection from 'ol/Collection'
@@ -16,9 +15,8 @@ import Feature from '../project/Feature'
 import URI from '../project/URI'
 import selection from '../selection'
 import { featureGeometry } from '../components/feature-descriptors'
-import { ModifyFan } from './interaction/ModifyFan'
-import { ModifyCorridor } from './interaction/ModifyCorridor'
-import { ModifyOrbit } from './interaction/ModifyOrbit'
+import { ModifyCustom } from './interaction/ModifyCustom'
+import { geometryOptions } from './interaction/geometry-options'
 
 // --
 // SECTION: Module-global (utility) functions.
@@ -312,20 +310,25 @@ const createModify = () => {
   let initial = {} // Cloned geometries BEFORE modify.
 
   const ctor = R.cond([
-    [R.equals('fan'), R.always(options => new ModifyFan(options))],
-    [R.equals('corridor'), R.always(options => new ModifyCorridor(options))],
-    [R.equals('orbit'), R.always(options => new ModifyOrbit(options))],
+    [R.equals('fan'), R.always(options => new ModifyCustom(options))],
+    [R.equals('corridor'), R.always(options => new ModifyCustom(options))],
+    [R.equals('orbit'), R.always(options => new ModifyCustom(options))],
     [R.T, R.always(options => new Modify(options))]
   ])(geometry ? geometry.layout : null)
 
-  const interaction = ctor({
+  const layout = geometry ? geometry.layout : null
+  const additionalOptions = geometryOptions[layout] || {}
+  const options = {
     hitTolerance,
     features: selectedFeatures,
     // Allow translate while editing (with shift key pressed):
     condition: conjunction(primaryAction, noShiftKey),
     insertVertexCondition: () => !geometry.maxPoints,
-    ...geometry
-  })
+    ...geometry,
+    ...additionalOptions
+  }
+
+  const interaction = ctor(options)
 
   interaction.on('modifystart', ({ features }) => {
     initial = cloneGeometries(features.getArray())
