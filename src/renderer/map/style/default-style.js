@@ -100,3 +100,29 @@ export const arc = (C, radius, angle, circumference, quads = 48) =>
     .map(i => angle + i * (circumference / quads))
     .map(offset => C.destinationPoint(radius, offset))
 
+
+const flip = angle => (angle > 0 && angle <= 180) ? -1 : 1
+
+export const lineLabel = ([A, B], text, frac = 0.5) => {
+  const [bearing, distance] = G.bearingLine([A, B])
+
+  return new style.Style({
+    geometry: new geom.Point(G.fromLatLon(A.destinationPoint(distance * frac, bearing))),
+    text: new style.Text({
+      text,
+      rotation: (bearing + flip(bearing) * 90) / 180 * Math.PI,
+      font: biggerFont,
+      stroke: whiteStroke
+    })
+  })
+}
+
+export const arcLabel = (C, radius, angle, text) => new style.Style({
+  geometry: new geom.Point(G.fromLatLon(C.destinationPoint(radius, angle + 180))),
+  text: new style.Text({
+    text,
+    rotation: (angle + flip(angle) * 90) / 180 * Math.PI,
+    font: biggerFont,
+    stroke: whiteStroke
+  })
+})

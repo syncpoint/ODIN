@@ -1,23 +1,10 @@
 import * as R from 'ramda'
-import * as geom from 'ol/geom'
-import * as style from 'ol/style'
-import { defaultStyle, whiteStroke, lineStyle, arc, biggerFont } from './default-style'
+import { defaultStyle, lineStyle, arc, arcLabel, lineLabel } from './default-style'
 import { parameterized } from '../../components/SIDC'
 import * as G from './geodesy'
 import { closedArrowEnd, simpleArrowEnd, simpleCrossEnd } from './arrows'
 
-const lastArcSegment = arc => [arc[arc.length - 2], arc[arc.length - 1]]
-
-const flip = angle => (angle > 0 && angle <= 180) ? -1 : 1
-const arcLabel = (C, radius, angle, text) => new style.Style({
-  geometry: new geom.Point(G.fromLatLon(C.destinationPoint(radius, angle + 180))),
-  text: new style.Text({
-    text,
-    rotation: (angle + flip(angle) * 90) / 180 * Math.PI,
-    font: biggerFont,
-    stroke: whiteStroke
-  })
-})
+const lastSegment = arc => [arc[arc.length - 2], arc[arc.length - 1]]
 
 const styles = {}
 
@@ -47,7 +34,7 @@ styles['G*T*E-----'] = (feature, resolution) => {
   return lineStyle(feature, [
     outerArc,
     ...teeth,
-    simpleArrowEnd(lastArcSegment(outerArc), resolution)
+    simpleArrowEnd(lastSegment(outerArc), resolution)
   ]).concat(arcLabel(C, radius, angle, 'I'))
 }
 
@@ -61,7 +48,7 @@ styles['G*T*O-----'] = (feature, resolution) => {
 
   return lineStyle(feature, [
     outerArc,
-    ...simpleCrossEnd(lastArcSegment(outerArc), resolution)
+    ...simpleCrossEnd(lastSegment(outerArc), resolution)
   ]).concat(arcLabel(C, radius, angle, 'O'))
 }
 
@@ -80,7 +67,7 @@ styles['G*T*Q-----'] = (feature, resolution) => {
   return lineStyle(feature, [
     innerArc,
     ...spikes,
-    simpleArrowEnd(lastArcSegment(innerArc), resolution)
+    simpleArrowEnd(lastSegment(innerArc), resolution)
   ]).concat(arcLabel(C, radius * 0.8, angle, 'R'))
 }
 
@@ -94,24 +81,38 @@ styles['G*T*S-----'] = (feature, resolution) => {
 
   return lineStyle(feature, [
     outerArc,
-    simpleArrowEnd(lastArcSegment(outerArc), resolution)
+    simpleArrowEnd(lastSegment(outerArc), resolution)
   ]).concat(arcLabel(C, radius, angle, 'S'))
 }
 
-// TODO: label 'S'
-styles['G*T*US----'] = (feature, resolution) => {
+const fanLike = text => (feature, resolution) => {
   const points = G.coordinates(feature)
   if (points.length !== 3) return defaultStyle(feature)
 
   const [C, A, B] = points.map(G.toLatLon)
+  const [bearingA, distanceA] = G.bearingLine([C, A])
+  const [bearingB, distanceB] = G.bearingLine([C, B])
   const arrowA = simpleArrowEnd([C, A], resolution)
   const arrowB = simpleArrowEnd([C, B], resolution)
-  const lines = [[C, A], [C, B], arrowA, arrowB]
-  return lineStyle(feature, lines)
+  const A1 = C.destinationPoint(distanceA / 1.95, bearingA - 4)
+  const A2 = A.destinationPoint(-distanceA / 1.95, bearingA - 4)
+  const B1 = C.destinationPoint(distanceB / 1.95, bearingB + 4)
+  const B2 = B.destinationPoint(-distanceB / 1.95, bearingB + 4)
+
+  return lineStyle(feature, [
+    [C, A1, A2, A],
+    [C, B1, B2, B],
+    arrowA,
+    arrowB
+  ]).concat([
+    lineLabel([C, A1], text, 0.4),
+    lineLabel([C, B1], text, 0.4)
+  ])
 }
 
-styles['G*T*UG----'] = styles['G*T*US----'] // TODO: label 'G'
-styles['G*T*UC----'] = styles['G*T*US----'] // TODO: label 'C'
+styles['G*T*US----'] = fanLike('S')
+styles['G*T*UG----'] = fanLike('G')
+styles['G*T*UC----'] = fanLike('C')
 
 export const multipointStyle = (feature, resolution) => {
   const sidc = parameterized(feature.getProperties().sidc)

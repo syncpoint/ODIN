@@ -1,5 +1,5 @@
 import * as R from 'ramda'
-import { defaultStyle, lineStyle, arc } from './default-style'
+import { defaultStyle, lineStyle, arc, lineLabel } from './default-style'
 import { parameterized } from '../../components/SIDC'
 import * as G from './geodesy'
 import { simpleArrowEnd, slashEnd } from './arrows'
@@ -74,6 +74,7 @@ const withdrawLike = text => (feature, resolution) => {
   const arcPoints = arc(C, width / 2, bearing, orientation * 180)
   const arrow = simpleArrowEnd(linePoints, resolution)
   return lineStyle(feature, [linePoints, arcPoints, arrow])
+    .concat(lineLabel(linePoints, text))
 }
 
 geometries['G*T*L-----'] = withdrawLike('D')
@@ -81,7 +82,6 @@ geometries['G*T*M-----'] = withdrawLike('R')
 geometries['G*T*W-----'] = withdrawLike('W')
 geometries['G*T*WP----'] = withdrawLike('WP')
 
-// TODO: label 'RIP'
 geometries['G*T*R-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const A = G.toLatLon(G.coordinates(point))
@@ -98,6 +98,7 @@ geometries['G*T*R-----'] = (feature, resolution) => {
   const arrowA = simpleArrowEnd(lineA, resolution)
   const arrowB = simpleArrowEnd(lineB.reverse(), resolution)
   return lineStyle(feature, [lineA, lineB, arcPoints, arrowA, arrowB])
+    .concat(lineLabel(lineA, 'RIP'))
 }
 
 geometries['G*T*P-----'] = (feature, resolution) => {
