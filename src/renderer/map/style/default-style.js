@@ -1,5 +1,12 @@
+import * as R from 'ramda'
+import * as geom from 'ol/geom'
 import * as style from 'ol/style'
 import ColorSchemes from './color-schemes'
+import { K } from '../../../shared/combinators'
+import * as G from './geodesy'
+
+export const defaultFont = '14px sans-serif'
+export const biggerFont = '16px sans-serif'
 
 const identity = sidc => sidc ? sidc[1] : 'U' // identity or U - UNKNOWN
 const status = sidc => sidc ? sidc[3] : 'P' // status or P - PRESENT
@@ -50,7 +57,9 @@ const white = [255, 255, 255, 1]
 const blue = [0, 153, 255, 1]
 const width = 3
 
-export default (feature, resolution) => {
+export const whiteStroke = new style.Stroke({ color: 'white', width: 3 })
+
+export const defaultStyle = (feature, resolution) => {
   const { sidc, n } = feature.getProperties()
   const styles = []
   styles.push(new style.Style({
@@ -68,3 +77,26 @@ export default (feature, resolution) => {
   }))
   return styles
 }
+
+const multiLineString = lines =>
+  new geom.MultiLineString(lines.map(line => line.map(G.fromLatLon)))
+
+export const lineStyle = (feature, lines) => {
+  const styles = defaultStyle(feature)
+
+  // It is quite possible that feature's extent is too small
+  // to construct a valid geometry. Use default style in this case.
+
+  try {
+    const geometry = multiLineString(lines)
+    return K(styles)(xs => xs.forEach(s => s.setGeometry(geometry)))
+  } catch (err) {
+    return styles
+  }
+}
+
+export const arc = (C, radius, angle, circumference, quads = 48) =>
+  R.range(0, quads + 1)
+    .map(i => angle + i * (circumference / quads))
+    .map(offset => C.destinationPoint(radius, offset))
+

@@ -3,10 +3,10 @@ import { Style, Icon } from 'ol/style'
 import ms from 'milsymbol'
 import { K } from '../../../shared/combinators'
 import selection from '../../selection'
-import defaultStyle from './default-style'
+import { defaultStyle } from './default-style'
 import { polygonStyle } from './polygon-style'
 import { lineStyle } from './line-style'
-import { fanStyle } from './fan-style'
+import { multipointStyle } from './multipoint-style'
 import { collectionStyle } from './collection-style'
 
 /**
@@ -94,7 +94,7 @@ export default (feature, resolution) => {
     [R.equals('Point'), R.always(symbolStyle)],
     [R.equals('Polygon'), R.always(polygonStyle)],
     [R.equals('LineString'), R.always(lineStyle)],
-    [R.equals('MultiPoint'), R.always(fanStyle)],
+    [R.equals('MultiPoint'), R.always(multipointStyle)],
     [R.equals('GeometryCollection'), R.always(collectionStyle)],
     [R.T, R.always(defaultStyle)]
   ])

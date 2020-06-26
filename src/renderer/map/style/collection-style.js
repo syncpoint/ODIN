@@ -1,47 +1,8 @@
 import * as R from 'ramda'
-import * as geom from 'ol/geom'
-import defaultStyle from './default-style'
-import { K } from '../../../shared/combinators'
+import { defaultStyle, lineStyle, arc } from './default-style'
 import { parameterized } from '../../components/SIDC'
 import * as G from './geodesy'
-
-const multiLineString = lines =>
-  new geom.MultiLineString(lines.map(line => line.map(G.fromLatLon)))
-
-const lineStyle = (feature, lines) => {
-  const styles = defaultStyle(feature)
-
-  // It is quite possible that feature's extent is too small
-  // to construct a valid geometry. Use default style in this case.
-
-  try {
-    const geometry = multiLineString(lines)
-    return K(styles)(xs => xs.forEach(s => s.setGeometry(geometry)))
-  } catch (err) {
-    return styles
-  }
-}
-
-const simpleArrowEnd = (line, resolution, widthFactor = 10, bearing = 145) => {
-  const finalBearing = G.finalBearing(line)
-  const arrowWidth = resolution * widthFactor
-  const PA = line[1].destinationPoint(arrowWidth, finalBearing - bearing)
-  const PB = line[1].destinationPoint(arrowWidth, finalBearing + bearing)
-  return [PA, line[1], PB]
-}
-
-const slashEnd = (line, angle, resolution, widthFactor = 10) => {
-  const finalBearing = G.finalBearing(line)
-  const arrowWidth = resolution * widthFactor
-  const PA0 = line[1].destinationPoint(arrowWidth, finalBearing - angle)
-  const PA1 = line[1].destinationPoint(-arrowWidth, finalBearing - angle)
-  return [PA0, PA1]
-}
-
-const arc = (C, radius, angle, circumference, quads = 48) =>
-  R.range(0, quads + 1)
-    .map(i => angle + i * (circumference / quads))
-    .map(offset => C.destinationPoint(radius, offset))
+import { simpleArrowEnd, slashEnd } from './arrows'
 
 
 const geometries = {}
@@ -103,7 +64,7 @@ geometries['G*T*J-----'] = (feature, resolution) => {
   return lineStyle(feature, [linePoints, arrow, outerArc, ...spikes])
 }
 
-const withdrawLike = (feature, resolution) => {
+const withdrawLike = text => (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
   const A = G.toLatLon(G.coordinates(point))
@@ -115,10 +76,10 @@ const withdrawLike = (feature, resolution) => {
   return lineStyle(feature, [linePoints, arcPoints, arrow])
 }
 
-geometries['G*T*L-----'] = withdrawLike // TODO: label 'D', W
-geometries['G*T*M-----'] = withdrawLike // TODO: label 'R'
-geometries['G*T*W-----'] = withdrawLike // TODO: label 'W'
-geometries['G*T*WP----'] = withdrawLike // TODO: label 'WP'
+geometries['G*T*L-----'] = withdrawLike('D')
+geometries['G*T*M-----'] = withdrawLike('R')
+geometries['G*T*W-----'] = withdrawLike('W')
+geometries['G*T*WP----'] = withdrawLike('WP')
 
 // TODO: label 'RIP'
 geometries['G*T*R-----'] = (feature, resolution) => {
@@ -176,11 +137,8 @@ geometries['G*T*Y-----'] = (feature, resolution) => {
   return lineStyle(feature, [[A1, B1], [A1, A2], [B1, B2], arrowA, arrowB])
 }
 
-const labels = {}
-
 export const collectionStyle = (feature, resolution) => {
   const sidc = parameterized(feature.getProperties().sidc)
-  const labelFns = labels[sidc] || []
   const geometryFns = geometries[sidc] || defaultStyle
-  return [geometryFns, ...labelFns].flatMap(fn => fn(feature, resolution))
+  return [geometryFns].flatMap(fn => fn(feature, resolution))
 }

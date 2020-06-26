@@ -1,4 +1,5 @@
-import defaultStyle from './default-style'
+import { defaultStyle } from './default-style'
+import { parameterized } from '../../components/SIDC'
 import {
   nsewLabel as nsew,
   centerLabel as c,
@@ -8,7 +9,6 @@ import {
   footerLabel as f,
   nsLabels as ns
 } from './polygon-labels'
-import { parameterized } from '../../components/SIDC'
 
 const when = s => fn => s ? fn(s) : null
 const W = (w, w1) => (w && w1) ? w + '-' + w1 : w || w1

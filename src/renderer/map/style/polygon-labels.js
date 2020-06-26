@@ -3,7 +3,7 @@ import * as math from 'mathjs'
 import * as geom from 'ol/geom'
 import * as style from 'ol/style'
 import { containsXY } from 'ol/extent'
-import { defaultFont } from './font'
+import { defaultFont } from './default-style'
 
 /**
  * segmentIntersect :: ([x, y], [x, y]) -> [[x0, y0], [x1, y1]] -> [x, y]
