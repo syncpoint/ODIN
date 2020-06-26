@@ -2,8 +2,11 @@ import { ipcRenderer } from 'electron'
 import OSM from 'ol/source/OSM'
 import XYZ from 'ol/source/XYZ'
 import WMTS, { optionsFromCapabilities } from 'ol/source/WMTS'
+import TileWMS from 'ol/source/TileWMS'
+import WMSCapabilities from 'ol/format/WMSCapabilities'
 import WMTSCapabilities from 'ol/format/WMTSCapabilities'
 import { DEVICE_PIXEL_RATIO } from 'ol/has'
+import { URL } from 'url'
 
 import '../epsg'
 
@@ -14,6 +17,17 @@ export const DEFAULT_SOURCE_DESCRIPTOR = Object.freeze({
   type: 'OSM',
   id: '708b7f83-12a2-4a8b-a49d-9f2683586bcf'
 })
+
+const wmsOptionsFromDescriptor = descriptor => {
+  const wmsServerUrl = new URL(descriptor.options.url)
+  return {
+    url: `${wmsServerUrl.origin}${wmsServerUrl.pathname}`,
+    params: {
+      LAYERS: descriptor.options.layer
+    },
+    crossOrigin: 'anonymous'
+  }
+}
 
 /*
   This is a factory function that takes a source descriptor and returns
@@ -30,6 +44,13 @@ const sources = {
     wmtsOptions.tilePixelRatio = (highDPI ? 2 : 1)
     wmtsOptions.crossOrigin = 'anonymous'
     return new WMTS(wmtsOptions)
+  },
+  WMS: async descriptor => {
+    const response = await fetch(descriptor.options.url)
+    const capabilities = (new WMSCapabilities()).read(await response.text())
+    console.dir(capabilities)
+    const options = wmsOptionsFromDescriptor(descriptor)
+    return new TileWMS(options)
   }
 }
 

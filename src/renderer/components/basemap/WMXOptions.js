@@ -2,16 +2,18 @@ import React from 'react'
 import { PropTypes } from 'prop-types'
 import { Card, CardContent, Typography, CircularProgress } from '@material-ui/core'
 
-import WMTSLayerTable from './WMTSLayerTable'
-import WMTSCapabilities from 'ol/format/WMTSCapabilities'
+import WMXLayerTable from './WMXLayerTable'
+
 import { get as getProjection } from 'ol/proj'
+import { firstOrDefault } from './tools'
 
 import { useTranslation } from 'react-i18next'
 
-const WMTSOptions = props => {
-  const { merge, onValidation } = props
+const WMXOptions = props => {
+  const { provider, merge, onValidation } = props
 
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const collator = Intl.Collator(i18n.language)
 
   /* effects */
   const [capabilities, setCapabilities] = React.useState(null)
@@ -29,7 +31,10 @@ const WMTSOptions = props => {
       try {
         const response = await fetch(props.options.url, { signal })
         if (!response.ok) { throw new Error(response.statusText) }
-        const caps = (new WMTSCapabilities()).read(await response.text())
+
+        const content = await response.text()
+        const caps = provider.capabilitiesFromContent(content)
+        if (!caps) { throw new Error(t('basemapManagement.invalidResponse')) }
         setCapabilities(caps)
       } catch (error) {
         setError(error.message)
@@ -43,69 +48,44 @@ const WMTSOptions = props => {
   // triggered by changes to the WMTS capabilities or by selecting a layer
   React.useEffect(() => {
     if (!capabilities || !selectedLayerId) return
-    const missingDefinitions = crs(capabilities, selectedLayerId)
+    const providedCRS = provider.crs(capabilities, selectedLayerId)
       .map(crs => ({
         Identifier: crs.Identifier,
         SupportedCRS: crs.SupportedCRS,
         CRSCode: crs.SupportedCRS.replace(/urn:ogc:def:crs:(\w+):(.*:)?(\w+)$/, '$1:$3')
       }))
-      .filter(crs => !getProjection(crs.CRSCode))
-
-    setMissingProjectionDefinitions(missingDefinitions)
-    onValidation(missingDefinitions.length === 0)
+    const missingDefinitions = providedCRS.filter(crs => !getProjection(crs.CRSCode))
+    if (missingDefinitions.length === providedCRS.length) {
+      /* Oops, seems like we do not support any CRS provided by the source */
+      setMissingProjectionDefinitions(missingDefinitions)
+      onValidation(false)
+    } else {
+      /* phew, we do support at least one provided CRS */
+      onValidation(true)
+    }
   }, [capabilities, selectedLayerId])
 
   /* increases performance */
   const layers = React.useMemo(() => {
-    /*  Depending on the WMTS provider the abstract may be lengthy. In order
-        to avoid information overflow we cut off the abstract at a given length.
-    */
-    const MAX_ABSTRACT_LENGTH = 140
-
-    const getAbstract = layer => {
-      if (!layer.Abstract) return ''
-      return layer.Abstract.length > MAX_ABSTRACT_LENGTH
-        ? `${layer.Abstract.substring(0, MAX_ABSTRACT_LENGTH)} ...`
-        : layer.Abstract
-    }
 
     if (!capabilities) return []
-    return capabilities.Contents.Layer.map(layer => {
-      return {
-        Identifier: layer.Identifier,
-        Title: layer.Title,
-        Abstract: getAbstract(layer)
-      }
-    })
+    const l = provider.layers(capabilities)
+    return l.sort((left, right) => collator.compare(left.Name, right.Name))
   }, [capabilities])
-
-  const wgs84BoundingBox = (wmtsCapabilites, layerId) => {
-    const layer = wmtsCapabilites.Contents.Layer.find(l => l.Identifier === layerId)
-    if (!layer) return null
-    return layer.WGS84BoundingBox
-  }
-
-  const crs = (caps, layerId) => {
-    let providedCRS = []
-    const layer = caps.Contents.Layer.find(l => l.Identifier === layerId)
-    if (!layer) return providedCRS
-    layer.TileMatrixSetLink.forEach(link => {
-      providedCRS = providedCRS.concat(
-        caps.Contents.TileMatrixSet
-          .filter(tms => tms.Identifier === link.TileMatrixSet)
-          .map(matrixSet => ({ Identifier: matrixSet.Identifier, SupportedCRS: matrixSet.SupportedCRS }))
-      )
-    })
-    return providedCRS
-  }
 
   /* functions */
   const handleLayerSelected = layerId => {
     setSelectedLayerId(layerId)
     if (layerId) {
+      const providedCRS = provider.crs(capabilities, layerId)
+      const p = (providedCRS.some(c => c.Identifier === 'EPSG:3857')
+        ? 'EPSG:3857'
+        : firstOrDefault(providedCRS.filter(crs => getProjection(crs.CRSCode)), null)
+      )
       merge({
         layer: layerId,
-        wgs84BoundingBox: wgs84BoundingBox(capabilities, layerId)
+        wgs84BoundingBox: provider.wgs84BoundingBox(capabilities, layerId),
+        projection: p
       })
     }
   }
@@ -146,7 +126,7 @@ const WMTSOptions = props => {
           </Typography>
         </CardContent>
       </Card>
-      <WMTSLayerTable
+      <WMXLayerTable
         layers={layers}
         selectedLayerIdentifier={selectedLayerId}
         onLayerSelected={handleLayerSelected}
@@ -164,10 +144,12 @@ const WMTSOptions = props => {
     </>
   )
 }
-WMTSOptions.propTypes = {
+
+WMXOptions.propTypes = {
+  provider: PropTypes.object,
   options: PropTypes.object,
   merge: PropTypes.func,
   onValidation: PropTypes.func
 }
 
-export default WMTSOptions
+export default WMXOptions

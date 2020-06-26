@@ -34,7 +34,8 @@
     "wmts": {
       "error": "Fehler",
       "missingProjections": "Für diese Projektionen fehlen die Definitionen"
-    }
+    },
+    "invalidResponse": "Der Server hat mit ungültigen Daten geantwortet. Bitte prüfen Sie die URL!"
   },
   "activities": {
     "tooltips": {
