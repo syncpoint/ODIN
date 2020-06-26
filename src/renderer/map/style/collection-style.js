@@ -116,6 +116,30 @@ geometries['G*T*P-----'] = (feature, resolution) => {
     .concat(lineLabel(linePoints, 'P'))
 }
 
+// 2.X.1.10: TACTICAL GRAPHICS - TASKS - DISRUPT
+geometries['G*T*T-----'] = (feature, resolution) => {
+  const [line, point] = feature.getGeometry().getGeometries()
+  const linePoints = G.coordinates(line).map(G.toLatLon)
+  const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
+  const [bearing, distance] = G.bearingLine(linePoints)
+  const A1 = linePoints[0].destinationPoint(halfWidth, bearing - 90)
+  const A2 = A1.destinationPoint(distance * 0.5, bearing)
+  const B1 = linePoints[0].destinationPoint(-distance * 0.25, bearing)
+  const B2 = linePoints[0].destinationPoint(distance * 0.75, bearing)
+  const C1 = linePoints[0].destinationPoint(halfWidth, bearing + 90)
+  const C2 = C1.destinationPoint(distance, bearing)
+
+  return lineStyle(feature, [
+    [A1, C1],
+    [A1, A2],
+    [B1, B2],
+    [C1, C2],
+    simpleArrowEnd([A1, A2], resolution),
+    simpleArrowEnd([B1, B2], resolution),
+    simpleArrowEnd([C1, C2], resolution)
+  ]).concat(lineLabel([linePoints[0], B2], 'D'))
+}
+
 geometries['G*T*X-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -128,8 +152,16 @@ geometries['G*T*X-----'] = (feature, resolution) => {
   const arrowA = simpleArrowEnd([A1, A2], resolution)
   const arrowB = simpleArrowEnd([B1, B2], resolution)
   const arrowC = simpleArrowEnd(linePoints, resolution)
-  return lineStyle(feature, [[A, B], linePoints, [A1, A2], [B1, B2], arrowA, arrowB, arrowC])
-    .concat(lineLabel(linePoints, 'C'))
+
+  return lineStyle(feature, [
+    [A, B],
+    linePoints,
+    [A1, A2],
+    [B1, B2],
+    arrowA,
+    arrowB,
+    arrowC
+  ]).concat(lineLabel(linePoints, 'C'))
 }
 
 geometries['G*T*Y-----'] = (feature, resolution) => {
