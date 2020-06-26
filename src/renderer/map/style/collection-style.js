@@ -1,5 +1,5 @@
 import * as R from 'ramda'
-import { defaultStyle, lineStyle, arc, lineLabel } from './default-style'
+import { defaultStyle, lineStyle, arc, lineLabel, arcLabel } from './default-style'
 import { parameterized } from '../../components/SIDC'
 import * as G from './geodesy'
 import { simpleArrowEnd, slashEnd } from './arrows'
@@ -24,7 +24,7 @@ geometries['G*T*B-----'] = (feature, resolution) => {
   const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
   const A = linePoints[1].destinationPoint(halfWidth, bearing + 90)
   const B = linePoints[1].destinationPoint(halfWidth, bearing - 90)
-  return lineStyle(feature, [linePoints, [A, B]])
+  return lineStyle(feature, [linePoints, [A, B]]).concat(lineLabel(linePoints, 'B'))
 }
 
 geometries['G*T*C-----'] = (feature, resolution) => {
@@ -36,6 +36,7 @@ geometries['G*T*C-----'] = (feature, resolution) => {
   const slashA = slashEnd([A1, A2], -45, resolution)
   const slashB = slashEnd([B1, B2], 45, resolution)
   return lineStyle(feature, [[A1, B1], [A1, A2], [B1, B2], slashA, slashB])
+    .concat(lineLabel(linePoints, 'C', 0))
 }
 
 geometries['G*T*H-----'] = (feature, resolution) => {
@@ -47,6 +48,7 @@ geometries['G*T*H-----'] = (feature, resolution) => {
   const slashA = slashEnd([A1, A2], 45, resolution)
   const slashB = slashEnd([B1, B2], -45, resolution)
   return lineStyle(feature, [[A1, B1], [A1, A2], [B1, B2], slashA, slashB])
+    .concat(lineLabel(linePoints, 'B', 0))
 }
 
 geometries['G*T*J-----'] = (feature, resolution) => {
@@ -62,6 +64,7 @@ geometries['G*T*J-----'] = (feature, resolution) => {
     .map(i => [outerArc[i], innerArc[i]])
 
   return lineStyle(feature, [linePoints, arrow, outerArc, ...spikes])
+    .concat(arcLabel(linePoints[1], halfWidth, bearing - 180, 'C'))
 }
 
 const withdrawLike = text => (feature, resolution) => {
@@ -110,6 +113,7 @@ geometries['G*T*P-----'] = (feature, resolution) => {
   const B = linePoints[1].destinationPoint(halfWidth, bearing - 90)
   const arrowC = simpleArrowEnd(linePoints, resolution)
   return lineStyle(feature, [[A, B], linePoints, arrowC])
+    .concat(lineLabel(linePoints, 'P'))
 }
 
 geometries['G*T*X-----'] = (feature, resolution) => {
@@ -125,6 +129,7 @@ geometries['G*T*X-----'] = (feature, resolution) => {
   const arrowB = simpleArrowEnd([B1, B2], resolution)
   const arrowC = simpleArrowEnd(linePoints, resolution)
   return lineStyle(feature, [[A, B], linePoints, [A1, A2], [B1, B2], arrowA, arrowB, arrowC])
+    .concat(lineLabel(linePoints, 'C'))
 }
 
 geometries['G*T*Y-----'] = (feature, resolution) => {
@@ -136,6 +141,7 @@ geometries['G*T*Y-----'] = (feature, resolution) => {
   const arrowA = simpleArrowEnd([A1, A2], resolution)
   const arrowB = simpleArrowEnd([B1, B2], resolution)
   return lineStyle(feature, [[A1, B1], [A1, A2], [B1, B2], arrowA, arrowB])
+    .concat(lineLabel(linePoints, 'B', 0))
 }
 
 export const collectionStyle = (feature, resolution) => {
