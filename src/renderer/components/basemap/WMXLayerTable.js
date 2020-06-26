@@ -50,6 +50,7 @@ const WMTSLayerTable = props => {
     </div>
   )
 }
+
 WMTSLayerTable.propTypes = {
   columns: PropTypes.array,
   layers: PropTypes.array,

@@ -144,6 +144,7 @@ const WMXOptions = props => {
     </>
   )
 }
+
 WMXOptions.propTypes = {
   provider: PropTypes.object,
   options: PropTypes.object,

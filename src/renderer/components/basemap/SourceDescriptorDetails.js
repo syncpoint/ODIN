@@ -14,8 +14,6 @@ import SaveIcon from '@material-ui/icons/Save'
 
 import Url from './Url'
 import XYZOptions from './XYZOptions'
-// import WMTSOptions from './WMTSOptions'
-// import WMSOptions from './WMSOptions'
 import WMXOptions from './WMXOptions'
 import Name from './Name'
 import wmts from './wmts'
@@ -192,6 +190,7 @@ const SourceDescriptorDetails = props => {
     </>
   )
 }
+
 SourceDescriptorDetails.propTypes = {
   classes: PropTypes.object,
   t: PropTypes.func,
