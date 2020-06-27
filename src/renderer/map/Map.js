@@ -15,7 +15,7 @@ import evented from '../evented'
 import preferences from '../project/preferences'
 import coordinateFormat from '../../shared/coord-format'
 import layers from './layers'
-import draw from './draw'
+import draw from './interaction/draw'
 import share from './share'
 import './style/scalebar.css'
 

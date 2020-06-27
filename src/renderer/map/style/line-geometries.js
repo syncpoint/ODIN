@@ -189,7 +189,7 @@ geometries['G*T*AS----'] = (feature, resolution) => {
 
 geometries['G*S*LCH---'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
-  const finalBearing = G.finalBearing(line).reverse()
+  const finalBearing = G.finalBearing(line)
   const width = resolution * 25
   const PB1 = line[1].destinationPoint(-width, finalBearing)
   const PB2 = line[1].destinationPoint(width, finalBearing + 90)
