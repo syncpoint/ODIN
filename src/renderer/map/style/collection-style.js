@@ -5,9 +5,10 @@ import * as G from './geodesy'
 import { simpleArrowEnd, slashEnd } from './arrows'
 
 
-const geometries = {}
+const styles = {}
 
-geometries['G*M*OEB---'] = (feature, resolution) => {
+// TACGRP.MOBSU.OBST.OBSEFT.BLK
+styles['G*M*OEB---'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
   const bearing = G.initialBearing(linePoints)
@@ -17,7 +18,8 @@ geometries['G*M*OEB---'] = (feature, resolution) => {
   return lineStyle(feature, [linePoints, [A, B]])
 }
 
-geometries['G*T*B-----'] = (feature, resolution) => {
+// TACGRP.TSK.BLK
+styles['G*T*B-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
   const bearing = G.finalBearing(linePoints)
@@ -27,7 +29,8 @@ geometries['G*T*B-----'] = (feature, resolution) => {
   return lineStyle(feature, [linePoints, [A, B]]).concat(lineLabel(linePoints, 'B'))
 }
 
-geometries['G*T*C-----'] = (feature, resolution) => {
+// TACGRP.TSK.CNZ
+styles['G*T*C-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
   const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
@@ -39,7 +42,8 @@ geometries['G*T*C-----'] = (feature, resolution) => {
     .concat(lineLabel(linePoints, 'C', 0))
 }
 
-geometries['G*T*H-----'] = (feature, resolution) => {
+// TACGRP.TSK.BRH
+styles['G*T*H-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
   const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
@@ -51,7 +55,8 @@ geometries['G*T*H-----'] = (feature, resolution) => {
     .concat(lineLabel(linePoints, 'B', 0))
 }
 
-geometries['G*T*J-----'] = (feature, resolution) => {
+// TACGRP.TSK.CNT
+styles['G*T*J-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
   const bearing = G.finalBearing(linePoints)
@@ -80,12 +85,13 @@ const withdrawLike = text => (feature, resolution) => {
     .concat(lineLabel(linePoints, text))
 }
 
-geometries['G*T*L-----'] = withdrawLike('D')
-geometries['G*T*M-----'] = withdrawLike('R')
-geometries['G*T*W-----'] = withdrawLike('W')
-geometries['G*T*WP----'] = withdrawLike('WP')
+styles['G*T*L-----'] = withdrawLike('D') // TACGRP.TSK.DLY
+styles['G*T*M-----'] = withdrawLike('R') // TACGRP.TSK.RTM
+styles['G*T*W-----'] = withdrawLike('W') // TACGRP.TSK.WDR
+styles['G*T*WP----'] = withdrawLike('WP') // TACGRP.TSK.WDR.WDRUP
 
-geometries['G*T*R-----'] = (feature, resolution) => {
+// TACGRP.TSK.RIP
+styles['G*T*R-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const A = G.toLatLon(G.coordinates(point))
   const lineA = G.coordinates(line).map(G.toLatLon)
@@ -104,7 +110,8 @@ geometries['G*T*R-----'] = (feature, resolution) => {
     .concat(lineLabel(lineA, 'RIP'))
 }
 
-geometries['G*T*P-----'] = (feature, resolution) => {
+// TACGRP.TSK.PNE
+styles['G*T*P-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
   const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
@@ -116,8 +123,8 @@ geometries['G*T*P-----'] = (feature, resolution) => {
     .concat(lineLabel(linePoints, 'P'))
 }
 
-// 2.X.1.10: TACTICAL GRAPHICS - TASKS - DISRUPT
-geometries['G*T*T-----'] = (feature, resolution) => {
+// TACGRP.TSK.DRT
+styles['G*T*T-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
   const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
@@ -140,7 +147,8 @@ geometries['G*T*T-----'] = (feature, resolution) => {
   ]).concat(lineLabel([linePoints[0], B2], 'D'))
 }
 
-geometries['G*T*X-----'] = (feature, resolution) => {
+// TACGRP.TSK.CLR
+styles['G*T*X-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
   const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
@@ -164,7 +172,8 @@ geometries['G*T*X-----'] = (feature, resolution) => {
   ]).concat(lineLabel(linePoints, 'C'))
 }
 
-geometries['G*T*Y-----'] = (feature, resolution) => {
+// TACGRP.TSK.BYS
+styles['G*T*Y-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
   const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
@@ -178,6 +187,6 @@ geometries['G*T*Y-----'] = (feature, resolution) => {
 
 export const collectionStyle = (feature, resolution) => {
   const sidc = parameterized(feature.getProperties().sidc)
-  const geometryFns = geometries[sidc] || defaultStyle
+  const geometryFns = styles[sidc] || defaultStyle
   return [geometryFns].flatMap(fn => fn(feature, resolution))
 }

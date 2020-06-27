@@ -8,6 +8,7 @@ const lastSegment = arc => [arc[arc.length - 2], arc[arc.length - 1]]
 
 const styles = {}
 
+// TACGRP.C2GM.GNL.ARS.SRHARA
 styles['G*G*GAS---'] = (feature, resolution) => {
   const points = G.coordinates(feature)
   if (points.length !== 3) return defaultStyle(feature)
@@ -19,6 +20,7 @@ styles['G*G*GAS---'] = (feature, resolution) => {
   return lineStyle(feature, lines)
 }
 
+// TACGRP.TSK.ISL
 styles['G*T*E-----'] = (feature, resolution) => {
   const points = G.coordinates(feature)
   if (points.length !== 2) return defaultStyle(feature)
@@ -38,6 +40,7 @@ styles['G*T*E-----'] = (feature, resolution) => {
   ]).concat(arcLabel(C, radius, angle, 'I'))
 }
 
+// TACGRP.TSK.OCC
 styles['G*T*O-----'] = (feature, resolution) => {
   const points = G.coordinates(feature)
   if (points.length !== 2) return defaultStyle(feature)
@@ -52,6 +55,7 @@ styles['G*T*O-----'] = (feature, resolution) => {
   ]).concat(arcLabel(C, radius, angle, 'O'))
 }
 
+// TACGRP.TSK.RTN
 styles['G*T*Q-----'] = (feature, resolution) => {
   const points = G.coordinates(feature)
   if (points.length !== 2) return defaultStyle(feature)
@@ -71,6 +75,7 @@ styles['G*T*Q-----'] = (feature, resolution) => {
   ]).concat(arcLabel(C, radius * 0.8, angle, 'R'))
 }
 
+// TACGRP.TSK.SCE
 styles['G*T*S-----'] = (feature, resolution) => {
   const points = G.coordinates(feature)
   if (points.length !== 2) return defaultStyle(feature)
@@ -110,9 +115,9 @@ const fanLike = text => (feature, resolution) => {
   ])
 }
 
-styles['G*T*US----'] = fanLike('S')
-styles['G*T*UG----'] = fanLike('G')
-styles['G*T*UC----'] = fanLike('C')
+styles['G*T*US----'] = fanLike('S') // TACGRP.TSK.SEC.SCN
+styles['G*T*UG----'] = fanLike('G') // TACGRP.TSK.SEC.GUD
+styles['G*T*UC----'] = fanLike('C') // TACGRP.TSK.SEC.COV
 
 export const multipointStyle = (feature, resolution) => {
   const sidc = parameterized(feature.getProperties().sidc)

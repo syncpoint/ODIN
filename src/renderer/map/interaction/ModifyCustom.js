@@ -6,17 +6,20 @@ import Collection from 'ol/Collection'
 import * as geom from 'ol/geom'
 import { distance } from 'ol/coordinate'
 import Feature from 'ol/Feature'
-import * as style from 'ol/style'
 import Event from 'ol/events/Event'
 import * as G from '../style/geodesy'
+import { redPointStyle, bluePointStyle } from '../style/default-style'
 
 /**
- * Modify event with same interface as ol/interaction/Modify.
+ * Modify event types.
  */
 
 const MODIFYSTART = 'modifystart'
 const MODIFYEND = 'modifyend'
 
+/**
+ * Modify event with same interface as ol/interaction/Modify.
+ */
 class ModifyEvent extends Event {
   constructor (type, features, event) {
     super(type)
@@ -24,26 +27,6 @@ class ModifyEvent extends Event {
     this.mapBrowserEvent = event
   }
 }
-
-/**
- * Control handle styles.
- */
-
-const white = [255, 255, 255, 1]
-const blue = [0, 153, 255, 1]
-const red = [255, 0, 0, 1]
-const width = 3
-
-const pointStyle = fillColor => [
-  new style.Style({
-    image: new style.Circle({
-      radius: width * 2,
-      fill: new style.Fill({ color: fillColor }),
-      stroke: new style.Stroke({ color: white, width: width / 2 })
-    }),
-    zIndex: Infinity
-  })
-]
 
 /**
  * point :: [number, number] -> ol/geom/Point
@@ -57,14 +40,14 @@ const point = latLon => new geom.Point(G.fromLatLon(latLon))
 const handle = ([geometry, pointerdrag]) =>
   new Feature({ geometry, pointerdrag })
 
-const DONT_PROPAGATE = false
-const PROPAGATE = true
+const DONT_PROPAGATE = false // don't propagate event
+const PROPAGATE = true // propagate event
 
 /**
- * candidate :: (ol/MapBrowserEvent, [ol/Feature], number) -> ol/Feature
- * Handle under pointer (within given pixel tolerance).
+ * candidateHandle :: (ol/MapBrowserEvent, [ol/Feature], number) -> ol/Feature
+ * Handle under pointer (within given pixel tolerance) or null.
  */
-const candidate = ({ map, pixel }, [...handles], pixelTolerance) => {
+const candidateHandle = ({ map, pixel }, [...handles], pixelTolerance) => {
   handles.forEach(feature => {
     const vertexCoodinate = G.coordinates(feature)
     const vertexPixel = map.getPixelFromCoordinate(vertexCoodinate)
@@ -77,19 +60,19 @@ const candidate = ({ map, pixel }, [...handles], pixelTolerance) => {
 }
 
 // Behavior :: { string -> (ol/MapBrowserEvent -> boolean)}
-// DFA states (behaviors).
+// Named DFA states (behaviors).
 // Note: Event handlers are bound to modify interaction instance (execution context).
 
 /**
- * pointerUp :: [ol/Feature] -> Behavior
+ * (behavior) pointerUp :: [ol/Feature] -> Behavior
  * Detect focused handle under pointer.
  */
 const pointerUp = handles => {
-  handles.forEach(feature => feature.setStyle(pointStyle(red)))
+  handles.forEach(feature => feature.setStyle(redPointStyle))
 
   return {
     pointermove (event) {
-      const handle = candidate(event, handles, this.pixelTolerance)
+      const handle = candidateHandle(event, handles, this.pixelTolerance)
       return handle
         ? this.become(focusHandle(handles, handle), DONT_PROPAGATE)
         : PROPAGATE
@@ -98,32 +81,39 @@ const pointerUp = handles => {
 }
 
 /**
- * focusHandle :: ([ol/Feature], ol/Feature) -> Behavior
+ * (behavior) focusHandle :: ([ol/Feature], ol/Feature) -> Behavior
  * Initiate drag sequence for focused handle on pointer down.
  */
 const focusHandle = (handles, handle) => {
-  handle.setStyle(pointStyle(blue))
+  handle.setStyle(bluePointStyle)
 
   return {
     pointermove (event) {
-      const handle = candidate(event, handles, this.pixelTolerance)
+      // Determine new handle (if any) under pointer.
+      const handle = candidateHandle(event, handles, this.pixelTolerance)
       return handle
         ? this.become(focusHandle(handles, handle), DONT_PROPAGATE)
-        : this.become(pointerUp(handles), PROPAGATE)
+        : this.become(pointerUp(handles), PROPAGATE) // focus lost
     },
 
     pointerdown () {
+      // Switch to dragging.
       return this.become(dragHandle(handles, handle), DONT_PROPAGATE)
     }
   }
 }
 
 /**
- * dragHandle :: ([ol/Feature], ol/Feature) -> Behavior
+ * (behavior) dragHandle :: ([ol/Feature], ol/Feature) -> Behavior
  * Delegate point drag to event handler of control handle,
  * thus updating geometry frame.
  */
 const dragHandle = (handles, handle) => {
+
+  /**
+   * pointerdrag :: (Frame, ol/MapBrowserEvent) -> boolean
+   * Drag handler for current handle.
+   */
   const pointerdrag = handle.get('pointerdrag')
 
   return {
@@ -174,7 +164,8 @@ const featureCollection = options => {
 
 
 /**
- * Modify interaction specific to fan areas.
+ * Modify interaction used for geometries other than Polygon, LineString and Point.
+ * Interaction is configured for specific geometry through extended options object.
  * Note: Interaction is implemented as DFA.
  */
 export class ModifyCustom extends Interaction {
@@ -189,7 +180,6 @@ export class ModifyCustom extends Interaction {
     this.featureChanged = () => {
       // NOTE: Re-creating frame is only necessary when update was triggered
       // from the 'outside', i.e. Translate interaction.
-      // TODO: disable Translate for fan areas and similar?
       this.frame = options.frame(this.feature, options)
 
       // Update handle geometries as a result of updated feature geometry.
@@ -198,7 +188,8 @@ export class ModifyCustom extends Interaction {
 
     this.feature.on('change', this.featureChanged)
 
-    // Setup dedicated vector layer for control features.
+    // Setup dedicated vector layer for control features (handles).
+    // NOTE: Functions `frame` and `handledrag` are specific to actual geometry.
     this.frame = options.frame(this.feature, options)
     const points = this.frame.points.map(point)
     this.handles = R.zip(points, options.handledrag).map(handle)

@@ -38,6 +38,7 @@ export const geometries = {
   'G*F*LTF---': linearTarget
 }
 
+// TACGRP.C2GM.OFF.LNE.DIRATK.AVN
 geometries['G*G*OLKA--'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
   const initialBearing = G.initialBearing(line)
@@ -55,17 +56,20 @@ geometries['G*G*OLKA--'] = (feature, resolution) => {
   ])
 }
 
+// TACGRP.C2GM.OFF.LNE.DIRATK.GRD.MANATK
 geometries['G*G*OLKGM-'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
   const arrow = doubleArrow(line, resolution)
   return lineStyle(feature, [[line[0], arrow[4]], arrow])
 }
 
+// TACGRP.C2GM.OFF.LNE.DIRATK.GRD.SUPATK
 geometries['G*G*OLKGS-'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
   return lineStyle(feature, [line, simpleArrowEnd(line, resolution)])
 }
 
+// TACGRP.C2GM.DCPN.DAFF
 geometries['G*G*PF----'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
   const finalBearing = G.finalBearing(line)
@@ -82,6 +86,7 @@ geometries['G*G*PF----'] = (feature, resolution) => {
   return s1.concat(s2)
 }
 
+// TACGRP.MOBSU.OBSTBP.CSGSTE.FRY
 geometries['G*M*BCF---'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
   const arrowEnd = closedArrowEnd(line, resolution)
@@ -93,6 +98,7 @@ geometries['G*M*BCF---'] = (feature, resolution) => {
   ])
 }
 
+// TACGRP.MOBSU.OBSTBP.CSGSTE.LANE
 geometries['G*M*BCL---'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
   const arrowEnd = simpleArrowEnd(line, resolution, 15, -35)
@@ -104,6 +110,7 @@ geometries['G*M*BCL---'] = (feature, resolution) => {
   ])
 }
 
+// TACGRP.MOBSU.OBSTBP.CSGSTE.RFT
 geometries['G*M*BCR---'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
   const arrowEnd = simpleArrowEnd(line, resolution, 25, -60)
@@ -115,6 +122,7 @@ geometries['G*M*BCR---'] = (feature, resolution) => {
   ])
 }
 
+// TACGRP.MOBSU.OBST.OBSEFT.FIX
 geometries['G*M*OEF---'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
   const [initialBearing, finalBearing] = G.bearings(line)
@@ -128,6 +136,7 @@ geometries['G*M*OEF---'] = (feature, resolution) => {
   ])
 }
 
+// TACGRP.MOBSU.SU.FEWS
 geometries['G*M*SW----'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
   const width = resolution * 20
@@ -135,6 +144,7 @@ geometries['G*M*SW----'] = (feature, resolution) => {
   return lineStyle(feature, [[PA1, ...line, PA2]])
 }
 
+// TACGRP.OTH.HAZ.NVGL
 geometries['G*O*HN----'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
   const [initialBearing, finalBearing] = G.bearings(line)
@@ -144,6 +154,7 @@ geometries['G*O*HN----'] = (feature, resolution) => {
   return lineStyle(feature, [[PB, ...line, PA]])
 }
 
+// TACGRP.TSK.FLWASS
 geometries['G*T*A-----'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
   const initialBearing = G.initialBearing(line)
@@ -167,6 +178,7 @@ geometries['G*T*A-----'] = (feature, resolution) => {
   return s1.concat(s2)
 }
 
+// TACGRP.TSK.FLWASS.FLWSUP
 geometries['G*T*AS----'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
   const initialBearing = G.initialBearing(line)
@@ -187,6 +199,7 @@ geometries['G*T*AS----'] = (feature, resolution) => {
   ])
 }
 
+// TACGRP.CSS.LNE.CNY.HCNY
 geometries['G*S*LCH---'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
   const finalBearing = G.finalBearing(line)
@@ -202,6 +215,7 @@ geometries['G*S*LCH---'] = (feature, resolution) => {
   ])
 }
 
+// TACGRP.CSS.LNE.CNY.MCNY
 geometries['G*S*LCM---'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
   const finalBearing = G.finalBearing(line)
@@ -214,6 +228,7 @@ geometries['G*S*LCM---'] = (feature, resolution) => {
   return lineStyle(feature, [[PA3, PA4, PA1, PA2, PB2, line[1], PB3, PA3]])
 }
 
+// TACGRP.TSK.FIX
 geometries['G*T*F-----'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
   const [initialBearing, finalBearing] = G.bearings(line)

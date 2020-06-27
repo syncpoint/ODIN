@@ -55,27 +55,33 @@ const stroke = (sidc, n) => new style.Stroke({
 
 const white = [255, 255, 255, 1]
 const blue = [0, 153, 255, 1]
+const red = [255, 0, 0, 1]
 const width = 3
+
+const circle = fillColor => new style.Circle({
+  radius: width * 2,
+  fill: new style.Fill({ color: fillColor }),
+  stroke: new style.Stroke({ color: white, width: width / 2 })
+})
+
+const pointStyle = fillColor => [
+  new style.Style({
+    image: circle(fillColor),
+    zIndex: Infinity
+  })
+]
+
+export const bluePointStyle = pointStyle(blue)
+export const redPointStyle = pointStyle(red)
 
 export const whiteStroke = new style.Stroke({ color: 'white', width: 3 })
 
-export const defaultStyle = (feature, resolution) => {
+export const defaultStyle = feature => {
   const { sidc, n } = feature.getProperties()
-  const styles = []
-  styles.push(new style.Style({
-    stroke: outlineStroke(sidc),
-
-    // Fallback to make POINT/MULTI_POINT visible.
-    image: new style.Circle({
-      radius: width * 2,
-      fill: new style.Fill({ color: blue }),
-      stroke: new style.Stroke({ color: white, width: width / 2 })
-    })
-  }))
-  styles.push(new style.Style({
-    stroke: stroke(sidc, n)
-  }))
-  return styles
+  return [
+    new style.Style({ stroke: outlineStroke(sidc), image: circle(blue) }),
+    new style.Style({ stroke: stroke(sidc, n) })
+  ]
 }
 
 const multiLineString = lines =>
@@ -85,7 +91,8 @@ export const lineStyle = (feature, lines) => {
   const styles = defaultStyle(feature)
 
   // It is quite possible that feature's extent is too small
-  // to construct a valid geometry. Use default style in this case.
+  // to construct a valid geometry (exception).
+  // Use default style in this case.
 
   try {
     const geometry = multiLineString(lines)
