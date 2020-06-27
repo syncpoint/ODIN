@@ -49,5 +49,21 @@ export const drawOptions = [
       const A = C.destinationPoint(resolution * 50, 0)
       feature.setGeometry(new geom.MultiPoint([G.fromLatLon(C), G.fromLatLon(A)]))
     }
+  },
+  {
+    match: descriptor => descriptor.layout === 'corridor',
+    options: descriptor => ({ type: GeometryType.LINE_STRING, maxPoints: descriptor.maxPoints }),
+    complete: (map, feature) => {
+      const resolution = map.getView().getResolution()
+      const line = feature.getGeometry()
+      const linePoints = G.coordinates(line).map(G.toLatLon)
+      const bearing = G.initialBearing(linePoints)
+      const point = linePoints[0].destinationPoint(resolution * 50, bearing + 90)
+      feature.setGeometry(new geom.GeometryCollection([
+        new geom.LineString(linePoints.map(G.fromLatLon)),
+        new geom.Point(G.fromLatLon(point))
+      ]))
+    }
   }
+
 ]
