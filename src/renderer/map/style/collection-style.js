@@ -2,10 +2,125 @@ import * as R from 'ramda'
 import { defaultStyle, lineStyle, arc, lineLabel, arcLabel } from './default-style'
 import { parameterized } from '../../components/SIDC'
 import * as G from './geodesy'
-import { simpleArrowEnd, slashEnd } from './arrows'
+import { simpleArrowEnd, slashEnd, closedArrowEnd } from './arrows'
+import { K } from '../../../shared/combinators'
 
 
 const styles = {}
+
+// TACGRP.C2GM.OFF.ARS.AFP
+styles['G*G*OAF---'] = (feature, resolution) => {
+  const [line, point] = feature.getGeometry().getGeometries()
+  const linePoints = G.coordinates(line).map(G.toLatLon)
+  const bearing = G.initialBearing(linePoints)
+  const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
+  const A1 = linePoints[0].destinationPoint(halfWidth, bearing + 90)
+  const A2 = A1.destinationPoint(resolution * 20, bearing + 135)
+  const B1 = linePoints[0].destinationPoint(halfWidth, bearing - 90)
+  const B2 = B1.destinationPoint(resolution * 20, bearing - 135)
+  return lineStyle(feature, [
+    linePoints,
+    [A2, A1, B1, B2],
+    simpleArrowEnd(linePoints, resolution)
+  ])
+}
+
+// TACGRP.MOBSU.OBSTBP.CSGSTE.FRDDFT
+styles['G*M*BCD---'] = (feature, resolution) => {
+  const [line, point] = feature.getGeometry().getGeometries()
+  const linePoints = G.coordinates(line).map(G.toLatLon)
+  const [bearing, distance] = G.bearingLine(linePoints)
+  const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
+  const A = linePoints[0].destinationPoint(distance / 2, bearing)
+  const B = A.destinationPoint(halfWidth + resolution * 10, bearing + 90)
+  const C = A.destinationPoint(halfWidth + resolution * 10, bearing - 90)
+  const X = G.translateLine(resolution * 4, 90)([B, C])
+  const Y = G.translateLine(resolution * 4, -90)([B, C])
+  const SX = G.segmentizeLine(X, resolution).filter((_, i) => i % 2 === 0)
+  const SY = G.segmentizeLine(Y, resolution).filter((_, i) => (i + 1) % 2 === 0)
+
+  return lineStyle(feature, [
+    G.translateLine(halfWidth, 90)(linePoints),
+    G.translateLine(halfWidth, -90)(linePoints)
+  ])
+    .map(s => K(s)(s => s.getStroke().setLineDash([20, 10])))
+    .concat(lineStyle(feature, [R.flatten(R.zip(SX, SY))]))
+}
+
+// TACGRP.MOBSU.OBSTBP.CSGSTE.FRDESY
+styles['G*M*BCE---'] = (feature, resolution) => {
+  const [line, point] = feature.getGeometry().getGeometries()
+  const linePoints = G.coordinates(line).map(G.toLatLon)
+  const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
+  return lineStyle(feature, [
+    G.translateLine(halfWidth, 90)(linePoints),
+    G.translateLine(halfWidth, -90)(linePoints)
+  ]).map(s => K(s)(s => s.getStroke().setLineDash([20, 10])))
+}
+
+// TACGRP.MOBSU.OBSTBP.DFTY.DFT
+styles['G*M*BDD---'] = (feature, resolution) => {
+  const [line, point] = feature.getGeometry().getGeometries()
+  const linePoints = G.coordinates(line).map(G.toLatLon)
+  const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
+  const [A1, A2] = G.translateLine(halfWidth, 90)(linePoints)
+  const [B1, B2] = G.translateLine(halfWidth, -90)(linePoints)
+  const [C1, C2] = G.translateLine(resolution * 4, 90)([A1, B1])
+  const [D1, D2] = G.translateLine(resolution * 4, -90)([A1, B1])
+  const arrowA = closedArrowEnd([A1, A2], resolution)
+  const arrowB = closedArrowEnd([B1, B2], resolution)
+
+  const SC = G.segmentizeLine([C1, C2], resolution).filter((_, i) => i % 2 === 0)
+  const SD = G.segmentizeLine([D1, D2], resolution).filter((_, i) => (i + 1) % 2 === 0)
+
+  return lineStyle(feature, [
+    [arrowA[3], A1, ...R.flatten(R.zip(SC, SD)), B1, arrowB[3]],
+    arrowA,
+    arrowB
+  ])
+}
+
+// TACGRP.MOBSU.OBSTBP.DFTY.ESY
+styles['G*M*BDE---'] = (feature, resolution) => {
+  const [line, point] = feature.getGeometry().getGeometries()
+  const linePoints = G.coordinates(line).map(G.toLatLon)
+  const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
+  const [A1, A2] = G.translateLine(halfWidth, 90)(linePoints)
+  const [B1, B2] = G.translateLine(halfWidth, -90)(linePoints)
+  const arrowA = closedArrowEnd([A1, A2], resolution)
+  const arrowB = closedArrowEnd([B1, B2], resolution)
+  return lineStyle(feature, [
+    [arrowA[3], A1, B1, arrowB[3]],
+    arrowA,
+    arrowB
+  ])
+}
+
+// TACGRP.MOBSU.OBSTBP.DFTY.IMP
+styles['G*M*BDI---'] = (feature, resolution) => {
+  const [line, point] = feature.getGeometry().getGeometries()
+  const linePoints = G.coordinates(line).map(G.toLatLon)
+  const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
+  const bearing = G.initialBearing(linePoints)
+  const [A1, A2] = G.translateLine(halfWidth, 90)(linePoints)
+  const [B1, B2] = G.translateLine(halfWidth, -90)(linePoints)
+  const A3 = linePoints[0].destinationPoint(resolution * 5, bearing + 90)
+  const B3 = linePoints[0].destinationPoint(resolution * 5, bearing - 90)
+  const A4 = A3.destinationPoint(-resolution * 5, bearing)
+  const A5 = A3.destinationPoint(resolution * 5, bearing)
+  const B4 = B3.destinationPoint(-resolution * 5, bearing)
+  const B5 = B3.destinationPoint(resolution * 5, bearing)
+  const arrowA = closedArrowEnd([A1, A2], resolution)
+  const arrowB = closedArrowEnd([B1, B2], resolution)
+  return lineStyle(feature, [
+    [arrowA[3], A1, A3],
+    [arrowB[3], B1, B3],
+    [A4, A5],
+    [B4, B5],
+    arrowA,
+    arrowB
+  ])
+}
 
 // TACGRP.MOBSU.OBST.OBSEFT.BLK
 styles['G*M*OEB---'] = (feature, resolution) => {
@@ -16,6 +131,43 @@ styles['G*M*OEB---'] = (feature, resolution) => {
   const A = linePoints[0].destinationPoint(halfWidth, bearing + 90)
   const B = linePoints[0].destinationPoint(halfWidth, bearing - 90)
   return lineStyle(feature, [linePoints, [A, B]])
+}
+
+// TACGRP.MOBSU.OBST.RCBB.ABP
+styles['G*M*ORA---'] = (feature, resolution) => {
+  const [line, point] = feature.getGeometry().getGeometries()
+  const linePoints = G.coordinates(line).map(G.toLatLon)
+  const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
+  return lineStyle(feature, [
+    G.translateLine(halfWidth, 90)(linePoints),
+    G.translateLine(halfWidth, -90)(linePoints)
+  ])
+}
+
+// TACGRP.MOBSU.OBST.RCBB.EXCD
+styles['G*M*ORC---'] = (feature, resolution) => {
+  const [line, point] = feature.getGeometry().getGeometries()
+  const linePoints = G.coordinates(line).map(G.toLatLon)
+  const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
+  const C = G.mirrorPoints(linePoints)
+
+  return lineStyle(feature, [
+    G.translateLine(halfWidth, 90)(linePoints),
+    G.translateLine(halfWidth, -90)(linePoints),
+    G.translateLine(halfWidth, 90)(C),
+    G.translateLine(halfWidth, -90)(C)
+  ])
+}
+
+// TACGRP.MOBSU.OBST.RCBB.SAFE
+styles['G*M*ORS---'] = (feature, resolution) => {
+  const [line, point] = feature.getGeometry().getGeometries()
+  const linePoints = G.coordinates(line).map(G.toLatLon)
+  const halfWidth = G.distance([linePoints[0], G.toLatLon(G.coordinates(point))])
+  const styleA = lineStyle(feature, [G.translateLine(halfWidth, 90)(linePoints)])
+    .map(s => K(s)(s => s.getStroke().setLineDash([15, 15])))
+  const styleB = lineStyle(feature, [G.translateLine(halfWidth, -90)(linePoints)])
+  return styleA.concat(styleB)
 }
 
 // TACGRP.TSK.BLK

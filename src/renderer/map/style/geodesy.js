@@ -78,3 +78,13 @@ export const wrap360 = degrees => {
   if (degrees >= 0 && degrees < 360) return degrees
   return (degrees % 360 + 360) % 360 // sawtooth wave p:360, a:360
 }
+
+export const mirrorPoints = ([A, B]) => {
+  return [new LatLon(A.lat, B.lon), new LatLon(B.lat, A.lon)]
+}
+
+export const segmentizeLine = ([A, B], resolution, fac = 5) => {
+  const [bearing, distance] = bearingLine([A, B])
+  const delta = distance / (distance / resolution) * fac
+  return R.range(1, distance / delta).map(i => A.destinationPoint(i * delta, bearing))
+}
