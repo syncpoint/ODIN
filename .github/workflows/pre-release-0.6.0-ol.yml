@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: 12
       - name: Install 
-        run: npm install --no-optional --only=production
+        run: npm install --no-optional
       - name: Create Webpack
         run: npm run webpack:production
       - name: Create Windows binary
