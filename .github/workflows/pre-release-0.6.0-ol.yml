@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Create pre-release for Windows # verify if we can do a amtrix build
+    name: Create pre-release for Windows # verify if we can do a matrix build
     runs-on: windows-latest
     steps:
       - name: Checkout the source into the VM
@@ -21,8 +21,6 @@ jobs:
         run: npm run webpack:production
       - name: Create Windows binary
         run: npm run builder:win
-      - name: Create OSX binary
-        run: npm run builder:mac
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -49,13 +47,3 @@ jobs:
           asset_path: '.\binaries\odin-c2is-ol Setup 0.6.0.exe'
           asset_name: 'odin-c2is-ol Setup 0.6.0.exe'
           asset_content_type: application/vnd.microsoft.portable-executable
-      - name: Upload OSX binary
-        id: upload-osx-binary
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: '.\binaries\odin-c2is-ol-0.6.0.dmg'
-          asset_name: 'odin-c2is-ol-0.6.0.dmg'
-          asset_content_type: application/octet-stream
