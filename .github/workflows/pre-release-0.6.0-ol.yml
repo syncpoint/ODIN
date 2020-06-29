@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Create pre-release for Windows
+    name: Create pre-release for Windows # verify if we can do a amtrix build
     runs-on: windows-latest
     steps:
       - name: Checkout the source into the VM
