@@ -59,14 +59,23 @@ geometries['G*G*OLKA--'] = (feature, resolution) => {
 // TACGRP.C2GM.OFF.LNE.DIRATK.GRD.MANATK
 geometries['G*G*OLKGM-'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
-  const arrow = doubleArrow(line, resolution)
-  return lineStyle(feature, [[line[0], arrow[4]], arrow])
+  const lastSegment = R.last(R.aperture(2, line))
+  const arrow = doubleArrow(lastSegment, resolution)
+  return lineStyle(feature, [
+    R.init(line),
+    [lastSegment[0], arrow[4]],
+    arrow
+  ])
 }
 
 // TACGRP.C2GM.OFF.LNE.DIRATK.GRD.SUPATK
 geometries['G*G*OLKGS-'] = (feature, resolution) => {
   const line = G.coordinates(feature).map(G.toLatLon)
-  return lineStyle(feature, [line, simpleArrowEnd(line, resolution)])
+  const lastSegment = R.last(R.aperture(2, line))
+  return lineStyle(feature, [
+    line,
+    simpleArrowEnd(lastSegment, resolution)
+  ])
 }
 
 // TACGRP.C2GM.DCPN.DAFF

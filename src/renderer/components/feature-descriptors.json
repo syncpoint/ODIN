@@ -4853,11 +4853,7 @@
       "AXIS OF ADVANCE",
       "GROUND",
       "MAIN ATTACK"
-    ],
-    "parameters": {
-      "layout": "corridor",
-      "maxPoints": "2"
-    }
+    ]
   },
   {
     "sidc": "G*G*OLAGS-*****",
@@ -4871,11 +4867,7 @@
       "AXIS OF ADVANCE",
       "GROUND",
       "SUPPORTING ATTACK"
-    ],
-    "parameters": {
-      "layout": "corridor",
-      "maxPoints": "2"
-    }
+    ]
   },
   {
     "sidc": "G*G*OLAR--*****",
@@ -4975,10 +4967,7 @@
       "LINES",
       "DIRECTION OF ATTACK GROUND",
       "MAIN ATTACK"
-    ],
-    "parameters": {
-      "maxPoints": "2"
-    }
+    ]
   },
   {
     "sidc": "G*G*OLKGS-*****",
@@ -4991,10 +4980,7 @@
       "LINES",
       "DIRECTION OF ATTACK GROUND",
       "SUPPORTING ATTACK"
-    ],
-    "parameters": {
-      "maxPoints": "2"
-    }
+    ]
   },
   {
     "sidc": "G*G*OLL---*****",
