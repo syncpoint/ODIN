@@ -28,11 +28,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          release_name: Release v0.6.0/ol-beta
           body: |
             Changes in this Release
             - Switched from Leaflet to OpenLayers
-          draft: true
+          draft: false
           prerelease: true
       - name: Upload Release Asset
         id: upload-release-asset
