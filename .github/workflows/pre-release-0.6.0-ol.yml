@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: 12
       - name: Install 
-        run: npm install --no-optional
+        run: npm install --no-optional --only=production
       - name: Create Webpack
         run: npm run webpack:production
       - name: Create Windows binary
@@ -31,10 +31,8 @@ jobs:
           release_name: v0.6.0-beta
           body: |
             Changes in this Release
-            - This version is a complete rewrite of ODIN.
-            - switched from Leaflet to OpenLayers
-            - filesystem storage
-            - support for multiple tile providers
+            - This version is a complete rewrite of ODIN. We switched from Leaflet to OpenLayers, introduced a GeoJSON based filesystem storage, project management and a ton of other features.
+            - The latest changeset introduced most of the task verbs like Block, Breach, Cover, Disrupt, ... Just enter 'task' into the search field.
           draft: false
           prerelease: true
       - name: Upload Windows binary
