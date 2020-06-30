@@ -8,7 +8,10 @@ const lookup = descriptors.reduce((acc, descriptor) => K(acc)(acc => {
   acc[sidc] = {
     sidc,
     class: descriptor.class,
-    geometry: descriptor.geometry,
+    geometry: {
+      type: descriptor.geometry,
+      ...descriptor.parameters
+    },
     hierarchy: R.drop(1, descriptor.hierarchy).join(', ')
   }
 }), {})
@@ -18,6 +21,7 @@ const sortedList = descriptors
     sidc: descriptor.sidc,
     class: descriptor.class,
     geometry: descriptor.geometry,
+    ...descriptor.parameters,
     name: descriptor.hierarchy[descriptor.hierarchy.length - 1],
     hierarchy: R.take(descriptor.hierarchy.length - 2, R.drop(1, descriptor.hierarchy)).join(', '),
     sortkey: descriptor.hierarchy.join(', ').toLowerCase()
@@ -37,8 +41,6 @@ export const featureGeometry = sidc => {
   return feature ? feature.geometry : undefined
 }
 
-const supportedGeometries = ['point', 'polygon', 'line', 'line-2pt']
-
 /**
  * featureDescriptors :: () => [object]
  */
@@ -52,7 +54,6 @@ export const featureDescriptors = (filter, preset = {}) => {
   const filterMatch = descr => descr.sortkey.includes(filter.toLowerCase())
   const installationMatch = descr => [installation, '*'].includes(installationPart.value(descr.sidc))
   const match = descr => filterMatch(descr) && installationMatch(descr)
-  const supported = descr => supportedGeometries.includes(descr.geometry)
 
   const installationModifier = sidc => installationPart.value(sidc) !== '*'
     ? sidc
@@ -66,7 +67,6 @@ export const featureDescriptors = (filter, preset = {}) => {
 
   const updateSIDC = descriptor => ({ ...descriptor, sidc: sidc(descriptor.sidc) })
   const matches = sortedList
-    .filter(supported)
     .filter(match)
     .map(updateSIDC)
   return R.take(50, matches)

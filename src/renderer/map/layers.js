@@ -15,7 +15,8 @@ import Feature from '../project/Feature'
 import URI from '../project/URI'
 import selection from '../selection'
 import { featureGeometry } from '../components/feature-descriptors'
-
+import { ModifyCustom } from './interaction/ModifyCustom'
+import { geometryOptions } from './interaction/geometry-options'
 
 // --
 // SECTION: Module-global (utility) functions.
@@ -209,7 +210,7 @@ const replaceSelection = features => {
 }
 
 /**
- * removeSelection :: [Feature] => unit
+ * removeSelection :: [ol/Feature] => unit
  * Update selection and remove features from collection.
  */
 const removeSelection = features => {
@@ -304,22 +305,30 @@ const createSelect = () => {
  * Modify interaction.
  */
 const createModify = () => {
+  const feature = selectedFeatures.getArray()[0]
+  const geometry = featureGeometry(feature.get('sidc'))
   let initial = {} // Cloned geometries BEFORE modify.
 
-  const interaction = new Modify({
+  const ctor = R.cond([
+    [R.equals('fan'), R.always(options => new ModifyCustom(options))],
+    [R.equals('corridor'), R.always(options => new ModifyCustom(options))],
+    [R.equals('orbit'), R.always(options => new ModifyCustom(options))],
+    [R.T, R.always(options => new Modify(options))]
+  ])(geometry ? geometry.layout : null)
+
+  const layout = geometry ? geometry.layout : null
+  const additionalOptions = geometryOptions[layout] || {}
+  const options = {
     hitTolerance,
     features: selectedFeatures,
     // Allow translate while editing (with shift key pressed):
     condition: conjunction(primaryAction, noShiftKey),
-    insertVertexCondition: () => {
-      const [geometry] = selection.selected(URI.isFeatureId)
-        .map(featureById)
-        .map(feature => feature.get('sidc'))
-        .map(sidc => featureGeometry(sidc))
+    insertVertexCondition: () => !geometry.maxPoints,
+    ...geometry,
+    ...additionalOptions
+  }
 
-      return !['line-2pt'].includes(geometry)
-    }
-  })
+  const interaction = ctor(options)
 
   interaction.on('modifystart', ({ features }) => {
     initial = cloneGeometries(features.getArray())
@@ -328,18 +337,6 @@ const createModify = () => {
   interaction.on('modifyend', ({ features }) => {
     inputLayers.updateGeometries(initial, features.getArray())
   })
-
-  // Activate Modify interaction only for single-select:
-  const activate = () => {
-    const features = selection.selected(URI.isFeatureId)
-      .map(featureById)
-      .filter(Feature.showing)
-
-    interaction.setActive(features.length === 1)
-  }
-
-  selection.on('selected', activate)
-  selection.on('deselected', activate)
 
   return interaction
 }
@@ -449,6 +446,7 @@ const eventHandlers = {
 export default map => {
   const addLayer = map.addLayer.bind(map)
   const addInteraction = map.addInteraction.bind(map)
+  const removeInteraction = map.removeInteraction.bind(map)
 
   layers = createLayers()
   Object.values(layers).forEach(addLayer)
@@ -459,8 +457,30 @@ export default map => {
 
   addInteraction(createSelect())
   addInteraction(createTranslate())
-  addInteraction(createModify())
   addInteraction(createBoxSelect())
+
+  const singleton = (attach, detach) => {
+    let current
+    return next => {
+      if (current && next !== current) detach(current)
+      if (next !== null) attach(next)
+      current = next
+    }
+  }
+
+  const modify = singleton(addInteraction, removeInteraction)
+
+  const activateModify = () => {
+    // Activate Modify interaction only for single-select:
+    const features = selection.selected(URI.isFeatureId)
+      .map(featureById)
+      .filter(Feature.showing)
+
+    modify(features.length === 1 ? createModify() : null)
+  }
+
+  selection.on('selected', activateModify)
+  selection.on('deselected', activateModify)
 
   inputLayers.register(event => (eventHandlers[event.type] || noop)(event))
 }

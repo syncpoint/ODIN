@@ -21,6 +21,7 @@ const panelTypes = {
   P: (key, props) => <PointProperties key={key} { ...props }/>,
   I: (key, props) => <InstallationProperties key={key} { ...props }/>,
   EEI: (key, props) => <EEIProperties key={key} { ...props }/>
+  // TODO: BL
 }
 
 providers.register(selected => {
@@ -28,7 +29,7 @@ providers.register(selected => {
 
   if (featureIds.length !== 1) return null
 
-  const properties = inputLayers.featureProperties(featureIds[0])
+  const featureProperties = inputLayers.featureProperties(featureIds[0])
   const update = properties => inputLayers.updateFeatureProperties(featureIds[0], properties)
 
   const featureClass = properties => {
@@ -38,19 +39,10 @@ providers.register(selected => {
     return clazz
   }
 
-  const clazz = featureClass(properties)
-  if (!clazz) {
-    console.log('feature class missing', properties.sidc)
-    // TODO: return generic 2525C properties panel
-    return null
-  }
-
-  if (!panelTypes[clazz]) {
-    console.log('properties missing for class', clazz)
-    return null
-  }
-
+  // Fall back to area when undefined.
+  const clazz = featureClass(featureProperties) || 'A'
   const key = featureIds[0]
-  const props = { properties, update }
-  return (panelTypes[clazz] || (() => null))(key, props)
+  const props = { properties: featureProperties, update }
+  const panel = (panelTypes[clazz] || (() => null))
+  return panel(key, props)
 })

@@ -3,10 +3,11 @@ import { Style, Icon } from 'ol/style'
 import ms from 'milsymbol'
 import { K } from '../../../shared/combinators'
 import selection from '../../selection'
-import defaultStyle from './default-style'
+import { defaultStyle } from './default-style'
 import { polygonStyle } from './polygon-style'
 import { lineStyle } from './line-style'
-import { featureGeometry } from '../../components/feature-descriptors'
+import { multipointStyle } from './multipoint-style'
+import { collectionStyle } from './collection-style'
 
 /**
  * normalizeSIDC :: String -> String
@@ -84,22 +85,6 @@ const symbolStyle = (feature, resolution) => {
 }
 
 
-const geometryType = feature => {
-  const type = feature.getGeometry().getType()
-
-  /* eslint-disable camelcase */
-  switch (type) {
-    case 'LineString': {
-      const specificType = featureGeometry(feature.get('sidc'))
-      switch (specificType) {
-        case 'line-2pt': return 'Line'
-        default: return type
-      }
-    }
-    default: return type
-  }
-}
-
 /**
  * FEATURE STYLE FUNCTION.
  */
@@ -108,18 +93,12 @@ export default (feature, resolution) => {
   const provider = R.cond([
     [R.equals('Point'), R.always(symbolStyle)],
     [R.equals('Polygon'), R.always(polygonStyle)],
-    [R.equals('Line'), R.always(lineStyle)],
     [R.equals('LineString'), R.always(lineStyle)],
+    [R.equals('MultiPoint'), R.always(multipointStyle)],
+    [R.equals('GeometryCollection'), R.always(collectionStyle)],
     [R.T, R.always(defaultStyle)]
   ])
 
-  // Only cache style when not selected and not hidden.
-  const type = geometryType(feature)
-  const style = provider(type)(feature, resolution)
-  const selected = selection.isSelected(feature.getId())
-  const hidden = feature.get('hidden')
-  const cacheDisabled = ['Line'].includes(type)
-  if (!cacheDisabled && !selected && !hidden) feature.setStyle(style)
-
-  return style
+  const type = feature.getGeometry().getType()
+  return provider(type)(feature, resolution)
 }

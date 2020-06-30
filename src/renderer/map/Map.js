@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { ipcRenderer } from 'electron'
+import throttle from 'lodash.throttle'
 
 import * as ol from 'ol'
 import 'ol/ol.css'
@@ -14,7 +15,7 @@ import evented from '../evented'
 import preferences from '../project/preferences'
 import coordinateFormat from '../../shared/coord-format'
 import layers from './layers'
-import draw from './draw'
+import draw from './interaction/draw'
 import share from './share'
 import './style/scalebar.css'
 
@@ -25,6 +26,12 @@ const viewportChanged = view => () => {
   const viewport = { zoom: zoom(view), center: center(view) }
   ipcRenderer.send('IPC_VIEWPORT_CHANGED', viewport)
   preferences.set('viewport', viewport)
+}
+
+const updateCoordinateDisplay = ({ coordinate }) => {
+  const lonLatCooridinate = toLonLat(coordinate)
+  const currentCoordinate = coordinateFormat.format({ lng: lonLatCooridinate[0], lat: lonLatCooridinate[1] })
+  evented.emit('OSD_MESSAGE', { message: currentCoordinate, slot: 'C2' })
 }
 
 
@@ -58,13 +65,7 @@ const effect = props => () => {
 
   map.on('click', () => evented.emit('MAP_CLICKED'))
   map.on('moveend', viewportChanged(view))
-  map.on('pointermove', event => {
-    const lonLatCooridinate = toLonLat(event.coordinate)
-    const currentCoordinate = coordinateFormat.format({ lng: lonLatCooridinate[0], lat: lonLatCooridinate[1] })
-
-    // TODO: throttle?
-    evented.emit('OSD_MESSAGE', { message: currentCoordinate, slot: 'C2' })
-  })
+  map.on('pointermove', throttle(updateCoordinateDisplay, 75))
 
   layers(map)
   draw(map)

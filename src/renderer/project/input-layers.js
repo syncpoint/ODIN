@@ -135,6 +135,7 @@ const writeFeatures = xs =>
     .map(s => URI.isFeatureId(s) ? URI.layerId(s) : s)
     .filter(uniq)
     .map(layerId => ({ name: layerName(layerId), features: layerFeatures(layerId) }))
+    // TODO: remove feature id property before write
     .map(({ name, features }) => ({ name, contents: geoJSON.writeFeatures(features) }))
     .forEach(({ name, contents }) => io.writeLayer(name, contents))
 

@@ -1,4 +1,4 @@
-import defaultStyle from './default-style'
+import { defaultStyle } from './default-style'
 import { parameterized } from '../../components/SIDC'
 import { labels } from './line-labels'
 import { geometries } from './line-geometries'
