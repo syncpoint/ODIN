@@ -8,7 +8,7 @@
     "hot": "webpack-dev-server --hot --inline",
     "webpack": "webpack",
     "webpack:production": "webpack --env.production",
-    "builder": "electron-builder --publish=never",
+    "builder": "electron-builder --publish=never -mlw",
     "builder:dir": "electron-builder --dir",
     "builder:mac": "electron-builder --mac",
     "builder:win": "electron-builder --win --publish=never",
