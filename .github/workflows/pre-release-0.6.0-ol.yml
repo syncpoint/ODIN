@@ -19,7 +19,7 @@ jobs:
         run: npm install --no-optional
       - name: Create Webpack
         run: npm run webpack:production
-      - name: Create Windows binary
+      - name: Create multi-platform binaries
         run: npm run builder
       - name: Create Release
         id: create_release
@@ -54,6 +54,7 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
           asset_path: './binaries/odin-c2is-ol-0.6.0.dmg'
           asset_name: 'odin-c2is-ol-0.6.0.dmg'
+          asset_content_type: application/octet-stream
       - name: Upload Linux/Debian binary
         id: upload-linux-binary
         uses: actions/upload-release-asset@v1
@@ -63,6 +64,7 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
           asset_path: './binaries/odin-c2is-ol_0.6.0_amd64.deb'
           asset_name: 'odin-c2is-ol_0.6.0_amd64.deb'
+          asset_content_type: application/octet-stream
       - name: Upload Linux/SNAP binary
         id: upload-snap-binary
         uses: actions/upload-release-asset@v1
@@ -72,3 +74,4 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
           asset_path: './binaries/odin-c2is-ol_0.6.0_amd64.snap'
           asset_name: 'odin-c2is-ol_0.6.0_amd64.snap'
+          asset_content_type: application/octet-stream
