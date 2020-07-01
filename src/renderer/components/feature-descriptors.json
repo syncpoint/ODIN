@@ -4266,7 +4266,7 @@
   {
     "sidc": "G*G*GPR---*****",
     "class": "P",
-    "geometry": "point",
+    "geometry": "Point",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "COMMAND AND CONTROL AND GENERAL MANEUVER",
@@ -4865,7 +4865,10 @@
       "AXIS OF ADVANCE",
       "GROUND",
       "MAIN ATTACK"
-    ]
+    ],
+    "parameters": {
+      "layout": "corridor"
+    }
   },
   {
     "sidc": "G*G*OLAGS-*****",
@@ -4879,7 +4882,10 @@
       "AXIS OF ADVANCE",
       "GROUND",
       "SUPPORTING ATTACK"
-    ]
+    ],
+    "parameters": {
+      "layout": "corridor"
+    }
   },
   {
     "sidc": "G*G*OLAR--*****",
