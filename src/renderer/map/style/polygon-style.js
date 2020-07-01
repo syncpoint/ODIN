@@ -57,6 +57,7 @@ const labels = {
   'G*F*ACEI--': templates['G*F*ACBI--']('SENSOR ZONE'),
   'G*F*ACFI--': templates['G*F*ACFI--']('FFA'),
   'G*F*ACNI--': templates['G*F*ACFI--']('NFA'), // TODO: fill pattern
+  'G*F*ACPR--': [nsew(() => ['PAA'])],
   'G*F*ACRI--': templates['G*F*ACFI--']('RFA'),
   'G*F*ACSI--': templates['G*F*ACSI--']('FSA'),
   'G*F*ACT---': templates['G*F*ACT---']('TGMF'),
