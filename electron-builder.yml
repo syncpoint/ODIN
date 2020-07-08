@@ -2,6 +2,8 @@ directories:
   output: binaries
   buildResources: build
 appId: io.syncpoint.odin
+productName: ODIN
+copyright: ${author} https://syncpoint.io
 win:
   target:
     - target: nsis
