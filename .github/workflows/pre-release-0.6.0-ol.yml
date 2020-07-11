@@ -20,7 +20,7 @@ jobs:
       - name: Create Webpack
         run: npm run webpack:production
       - name: Import OS-X certificates
-        run: chmod +x add-osx-cert.sh && ./add-osx-cert.sh
+        run: chmod +x ./.github/workflows/add-osx-cert.sh && ./.github/workflows/add-osx-cert.sh
         env:
           CSC_LINK: ${{ secrets.CSC_LINK }} # maybe we need to import the cert into the osx-keychain
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
