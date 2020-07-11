@@ -22,7 +22,7 @@ jobs:
       - name: Create multi-platform binaries
         run: npm run builder
         env:
-          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_LINK: ${{ secrets.CSC_LINK }} # maybe we need to import the cert into the osx-keychain
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
       - name: Create Release
         id: create_release
