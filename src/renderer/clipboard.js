@@ -1,5 +1,5 @@
 import Mousetrap from 'mousetrap'
-import { ipcRenderer } from 'electron'
+import { ipcRenderer, remote } from 'electron'
 import evented from './evented'
 import { K, noop } from '../shared/combinators'
 import selection from './selection'
@@ -92,3 +92,12 @@ evented.on('EDIT_REDO', block(inputFocused)(undo.redo))
 Mousetrap.bind('del', editDelete) // macOS: fn+backspace
 Mousetrap.bind('command+backspace', editDelete)
 Mousetrap.bind('esc', () => selection.deselect())
+/*
+  We need this workaround for OSs other than OSX for CTRL-A because i.e.
+  the Windows version of Chrome seems to handle this keybinding itself and
+  does not work the same way as it does on OS X.
+  See https://github.com/electron/electron/issues/7165
+*/
+if (remote.process.platform !== 'darwin') {
+  Mousetrap.bind('ctrl+a', () => evented.emit('EDIT_SELECT_ALL'))
+}
