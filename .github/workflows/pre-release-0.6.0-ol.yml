@@ -21,6 +21,9 @@ jobs:
         run: npm run webpack:production
       - name: Create multi-platform binaries
         run: npm run builder
+        env:
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
