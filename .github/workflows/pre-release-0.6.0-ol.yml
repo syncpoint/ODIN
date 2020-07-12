@@ -39,7 +39,11 @@ jobs:
           release_name: v0.6.0-beta
           body: |
             Changes in this Release
-            - This version is a complete rewrite of ODIN. We switched from Leaflet to OpenLayers, introduced a GeoJSON based filesystem storage, project management and a ton of other features.
+            - v0.6 is a complete rewrite of ODIN. We switched from Leaflet to OpenLayers, introduced a GeoJSON based filesystem storage, project management and a ton of other features.
+            - Projects lets you organise your mission data
+            - Use layers for grouping features like uncorrelated enemy, own troops, ...
+            - Use X/Y/Z, WMTS and WMS for your basemaps with selectable opacity
+            - Clipboard operations for all features (select all, cut, copy, paste, undo, redo)
             - The latest changeset introduced most of the task verbs like Block, Breach, Cover, Disrupt, ... Just enter 'task' into the search field.
           draft: false
           prerelease: true
