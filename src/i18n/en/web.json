@@ -48,7 +48,7 @@
       "cut": "Cut",
       "copy": "Copy",
       "paste": "Paste",
-      "share": "Share (PNG)"
+      "exportPNG": "Export current view as PNG"
     }
   },
   "layers": {
