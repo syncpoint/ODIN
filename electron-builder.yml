@@ -4,6 +4,7 @@ directories:
 appId: io.syncpoint.odin
 productName: ODIN
 copyright: ${author} https://syncpoint.io
+afterSign: 'scripts/notarize.js'
 win:
   target:
     - target: nsis
@@ -14,6 +15,8 @@ win:
 mac:
    target: dmg
    icon: 'build/icon.icns'
+   entitlements: 'build/entitlements.mac.plist'
+   entitlementsInherit: 'build/entitlements.mac.plist'
 linux:
   target:
     - target: deb
@@ -21,6 +24,7 @@ linux:
     - target: tar.gz
     - target: Appimage
   icon: 'build/icons'
-  category: 'Office'files:
-  - 'dist'
+  category: 'Office'
+  files:
+    - 'dist'
 electronVersion: 8.2.0
