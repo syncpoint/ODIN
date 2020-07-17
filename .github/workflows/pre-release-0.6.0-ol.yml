@@ -19,19 +19,33 @@ jobs:
         run: npm install --no-optional
       - name: Create Webpack
         run: npm run webpack:production
+      - name: Import OS-X certificates
+        run: chmod +x ./.github/workflows/add-osx-cert.sh && ./.github/workflows/add-osx-cert.sh
+        env:
+          CSC_LINK: ${{ secrets.CSC_LINK }} # maybe we need to import the cert into the osx-keychain
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
       - name: Create multi-platform binaries
         run: npm run builder
+        env:
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+          WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: v0.6.0-beta
           release_name: v0.6.0-beta
           body: |
             Changes in this Release
-            - This version is a complete rewrite of ODIN. We switched from Leaflet to OpenLayers, introduced a GeoJSON based filesystem storage, project management and a ton of other features.
+            - v0.6 is a complete rewrite of ODIN. We switched from Leaflet to OpenLayers, introduced a GeoJSON based filesystem storage, project management and a ton of other features.
+            - Projects lets you organise your mission data
+            - Use layers for grouping features like uncorrelated enemy, own troops, ...
+            - Use X/Y/Z, WMTS and WMS for your basemaps with selectable opacity
+            - Clipboard operations for all features (select all, cut, copy, paste, undo, redo)
             - The latest changeset introduced most of the task verbs like Block, Breach, Cover, Disrupt, ... Just enter 'task' into the search field.
           draft: false
           prerelease: true
@@ -42,8 +56,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: './binaries/odin-c2is-ol Setup 0.6.0.exe'
-          asset_name: 'odin-c2is-ol Setup 0.6.0.exe'
+          asset_path: './binaries/ODIN Setup 0.6.0.exe'
+          asset_name: 'ODIN Setup 0.6.0.exe'
           asset_content_type: application/vnd.microsoft.portable-executable
       - name: Upload OSX binary
         id: upload-osx-binary
@@ -52,8 +66,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: './binaries/odin-c2is-ol-0.6.0.dmg'
-          asset_name: 'odin-c2is-ol-0.6.0.dmg'
+          asset_path: './binaries/ODIN-0.6.0.dmg'
+          asset_name: 'ODIN-0.6.0.dmg'
           asset_content_type: application/octet-stream
       - name: Upload Linux/Debian binary
         id: upload-linux-binary

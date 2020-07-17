@@ -48,7 +48,7 @@
       "cut": "Ausschneiden",
       "copy": "Kopieren",
       "paste": "Einfügen",
-      "share": "Teilen (PNG)"
+      "exportPNG": "Aktuellen Kartenausschnitt als PNG exportieren"
     }
   },
   "layers": {
