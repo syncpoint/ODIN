@@ -37,6 +37,7 @@ const useStyles = makeStyles(theme => ({
     right: 0,
     background: theme.palette.background.paper,
     padding: theme.spacing(1.5),
+    borderRadius: '4px',
     zIndex: 200,
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',

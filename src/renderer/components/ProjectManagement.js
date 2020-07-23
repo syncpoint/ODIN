@@ -17,18 +17,29 @@ import { fromISO } from '../../shared/militaryTime'
 import { useTranslation } from 'react-i18next'
 
 const useStyles = makeStyles(theme => ({
+  blurredBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    background: theme.palette.grey[700],
+    opacity: theme.palette.action.disabledOpacity,
+    zIndex: 199
+  },
   management: {
-    position: 'fixed',
+    position: 'relative',
     top: 0,
     left: 0,
     bottom: 0,
     right: 0,
     background: theme.palette.background.paper,
     padding: theme.spacing(1.5),
+    borderRadius: '4px',
     zIndex: 200,
     display: 'grid',
-    gridTemplateColumns: '1fr 2fr',
-    gridTemplateRows: '3em auto',
+    gridTemplateColumns: '1fr 1fr',
+    gridTemplateRows: '1em auto',
     gridGap: theme.spacing(1.5),
     gridTemplateAreas: `
       "navigation navigation"
@@ -36,12 +47,12 @@ const useStyles = makeStyles(theme => ({
     `,
     '@media (max-width:1024px)': {
       gridTemplateColumns: '1fr',
-      gridTemplateRows: '3em auto auto',
+      gridTemplateRows: '2em auto auto',
       gridTemplateAreas: `
       "navigation"
       "projects"
       "details"
-      `
+    `
     }
   },
 
@@ -326,30 +337,33 @@ const Management = props => {
 
   /* main screen */
   return (
-    <div className={classes.management}>
-      <div className={classes.navigation}>
-        <BackToMapIcon id="backToMap" onClick={onCloseClicked}/>
-      </div>
-      <div className={classes.projects} id="projects">
-        <div style={{ marginBottom: '3em' }} id="projectActions">
-          <Button id="importProject" variant="outlined" color="primary" style={{ float: 'right', marginRight: '1em', marginLeft: '2px' }}
-            startIcon={<ImportProjectIcon />}
-            onClick={ event => handleImportProject() }
-          >
-            {t('projectManagement.import')}
-          </Button>
-          <Button id="newProject" variant="contained" color="primary" style={{ float: 'right', marginRight: '2px' }}
-            startIcon={<AddCircleOutlineIcon />}
-            onClick={ event => handleNewProject(event) }>
-            {t('projectManagement.new')}
-          </Button>
+    <>
+      <div className={classes.blurredBackground} />
+      <div className={classes.management}>
+        <div className={classes.navigation}>
+          <BackToMapIcon id="backToMap" onClick={onCloseClicked}/>
         </div>
-        <List id="projectList"><Projects projects={currentProjects}/></List>
+        <div className={classes.projects} id="projects">
+          <div style={{ marginBottom: '3em' }} id="projectActions">
+            <Button id="importProject" variant="outlined" color="primary" style={{ float: 'right', marginRight: '1em', marginLeft: '2px' }}
+              startIcon={<ImportProjectIcon />}
+              onClick={ event => handleImportProject() }
+            >
+              {t('projectManagement.import')}
+            </Button>
+            <Button id="newProject" variant="contained" color="primary" style={{ float: 'right', marginRight: '2px' }}
+              startIcon={<AddCircleOutlineIcon />}
+              onClick={ event => handleNewProject(event) }>
+              {t('projectManagement.new')}
+            </Button>
+          </div>
+          <List id="projectList"><Projects projects={currentProjects}/></List>
+        </div>
+        <div className={classes.details}>
+          <Details project={selectedProject}/>
+        </div>
       </div>
-      <div className={classes.details}>
-        <Details project={selectedProject}/>
-      </div>
-    </div>
+    </>
   )
 }
 
