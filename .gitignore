@@ -6,3 +6,4 @@ binaries/
 .idea/
 test-db/
 report/
+.env
