@@ -545,6 +545,21 @@ const updateFeatureProperties = (featureId, properties) => {
   emit({ type: 'featurepropertiesupdated', featureId, properties })
 }
 
+const exportLayer = layerId => {
+  const name = layerName(layerId)
+  const contents = JSON.parse(io.readLayer(name))
+  const removeIds = feature => {
+    delete feature.id
+    delete feature.properties.layerId
+    return feature
+  }
+  const sanitizedContents = {
+    type: 'FeatureCollection',
+    features: contents.features.map(removeIds)
+  }
+  evented.emit('EXPORT_LAYER', name, sanitizedContents)
+}
+
 /**
  * Featre clipboard ops.
  */
@@ -660,6 +675,7 @@ export default {
   removeLayer,
   createLayer,
   duplicateLayer,
+  exportLayer,
   layerProperties,
   featureProperties,
   updateFeatureProperties
