@@ -7,7 +7,7 @@ const dropImportInteraction = new DragAndDrop({
 })
 dropImportInteraction.on('addfeatures', event => {
   if (!event.file || !event.features) return
-  inputLayers.importLayer(event.file.name, event.features)
+  inputLayers.importLayer(event.file.name.replace('.json', ''), event.features)
 })
 
 export default dropImportInteraction
