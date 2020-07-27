@@ -513,6 +513,10 @@ const duplicateLayer = layerId => {
   ))
 }
 
+/**
+ * @param {string} sourceName The name of the source will become the name of the new layer
+ * @param {[ol/Feature]} features A collection of OL features
+ */
 const importLayer = (sourceName, features) => {
   const layerId = createLayer()
   const layerName = disambiguateLayerName(sourceName)
