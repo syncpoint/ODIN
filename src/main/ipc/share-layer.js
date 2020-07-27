@@ -1,8 +1,8 @@
-import { dialog, Notification, shell } from 'electron'
+
 import sanitizeFilename from 'sanitize-filename'
 import fs from 'fs'
 import i18n from '../../i18n'
-
+import saveFileDialog from './save-file-dialog'
 
 export const exportLayer = (event, name, contents) => {
   const filenameSuggestion = sanitizeFilename(`${name}.json`)
@@ -11,25 +11,7 @@ export const exportLayer = (event, name, contents) => {
     defaultPath: filenameSuggestion,
     filters: [{ name: 'Layer', extensions: ['json'] }]
   }
+  const action = async (targetPath) => fs.promises.writeFile(targetPath, JSON.stringify(contents))
 
-  dialog.showSaveDialog(event.sender.getOwnerBrowserWindow(), dialogOptions).then(async result => {
-    if (result.canceled) return
-    try {
-      await fs.promises.writeFile(result.filePath, JSON.stringify(contents))
-      const n = new Notification({
-        title: i18n.t('export.succeeded', { name: name }),
-        body: i18n.t('export.clickToOpen', { path: result.filePath })
-      })
-      n.once('click', () => {
-        shell.showItemInFolder(result.filePath)
-      })
-      n.show()
-    } catch (error) {
-      const n = new Notification({
-        title: i18n.t('export.failed', { name: name }),
-        body: error.message
-      })
-      n.show()
-    }
-  })
+  saveFileDialog(event.sender.getOwnerBrowserWindow(), dialogOptions, action)
 }
