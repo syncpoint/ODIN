@@ -136,6 +136,7 @@ const writeFeatures = xs =>
     .filter(uniq)
     .map(layerId => ({ name: layerName(layerId), features: layerFeatures(layerId) }))
     // TODO: remove feature id property before write
+    // this also affects the exportLayer function
     .map(({ name, features }) => ({ name, contents: geoJSON.writeFeatures(features) }))
     .forEach(({ name, contents }) => io.writeLayer(name, contents))
 
@@ -366,7 +367,14 @@ const removeFeatures = featureIds => {
  * addFeatures :: [[string]] -> unit
  */
 const addFeatures = content => {
-  const additions = content.map(json => geoJSON.readFeature(json))
+  const additions = content.map(candidate => {
+    /*
+      When adding features to a layer via the drag-and-drop import handler
+      OL already creates features for us.
+    */
+    if (candidate instanceof ol.Feature) return candidate
+    return geoJSON.readFeature(candidate)
+  })
 
   // Add features to active layer if defined.
   additions.forEach(feature => feature.set('layerId', activeLayer().id))
@@ -478,17 +486,18 @@ const removeLayer =
     undo.applyAndPush(unlinkLayerCommand(layerId))
 
 /**
- * createLayer :: () -> unit
+ * createLayer :: () -> string
  */
 const createLayer = () => {
   const name = disambiguateLayerName('New Layer')
   const contents = '{"type":"FeatureCollection","features":[]}'
-
+  const layerId = URI.layerId()
   undo.applyAndPush(writeLayerCommand(
-    URI.layerId(),
+    layerId,
     name,
     contents
   ))
+  return layerId
 }
 
 /**
@@ -502,6 +511,14 @@ const duplicateLayer = layerId => {
     disambiguateLayerName(name),
     contents
   ))
+}
+
+const importLayer = (sourceName, features) => {
+  const layerId = createLayer()
+  const layerName = disambiguateLayerName(sourceName)
+  renameLayer(layerId, layerName)
+  activateLayer(layerId)
+  addFeatures(features)
 }
 
 /**
@@ -676,6 +693,7 @@ export default {
   createLayer,
   duplicateLayer,
   exportLayer,
+  importLayer,
   layerProperties,
   featureProperties,
   updateFeatureProperties

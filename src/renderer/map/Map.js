@@ -16,7 +16,9 @@ import preferences from '../project/preferences'
 import coordinateFormat from '../../shared/coord-format'
 import layers from './layers'
 import draw from './interaction/draw'
+import dropImport from './interaction/drop-import'
 import share from './share'
+
 import './style/scalebar.css'
 
 const zoom = view => view.getZoom()
@@ -60,7 +62,7 @@ const effect = props => () => {
     layers: [basemapLayerGroup(), getGridLayerGroup()],
     interactions: defaultInteractions({
       doubleClickZoom: false
-    })
+    }).extend([dropImport])
   })
 
   map.on('click', () => evented.emit('MAP_CLICKED'))
