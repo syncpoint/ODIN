@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { InputBase } from '@material-ui/core'
 import { useTranslation } from 'react-i18next'
+import debounce from 'lodash.debounce'
 
 const useStyles = makeStyles((theme) => ({
   search: {
@@ -26,13 +27,20 @@ const Search = props => {
     }
   }
 
+  const notifyParent = debounce(() => props.onChange(value), 400)
+
+  const [value, setValue] = React.useState(props.value)
+  React.useEffect(() => {
+    notifyParent()
+  }, [value])
+
   return (
     <InputBase
       className={classes.search}
       placeholder={t('palette.search.placeholder')}
       autoFocus
-      value={props.value}
-      onChange={({ target }) => props.onChange(target.value)}
+      value={value}
+      onChange={({ target }) => setValue(target.value)}
       onKeyDown={handleKeyDown}
     />
   )
