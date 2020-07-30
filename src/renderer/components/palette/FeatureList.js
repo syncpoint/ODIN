@@ -10,7 +10,7 @@ const FeatureList = props => {
   const { t } = useTranslation()
   const list = React.useRef()
 
-  if (list.current && listItems) {
+  if (list && list.current) {
     list.current.resetAfterIndex(0, true)
     list.current.scrollToItem(0, 'start')
   }
@@ -18,7 +18,7 @@ const FeatureList = props => {
   const getItemSize = index => {
     const descriptor = listItems[index]
     const textLength = descriptor.name.length + descriptor.hierarchy.length
-    console.log('##length', textLength, descriptor.name + ' ' + descriptor.hierarchy)
+    // console.log('##length', textLength, descriptor.name + ' ' + descriptor.hierarchy)
     if (textLength <= 45) return 80
     if (textLength <= 65) return 100
     if (textLength <= 85) return 120

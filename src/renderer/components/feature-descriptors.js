@@ -84,6 +84,6 @@ export const featureDescriptors = (filter, preset = {}) => {
   const matches = sortedList
     .filter(match)
     .map(updateSIDC)
-  console.log('## matches', matches.length)
-  return matches // R.take(50, matches)
+  // console.log('## matches', matches.length)
+  return matches
 }
