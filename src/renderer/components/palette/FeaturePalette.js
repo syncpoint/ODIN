@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   list: {
+    margin: theme.spacing(1),
     display: 'flex',
     flexGrow: 1
   }
@@ -107,5 +108,4 @@ const FeaturePalette = (/* props */) => {
   )
 }
 
-// 
 export default FeaturePalette

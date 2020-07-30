@@ -2,9 +2,18 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { VariableSizeList } from 'react-window'
 import FeatureItem from './FeatureItem'
+import { Typography } from '@material-ui/core'
+import { useTranslation } from 'react-i18next'
 
 const FeatureList = props => {
   const { listItems, handleClick, height } = props
+  const { t } = useTranslation()
+  const list = React.useRef()
+
+  if (list.current && listItems) {
+    list.current.resetAfterIndex(0, true)
+    list.current.scrollToItem(0, 'start')
+  }
 
   const getItemSize = index => {
     const descriptor = listItems[index]
@@ -18,21 +27,22 @@ const FeatureList = props => {
   }
 
   return (
-
-    <VariableSizeList
-      itemCount={listItems.length}
-      itemSize={getItemSize}
-      itemData={listItems}
-      estimatedItemSize={90}
-      height={height}
-      width={'100%'}
-    >
-      {({ index, style }) => {
-        const descriptor = listItems[index]
-        return <div style={style}><FeatureItem {...descriptor} key={descriptor.sortKey} onClick={handleClick(descriptor)} /></div>
-      }}
-    </VariableSizeList>
-
+    listItems && listItems.length
+      ? <VariableSizeList
+        itemCount={listItems.length}
+        itemSize={getItemSize}
+        itemData={listItems}
+        estimatedItemSize={90}
+        height={height}
+        width={'100%'}
+        ref={list}
+      >
+        {({ index, style }) => {
+          const descriptor = listItems[index]
+          return <div style={style}><FeatureItem {...descriptor} key={descriptor.sortKey} onClick={handleClick(descriptor)} /></div>
+        }}
+      </VariableSizeList>
+      : <Typography variant='body2'>{t('palette.featureList.noResults')}</Typography>
   )
 }
 

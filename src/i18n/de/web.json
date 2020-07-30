@@ -68,6 +68,9 @@
     },
     "search": {
       "placeholder": "Suche nach unit, radar, missile, ..."
+    },
+    "featureList": {
+      "noResults": "Keine Ergebnisse. Bitte ändern Sie die Such- bzw. Filterkriterien"
     }
   }
 }
