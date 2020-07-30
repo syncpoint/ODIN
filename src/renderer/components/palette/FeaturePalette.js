@@ -1,15 +1,14 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
-import List from '@material-ui/core/List'
-
 import Search from './Search'
 import { featureDescriptors } from '../feature-descriptors'
-import FeatureItem from './FeatureItem'
 import Presets from './Presets'
 import evented from '../../evented'
 import preferences from '../../project/preferences'
 import selection from '../../selection'
+
+import FeatureList from './FeatureList'
 
 const useStyles = makeStyles((theme) => ({
   panel: {
@@ -17,7 +16,8 @@ const useStyles = makeStyles((theme) => ({
     pointerEvents: 'auto',
     fontFamily: 'Roboto',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    alignItems: 'stretch'
   },
 
   buttons: {
@@ -31,26 +31,25 @@ const useStyles = makeStyles((theme) => ({
     marginRight: '16px'
   },
 
-  listContainer: {
-    height: '100%',
-    overflow: 'auto'
-  },
-
   list: {
-    maxHeight: '0px' // ?!
+    display: 'flex',
+    flexGrow: 1
   }
 }))
 
-
-
 const FeaturePalette = (/* props */) => {
+
+  const memento = preferences.get('paletteMemento')
+
   const classes = useStyles()
   const [showing, setShowing] = React.useState(true)
-  const [filter, setFilter] = React.useState('')
-  const [presets, setPresets] = React.useState({
+  const [height, setHeight] = React.useState(0)
+  const [filter, setFilter] = React.useState(memento.filter || '')
+  const [presets, setPresets] = React.useState(memento.presets || {
     installation: null,
     status: 'P',
-    hostility: 'F'
+    hostility: 'F',
+    schema: 'S'
   })
 
   React.useEffect(() => {
@@ -64,14 +63,6 @@ const FeaturePalette = (/* props */) => {
       evented.off('MAP_DRAW', hide)
       evented.off('MAP_DRAWEND', show)
     }
-  }, [])
-
-  React.useEffect(() => {
-    const memento = preferences.get('paletteMemento')
-    if (!memento) return
-    const { filter, presets } = memento
-    if (filter) setFilter(filter)
-    if (presets) setPresets(presets)
   }, [])
 
   const updateFilter = filter => {
@@ -94,15 +85,6 @@ const FeaturePalette = (/* props */) => {
   }
 
   const listItems = featureDescriptors(filter, presets)
-    .map(descriptor => <FeatureItem
-      {...descriptor}
-      key={descriptor.sortkey}
-      onClick={itemSelected(descriptor)}
-    />)
-
-  const content = listItems.length
-    ? listItems
-    : <div style={{ marginLeft: 8 }}>Recently used features will appear here.</div>
 
   return (
     <Paper
@@ -114,13 +96,16 @@ const FeaturePalette = (/* props */) => {
         <Presets value={presets} onChange={updatePresets}/>
       </div>
       <Search value={filter} onChange={updateFilter}/>
-      <div className={classes.listContainer}>
-        <List className={classes.list}>
-          {content}
-        </List>
+      <div className={classes.list} ref={element => {
+        if (!element) return
+        const currentHeight = element.getBoundingClientRect().height
+        if (currentHeight !== height) setHeight(currentHeight)
+      }}>
+        <FeatureList classes={classes} listItems={listItems} handleClick={itemSelected} height={height}/>
       </div>
     </Paper>
   )
 }
 
+// 
 export default FeaturePalette

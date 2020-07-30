@@ -63,6 +63,21 @@ const Presets = props => {
           <ToggleButton value="A">A</ToggleButton>
         </ToggleButtonGroup>
       </Tooltip>
+      <Tooltip title={t('palette.presets.schema')}>
+        <ToggleButtonGroup
+          size="small"
+          exclusive
+          className={classes.toggleContainer}
+          value={props.value.schema}
+          onChange={handleChange('schema')}
+        >
+          <ToggleButton value="S">U/E/I</ToggleButton>
+          <ToggleButton value="G">TG</ToggleButton>
+          <ToggleButton value="I">SIGINT</ToggleButton>
+          <ToggleButton value="O">Stability</ToggleButton>
+          <ToggleButton value="E">EMS</ToggleButton>
+        </ToggleButtonGroup>
+      </Tooltip>
     </span>
   )
 }
@@ -73,3 +88,24 @@ Presets.propTypes = {
 }
 
 export default Presets
+
+/*
+
+<Tooltip title={t('palette.presets.battleDimension')}>
+        <ToggleButtonGroup
+          size="small"
+          exclusive
+          className={classes.toggleContainer}
+          value={props.value.battleDimension}
+          onChange={handleChange('battleDimension')}
+        >
+          <ToggleButton value="P">P</ToggleButton>
+          <ToggleButton value="A">A</ToggleButton>
+          <ToggleButton value="G">G</ToggleButton>
+          <ToggleButton value="S">S</ToggleButton>
+          <ToggleButton value="U">U</ToggleButton>
+          <ToggleButton value="F">F</ToggleButton>
+        </ToggleButtonGroup>
+      </Tooltip>
+
+*/

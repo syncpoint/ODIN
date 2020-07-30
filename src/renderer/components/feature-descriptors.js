@@ -1,7 +1,14 @@
 import * as R from 'ramda'
 import descriptors from './feature-descriptors.json'
 import { K } from '../../shared/combinators'
-import { parameterized, hostilityPart, statusPart, installationPart } from './SIDC'
+import {
+  parameterized,
+  schemaPart,
+  hostilityPart,
+  // battleDimensionPart,
+  statusPart,
+  installationPart
+} from './SIDC'
 
 const lookup = descriptors.reduce((acc, descriptor) => K(acc)(acc => {
   const sidc = parameterized(descriptor.sidc)
@@ -45,15 +52,23 @@ export const featureGeometry = sidc => {
  * featureDescriptors :: () => [object]
  */
 export const featureDescriptors = (filter, preset = {}) => {
-  if (!filter || filter.length < 3) return []
+  // if (!filter || filter.length < 3) return []
 
+  const schema = preset.schema || 'S'
   const hostlility = preset.hostility || 'F'
+  // const battleDimension = preset.battleDimension || 'G'
   const status = preset.status || 'P'
   const installation = preset.installation || '-'
 
+  const schemaMatch = descr => schemaPart.value(descr.sidc) === schema
+  // const battleDimensionMatch = descr => battleDimensionPart.value(descr.sidc) === battleDimension
   const filterMatch = descr => descr.sortkey.includes(filter.toLowerCase())
   const installationMatch = descr => [installation, '*'].includes(installationPart.value(descr.sidc))
-  const match = descr => filterMatch(descr) && installationMatch(descr)
+  const match = descr =>
+    schemaMatch(descr) &&
+    // battleDimensionMatch(descr) &&
+    filterMatch(descr) &&
+    installationMatch(descr)
 
   const installationModifier = sidc => installationPart.value(sidc) !== '*'
     ? sidc
@@ -69,5 +84,6 @@ export const featureDescriptors = (filter, preset = {}) => {
   const matches = sortedList
     .filter(match)
     .map(updateSIDC)
-  return R.take(50, matches)
+  console.log('## matches', matches.length)
+  return matches // R.take(50, matches)
 }
