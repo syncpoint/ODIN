@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
 const Presets = props => {
   const classes = useStyles()
   const { t } = useTranslation()
+
   const handleChange = property => (_, value) => {
     if (!value && property !== 'installation') return
     const preset = { ...props.value }
@@ -74,10 +75,26 @@ const Presets = props => {
           <ToggleButton value="S">U/E/I</ToggleButton>
           <ToggleButton value="G">TG</ToggleButton>
           <ToggleButton value="I">SIGINT</ToggleButton>
-          <ToggleButton value="O">Stability</ToggleButton>
+          <ToggleButton value="O">STBLTY</ToggleButton>
           <ToggleButton value="E">EMS</ToggleButton>
         </ToggleButtonGroup>
       </Tooltip>
+      <Tooltip title={t('palette.presets.battleDimension')}>
+        <ToggleButtonGroup
+          size="small"
+          className={classes.toggleContainer}
+          value={props.value.battleDimension}
+          onChange={handleChange('battleDimension')}
+        >
+          <ToggleButton value="P">SPC</ToggleButton>
+          <ToggleButton value="A">AIR</ToggleButton>
+          <ToggleButton value="G">GND</ToggleButton>
+          <ToggleButton value="S">SRFC</ToggleButton>
+          <ToggleButton value="U">SUB</ToggleButton>
+          <ToggleButton value="F">SOF</ToggleButton>
+        </ToggleButtonGroup>
+      </Tooltip>
+
     </span>
   )
 }
@@ -88,24 +105,3 @@ Presets.propTypes = {
 }
 
 export default Presets
-
-/*
-
-<Tooltip title={t('palette.presets.battleDimension')}>
-        <ToggleButtonGroup
-          size="small"
-          exclusive
-          className={classes.toggleContainer}
-          value={props.value.battleDimension}
-          onChange={handleChange('battleDimension')}
-        >
-          <ToggleButton value="P">P</ToggleButton>
-          <ToggleButton value="A">A</ToggleButton>
-          <ToggleButton value="G">G</ToggleButton>
-          <ToggleButton value="S">S</ToggleButton>
-          <ToggleButton value="U">U</ToggleButton>
-          <ToggleButton value="F">F</ToggleButton>
-        </ToggleButtonGroup>
-      </Tooltip>
-
-*/

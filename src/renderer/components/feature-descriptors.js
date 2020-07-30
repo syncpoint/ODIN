@@ -5,7 +5,7 @@ import {
   parameterized,
   schemaPart,
   hostilityPart,
-  // battleDimensionPart,
+  battleDimensionPart,
   statusPart,
   installationPart
 } from './SIDC'
@@ -52,21 +52,20 @@ export const featureGeometry = sidc => {
  * featureDescriptors :: () => [object]
  */
 export const featureDescriptors = (filter, preset = {}) => {
-  // if (!filter || filter.length < 3) return []
 
   const schema = preset.schema || 'S'
   const hostlility = preset.hostility || 'F'
-  // const battleDimension = preset.battleDimension || 'G'
+  const battleDimension = preset.battleDimension || []
   const status = preset.status || 'P'
   const installation = preset.installation || '-'
 
   const schemaMatch = descr => schemaPart.value(descr.sidc) === schema
-  // const battleDimensionMatch = descr => battleDimensionPart.value(descr.sidc) === battleDimension
+  const battleDimensionMatch = descr => battleDimension.length ? battleDimension.includes(battleDimensionPart.value(descr.sidc)) : true
   const filterMatch = descr => descr.sortkey.includes(filter.toLowerCase())
   const installationMatch = descr => [installation, '*'].includes(installationPart.value(descr.sidc))
   const match = descr =>
     schemaMatch(descr) &&
-    // battleDimensionMatch(descr) &&
+    battleDimensionMatch(descr) &&
     filterMatch(descr) &&
     installationMatch(descr)
 
