@@ -40,17 +40,18 @@ const useStyles = makeStyles((theme) => ({
 
 const FeaturePalette = (/* props */) => {
 
-  const memento = preferences.get('paletteMemento')
+  // const memento = preferences.get('paletteMemento')
 
   const classes = useStyles()
   const [showing, setShowing] = React.useState(true)
   const [height, setHeight] = React.useState(0)
-  const [filter, setFilter] = React.useState(memento.filter || '')
-  const [presets, setPresets] = React.useState(memento.presets || {
+  const [filter, setFilter] = React.useState('')
+  const [presets, setPresets] = React.useState({
     installation: null,
     status: 'P',
     hostility: 'F',
-    schema: 'S'
+    schema: 'S',
+    battleDimension: []
   })
 
   React.useEffect(() => {
@@ -64,6 +65,14 @@ const FeaturePalette = (/* props */) => {
       evented.off('MAP_DRAW', hide)
       evented.off('MAP_DRAWEND', show)
     }
+  }, [])
+
+  React.useEffect(() => {
+    const memento = preferences.get('paletteMemento')
+    if (!memento) return
+    const { filter, presets } = memento
+    if (filter) setFilter(filter)
+    if (presets) setPresets(presets)
   }, [])
 
   const updateFilter = filter => {
