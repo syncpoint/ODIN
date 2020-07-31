@@ -8,12 +8,12 @@ import { useTranslation } from 'react-i18next'
 const FeatureList = props => {
   const { listItems, handleClick, height } = props
   const { t } = useTranslation()
-  const list = React.useRef()
 
-  if (list && list.current) {
-    list.current.resetAfterIndex(0, true)
-    list.current.scrollToItem(0, 'start')
-  }
+  const list = React.useCallback(element => {
+    if (!element) return
+    element.resetAfterIndex(0, true)
+    element.scrollToItem(0, 'start')
+  })
 
   const getItemSize = index => {
     const descriptor = listItems[index]

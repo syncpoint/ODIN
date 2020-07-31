@@ -75,6 +75,12 @@ const FeaturePalette = (/* props */) => {
     if (presets) setPresets(presets)
   }, [])
 
+  const detectListHeigth = React.useCallback(element => {
+    if (!element) return
+    const currentHeight = element.getBoundingClientRect().height
+    if (currentHeight !== height) setHeight(currentHeight)
+  }, [])
+
   const updateFilter = filter => {
     setFilter(filter)
     const memento = preferences.get('paletteMemento') || {}
@@ -106,11 +112,7 @@ const FeaturePalette = (/* props */) => {
         <Presets value={presets} onChange={updatePresets}/>
       </div>
       <Search value={filter} onChange={updateFilter}/>
-      <div className={classes.list} ref={element => {
-        if (!element) return
-        const currentHeight = element.getBoundingClientRect().height
-        if (currentHeight !== height) setHeight(currentHeight)
-      }}>
+      <div className={classes.list} ref={detectListHeigth}>
         <FeatureList classes={classes} listItems={listItems} handleClick={itemSelected} height={height}/>
       </div>
     </Paper>
