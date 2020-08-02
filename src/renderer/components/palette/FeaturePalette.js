@@ -40,19 +40,20 @@ const useStyles = makeStyles((theme) => ({
 
 const FeaturePalette = (/* props */) => {
 
-  // const memento = preferences.get('paletteMemento')
-
-  const classes = useStyles()
-  const [showing, setShowing] = React.useState(true)
-  const [height, setHeight] = React.useState(0)
-  const [filter, setFilter] = React.useState('')
-  const [presets, setPresets] = React.useState({
+  const DEFAULT_FILTER = ''
+  const DEFAULT_PRESETS = {
     installation: null,
     status: 'P',
     hostility: 'F',
     schema: 'S',
     battleDimension: []
-  })
+  }
+
+  const classes = useStyles()
+  const [showing, setShowing] = React.useState(true)
+  const [height, setHeight] = React.useState(0)
+  const [filter, setFilter] = React.useState(null)
+  const [presets, setPresets] = React.useState(null)
 
   React.useEffect(() => {
     const hide = () => setShowing(false)
@@ -69,11 +70,19 @@ const FeaturePalette = (/* props */) => {
 
   React.useEffect(() => {
     const memento = preferences.get('paletteMemento')
-    if (!memento) return
-    const { filter, presets } = memento
-    if (filter) setFilter(filter)
-    if (presets) setPresets(presets)
+    let { filter, presets } = memento
+    if (!filter) filter = DEFAULT_FILTER
+    if (!presets) presets = DEFAULT_PRESETS
+    setFilter(filter)
+    setPresets(presets)
   }, [])
+
+  React.useEffect(() => {
+    const memento = preferences.get('paletteMemento') || {}
+    memento.filter = filter
+    memento.presets = presets
+    preferences.set('paletteMemento', memento)
+  }, [filter, presets])
 
   const detectListHeigth = React.useCallback(element => {
     if (!element) return
@@ -81,24 +90,20 @@ const FeaturePalette = (/* props */) => {
     if (currentHeight !== height) setHeight(currentHeight)
   }, [])
 
-  const updateFilter = filter => {
-    setFilter(filter)
-    const memento = preferences.get('paletteMemento') || {}
-    memento.filter = filter
-    preferences.set('paletteMemento', memento)
+  const updateFilter = newFilter => {
+    if (newFilter !== filter) setFilter(newFilter)
   }
 
-  const updatePresets = presets => {
-    setPresets(presets)
-    const memento = preferences.get('paletteMemento') || {}
-    memento.presets = presets
-    preferences.set('paletteMemento', memento)
+  const updatePresets = newPresets => {
+    if (presets !== newPresets) setPresets(newPresets)
   }
 
   const itemSelected = descriptor => () => {
     selection.deselect()
     evented.emit('MAP_DRAW', descriptor)
   }
+
+  if (filter === null || !presets) return null
 
   const listItems = featureDescriptors(filter, presets)
 
@@ -111,7 +116,7 @@ const FeaturePalette = (/* props */) => {
       <div className={classes.buttons}>
         <Presets value={presets} onChange={updatePresets}/>
       </div>
-      <Search value={filter} onChange={updateFilter}/>
+      <Search initialValue={filter} onChange={updateFilter}/>
       <div className={classes.list} ref={detectListHeigth}>
         <FeatureList classes={classes} listItems={listItems} handleClick={itemSelected} height={height}/>
       </div>
