@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { InputBase } from '@material-ui/core'
 import { useTranslation } from 'react-i18next'
-import debounce from 'lodash.debounce'
 
 const useStyles = makeStyles((theme) => ({
   search: {
@@ -18,21 +17,27 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-const Search = props => {
+const Search = ({ initialValue, onChange, delay = 400 }) => {
   const classes = useStyles()
   const { t } = useTranslation()
+  const [value, setValue] = React.useState(initialValue)
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      onChange(value)
+    }, delay)
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [value])
+
+  const handleChange = ({ target }) => setValue(target.value)
+
   const handleKeyDown = event => {
     switch (event.key) {
-      case 'Escape': return props.onChange('')
+      case 'Escape': return onChange('')
     }
   }
-
-  const notifyParent = debounce(() => props.onChange(value), 400)
-
-  const [value, setValue] = React.useState(props.value)
-  React.useEffect(() => {
-    notifyParent()
-  }, [value])
 
   return (
     <InputBase
@@ -40,15 +45,16 @@ const Search = props => {
       placeholder={t('palette.search.placeholder')}
       autoFocus
       value={value}
-      onChange={({ target }) => setValue(target.value)}
+      onChange={handleChange}
       onKeyDown={handleKeyDown}
     />
   )
 }
 
 Search.propTypes = {
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired
+  initialValue: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  delay: PropTypes.number
 }
 
 export default Search
