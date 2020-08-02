@@ -12,7 +12,7 @@ const FeatureList = props => {
   const list = React.useCallback(element => {
     if (!element) return
     element.resetAfterIndex(0, true)
-    element.scrollToItem(0, 'start')
+    // element.scrollToItem(0, 'start')
   })
 
   const getItemSize = index => {
