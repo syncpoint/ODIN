@@ -17,21 +17,10 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-const Search = ({ initialValue, onChange, delay = 400 }) => {
+const Search = ({ initialValue, onChange }) => {
   const classes = useStyles()
   const { t } = useTranslation()
-  const [value, setValue] = React.useState(initialValue)
-
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      onChange(value)
-    }, delay)
-    return () => {
-      clearTimeout(timer)
-    }
-  }, [value])
-
-  const handleChange = ({ target }) => setValue(target.value)
+  const handleChange = ({ target }) => onChange(target.value)
 
   const handleKeyDown = event => {
     switch (event.key) {
@@ -44,7 +33,7 @@ const Search = ({ initialValue, onChange, delay = 400 }) => {
       className={classes.search}
       placeholder={t('palette.search.placeholder')}
       autoFocus
-      value={value}
+      value={initialValue}
       onChange={handleChange}
       onKeyDown={handleKeyDown}
     />

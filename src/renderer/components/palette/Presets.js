@@ -27,17 +27,6 @@ const Presets = props => {
 
   return (
     <span>
-      <Tooltip title={t('palette.presets.installation')}>
-        <ToggleButtonGroup
-          size="small"
-          exclusive
-          className={classes.toggleContainer}
-          value={props.value.installation}
-          onChange={handleChange('installation')}
-        >
-          <ToggleButton value="H">I</ToggleButton>
-        </ToggleButtonGroup>
-      </Tooltip>
       <Tooltip title={t('palette.presets.hostility')}>
         <ToggleButtonGroup
           size="small"
@@ -64,37 +53,6 @@ const Presets = props => {
           <ToggleButton value="A">A</ToggleButton>
         </ToggleButtonGroup>
       </Tooltip>
-      <Tooltip title={t('palette.presets.schema')}>
-        <ToggleButtonGroup
-          size="small"
-          exclusive
-          className={classes.toggleContainer}
-          value={props.value.schema}
-          onChange={handleChange('schema')}
-        >
-          <ToggleButton value="S">U/E/I</ToggleButton>
-          <ToggleButton value="G">TG</ToggleButton>
-          <ToggleButton value="I">SIGINT</ToggleButton>
-          <ToggleButton value="O">STBLTY</ToggleButton>
-          <ToggleButton value="E">EMS</ToggleButton>
-        </ToggleButtonGroup>
-      </Tooltip>
-      <Tooltip title={t('palette.presets.battleDimension')}>
-        <ToggleButtonGroup
-          size="small"
-          className={classes.toggleContainer}
-          value={props.value.battleDimension}
-          onChange={handleChange('battleDimension')}
-        >
-          <ToggleButton value="P">SPC</ToggleButton>
-          <ToggleButton value="A">AIR</ToggleButton>
-          <ToggleButton value="G">GND</ToggleButton>
-          <ToggleButton value="S">SRFC</ToggleButton>
-          <ToggleButton value="U">SUB</ToggleButton>
-          <ToggleButton value="F">SOF</ToggleButton>
-        </ToggleButtonGroup>
-      </Tooltip>
-
     </span>
   )
 }

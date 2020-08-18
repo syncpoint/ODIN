@@ -42,11 +42,9 @@ const FeaturePalette = (/* props */) => {
 
   const DEFAULT_FILTER = ''
   const DEFAULT_PRESETS = {
-    installation: null,
     status: 'P',
     hostility: 'F',
-    schema: 'S',
-    battleDimension: []
+    schema: 'S'
   }
 
   const classes = useStyles()
@@ -54,6 +52,7 @@ const FeaturePalette = (/* props */) => {
   const [height, setHeight] = React.useState(0)
   const [filter, setFilter] = React.useState(null)
   const [presets, setPresets] = React.useState(null)
+
 
   React.useEffect(() => {
     const hide = () => setShowing(false)
@@ -70,7 +69,8 @@ const FeaturePalette = (/* props */) => {
 
   React.useEffect(() => {
     const memento = preferences.get('paletteMemento')
-    const { filter = DEFAULT_FILTER, presets = DEFAULT_PRESETS } = memento || {}
+    const filter = memento.filter || DEFAULT_FILTER
+    const presets = memento.presets || DEFAULT_PRESETS
     setFilter(filter)
     setPresets(presets)
   }, [])
