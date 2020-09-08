@@ -17,12 +17,14 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-const Search = props => {
+const Search = ({ initialValue, onChange }) => {
   const classes = useStyles()
   const { t } = useTranslation()
+  const handleChange = ({ target }) => onChange(target.value)
+
   const handleKeyDown = event => {
     switch (event.key) {
-      case 'Escape': return props.onChange('')
+      case 'Escape': return onChange('')
     }
   }
 
@@ -31,16 +33,17 @@ const Search = props => {
       className={classes.search}
       placeholder={t('palette.search.placeholder')}
       autoFocus
-      value={props.value}
-      onChange={({ target }) => props.onChange(target.value)}
+      value={initialValue}
+      onChange={handleChange}
       onKeyDown={handleKeyDown}
     />
   )
 }
 
 Search.propTypes = {
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired
+  initialValue: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  delay: PropTypes.number
 }
 
 export default Search

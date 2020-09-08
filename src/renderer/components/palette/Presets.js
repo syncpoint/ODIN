@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
 const Presets = props => {
   const classes = useStyles()
   const { t } = useTranslation()
+
   const handleChange = property => (_, value) => {
     if (!value && property !== 'installation') return
     const preset = { ...props.value }
@@ -26,17 +27,6 @@ const Presets = props => {
 
   return (
     <span>
-      <Tooltip title={t('palette.presets.installation')}>
-        <ToggleButtonGroup
-          size="small"
-          exclusive
-          className={classes.toggleContainer}
-          value={props.value.installation}
-          onChange={handleChange('installation')}
-        >
-          <ToggleButton value="H">I</ToggleButton>
-        </ToggleButtonGroup>
-      </Tooltip>
       <Tooltip title={t('palette.presets.hostility')}>
         <ToggleButtonGroup
           size="small"
