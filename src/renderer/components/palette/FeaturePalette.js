@@ -69,8 +69,7 @@ const FeaturePalette = (/* props */) => {
 
   React.useEffect(() => {
     const memento = preferences.get('paletteMemento')
-    const filter = memento.filter || DEFAULT_FILTER
-    const presets = memento.presets || DEFAULT_PRESETS
+    const { filter = DEFAULT_FILTER, presets = DEFAULT_PRESETS } = memento || {}
     setFilter(filter)
     setPresets(presets)
   }, [])
