@@ -5,7 +5,6 @@ import Tooltip from '../Tooltip.js'
 import inputLayers from '../../project/input-layers'
 import selection from '../../selection'
 import URI from '../../project/URI'
-import { noop } from '../../../shared/combinators'
 import { useTranslation } from 'react-i18next'
 
 const withLayer = fn => {
@@ -37,8 +36,8 @@ const actions = [
   {
     icon: <ExportVariant/>,
     tooltip: 'layers.share',
-    disabled: () => true,
-    action: noop
+    disabled: layer => !layer,
+    action: () => { withLayer(layerId => inputLayers.exportLayer(layerId)) }
   }
 ]
 

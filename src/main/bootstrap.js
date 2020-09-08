@@ -4,6 +4,7 @@ import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import settings from 'electron-settings'
 import projects from '../shared/projects'
 import { exportProject, importProject } from './ipc/share-project'
+import { exportLayer } from './ipc/share-layer'
 import { viewAsPng } from './ipc/share-view'
 import handleCreatePreview from './ipc/create-preview'
 import i18n from '../i18n'
@@ -191,6 +192,8 @@ const bootstrap = () => {
   /* emitted by renderer/components/Management.js */
   ipcMain.on('IPC_EXPORT_PROJECT', exportProject)
   ipcMain.on('IPC_IMPORT_PROJECT', importProject)
+
+  ipcMain.on('IPC_EXPORT_LAYER', exportLayer)
 
   /* share view */
   ipcMain.on('IPC_SHARE_PNG', viewAsPng)

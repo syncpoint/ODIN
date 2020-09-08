@@ -46,8 +46,8 @@
   },
   "export": {
     "title": "Export {{name}}",
-    "succeeded": "Export succeeded: {{name}}",
-    "failed": "Export failed: {{name}}",
+    "succeeded": "Export succeeded",
+    "failed": "Export failed",
     "clickToOpen": "Open: {{path}}"
   },
   "importProject": {
