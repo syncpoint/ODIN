@@ -10,7 +10,10 @@ export default {
     ? `layer:${featureId.match(/feature:(.*)\/.*/)[1]}`
     : `layer:${uuid()}`,
 
-  featureId: layerId => `feature:${layerId.match(/layer:(.*)/)[1]}/${uuid()}`,
+  featureId: (layerId, featureId) =>
+    featureId
+      ? featureId.replace('^feature:.+/', `feature:${layerId}/`)
+      : `feature:${layerId.match(/layer:(.*)/)[1]}/${uuid()}`,
   isFeatureId: s => s.startsWith('feature:'),
   isLayerId: s => s.startsWith('layer:')
 }
