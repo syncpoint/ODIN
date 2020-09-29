@@ -616,7 +616,18 @@ clipboard.registerHandler(URI.SCHEME_FEATURE, {
     .map(feature => feature.clone())
     .map(feature => geoJSON.writeFeature(feature)),
 
-  paste: content => addFeatures(content),
+  paste: content => {
+    const features = content
+      .map(source => geoJSON.readFeature(source))
+      .map(feature => {
+        const featureId = URI.featureId(Feature.layerId(feature))
+        feature.setId(featureId)
+        return feature
+      })
+      .map(feature => geoJSON.writeFeature(feature))
+
+    addFeatures(features)
+  },
 
   // NOTE: For CUT operation, feature must not be locked.
   cut: () => {
