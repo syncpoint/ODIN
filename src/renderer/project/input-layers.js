@@ -620,7 +620,7 @@ clipboard.registerHandler(URI.SCHEME_FEATURE, {
     const features = content
       .map(source => geoJSON.readFeature(source))
       .map(feature => {
-        const featureId = URI.featureId(Feature.layerId(feature))
+        const featureId = URI.featureId(activeLayer().id)
         feature.setId(featureId)
         return feature
       })
