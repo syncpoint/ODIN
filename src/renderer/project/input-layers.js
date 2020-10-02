@@ -200,11 +200,14 @@ const emit = event => reducers.forEach(reducer => setImmediate(() => reducer(eve
 /**
  * insertFeaturesCommand :: [ol/Feature] -> command
  * Add given features to corresponding input layer.
+ * Please see readme.md for the expected behaviour.
  */
-const insertFeaturesCommand = clones => {
-  const additions = clones.map(feature => {
+const insertFeaturesCommand = candidates => {
+  const additions = candidates.map(feature => {
     const layerId = Feature.layerId(feature)
-    feature.setId(URI.featureId(layerId))
+    const featureId = Feature.id(feature)
+    const id = URI.featureId(layerId, featureId)
+    feature.setId(id)
     return feature
   })
 
@@ -221,13 +224,18 @@ const insertFeaturesCommand = clones => {
 /**
  * deleteFeaturesCommand :: [string] -> command
  * Delete features with given ids.
+ * Please see readme.md for the expected behaviour.
  */
 const deleteFeaturesCommand = featureIds => {
 
-  // Create clones (without ids) to re-insert if necessary.
+  // Create clones (WITH ids) to re-insert if necessary.
   const clones = featureIds
-    .map(id => featureList[id])
-    .map(feature => feature.clone())
+    .map(id => [id, featureList[id]])
+    .map(([id, feature]) => {
+      const clone = feature.clone()
+      clone.setId(id)
+      return clone
+    })
 
   return {
     inverse: () => insertFeaturesCommand(clones),
@@ -243,11 +251,20 @@ const deleteFeaturesCommand = featureIds => {
 /**
  * updateGeometriesCommand
  *   :: (string ~> ol/Geometry) -> (string ~> ol/Geometry) -> command
+ * Please see readme.md for the expected behaviour.
  */
 const updateGeometriesCommand = (initial, current) => ({
   inverse: () => updateGeometriesCommand(current, initial),
   apply: () => {
     const features = Object.entries(initial)
+      /*
+      .map(([id, geometry]) => {
+        console.log('id ' + id)
+        console.dir(geometry)
+        console.dir(featureList)
+        return [id, geometry]
+      })
+      */
       .map(([id, geometry]) => [featureList[id], geometry])
       .map(([feature, geometry]) => K(feature)(feature => {
         feature.setGeometry(geometry)
@@ -596,9 +613,21 @@ clipboard.registerHandler(URI.SCHEME_FEATURE, {
   // NOTE: For COPY operation, feature may be locked.
   copy: () => selection.selected(URI.isFeatureId)
     .map(featureId => featureList[featureId])
+    .map(feature => feature.clone())
     .map(feature => geoJSON.writeFeature(feature)),
 
-  paste: content => addFeatures(content),
+  paste: content => {
+    const features = content
+      .map(source => geoJSON.readFeature(source))
+      .map(feature => {
+        const featureId = URI.featureId(Feature.layerId(feature))
+        feature.setId(featureId)
+        return feature
+      })
+      .map(feature => geoJSON.writeFeature(feature))
+
+    addFeatures(features)
+  },
 
   // NOTE: For CUT operation, feature must not be locked.
   cut: () => {
