@@ -27,4 +27,4 @@ linux:
   category: 'Office'
   files:
     - 'dist'
-electronVersion: 8.2.0
+electronVersion: 8.5.2
