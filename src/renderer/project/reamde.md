@@ -23,3 +23,7 @@ In order to make this possible we need to re-insert deleted features with their 
 When a user executes COPY/CUT and PASTE we will create NEW features for every PASTE action. Every new feature will have a NEW unique ID.
 
 If CUT/PASTE is employed to MOVE a feature from one layer to some other layer the featureId will get changed accordingly.
+
+### Target layer for PASTE
+
+No matter which source layer the object was COPIED/CUTED from, the target will always be the ACTIVE LAYER.
