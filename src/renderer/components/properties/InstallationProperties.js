@@ -34,11 +34,11 @@ const InstallationProperties = props => {
       <TextProperty label='Name' property='name' properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
       <TextProperty label='Unique Designation' property='t' properties={props.properties} onCommit={props.update} />
       <TextProperty label='Higher Formation' property='m' properties={props.properties} onCommit={props.update} />
-      <TextProperty label='Special C2 HQ' property='aa' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
+      <TextProperty label='Special C2 HQ' property='aa' properties={props.properties} onCommit={props.update}/>
+      <HostilityProperty properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
+      <TextProperty label='Date-Time Group' property='w' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
       <TextProperty label='Staff Comments' property='g' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
       <TextProperty label='Additional Information' property='h' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
-      <TextProperty label='Date-Time Group' property='w' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
-      <HostilityProperty properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
       <StatusGroupFull properties={props.properties} onCommit={props.update}/>
     </Paper>
   )

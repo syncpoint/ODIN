@@ -39,7 +39,7 @@ const UnitProperties = props => {
       <TextProperty label='Higher Formation' property='m' properties={props.properties} onCommit={props.update}/>
       <TextProperty label='Special C2 HQ' property='aa' properties={props.properties} onCommit={props.update}/>
       <EchelonProperty properties={props.properties} onCommit={props.update}/>
-      <HostilityProperty properties={props.properties} onCommit={props.update} />
+      <HostilityProperty properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
       <TextProperty label='Date-Time Group' property='w' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
       <TextProperty label='Speed' property='z' properties={props.properties} onCommit={props.update}/>
       <TextProperty label='Direction' property='q' properties={props.properties} onCommit={props.update}/>
