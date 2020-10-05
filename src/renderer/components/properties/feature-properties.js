@@ -10,6 +10,7 @@ import EquipmentProperties from './EquipmentProperties'
 import SigIntEquipmentProperties from './SigIntEquipmentProperties'
 import StabilityOperationsProperties from './StabilityOperationsProperties'
 import PointProperties from './PointProperties'
+import GenericPointProperties from './GenericPointProperties'
 import InstallationProperties from './InstallationProperties'
 import EEIProperties from './EEIProperties'
 
@@ -22,7 +23,8 @@ const panelTypes = {
   SO: (key, props) => <StabilityOperationsProperties key={key} { ...props }/>,
   P: (key, props) => <PointProperties key={key} { ...props }/>,
   I: (key, props) => <InstallationProperties key={key} { ...props }/>,
-  EEI: (key, props) => <EEIProperties key={key} { ...props }/>
+  EEI: (key, props) => <EEIProperties key={key} { ...props }/>,
+  GP: (key, props) => <GenericPointProperties key={key} { ...props }/>
   // TODO: BL
 }
 
@@ -42,7 +44,13 @@ providers.register(selected => {
   }
 
   // Fall back to area when undefined.
-  const clazz = featureClass(featureProperties) || 'A'
+  let clazz = featureClass(featureProperties)
+  if (!clazz) {
+    const geometry = descriptors.featureGeometry(featureProperties.sidc)
+    console.log(`geometry for ${featureProperties.sidc} is ${geometry}`)
+    console.dir(geometry)
+    clazz = (geometry.type === 'Point') ? 'GP' : 'A'
+  }
   const key = featureIds[0]
   const props = { properties: featureProperties, update }
   const panel = (panelTypes[clazz] || (() => null))
