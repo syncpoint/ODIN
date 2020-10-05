@@ -30,13 +30,12 @@ const MODIFIERS = {
   t: 'uniqueDesignation',
   v: 'type',
   z: 'speed',
-  aa: 'specialHeadquarters'
+  aa: 'specialHeadquarters',
+  w: 'dtg'
 }
 
-const fromNow = dtg => dtg && 'TIMNA'
 const modifiers = properties => Object.entries(properties)
   .filter(([key, value]) => MODIFIERS[key] && value)
-  .map(([key, value]) => ([key, key === 'w' ? fromNow(value) : value]))
   .filter(([key, value]) => {
     if (key === 't' && value === '[NO FORMALABBREVIATEDNAME]') return false
     if (key === 't' && value === 'Untitled') return false
