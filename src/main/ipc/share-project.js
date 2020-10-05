@@ -1,6 +1,7 @@
-import { dialog, Notification, shell } from 'electron'
+import { dialog, Notification } from 'electron'
 import sanitizeFilename from 'sanitize-filename'
 import projects from '../../shared/projects'
+import saveFileDialog from './save-file-dialog'
 import i18n from '../../i18n'
 
 export const exportProject = async (event, projectPath) => {
@@ -8,30 +9,12 @@ export const exportProject = async (event, projectPath) => {
   const filenameSuggestion = sanitizeFilename(`${project.metadata.name}.odin`)
   const dialogOptions = {
     title: i18n.t('exportProject.title', { name: project.metadata.name }),
-    defaultPath: filenameSuggestion
+    defaultPath: filenameSuggestion,
+    filters: [{ name: i18n.t('importProject.fileFilterName'), extensions: ['odin'] }]
   }
-  /* providing getOwnerBrowserWindow creates a modal dialog */
-  dialog.showSaveDialog(event.sender.getOwnerBrowserWindow(), dialogOptions).then(async result => {
-    if (result.canceled) return
-    try {
-      await projects.exportProject(projectPath, result.filePath)
-      if (!Notification.isSupported()) return
-      const n = new Notification({
-        title: i18n.t('export.succeeded', { name: project.metadata.name }),
-        body: i18n.t('export.clickToOpen', { path: result.filePath })
-      })
-      n.on('click', () => {
-        shell.showItemInFolder(result.filePath)
-      })
-      n.show()
-    } catch (error) {
-      const n = new Notification({
-        title: i18n.t('export.failed', { name: project.metadata.title }),
-        body: error.message
-      })
-      n.show()
-    }
-  })
+
+  const action = async (targetPath) => await projects.exportProject(projectPath, targetPath)
+  saveFileDialog(event.sender.getOwnerBrowserWindow(), dialogOptions, action)
 }
 
 export const importProject = async (event) => {

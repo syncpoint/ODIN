@@ -23,14 +23,12 @@ const useStyles = makeStyles(theme => ({
     overflow: 'auto'
   },
   itemList: {
-    listStyleType: 'none', padding: '4px', backgroundColor: theme.palette.background.paper
+    listStyleType: 'none', padding: '4px', backgroundColor: theme.palette.background.paper, maxHeight: '0px' // ?!
   },
   itemListActive: {
-    listStyleType: 'none', padding: '4px', backgroundColor: theme.palette.action.hover
+    listStyleType: 'none', padding: '4px', backgroundColor: theme.palette.action.hover, maxHeight: '0px' // ?!
   },
   controls: {
-    position: 'absolute',
-    bottom: 0,
     width: '90%',
     paddingInlineStart: '0px',
     margin: theme.spacing(1.5)
@@ -108,27 +106,29 @@ const BasemapList = props => {
         <ul id="basemapItemList" className={cssClass} ref={drop}>
           {
             basemapLayers.map((layer, index) => (
-              <BasemapListItem
-                key={layer.id}
-                index={index}
-                id={layer.id}
-                text={layer.name}
-                visible={layer.visible}
-                selected={isSelected(layer.id)}
-                moveBasemapItem={moveBasemapItem}
-                visibilityClicked={handleVisibilityClicked}
-                tuneClicked={handleTuneClicked}
-                onDrop={handleItemDropped}
-              />
+              <>
+                <BasemapListItem
+                  key={layer.id}
+                  index={index}
+                  id={layer.id}
+                  text={layer.name}
+                  visible={layer.visible}
+                  selected={isSelected(layer.id)}
+                  moveBasemapItem={moveBasemapItem}
+                  visibilityClicked={handleVisibilityClicked}
+                  tuneClicked={handleTuneClicked}
+                  onDrop={handleItemDropped}
+                />
+                { selectedBasemap && selectedBasemap.id === layer.id
+                  ? <ul className={classes.controls}>
+                    <Opacity key={selectedBasemap.id} onChange={handleOpacityChanged} defaultValue={selectedBasemap.opacity}/>
+                  </ul>
+                  : null
+                }
+              </>
             )).reverse()
           }
         </ul>
-        { selectedBasemap
-          ? <ul className={classes.controls}>
-            <Opacity key={selectedBasemap.id} onChange={handleOpacityChanged} defaultValue={selectedBasemap.opacity}/>
-          </ul>
-          : null
-        }
       </div>
     </Paper>
   )

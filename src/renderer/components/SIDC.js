@@ -1,4 +1,6 @@
+const SCHEMA = 0
 const HOSTILITY = 1
+const BATTLEDIMENSION = 2
 const STATUS = 3
 const MODIFIER = 10
 const MOBILITY = 10
@@ -16,7 +18,9 @@ const part = (index, n = 1, replaceWildcard = true) => {
   }
 }
 
+export const schemaPart = part(SCHEMA)
 export const hostilityPart = part(HOSTILITY)
+export const battleDimensionPart = part(BATTLEDIMENSION)
 export const statusPart = part(STATUS)
 export const modifierPart = part(MODIFIER)
 export const mobilityPart = part(MOBILITY, 2, true)

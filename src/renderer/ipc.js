@@ -10,3 +10,8 @@ ipcRenderer.on('IPC_EDIT_DELETE', emit('EDIT_DELETE'))
 ipcRenderer.on('IPC_EDIT_CUT', emit('EDIT_CUT'))
 ipcRenderer.on('IPC_EDIT_COPY', emit('EDIT_COPY'))
 ipcRenderer.on('IPC_EDIT_PASTE', emit('EDIT_PASTE'))
+
+
+evented.on('EXPORT_LAYER', (name, contents) => {
+  ipcRenderer.send('IPC_EXPORT_LAYER', name, contents)
+})

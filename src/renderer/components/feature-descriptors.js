@@ -1,7 +1,12 @@
 import * as R from 'ramda'
 import descriptors from './feature-descriptors.json'
 import { K } from '../../shared/combinators'
-import { parameterized, hostilityPart, statusPart, installationPart } from './SIDC'
+import lunr from 'lunr'
+import {
+  parameterized,
+  hostilityPart,
+  statusPart
+} from './SIDC'
 
 const lookup = descriptors.reduce((acc, descriptor) => K(acc)(acc => {
   const sidc = parameterized(descriptor.sidc)
@@ -23,10 +28,36 @@ const sortedList = descriptors
     geometry: descriptor.geometry,
     ...descriptor.parameters,
     name: descriptor.hierarchy[descriptor.hierarchy.length - 1],
-    hierarchy: R.take(descriptor.hierarchy.length - 2, R.drop(1, descriptor.hierarchy)).join(', '),
+    hierarchy: R.take(descriptor.hierarchy.length - 1, descriptor.hierarchy).join(', '),
     sortkey: descriptor.hierarchy.join(', ').toLowerCase()
   }))
   .sort((a, b) => a.sortkey.localeCompare(b.sortkey))
+
+const document = ({ sidc, hierarchy, scope, dimension }) => ({
+  sidc,
+  title: hierarchy[hierarchy.length - 1],
+  body: R.take(hierarchy.length - 1, hierarchy).join(' '),
+  scope,
+  dimension
+})
+
+const index = lunr(function () {
+  // TODO: remove 'so' (stability operations) from stop word list.
+  // Stemmer makes more harm than good in our case.
+  this.pipeline.remove(lunr.stemmer)
+  this.searchPipeline.remove(lunr.stemmer)
+
+  this.metadataWhitelist = ['position']
+  this.ref('sidc')
+  this.field('title')
+  this.field('body')
+  this.field('scope')
+  this.field('dimension')
+
+  descriptors
+    .map(document)
+    .forEach(document => this.add(document))
+})
 
 /**
  * featureClass :: string -> string
@@ -45,29 +76,21 @@ export const featureGeometry = sidc => {
  * featureDescriptors :: () => [object]
  */
 export const featureDescriptors = (filter, preset = {}) => {
-  if (!filter || filter.length < 3) return []
-
   const hostlility = preset.hostility || 'F'
   const status = preset.status || 'P'
-  const installation = preset.installation || '-'
-
-  const filterMatch = descr => descr.sortkey.includes(filter.toLowerCase())
-  const installationMatch = descr => [installation, '*'].includes(installationPart.value(descr.sidc))
-  const match = descr => filterMatch(descr) && installationMatch(descr)
-
-  const installationModifier = sidc => installationPart.value(sidc) !== '*'
-    ? sidc
-    : installationPart.replace(installation)(sidc)
-
   const sidc = R.compose(
-    installationModifier,
     hostilityPart.replace(hostlility),
     statusPart.replace(status)
   )
 
   const updateSIDC = descriptor => ({ ...descriptor, sidc: sidc(descriptor.sidc) })
-  const matches = sortedList
-    .filter(match)
-    .map(updateSIDC)
-  return R.take(50, matches)
+
+  try {
+    return index.search(filter)
+      .map(item => sortedList.find(descriptor => descriptor.sidc === item.ref))
+      .map(updateSIDC)
+  } catch (err) {
+    console.error(err)
+    return []
+  }
 }

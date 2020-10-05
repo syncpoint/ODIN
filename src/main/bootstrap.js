@@ -4,6 +4,7 @@ import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import settings from 'electron-settings'
 import projects from '../shared/projects'
 import { exportProject, importProject } from './ipc/share-project'
+import { exportLayer } from './ipc/share-layer'
 import { viewAsPng } from './ipc/share-view'
 import handleCreatePreview from './ipc/create-preview'
 import i18n from '../i18n'
@@ -102,20 +103,18 @@ const createProjectWindow = async (options) => {
     i18n.on('languageChanged', languageChangedHandler)
     window.on('close', () => i18n.off('languageChanged', languageChangedHandler))
 
-    window.once('ready-to-show', () => {
-      window.show()
-      /*  Remember this window/project to be the most recent.
-          We will use this key to identify the recent project and
-          use it on startup ('app-ready') and when we switch projects ('IPC_SWITCH_PROJECT').
-      */
-      merge(RECENT_WINDOW_KEY)(() => projectOptions.path)
-    })
-
     /* (re)establish electron's normal "quit the app if no more windows are open" behavior */
     appShallQuit = true
     /* allow users to find their recently used projects access by data/time */
     projects.mergeMetadata(projectOptions.path, { lastAccess: new Date() })
-    window.loadURL(windowUrl)
+
+    /*  Remember this window/project to be the most recent.
+          We will use this key to identify the recent project and
+          use it on startup ('app-ready') and when we switch projects ('IPC_SWITCH_PROJECT').
+      */
+    merge(RECENT_WINDOW_KEY)(() => projectOptions.path)
+    await window.loadURL(windowUrl)
+    window.show()
   }
 
   if (options && options.path && projects.exists(options.path)) {
@@ -193,6 +192,8 @@ const bootstrap = () => {
   /* emitted by renderer/components/Management.js */
   ipcMain.on('IPC_EXPORT_PROJECT', exportProject)
   ipcMain.on('IPC_IMPORT_PROJECT', importProject)
+
+  ipcMain.on('IPC_EXPORT_LAYER', exportLayer)
 
   /* share view */
   ipcMain.on('IPC_SHARE_PNG', viewAsPng)
