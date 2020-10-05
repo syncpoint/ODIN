@@ -7,6 +7,7 @@ import UnitProperties from './UnitProperties'
 import AreaProperties from './AreaProperties'
 import LineProperties from './LineProperties'
 import EquipmentProperties from './EquipmentProperties'
+import SigIntEquipmentProperties from './SigIntEquipmentProperties'
 import StabilityOperationsProperties from './StabilityOperationsProperties'
 import PointProperties from './PointProperties'
 import InstallationProperties from './InstallationProperties'
@@ -17,6 +18,7 @@ const panelTypes = {
   A: (key, props) => <AreaProperties key={key} { ...props }/>,
   L: (key, props) => <LineProperties key={key} { ...props }/>,
   E: (key, props) => <EquipmentProperties key={key} { ...props }/>,
+  SI: (key, props) => <SigIntEquipmentProperties key={key} { ...props }/>,
   SO: (key, props) => <StabilityOperationsProperties key={key} { ...props }/>,
   P: (key, props) => <PointProperties key={key} { ...props }/>,
   I: (key, props) => <InstallationProperties key={key} { ...props }/>,
