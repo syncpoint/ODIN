@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { Paper } from '@material-ui/core'
 import TextProperty from './TextProperty'
+import HostilityProperty from './HostilityProperty'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -31,7 +32,11 @@ const PointProperties = props => {
     >
       <TextProperty label='Name' property='name' properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
       <TextProperty label={'Unique Designation'} property={'t'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
+      <HostilityProperty properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
+      <TextProperty label='Date-Time Group' property='w' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
+      <TextProperty label='Staff Comments' property='g' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
       <TextProperty label={'Additional Information'} property={'h'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns }/>
+      <TextProperty label={'Altitude/Depth'} property={'x'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns }/>
       {/* TODO: ENY property */}
     </Paper>
   )
