@@ -2,8 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { Paper } from '@material-ui/core'
-import EchelonProperty from './EchelonProperty'
-import ModifierProperty from './ModifierProperty'
 import HostilityProperty from './HostilityProperty'
 import StatusGroupFull from './StatusGroupFull'
 import TextProperty from './TextProperty'
@@ -39,15 +37,13 @@ const StabilityOperationsProperties = props => {
     >
       <TextProperty label='Name' property='name' properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
       <TextProperty label='Unique Designation' property='t' properties={props.properties} onCommit={props.update}/>
-      <TextProperty label='Higher Formation' property='m' properties={props.properties} onCommit={props.update}/>
+      <HostilityProperty properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
+      <TextProperty label='Date-Time Group' property='w' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
       <TextProperty label='Speed' property='z' properties={props.properties} onCommit={props.update}/>
       <TextProperty label='Direction' property='q' properties={props.properties} onCommit={props.update}/>
       <TextProperty label='Staff Comments' property='g' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
-      <TextProperty label='Special C2 HQ' property='aa' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
-      <HostilityProperty properties={props.properties} onCommit={props.update}/>
-      <EchelonProperty properties={props.properties} onCommit={props.update}/>
+      <TextProperty label='Additional Information' property='h' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
       <StatusGroupFull properties={props.properties} onCommit={props.update}/>
-      <ModifierProperty properties={props.properties} onCommit={props.update}/>
     </Paper>
   )
 }

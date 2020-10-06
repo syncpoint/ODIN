@@ -2,10 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import { Paper } from '@material-ui/core'
-import HostilityProperty from './HostilityProperty'
-import StatusGroupFull from './StatusGroupFull'
 import TextProperty from './TextProperty'
-import MobilityProperty from './MobilityProperty'
+import HostilityProperty from './HostilityProperty'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -24,33 +22,28 @@ const useStyles = makeStyles(theme => ({
   twoColumns: { gridColumn: '1 / span 2' }
 }))
 
-const EquipmentProperties = props => {
+const PointProperties = props => {
   const classes = useStyles()
 
   return (
     <Paper
-      className={classes.paper}
-      elevation={4}
+      className={ classes.paper }
+      elevation={ 4 }
     >
       <TextProperty label='Name' property='name' properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
-      <TextProperty label='Unique Designation' property='t' properties={props.properties} onCommit={props.update}/>
-      <TextProperty label='Quantity' property='c' properties={props.properties} onCommit={props.update}/>
-      <TextProperty label='Type' property='v' properties={props.properties} onCommit={props.update} />
-      <MobilityProperty properties={props.properties} onCommit={props.update}/>
+      <TextProperty label={'Unique Designation'} property={'t'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
       <HostilityProperty properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
       <TextProperty label='Date-Time Group' property='w' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
-      <TextProperty label='Speed' property='z' properties={props.properties} onCommit={props.update}/>
-      <TextProperty label='Direction' property='q' properties={props.properties} onCommit={props.update}/>
       <TextProperty label='Staff Comments' property='g' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
-      <TextProperty label='Additional Information' property='h' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
-      <StatusGroupFull properties={props.properties} onCommit={props.update}/>
+      <TextProperty label={'Additional Information'} property={'h'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns }/>
     </Paper>
   )
 }
 
-EquipmentProperties.propTypes = {
+PointProperties.propTypes = {
   properties: PropTypes.object.isRequired,
   update: PropTypes.func.isRequired
 }
 
-export default EquipmentProperties
+
+export default PointProperties
