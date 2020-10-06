@@ -11,6 +11,7 @@ import StabilityOperationsProperties from './StabilityOperationsProperties'
 import PointProperties from './PointProperties'
 import InstallationProperties from './InstallationProperties'
 import EEIProperties from './EEIProperties'
+import BoundariesProperties from './BoundariesProperties'
 
 const panelTypes = {
   U: (key, props) => <UnitProperties key={key} { ...props }/>,
@@ -20,8 +21,8 @@ const panelTypes = {
   SO: (key, props) => <StabilityOperationsProperties key={key} { ...props }/>,
   P: (key, props) => <PointProperties key={key} { ...props }/>,
   I: (key, props) => <InstallationProperties key={key} { ...props }/>,
-  EEI: (key, props) => <EEIProperties key={key} { ...props }/>
-  // TODO: BL
+  EEI: (key, props) => <EEIProperties key={key} { ...props }/>,
+  BL: (key, props) => <BoundariesProperties key={key} { ...props }/>
 }
 
 providers.register(selected => {
