@@ -13,6 +13,7 @@ import PointProperties from './PointProperties'
 import GenericPointProperties from './GenericPointProperties'
 import InstallationProperties from './InstallationProperties'
 import EEIProperties from './EEIProperties'
+import BoundariesProperties from './BoundariesProperties'
 
 const panelTypes = {
   U: (key, props) => <UnitProperties key={key} { ...props }/>,
@@ -24,8 +25,8 @@ const panelTypes = {
   P: (key, props) => <PointProperties key={key} { ...props }/>,
   I: (key, props) => <InstallationProperties key={key} { ...props }/>,
   EEI: (key, props) => <EEIProperties key={key} { ...props }/>,
-  GP: (key, props) => <GenericPointProperties key={key} { ...props }/>
-  // TODO: BL
+  GP: (key, props) => <GenericPointProperties key={key} { ...props }/>,
+  BL: (key, props) => <BoundariesProperties key={key} { ...props }/>
 }
 
 providers.register(selected => {

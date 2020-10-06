@@ -2,6 +2,7 @@ import * as R from 'ramda'
 import * as geom from 'ol/geom'
 import * as style from 'ol/style'
 import { defaultFont } from './default-style'
+import echelons from './echelons'
 
 /**
  * Horizontal and vertical label placement
@@ -142,7 +143,23 @@ export const labels = {
   'G*F*LTS---': [topT, bottomTitle('SMOKE')],
   'G*F*LTF---': [topT, bottomT1('FPF')],
   'G*G*DLF---': [lineEndsTitle('FEBA')],
-  // TODO: G*G*GLB---
+  'G*G*GLB---': [
+    label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [t]),
+    label({ textAlign: 0.5, verticalAlign: BOTTOM })(({ t1 }) => [t1]),
+    (feature, resolution) => {
+      const modifier = feature.get('sidc')[11]
+      const geometry = feature.getGeometry()
+      const segment = [geometry.getCoordinateAt(0.45), geometry.getCoordinateAt(0.55)]
+      return new style.Style({
+        geometry: new geom.Point(geometry.getCoordinateAt(0.5)),
+        image: new style.Icon({
+          src: 'data:image/svg+xml;utf8,' + echelons[modifier],
+          scale: 0.4,
+          rotation: segmentAngle(segment)
+        })
+      })
+    }
+  ],
   // TODO: G*G*GLC---
   // TODO: G*G*GLF---
   'G*G*GLL---': [phaseLine('LL')],

@@ -36,6 +36,9 @@ const EchelonProperty = props => {
         <MenuItem value={'I'}>Division</MenuItem>
         <MenuItem value={'J'}>Corps</MenuItem>
         <MenuItem value={'K'}>Army</MenuItem>
+        <MenuItem value={'L'}>Front</MenuItem>
+        <MenuItem value={'M'}>Region</MenuItem>
+        <MenuItem value={'N'}>Command</MenuItem>
       </Select>
     </FormControl>
   )
