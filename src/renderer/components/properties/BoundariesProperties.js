@@ -35,7 +35,6 @@ const LineProperties = props => {
       <TextProperty label='Name' property='name' properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
       <TextProperty label={'Unique Designation (Left)'} property={'t'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
       <TextProperty label={'Unique Designation (Right)'} property={'t1'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
-      <TextProperty property={'t1'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
       <TextProperty label={'Additional Information'} property={'h'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns }/>
       <HostilityProperty properties={props.properties} onCommit={props.update}/>
       <EchelonProperty properties={props.properties} onCommit={props.update}/>
