@@ -55,5 +55,15 @@
     "succeeded": "Import succeeded",
     "failed": "Import from {{path}} failed",
     "fileFilterName": "ODIN project archives"
+  },
+  "autoUpdater": {
+    "buttons": {
+      "updateNow": "Download and update now!",
+      "skipUpdate": "Skip updating this time!"
+    },
+    "updateTitle": "A new version of ODIN is available",
+    "versionMessage": "Update available from {{currentVersion}} to {{newVersion}}.",
+    "updateMessage": "If you select 'Download and update now!' this will download and install the new version and restart ODIN immediately."
+
   }
 }

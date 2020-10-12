@@ -6,6 +6,7 @@ import projects from '../shared/projects'
 import { exportProject, importProject } from './ipc/share-project'
 import { exportLayer } from './ipc/share-layer'
 import { viewAsPng } from './ipc/share-view'
+import autoUpdater from './autoUpdater'
 import handleCreatePreview from './ipc/create-preview'
 import i18n from '../i18n'
 import './ipc/source-descriptors'
@@ -46,6 +47,9 @@ const windowTitle = async (projectPath) => {
 const sendi18Info = (receiver, lng) => {
   receiver.webContents.send('IPC_LANGUAGE_CHANGED', { lng: lng, resourceBundle: i18n.getResourceBundle(lng, 'web') })
 }
+
+
+
 
 /**
  * create the project window.
@@ -133,6 +137,8 @@ const createProjectWindow = async (options) => {
  * registers all app listeners and loads either the last project used or creates a new one
  */
 const bootstrap = () => {
+  let checkForUpdatesTimer = null
+
   // app.on('before-quit', () => (shuttingDown = true))
   app.on('ready', () => {
     /*
@@ -140,6 +146,7 @@ const bootstrap = () => {
       Please make sure this value is THE SAME as in 'electron-builder.yml'.
     */
     app.setAppUserModelId('io.syncpoint.odin')
+    checkForUpdatesTimer = setTimeout(() => autoUpdater.checkForUpdates().catch(error => console.error(error)), 5000)
 
     /* try to restore persisted window state */
     const state = Object.values(settings.get(WINDOWS_KEY, {}))
@@ -153,10 +160,13 @@ const bootstrap = () => {
 
     if (!recentProject) return createProjectWindow(/* will create a new untiteled project */)
     createProjectWindow(recentProject)
+
   })
 
   app.on('window-all-closed', () => {
-    if (appShallQuit) app.quit()
+    if (!appShallQuit) return
+    if (checkForUpdatesTimer) clearTimeout(checkForUpdatesTimer)
+    app.quit()
   })
 
   ipcMain.on('IPC_VIEWPORT_CHANGED', (event, viewport) => {
