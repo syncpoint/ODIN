@@ -6,7 +6,7 @@ import projects from '../shared/projects'
 import { exportProject, importProject } from './ipc/share-project'
 import { exportLayer } from './ipc/share-layer'
 import { viewAsPng } from './ipc/share-view'
-import autoUpdater from './autoUpdater'
+import autoUpdate from './autoUpdate'
 import handleCreatePreview from './ipc/create-preview'
 import i18n from '../i18n'
 import './ipc/source-descriptors'
@@ -47,9 +47,6 @@ const windowTitle = async (projectPath) => {
 const sendi18Info = (receiver, lng) => {
   receiver.webContents.send('IPC_LANGUAGE_CHANGED', { lng: lng, resourceBundle: i18n.getResourceBundle(lng, 'web') })
 }
-
-
-
 
 /**
  * create the project window.
@@ -137,16 +134,19 @@ const createProjectWindow = async (options) => {
  * registers all app listeners and loads either the last project used or creates a new one
  */
 const bootstrap = () => {
-  let checkForUpdatesTimer = null
 
-  // app.on('before-quit', () => (shuttingDown = true))
   app.on('ready', () => {
     /*
       Setting the appId is required to allow desktop notifications on the Windows platform.
       Please make sure this value is THE SAME as in 'electron-builder.yml'.
     */
     app.setAppUserModelId('io.syncpoint.odin')
-    checkForUpdatesTimer = setTimeout(() => autoUpdater.checkForUpdates().catch(error => console.error(error)), 5000)
+
+    /*
+      Checking for updates is always executed but will only do it's job if the user has enabled
+      the autoUpdate option.
+    */
+    autoUpdate.checkForUpdates()
 
     /* try to restore persisted window state */
     const state = Object.values(settings.get(WINDOWS_KEY, {}))
@@ -165,7 +165,7 @@ const bootstrap = () => {
 
   app.on('window-all-closed', () => {
     if (!appShallQuit) return
-    if (checkForUpdatesTimer) clearTimeout(checkForUpdatesTimer)
+    autoUpdate.cancel()
     app.quit()
   })
 
