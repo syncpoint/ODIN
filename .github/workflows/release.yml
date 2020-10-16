@@ -1,0 +1,37 @@
+name: Create binaries for the current release
+on:
+  push:
+    branches:
+      - 'release'
+
+jobs:
+  build:
+    name: Create binaries for all supported OSs
+    runs-on: macos-latest
+    steps:
+      - name: Checkout the source into the VM
+        uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Install 
+        run: npm install --no-optional
+      - name: Create Webpack
+        run: npm run webpack:production
+      - name: Import OS-X certificates
+        run: chmod +x ./.github/workflows/add-osx-cert.sh && ./.github/workflows/add-osx-cert.sh
+        env:
+          CSC_LINK: ${{ secrets.CSC_LINK }} # maybe we need to import the cert into the osx-keychain
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+      - name: publish multi-platform binaries
+        run: npm run release
+        env:
+          APPLEID: ${{ secrets.APPLEID }}
+          APPLEIDPASS: ${{ secrets.APPLEIDPASS }}
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+          WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      

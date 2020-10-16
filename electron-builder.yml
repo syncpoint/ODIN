@@ -27,4 +27,6 @@ linux:
   category: 'Office'
   files:
     - 'dist'
+publish:
+  - github
 electronVersion: 8.5.2
