@@ -15,8 +15,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12
-      - name: Install build tools
-        run: brew install snapcraft
       - name: Install 
         run: npm install --no-optional
       - name: Create Webpack

@@ -20,7 +20,6 @@ mac:
 linux:
   target:
     - target: deb
-    - target: snap
     - target: tar.gz
     - target: Appimage
   icon: 'build/icons'
