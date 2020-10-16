@@ -13,7 +13,7 @@
     "builder:mac": "electron-builder --mac",
     "builder:win": "electron-builder --win",
     "builder:linux": "electron-builder --linux",
-    "release": "electron-builder -mlw",
+    "release": "electron-builder -mlw --publish always",
     "eslint": "eslint src/",
     "test": "electron-mocha --require ./test/register.js --require ./test/helpers.js --require ./test/dom.js --require ignore-styles --recursive",
     "spectron": "mocha --require @babel/register --recursive spectron"
