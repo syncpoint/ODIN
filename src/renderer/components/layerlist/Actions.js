@@ -52,12 +52,26 @@ export const Actions = (/* props */) => {
       else setLayer(inputLayers.layerProperties(selected[0]))
     }
 
+    /*
+      We need to take care if the active layer has changed
+      since the active layer must not be removed. This additional
+      handler is required because the selection does not change
+      on the double-click. Thus the properties are not beeing refreshed
+      by only handling the selection events.
+    */
+    const layerActivatedHandler = event => {
+      if (event.type !== 'layeractivated') return
+      handleEvent()
+    }
+
     selection.on('selected', handleEvent)
     selection.on('deselected', handleEvent)
+    inputLayers.register(layerActivatedHandler)
 
     return () => {
       selection.off('selected', handleEvent)
       selection.off('deselected', handleEvent)
+      inputLayers.deregister(layerActivatedHandler)
     }
   }, [])
 
