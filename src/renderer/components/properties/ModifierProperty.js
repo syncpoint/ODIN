@@ -51,7 +51,7 @@ const ModifierProperty = props => {
 
   return (
     <div className={classes.twoColumns}>
-      <InputLabel className={classes.label} shrink>Modifer</InputLabel>
+      <InputLabel className={classes.label} shrink>Modifier</InputLabel>
       <FormControlLabel
         control={<Checkbox color="secondary" checked={state.modifierHQ}/>}
         label="HQ"
