@@ -123,8 +123,6 @@ const Activities = (/* props */) => {
 
   const toolPanel = () => activeTool ? activeTool.panel() : null
 
-  console.log('toolPanel', toolPanel())
-
   return (
     <>
       <ActivityBar activities={activities} activeTool={activeTool} onActivitySelected={handleActivitySelected}/>
