@@ -106,9 +106,8 @@ const BasemapList = props => {
         <ul id="basemapItemList" className={cssClass} ref={drop}>
           {
             basemapLayers.map((layer, index) => (
-              <>
+              <React.Fragment key={layer.id} >
                 <BasemapListItem
-                  key={layer.id}
                   index={index}
                   id={layer.id}
                   text={layer.name}
@@ -125,7 +124,7 @@ const BasemapList = props => {
                   </ul>
                   : null
                 }
-              </>
+              </React.Fragment>
             )).reverse()
           }
         </ul>
