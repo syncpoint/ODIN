@@ -63,11 +63,13 @@ const index = lunr(function () {
  * featureClass :: string -> string
  */
 export const featureClass = sidc => {
+  if (!sidc) return undefined
   const feature = lookup[parameterized(sidc)]
   return feature ? feature.class : undefined
 }
 
 export const featureGeometry = sidc => {
+  if (!sidc) return undefined
   const feature = lookup[parameterized(sidc)]
   return feature ? feature.geometry : undefined
 }

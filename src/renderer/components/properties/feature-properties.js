@@ -31,10 +31,13 @@ const panelTypes = {
 
 providers.register(selected => {
   const featureIds = selected.filter(URI.isFeatureId)
+  if (featureIds.length !== 1) return null /* no multiselect */
 
-  if (featureIds.length !== 1) return null
-
+  // For now we need to have a SIDC to infer properties panel.
+  // In the future we have to be more flexible.
   const featureProperties = inputLayers.featureProperties(featureIds[0])
+  if (!featureProperties.sidc) return null
+
   const update = properties => inputLayers.updateFeatureProperties(featureIds[0], properties)
 
   const featureClass = properties => {
@@ -48,10 +51,9 @@ providers.register(selected => {
   let clazz = featureClass(featureProperties)
   if (!clazz) {
     const geometry = descriptors.featureGeometry(featureProperties.sidc)
-    console.log(`geometry for ${featureProperties.sidc} is ${geometry}`)
-    console.dir(geometry)
     clazz = (geometry.type === 'Point') ? 'GP' : 'A'
   }
+
   const key = featureIds[0]
   const props = { properties: featureProperties, update }
   const panel = (panelTypes[clazz] || (() => null))
