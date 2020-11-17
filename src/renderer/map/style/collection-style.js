@@ -8,7 +8,10 @@ import { K } from '../../../shared/combinators'
 
 const styles = {}
 
-// TACGRP.C2GM.OFF.ARS.AFP
+/**
+ * TACGRP.C2GM.OFF.ARS.AFP
+ * ATTACK BY FIRE POSITION
+ */
 styles['G*G*OAF---'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -25,7 +28,10 @@ styles['G*G*OAF---'] = (feature, resolution) => {
   ])
 }
 
-// TACGRP.MOBSU.OBSTBP.CSGSTE.FRDDFT
+/**
+ * TACGRP.MOBSU.OBSTBP.CSGSTE.FRDDFT
+ * FORD DIFFICULT
+ */
 styles['G*M*BCD---'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -47,7 +53,10 @@ styles['G*M*BCD---'] = (feature, resolution) => {
     .concat(lineStyle(feature, [R.flatten(R.zip(SX, SY))]))
 }
 
-// TACGRP.MOBSU.OBSTBP.CSGSTE.FRDESY
+/**
+ * TACGRP.MOBSU.OBSTBP.CSGSTE.FRDESY
+ * FORD EASY
+ */
 styles['G*M*BCE---'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -58,7 +67,10 @@ styles['G*M*BCE---'] = (feature, resolution) => {
   ]).map(s => K(s)(s => s.getStroke().setLineDash([20, 10])))
 }
 
-// TACGRP.MOBSU.OBSTBP.DFTY.DFT
+/**
+ * TACGRP.MOBSU.OBSTBP.DFTY.DFT
+ * BYPASS DIFFICULT
+ */
 styles['G*M*BDD---'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -80,7 +92,10 @@ styles['G*M*BDD---'] = (feature, resolution) => {
   ])
 }
 
-// TACGRP.MOBSU.OBSTBP.DFTY.ESY
+/**
+ * TACGRP.MOBSU.OBSTBP.DFTY.ESY
+ * BYPASS EASY
+ */
 styles['G*M*BDE---'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -96,7 +111,10 @@ styles['G*M*BDE---'] = (feature, resolution) => {
   ])
 }
 
-// TACGRP.MOBSU.OBSTBP.DFTY.IMP
+/**
+ * TACGRP.MOBSU.OBSTBP.DFTY.IMP
+ * BYPASS IMPOSSIBLE
+ */
 styles['G*M*BDI---'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -122,7 +140,10 @@ styles['G*M*BDI---'] = (feature, resolution) => {
   ])
 }
 
-// TACGRP.MOBSU.OBST.OBSEFT.BLK
+/**
+ * TACGRP.MOBSU.OBST.OBSEFT.BLK
+ * OBSTACLE EFFECT / BLOCK
+ */
 styles['G*M*OEB---'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -133,7 +154,10 @@ styles['G*M*OEB---'] = (feature, resolution) => {
   return lineStyle(feature, [linePoints, [A, B]])
 }
 
-// TACGRP.MOBSU.OBST.RCBB.ABP
+/**
+ * TACGRP.MOBSU.OBST.RCBB.ABP
+ * BLOWN BRIDGES / ARMED-BUT PASSABLE
+ */
 styles['G*M*ORA---'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -144,7 +168,10 @@ styles['G*M*ORA---'] = (feature, resolution) => {
   ])
 }
 
-// TACGRP.MOBSU.OBST.RCBB.EXCD
+/**
+ * TACGRP.MOBSU.OBST.RCBB.EXCD
+ * BLOWN BRIDGES / EXECUTED
+ */
 styles['G*M*ORC---'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -159,7 +186,10 @@ styles['G*M*ORC---'] = (feature, resolution) => {
   ])
 }
 
-// TACGRP.MOBSU.OBST.RCBB.SAFE
+/**
+ * TACGRP.MOBSU.OBST.RCBB.SAFE
+ * BLOWN BRIDGES / SAFE
+ */
 styles['G*M*ORS---'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -170,7 +200,10 @@ styles['G*M*ORS---'] = (feature, resolution) => {
   return styleA.concat(styleB)
 }
 
-// TACGRP.TSK.BLK
+/**
+ * TACGRP.TSK.BLK
+ * TASKS / BLOCK
+ */
 styles['G*T*B-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -181,7 +214,10 @@ styles['G*T*B-----'] = (feature, resolution) => {
   return lineStyle(feature, [linePoints, [A, B]]).concat(lineLabel(linePoints, 'B'))
 }
 
-// TACGRP.TSK.CNZ
+/**
+ * TACGRP.TSK.CNZ
+ * TASKS / CANALIZE
+ */
 styles['G*T*C-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -194,7 +230,10 @@ styles['G*T*C-----'] = (feature, resolution) => {
     .concat(lineLabel(linePoints, 'C', 0))
 }
 
-// TACGRP.TSK.BRH
+/**
+ * TACGRP.TSK.BRH
+ * TASKS / BREACH
+ */
 styles['G*T*H-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -207,7 +246,10 @@ styles['G*T*H-----'] = (feature, resolution) => {
     .concat(lineLabel(linePoints, 'B', 0))
 }
 
-// TACGRP.TSK.CNT
+/**
+ * TACGRP.TSK.CNT
+ * TASKS / CONTAIN
+ */
 styles['G*T*J-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -237,12 +279,34 @@ const withdrawLike = text => (feature, resolution) => {
     .concat(lineLabel(linePoints, text))
 }
 
+/**
+ * TACGRP.TSK.DLY
+ * TASKS / DELAY
+ */
 styles['G*T*L-----'] = withdrawLike('D') // TACGRP.TSK.DLY
+
+/**
+ * TACGRP.TSK.RTM
+ * TASKS / RETIREMENT
+ */
 styles['G*T*M-----'] = withdrawLike('R') // TACGRP.TSK.RTM
+
+/**
+ * TACGRP.TSK.WDR
+ * TASKS / WITHDRAW
+ */
 styles['G*T*W-----'] = withdrawLike('W') // TACGRP.TSK.WDR
+
+/**
+ * TACGRP.TSK.WDR.WDRUP
+ * TASKS / WITHDRAW UNDER PRESSURE
+ */
 styles['G*T*WP----'] = withdrawLike('WP') // TACGRP.TSK.WDR.WDRUP
 
-// TACGRP.TSK.RIP
+/**
+ * TACGRP.TSK.RIP
+ * TASKS / RELIEF IN PLACE (RIP)
+ */
 styles['G*T*R-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const A = G.toLatLon(G.coordinates(point))
@@ -262,7 +326,10 @@ styles['G*T*R-----'] = (feature, resolution) => {
     .concat(lineLabel(lineA, 'RIP'))
 }
 
-// TACGRP.TSK.PNE
+/**
+ * TACGRP.TSK.PNE
+ * TASKS / PENETRATE
+ */
 styles['G*T*P-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -275,7 +342,10 @@ styles['G*T*P-----'] = (feature, resolution) => {
     .concat(lineLabel(linePoints, 'P'))
 }
 
-// TACGRP.TSK.DRT
+/**
+ * TACGRP.TSK.DRT
+ * TASKS / DISRUPT
+ **/
 styles['G*T*T-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -299,7 +369,10 @@ styles['G*T*T-----'] = (feature, resolution) => {
   ]).concat(lineLabel([linePoints[0], B2], 'D'))
 }
 
-// TACGRP.TSK.CLR
+/**
+ * TACGRP.TSK.CLR
+ * TASKS / CLEAR
+ */
 styles['G*T*X-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
@@ -324,7 +397,10 @@ styles['G*T*X-----'] = (feature, resolution) => {
   ]).concat(lineLabel(linePoints, 'C'))
 }
 
-// TACGRP.TSK.BYS
+/**
+ * TACGRP.TSK.BYS
+ * TASKS / BYPASS
+ */
 styles['G*T*Y-----'] = (feature, resolution) => {
   const [line, point] = feature.getGeometry().getGeometries()
   const linePoints = G.coordinates(line).map(G.toLatLon)
