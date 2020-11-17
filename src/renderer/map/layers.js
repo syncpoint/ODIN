@@ -452,7 +452,7 @@ export default map => {
   Object.values(layers).forEach(addLayer)
 
   // Selection source and layer.
-  selectionLayer = new VectorLayer({ style, source: selectionSource })
+  selectionLayer = new VectorLayer({ source: selectionSource })
   addLayer(selectionLayer)
 
   addInteraction(createSelect())
