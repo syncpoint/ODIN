@@ -27,7 +27,7 @@
     "stepFinalize": "Choose name and save",
     "descriptorUrl": "URL of the map",
     "descriptorName": "Name of the map",
-    "xyzNoOptions": "No options available",
+    "xyzZoomOptions": "Minimum and maximum zoom level",
     "unknownSource": "Type of the map could no be detected by inspecting the URL",
     "usePreview": "Use the map preview to verify the basemap",
     "deleteWarning": "Use with caution! You cannot undo this action!",

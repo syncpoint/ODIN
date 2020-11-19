@@ -27,7 +27,7 @@
     "stepFinalize": "Benennen und Speichern",
     "descriptorUrl": "URL der Karte",
     "descriptorName": "Bezeichnung der Karte",
-    "xyzNoOptions": "Für diesen Kartentyp sind keine Optionen verfügbar",
+    "xyzZoomOptions": "Minimale und maximale Zoomstufe",
     "unknownSource": "Kartentyp konnte anhand der URL nicht erkannt werden",
     "usePreview": "Benutzen Sie die Vorschau um die Karte zu überprüfen",
     "deleteWarning": "Vorsicht! Diese Aktion kann nicht rückgängig gemacht werden!",
