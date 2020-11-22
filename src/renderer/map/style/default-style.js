@@ -1,9 +1,12 @@
 import * as R from 'ramda'
 import * as geom from 'ol/geom'
 import * as style from 'ol/style'
-import ColorSchemes from './color-schemes'
+import { colorSchemes } from './color-schemes'
 import { K } from '../../../shared/combinators'
 import * as G from './geodesy'
+
+
+// =>> DEPRECATED
 
 export const defaultFont = '14px sans-serif'
 export const biggerFont = '16px sans-serif'
@@ -14,7 +17,7 @@ const strokeOutlineColor = sidc => identity(sidc) === '*' ? '#FFFFFF' : '#000000
 const lineDash = sidc => status(sidc) === 'A' ? [20, 10] : null
 
 const strokeColor = (sidc, n) => {
-  const colorScheme = ColorSchemes.medium
+  const colorScheme = colorSchemes.medium
   if (n === 'ENY') return colorScheme.red
 
   // 2525C, table TABLE XIII:
@@ -133,3 +136,5 @@ export const arcLabel = (C, radius, angle, text) => new style.Style({
     stroke: whiteStroke
   })
 })
+
+// <<= DEPRECATED

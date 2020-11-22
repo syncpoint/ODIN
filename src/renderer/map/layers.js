@@ -137,7 +137,7 @@ const removeFeature = feature => {
 const createLayers = () => {
   const entries = ['Polygon', 'LineString', 'Point']
     .map(type => [type, new VectorSource({})])
-    .map(([type, source]) => [type, new VectorLayer({ source, style })])
+    .map(([type, source]) => [type, new VectorLayer({ source, style: style('default') })])
 
 
   // Update layer opacity depending on selection.
@@ -285,7 +285,7 @@ const createSelect = () => {
     // Operates on all layers including selection (necessary to detect toggles).
     layers: [...Object.values(layers), selectionLayer],
     features: selectedFeatures,
-    style,
+    style: style('selected'),
     condition: conjunction(click, noAltKey),
     toggleCondition: platformModifierKeyOnly, // macOS: command
     multi: false, // don't select all features under cursor at once.
