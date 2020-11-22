@@ -1,5 +1,5 @@
-import * as TS from '../ts'
-import { format } from '../format'
+import * as TS from '../../ts'
+import { format } from '../../format'
 import G_G_OLAA from './G_G_OLAA'
 import G_G_OLAGM from './G_G_OLAGM'
 import G_G_OLAGS from './G_G_OLAGS'

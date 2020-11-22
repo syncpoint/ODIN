@@ -1,5 +1,5 @@
 import * as R from 'ramda'
-import * as TS from '../ts'
+import * as TS from '../../ts'
 import { arrowCoordinates } from './arrow'
 
 /**

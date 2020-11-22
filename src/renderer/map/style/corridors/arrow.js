@@ -1,5 +1,5 @@
 import * as R from 'ramda'
-import * as TS from '../ts'
+import * as TS from '../../ts'
 
 export const arrowCoordinates = (width, line) => {
   const [p0, p1] = R.last(R.aperture(2, TS.coordinates([line])))
