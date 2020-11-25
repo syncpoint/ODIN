@@ -444,34 +444,23 @@ const eventHandlers = {
 }
 
 export default map => {
-  const addLayer = map.addLayer.bind(map)
+  const addLayer = layer => K(layer)(layer => map.addLayer(layer))
   const addInteraction = map.addInteraction.bind(map)
-  // const removeInteraction = map.removeInteraction.bind(map)
 
   layers = createLayers()
   Object.values(layers).forEach(addLayer)
 
   // Selection source and layer.
-  selectionLayer = new VectorLayer({ source: selectionSource })
-  addLayer(selectionLayer)
+  selectionLayer = addLayer(new VectorLayer({
+    source: selectionSource,
+    style: style('selected')
+  }))
 
   const select = createSelect()
   addInteraction(select)
   addInteraction(createTranslate())
   addInteraction(createBoxSelect())
   addInteraction(createModify(select))
-
-
-  const activateModify = () => {
-    // Activate Modify interaction only for single-select:
-    const features = selection.selected(URI.isFeatureId)
-      .map(featureById)
-      .filter(Feature.showing)
-    console.log('[activateModify]', features.length)
-  }
-
-  selection.on('selected', activateModify)
-  selection.on('deselected', activateModify)
 
   inputLayers.register(event => (eventHandlers[event.type] || noop)(event))
 }

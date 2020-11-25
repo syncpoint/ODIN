@@ -7,7 +7,7 @@ import { arrowCoordinates } from './arrow'
  * COUNTERATTACK BY FIRE
  */
 export default options => {
-  const { width, line, point, styles, resolution } = options
+  const { width, line, styles, resolution } = options
   const aps = arrowCoordinates(width, line)([
     [28 / 26, 0], [48 / 26, 1], [48 / 26, -1], [48 / 26, 0],
     [37 / 26, 41 / 26], [15 / 26, 1], [15 / 26, -1], [37 / 26, -41 / 26],
@@ -24,7 +24,7 @@ export default options => {
   ])
 
   const linePoints = TS.coordinates([line])
-  const lastSegment = R.last(R.aperture(2, linePoints).map(TS.lineSegment))
+  const lastSegment = R.last(R.aperture(2, linePoints).map(TS.segment))
   const angle = Math.PI - lastSegment.angle()
   const font = `${width / resolution / 2}px sans-serif`
   const flip = α => α > Math.PI / 2 && α < 3 * Math.PI / 2
@@ -35,9 +35,6 @@ export default options => {
       TS.lineString(R.props([4, 5, 6, 7], aps)),
       TS.lineString(R.props([8, 9], aps))
     ])),
-
-    styles.wireFrame(line),
-    styles.handles(TS.multiPoint([point, ...TS.linePoints(line)])),
     styles.text(TS.point(aps[3]), {
       font,
       textAlign: flip(angle) ? 'start' : 'end',

@@ -18,8 +18,8 @@ const styleOptions = feature => {
     primaryColor: primaryColor(scheme)(SIDC.identity(sidc)),
     accentColor: accentColor(SIDC.identity(sidc)),
     dashPattern: SIDC.status(sidc) === 'A' ? [20, 10] : null,
-    thin: 3,
-    thick: 5
+    thin: 2,
+    thick: 3.5
   }
 }
 
@@ -70,10 +70,17 @@ const styles = (mode, options) => write => ({
     } else return []
   },
 
-  text: (inGeometry, options) => style({
-    text: text(options),
-    geometry: write(inGeometry)
-  }),
+  // TODO: callbacks for text rotation/flipping/alignment
+  text: (inGeometry, options) => {
+    return style({
+      geometry: write(inGeometry),
+      text: text({
+        font: '16px sans-serif',
+        stroke: stroke({ color: 'white', width: 3 }),
+        ...options
+      })
+    })
+  },
 
   fill: (inGeometry, options) => style({
     geometry: write(inGeometry),

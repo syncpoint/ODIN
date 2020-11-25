@@ -4,6 +4,13 @@ import * as geom from 'ol/geom'
 
 const K = v => fn => { fn(v); return v }
 
+const Types = {
+  isNumber: v => typeof v === 'number',
+  isArray: Array.isArray,
+  isCoordinate: v => v instanceof jsts.geom.Coordinate,
+  isLineSegment: v => v instanceof jsts.geom.LineSegment
+}
+
 /**
  * CAP_ROUND: 1 (DEFAULT)
  * CAP_FLAT: 2
@@ -82,13 +89,49 @@ export const lineBuffer = buffer({
 })
 
 export const polygon = coordinates => geometryFactory.createPolygon(coordinates)
-export const lineString = coordinates => geometryFactory.createLineString(coordinates)
+
+export const lineString = (...args) => {
+  // console.log('[lineString]', args.length)
+  if (args.length === 1) {
+    if (Types.isLineSegment(args[0])) return args[0].toGeometry(geometryFactory)
+    else if (Types.isArray(args[0])) {
+      // console.log(args[0])
+      return geometryFactory.createLineString(args[0])
+    }
+  } else return geometryFactory.createLineString(...args)
+}
+
 export const point = coordinate => geometryFactory.createPoint(coordinate)
 export const multiPoint = points => geometryFactory.createMultiPoint(points)
-export const lineSegment = ([p0, p1]) => new jsts.geom.LineSegment(p0, p1)
+
+export const segment = (...args) => {
+  if (args.every(Types.isCoordinate)) return new jsts.geom.LineSegment(args[0], args[1])
+  else if (Types.isArray(args[0])) return new jsts.geom.LineSegment(args[0][0], args[0][1])
+  return undefined
+}
+
+export const segments = lineString => R
+  .aperture(2, coordinates(lineString))
+  .map(segment)
+
 export const geometryCollection = geometries => geometryFactory.createGeometryCollection(geometries)
-export const coordinates = geometries => geometries.flatMap(geometry => geometry.getCoordinates())
-export const coordinate = geometry => geometry.getCoordinate()
+export const collect = geometries => geometryFactory.createGeometryCollection(geometries)
+
+
+export const coordinates = (...args) => {
+  if (Types.isArray(args[0])) return args[0].flatMap(coordinates)
+  else return args[0].getCoordinates()
+}
+
+export const coordinate = (...args) => {
+  if (args[0] instanceof jsts.geom.Geometry) return args[0].getCoordinate()
+  else if (Types.isArray(args[0])) return coordinate(...args[0])
+  else if (args.length === 2) {
+    if (args.every(Types.isNumber)) return new Coordinate(args[0], args[1])
+    else return undefined
+  } else return undefined
+}
+
 export const boundary = geometry => geometry.getBoundary()
 export const boundaries = geometries => geometries.map(boundary)
 export const union = geometries => geometries.reduce((a, b) => a.union(b))
@@ -101,6 +144,7 @@ export const endPoint = geometry => geometry.getEndPoint()
 export const linePoints = line => R.range(0, line.getNumPoints()).map(i => line.getPointN(i))
 export const minimumRectangle = geometry => MinimumDiameter.getMinimumRectangle(geometry)
 export const endCoordinate = R.compose(coordinate, endPoint)
+
 
 export const geometries = geometryCollection => R
   .range(0, geometryCollection.getNumGeometries())
@@ -115,10 +159,27 @@ export const translate = (angle, geometry) => distance => {
   return translated
 }
 
+export const reflect = (x0, y0, x1, y1) => geometry => {
+  const transform = AffineTransformation.reflectionInstance(x0, y0, x1, y1)
+  const translated = geometry.copy()
+  translated.apply(transform)
+  return translated
+}
+
 // CCW angle with x-axis [-π ,π] => CW angle with azimuth [0, 2π]
 export const angleAzimuth = α => Angle.PI_TIMES_2 - Angle.normalizePositive(α - Angle.PI_OVER_2)
 
-export const projectCoordinate = (angle, distance) => ({ x, y }) => new Coordinate(
+export const projectCoordinate = ({ x, y }) => ([angle, distance]) => new Coordinate(
   x + Math.cos(angle) * distance,
   y + Math.sin(angle) * distance
 )
+
+export const projectCoordinates = (distance, angle, point) => fractions =>
+  fractions
+    .map(cs => cs.map(c => c * distance))
+    .map(([a, b]) => [angle - Math.atan2(b, a), Math.hypot(a, b)])
+    .map(projectCoordinate(point))
+
+export const segmentize = (segment, n) => R
+  .range(0, n + 1)
+  .map(i => segment.pointAlong(i / n))

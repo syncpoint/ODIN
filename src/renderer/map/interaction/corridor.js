@@ -19,17 +19,17 @@ export default feature => {
     var [line, point] = TS.geometries(read(geometry))
     const coords = [TS.startPoint(line), point].map(TS.coordinate)
     const [A, B] = R.take(2, TS.coordinates([line]))
-    const segment = TS.lineSegment([A, B])
+    const segment = TS.segment(A, B)
     const orientation = segment.orientationIndex(TS.coordinate(point))
-    const width = TS.lineSegment(coords).getLength()
+    const width = TS.segment(coords).getLength()
     return { line, orientation, width }
   }
 
   let frame = (function create (params) {
     const { line, orientation, width } = params
     const [A, B] = R.take(2, TS.coordinates([line]))
-    const bearing = TS.lineSegment([A, B]).angle()
-    const point = TS.point(TS.projectCoordinate(bearing + orientation * Math.PI / 2, width)(A))
+    const bearing = TS.segment([A, B]).angle()
+    const point = TS.point(TS.projectCoordinate(A)([bearing + orientation * Math.PI / 2, width]))
     const copy = properties => create({ ...params, ...properties })
     const geometry = TS.geometryCollection([line, point])
     return { line, point, copy, geometry }
@@ -44,10 +44,10 @@ export default feature => {
   const pointChanged = ({ target: control }) => {
     const point = read(control.getGeometry())
     const [A, B] = R.take(2, TS.coordinates([frame.line]))
-    const segment = TS.lineSegment([A, B])
+    const segment = TS.segment([A, B])
     const orientation = segment.orientationIndex(TS.coordinate(point))
     const coords = [TS.startPoint(frame.line), point].map(TS.coordinate)
-    const width = TS.lineSegment(coords).getLength()
+    const width = TS.segment(coords).getLength()
     frame = frame.copy({ orientation, width })
     feature.setGeometry(write(frame.geometry))
   }
@@ -74,7 +74,7 @@ export default feature => {
     if (control !== point) return coordinate
     const [A, B] = R.take(2, TS.coordinates([frame.line]))
     const P = new TS.Coordinate(A.x - (B.y - A.y), A.y + (B.x - A.x))
-    const segment = TS.lineSegment([A, P])
+    const segment = TS.segment([A, P])
     const projected = segment.project(TS.coordinate(read(new Point(coordinate))))
     return write(TS.point(projected)).getFirstCoordinate()
   }

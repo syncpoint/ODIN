@@ -7,7 +7,7 @@ import { arrowCoordinates } from './arrow'
  * AXIS OF ADVANCE / AIRBORNE
  */
 export default options => {
-  const { width, line, point, styles } = options
+  const { width, line, styles } = options
   const aps = arrowCoordinates(width, line)([
     [0, 0], [3 / 4, 1], [3 / 4, 1 / 2], [3 / 4, 0], [3 / 4, -1 / 2], [3 / 4, -1]
   ])
@@ -21,7 +21,7 @@ export default options => {
     ? TS.point(linePoints[0])
     : TS.point(linePoints[linePoints.length - 2])
 
-  const segments = R.aperture(2, linePoints).map(TS.lineSegment)
+  const segments = R.aperture(2, linePoints).map(TS.segment)
   const cutline = (() => {
     const bisector = (a, b) => (a.angle() + b.angle()) / 2
     const angle = segments.length === 1
@@ -58,9 +58,5 @@ export default options => {
     crossing
   ])
 
-  return [
-    styles.solidLine(corridor),
-    styles.wireFrame(line),
-    styles.handles(TS.multiPoint([point, ...TS.linePoints(line)]))
-  ]
+  return styles.solidLine(corridor)
 }

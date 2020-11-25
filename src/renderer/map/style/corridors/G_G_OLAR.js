@@ -7,7 +7,7 @@ import { arrowCoordinates } from './arrow'
  * AXIS OF ADVANCE ATTACK, ROTARY WING
  */
 export default options => {
-  const { width, line, point, styles } = options
+  const { width, line, styles } = options
   const aps = arrowCoordinates(width, line)([
     [0, 0], [3 / 4, 1], [3 / 4, 1 / 2], [3 / 4, 0], [3 / 4, -1 / 2], [3 / 4, -1]
   ])
@@ -21,7 +21,7 @@ export default options => {
     ? TS.point(linePoints[0])
     : TS.point(linePoints[linePoints.length - 2])
 
-  const segments = R.aperture(2, linePoints).map(TS.lineSegment)
+  const segments = R.aperture(2, linePoints).map(TS.segment)
   const cutline = (() => {
     const bisector = (a, b) => (a.angle() + b.angle()) / 2
     const angle = segments.length === 1
@@ -45,7 +45,7 @@ export default options => {
   const crossing = TS.union([a, b])
   const intersection = a.intersection(b)
 
-  const xyz = TS.lineSegment([aps[2], aps[4]])
+  const xyz = TS.segment([aps[2], aps[4]])
   const mp = xyz.midPoint()
   const [tx, ty] = [
     mp.x - intersection.getCoordinate().x,
@@ -59,7 +59,7 @@ export default options => {
   const lineClone = line.copy()
   /* eslint-disable camelcase */
   const abc_1 = xyz.toGeometry(TS.geometryFactory)
-  const abc_x = TS.lineSegment([R.head(R.drop(1, lineClone.getCoordinates().reverse())), aps[3]]).toGeometry(TS.geometryFactory)
+  const abc_x = TS.segment([R.head(R.drop(1, lineClone.getCoordinates().reverse())), aps[3]]).toGeometry(TS.geometryFactory)
   const abc_2 = TS.translate(xyz.angle() + Math.PI / 2, abc_1)(abc_x.getLength() * 0.2)
   const abc_3 = TS.translate(xyz.angle() + Math.PI / 2, abc_1)(-abc_x.getLength() * 0.2)
 
@@ -86,9 +86,5 @@ export default options => {
     ])
   ])
 
-  return [
-    styles.solidLine(corridor),
-    styles.wireFrame(line),
-    styles.handles(TS.multiPoint([point, ...TS.linePoints(line)]))
-  ]
+  return styles.solidLine(corridor)
 }

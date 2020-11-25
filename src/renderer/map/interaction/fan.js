@@ -15,7 +15,7 @@ export default feature => {
   const params = geometry => {
     var [center, ...points] = TS.geometries(read(geometry))
     const vectors = points
-      .map(point => TS.lineSegment(TS.coordinates([center, point])))
+      .map(point => TS.segment(TS.coordinates([center, point])))
       .map(segment => ({ angle: segment.angle(), length: segment.getLength() }))
     return { center, vectors }
   }
@@ -41,7 +41,7 @@ export default feature => {
     const points = frame.points
     points[index] = read(control.getGeometry())
     const vectors = points
-      .map(point => TS.lineSegment(TS.coordinates([frame.center, point])))
+      .map(point => TS.segment(TS.coordinates([frame.center, point])))
       .map(segment => ({ angle: segment.angle(), length: segment.getLength() }))
 
     frame = frame.copy({ vectors })

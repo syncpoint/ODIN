@@ -7,7 +7,7 @@ import { arrowCoordinates } from './arrow'
  * AXIS OF ADVANCE / MAIN ATTACK
  */
 export default options => {
-  const { width, line, point, styles } = options
+  const { width, line, styles } = options
   const aps = arrowCoordinates(width, line)([
     [0, 0], [3 / 4, 1], [3 / 4, 1 / 2],
     [3 / 8, 0], [3 / 4, -1 / 2], [3 / 4, -1], [3 / 4, 0]
@@ -26,9 +26,5 @@ export default options => {
     TS.pointBuffer(TS.startPoint(line))(width / 2)
   ])
 
-  return [
-    styles.solidLine(TS.union([corridor, arrow])),
-    styles.wireFrame(line),
-    styles.handles(TS.multiPoint([point, ...TS.linePoints(line)]))
-  ]
+  return styles.solidLine(TS.union([corridor, arrow]))
 }

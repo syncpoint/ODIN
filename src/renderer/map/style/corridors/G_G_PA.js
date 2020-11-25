@@ -7,7 +7,7 @@ import { arrowCoordinates } from './arrow'
  * AXIS OF ADVANCE FOR FEINT
  */
 export default options => {
-  const { width, line, point, styles } = options
+  const { width, line, styles } = options
   const aps = arrowCoordinates(width, line)([
     [10 / 26, 0], [30 / 26, 1], [30 / 26, -1], [30 / 26, 0],
     [23 / 26, 30 / 26], [0, 0], [23 / 26, -30 / 26]
@@ -23,8 +23,6 @@ export default options => {
 
   return [
     styles.solidLine(corridor),
-    styles.dashedLine(TS.lineString(R.props([4, 5, 6], aps))),
-    styles.wireFrame(line),
-    styles.handles(TS.multiPoint([point, ...TS.linePoints(line)]))
+    styles.dashedLine(TS.lineString(R.props([4, 5, 6], aps)))
   ]
 }
