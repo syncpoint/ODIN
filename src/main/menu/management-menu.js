@@ -4,7 +4,7 @@ const menu = i18n => ({
   submenu: [
     {
       label: i18n.t('management.projects'),
-      accelerator: 'CmdOrCtrl+Alt+M',
+      accelerator: 'CmdOrCtrl+Alt+P',
       click: (menuItem, browserWindow) => {
         /* browserWindow is undefined if minimized or closed */
         if (browserWindow) browserWindow.send('IPC_SHOW_PROJECT_MANAGEMENT')
