@@ -26,7 +26,7 @@ const Name = props => {
   return (
     <Card variant="outlined">
       <CardContent>
-        <form id="editName">
+        <div id="editName">
           <FormControl error={!isValid} fullWidth className={classes.formControl}>
             <InputLabel htmlFor="descriptorName">{t('basemapManagement.descriptorName')}</InputLabel>
             <Input id="name" name="name" defaultValue={name} autoFocus={true}
@@ -34,7 +34,7 @@ const Name = props => {
               onBlur={() => props.onNameReady(name)}
             />
           </FormControl>
-        </form>
+        </div>
       </CardContent>
     </Card>
   )

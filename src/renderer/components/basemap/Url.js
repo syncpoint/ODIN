@@ -47,7 +47,7 @@ const Url = props => {
   return (
     <Card variant="outlined">
       <CardContent>
-        <form id="editURL">
+        <div id="editURL" >
           { predictedUrlType ? <Chip label={predictedUrlType} color='primary' variant='outlined' style={{ float: 'right' }}/> : null }
           <FormControl error={!isValid} fullWidth className={classes.formControl}>
             <InputLabel htmlFor="url">{t('basemapManagement.descriptorUrl')}</InputLabel>
@@ -57,7 +57,7 @@ const Url = props => {
               autoFocus={true}
             />
           </FormControl>
-        </form>
+        </div>
       </CardContent>
     </Card>
   )
