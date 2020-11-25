@@ -73,9 +73,13 @@ const effect = props => () => {
   draw(map)
   share(map)
 
-  // Set viewport and basemap from preferences.
+  // restore viewport and active layer name from preferences.
   preferences.register(({ type, preferences }) => {
     if (type !== 'preferences') return
+
+    const { activeLayer } = preferences
+    if (activeLayer) evented.emit('OSD_MESSAGE', { message: activeLayer, slot: 'A2' })
+
     const { center, zoom } = preferences.viewport
     view.setCenter(fromLonLat(center))
     view.setZoom(zoom)

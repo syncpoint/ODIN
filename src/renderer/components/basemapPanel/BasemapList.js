@@ -47,7 +47,7 @@ const BasemapList = props => {
 
   React.useEffect(() => {
     const handleBasemapLayersChanged = ({ type, value }) => {
-      if (!type === 'basemapLayersChanged') return
+      if (type !== 'basemapLayersChanged') return
       if (!value) return
       setBasemapLayers(value)
     }
