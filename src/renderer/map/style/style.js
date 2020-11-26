@@ -92,7 +92,7 @@ export default mode => (feature, resolution) => {
     [R.equals('Point'), R.always(symbolStyle)],
     [R.equals('Polygon'), R.always(polygonStyle)],
     [R.equals('LineString'), R.always(lineStyle(mode))],
-    [R.equals('MultiPoint'), R.always(multipointStyle)],
+    [R.equals('MultiPoint'), R.always(multipointStyle(mode))],
     [R.equals('GeometryCollection'), R.always(collectionStyle(mode))],
     [R.T, R.always(defaultStyle)]
   ])

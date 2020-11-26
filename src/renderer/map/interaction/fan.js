@@ -23,7 +23,7 @@ export default feature => {
   let frame = (function create (params) {
     const { center, vectors } = params
     const points = vectors
-      .map(({ angle, length }) => TS.projectCoordinate(angle, length)(TS.coordinate(center)))
+      .map(({ angle, length }) => TS.projectCoordinate(TS.coordinate(center))([angle, length]))
       .map(TS.point)
 
     const copy = properties => create({ ...params, ...properties })

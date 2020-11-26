@@ -35,7 +35,7 @@ export const simpleArrowStart = (line, resolution, widthFactor = 15, bearing = 1
   return [PA, line[0], PB]
 }
 
-export const simpleCrossEnd = (line, resolution, widthFactor = 15) => {
+export const simpleCrossEnd = (line, resolution, widthFactor = 10) => {
   const finalBearing = G.finalBearing(line)
   const arrowWidth = resolution * widthFactor
   const PA0 = line[1].destinationPoint(arrowWidth, finalBearing - 45)
