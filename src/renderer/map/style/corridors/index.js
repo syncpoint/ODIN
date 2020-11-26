@@ -5,6 +5,7 @@ import G_G_OLAA from './G_G_OLAA'
 import G_G_OLAGM from './G_G_OLAGM'
 import G_G_OLAGS from './G_G_OLAGS'
 import G_G_OLAR from './G_G_OLAR'
+import G_G_OLAV from './G_G_OLAV'
 import G_G_PA from './G_G_PA'
 import G_M_BCD from './G_M_BCD'
 import G_M_BCE from './G_M_BCE'
@@ -57,6 +58,7 @@ export default {
   'G*G*OLAGM-': style(G_G_OLAGM),
   'G*G*OLAGS-': style(G_G_OLAGS),
   'G*G*OLAR--': style(G_G_OLAR),
+  'G*G*OLAV--': style(G_G_OLAV),
   'G*G*PA----': style(G_G_PA),
   'G*M*BCD---': style(G_M_BCD),
   'G*M*BCE---': style(G_M_BCE),
