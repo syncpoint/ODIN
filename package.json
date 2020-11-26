@@ -80,6 +80,7 @@
     "geographiclib": "^1.50.0",
     "i18next": "^19.7.0",
     "immutable": "^4.0.0-rc.12",
+    "jsts": "^2.6.1",
     "lodash.throttle": "^4.1.1",
     "lunr": "^2.3.9",
     "luxon": "^1.25.0",
