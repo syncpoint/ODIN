@@ -22,18 +22,17 @@ export default options => {
 
   const linePoints = TS.coordinates([line])
   const lastSegment = R.last(R.aperture(2, linePoints).map(TS.segment))
-  const angle = Math.PI - lastSegment.angle()
   const font = `${width / resolution / 2}px sans-serif`
-  const flip = α => α > Math.PI / 2 && α < 3 * Math.PI / 2
 
   return [
     styles.dashedLine(corridor),
     styles.text(TS.point(aps[3]), {
       font,
-      textAlign: flip(angle) ? 'start' : 'end',
-      offsetX: flip(angle) ? -10 : 10,
-      rotation: flip(angle) ? angle - Math.PI : angle,
-      text: 'CATK'
+      textAlign: flipped => flipped ? 'start' : 'end',
+      offsetX: flipped => flipped ? -10 : 10,
+      rotation: Math.PI - lastSegment.angle(),
+      text: 'CATK',
+      flip: true
     })
   ]
 }

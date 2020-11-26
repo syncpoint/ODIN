@@ -23,7 +23,11 @@ export default text => options => {
       openArrow(resolution, angle, coords[1]),
       arc
     ])),
-    styles.text(TS.point(segment.midPoint()), { text }),
+    styles.text(TS.point(segment.midPoint()), {
+      text,
+      flip: true,
+      rotation: Math.PI - angle
+    }),
     styles.wireFrame(line),
     styles.handles(TS.multiPoint([point, ...TS.linePoints(line)]))
   ]

@@ -29,6 +29,10 @@ export default options => {
       openArrow(resolution, angle + Math.PI, p0),
       arc
     ])),
-    styles.text(TS.point(segment.midPoint()), { text: 'RIP' })
+    styles.text(TS.point(segment.midPoint()), {
+      text: 'RIP',
+      flip: true,
+      rotation: Math.PI - angle
+    })
   ]
 }

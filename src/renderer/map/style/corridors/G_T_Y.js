@@ -21,6 +21,10 @@ export default options => {
       openArrow(resolution, angle, p0),
       openArrow(resolution, angle, p1)
     ])),
-    styles.text(TS.startPoint(line), { text: 'B' })
+    styles.text(TS.startPoint(line), {
+      text: 'B',
+      flip: true,
+      rotation: Math.PI - angle
+    })
   ]
 }

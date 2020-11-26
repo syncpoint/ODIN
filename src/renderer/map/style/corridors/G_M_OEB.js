@@ -10,10 +10,8 @@ export default options => {
   const segment = TS.segment(coords)
   const angle = segment.angle()
 
-  const parts = [
+  return styles.solidLine(TS.collect([
     line,
     TS.lineString(TS.projectCoordinates(width / 2, angle, coords[0])([[0, 1], [0, -1]]))
-  ]
-
-  return styles.solidLine(TS.collect(parts))
+  ]))
 }

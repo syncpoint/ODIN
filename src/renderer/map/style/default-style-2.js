@@ -74,12 +74,28 @@ const styles = (mode, options) => write => ({
 
   // TODO: callbacks for text rotation/flipping/alignment
   text: (inGeometry, options) => {
+    const flipped = α => α > Math.PI / 2 && α < 3 * Math.PI / 2
+    const textAlign = options.flip
+      ? options.textAlign && options.textAlign(flipped(options.rotation))
+      : options.textAlign
+
+    const rotation = options.flip
+      ? flipped(options.rotation) ? options.rotation - Math.PI : options.rotation
+      : options.rotation
+
+    const offsetX = options.flip
+      ? options.offsetX && options.offsetX(flipped(options.rotation))
+      : options.offsetX
+
     return style({
       geometry: write(inGeometry),
       text: text({
         font: '16px sans-serif',
         stroke: stroke({ color: 'white', width: 3 }),
-        ...options
+        ...options,
+        rotation,
+        textAlign,
+        offsetX
       })
     })
   },

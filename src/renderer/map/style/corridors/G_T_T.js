@@ -5,8 +5,8 @@ import { openArrow } from './arrow'
 const K = v => fn => { fn(v); return v }
 
 /**
- * TACGRP.TSK.CLR
- * TASKS / CLEAR
+ * TACGRP.TSK.DRT
+ * TASKS / DISRUPT
  */
 export default options => {
   const { styles, width, line, resolution } = options
@@ -35,6 +35,10 @@ export default options => {
       TS.lineString([segments[1].pointAlong(-0.25), segments[1].p0]),
       ...arrows
     ])),
-    styles.text(TS.point(segments[1].midPoint()), { text: 'D' })
+    styles.text(TS.point(segments[1].midPoint()), {
+      text: 'D',
+      flip: true,
+      rotation: Math.PI - angle
+    })
   ]
 }

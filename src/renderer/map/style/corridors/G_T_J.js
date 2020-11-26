@@ -35,6 +35,10 @@ export default options => {
       ...spikes,
       openArrow(resolution, angle, coords[1])
     ])),
-    styles.text(TS.point(p1), { text: 'C' })
+    styles.text(TS.point(p1), {
+      text: 'C',
+      flip: true,
+      rotation: Math.PI - angle
+    })
   ]
 }

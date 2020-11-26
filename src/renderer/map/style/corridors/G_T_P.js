@@ -17,6 +17,10 @@ export default options => {
       openArrow(resolution, angle, coords[1]),
       TS.lineString(TS.projectCoordinates(width / 2, angle, coords[1])([[0, 1], [0, -1]]))
     ])),
-    styles.text(TS.point(segment.midPoint()), { text: 'P' })
+    styles.text(TS.point(segment.midPoint()), {
+      text: 'P',
+      flip: true,
+      rotation: Math.PI - angle
+    })
   ]
 }

@@ -15,6 +15,10 @@ export default options => {
       line,
       TS.lineString(TS.projectCoordinates(width / 2, angle, coords[1])([[0, 1], [0, -1]]))
     ])),
-    styles.text(TS.point(segment.midPoint()), { text: 'B' })
+    styles.text(TS.point(segment.midPoint()), {
+      text: 'B',
+      flip: true,
+      rotation: Math.PI - segment.angle()
+    })
   ]
 }
