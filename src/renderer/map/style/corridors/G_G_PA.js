@@ -7,7 +7,7 @@ import { arrowCoordinates } from './arrow'
  * AXIS OF ADVANCE FOR FEINT
  */
 export default options => {
-  const { width, line, styles } = options
+  const { width, line, styles, resolution, feature } = options
   const aps = arrowCoordinates(width, line)([
     [10 / 26, 0], [30 / 26, 1], [30 / 26, -1], [30 / 26, 0],
     [23 / 26, 30 / 26], [0, 0], [23 / 26, -30 / 26]
@@ -21,8 +21,26 @@ export default options => {
     TS.pointBuffer(TS.startPoint(line))(width / 2)
   ])
 
+  const linePoints = TS.coordinates([line])
+  const lastSegment = R.last(R.aperture(2, linePoints).map(TS.segment))
+  const font = `${width / resolution / 2}px sans-serif`
+
+  const uniqueDesignation = () => {
+    const t = feature.get('t')
+    if (!t) return []
+    return styles.text(TS.point(aps[3]), {
+      font,
+      textAlign: flipped => flipped ? 'start' : 'end',
+      offsetX: flipped => flipped ? -10 : 10,
+      rotation: Math.PI - lastSegment.angle(),
+      text: t,
+      flip: true
+    })
+  }
+
   return [
     styles.solidLine(corridor),
-    styles.dashedLine(TS.lineString(R.props([4, 5, 6], aps)))
+    styles.dashedLine(TS.lineString(R.props([4, 5, 6], aps))),
+    uniqueDesignation()
   ]
 }
