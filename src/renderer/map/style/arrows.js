@@ -1,7 +1,7 @@
 import LatLon from 'geodesy/latlon-spherical.js'
 import * as G from './geodesy'
 
-export const closedArrowEnd = (line, resolution, widthFactor = 10, bearing = 145) => {
+export const closedArrowEnd = (line, resolution, widthFactor = 15, bearing = 145) => {
   const finalBearing = G.finalBearing(line)
   const arrowWidth = resolution * widthFactor
   const PA = line[1].destinationPoint(arrowWidth, finalBearing - bearing)
@@ -19,7 +19,7 @@ export const closedArrowStart = (line, resolution, widthFactor = 15, bearing = 1
   return [PA, line[0], PB, I, PA]
 }
 
-export const simpleArrowEnd = (line, resolution, widthFactor = 10, bearing = 145) => {
+export const simpleArrowEnd = (line, resolution, widthFactor = 15, bearing = 145) => {
   const finalBearing = G.finalBearing(line)
   const arrowWidth = resolution * widthFactor
   const PA = line[1].destinationPoint(arrowWidth, finalBearing - bearing)
@@ -35,7 +35,7 @@ export const simpleArrowStart = (line, resolution, widthFactor = 15, bearing = 1
   return [PA, line[0], PB]
 }
 
-export const simpleCrossEnd = (line, resolution, widthFactor = 10) => {
+export const simpleCrossEnd = (line, resolution, widthFactor = 15) => {
   const finalBearing = G.finalBearing(line)
   const arrowWidth = resolution * widthFactor
   const PA0 = line[1].destinationPoint(arrowWidth, finalBearing - 45)
@@ -45,7 +45,7 @@ export const simpleCrossEnd = (line, resolution, widthFactor = 10) => {
   return [[PA0, PA1], [PB0, PB1]]
 }
 
-export const slashEnd = (line, angle, resolution, widthFactor = 10) => {
+export const slashEnd = (line, angle, resolution, widthFactor = 15) => {
   const finalBearing = G.finalBearing(line)
   const arrowWidth = resolution * widthFactor
   const PA0 = line[1].destinationPoint(arrowWidth, finalBearing - angle)

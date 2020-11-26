@@ -1,7 +1,9 @@
 /* eslint-disable camelcase */
 import * as ol_style from 'ol/style'
+import * as geom from 'ol/geom'
 import * as SIDC from './sidc'
 import { primaryColor, accentColor } from './color-schemes'
+import * as G from './geodesy'
 
 const style = options => new ol_style.Style(options)
 const stroke = options => new ol_style.Stroke(options)
@@ -85,7 +87,19 @@ const styles = (mode, options) => write => ({
   fill: (inGeometry, options) => style({
     geometry: write(inGeometry),
     fill: fill(options)
-  })
+  }),
+
+  // =>> deprecated
+
+  multiLineString: lines => {
+    const geometry = new geom.MultiLineString(lines.map(line => line.map(G.fromLatLon)))
+    return [
+      { width: options.thick, color: options.accentColor, lineDash: options.dashPattern },
+      { width: options.thin, color: options.primaryColor, lineDash: options.dashPattern }
+    ].map(options => style({ stroke: stroke(options), geometry }))
+  }
+
+  // <<= deprecated
 })
 
 export default (mode, feature) => styles(mode, styleOptions(feature))
