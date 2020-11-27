@@ -1,6 +1,8 @@
 import * as geom from 'ol/geom'
 import GeometryType from 'ol/geom/GeometryType'
 import * as G from '../style/geodesy'
+import * as TS from '../ts'
+import { format } from '../format'
 
 /**
  * Geometry-specific options for Draw interaction.
@@ -76,15 +78,19 @@ export const drawOptions = [
     match: descriptor => descriptor.layout === 'corridor',
     options: descriptor => ({ type: GeometryType.LINE_STRING, maxPoints: descriptor.maxPoints }),
     complete: (map, feature) => {
-      const resolution = map.getView().getResolution()
-      const line = feature.getGeometry()
-      const linePoints = G.coordinates(line).map(G.toLatLon)
-      const bearing = G.initialBearing(linePoints)
-      const point = linePoints[0].destinationPoint(resolution * 50, bearing + 90)
-      feature.setGeometry(new geom.GeometryCollection([
-        new geom.LineString(linePoints.map(G.fromLatLon)),
-        new geom.Point(G.fromLatLon(point))
-      ]))
+      const geometry = feature.getGeometry()
+      const reference = geometry.getFirstCoordinate()
+      const { read, write } = format(reference)
+      const line = read(geometry)
+
+      const min = (a, b) => Math.min(a, b)
+      const segments = TS.segments(line)
+      const minLength = segments.map(segment => segment.getLength()).reduce(min)
+      const width = Math.min(minLength / 4, map.getView().getResolution() * 50)
+      const A = TS.coordinate(TS.startPoint(line))
+      const angle = segments[0].angle() - Math.PI / 2
+      const point = TS.point(TS.projectCoordinate(A)([angle, width / 2]))
+      feature.setGeometry(write(TS.geometryCollection([line, point])))
     }
   }
 ]
