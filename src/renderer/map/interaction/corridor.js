@@ -43,8 +43,7 @@ export default feature => {
 
   const pointChanged = ({ target: control }) => {
     const point = read(control.getGeometry())
-    const [A, B] = R.take(2, TS.coordinates([frame.line]))
-    const segment = TS.segment([A, B])
+    const segment = TS.segment(R.take(2, TS.coordinates([frame.line])))
     const orientation = segment.orientationIndex(TS.coordinate(point))
     const coords = [TS.startPoint(frame.line), point].map(TS.coordinate)
     const width = TS.segment(coords).getLength()
@@ -71,12 +70,30 @@ export default feature => {
   }
 
   const projectCoordinate = (control, coordinate) => {
-    if (control !== point) return coordinate
-    const [A, B] = R.take(2, TS.coordinates([frame.line]))
-    const P = new TS.Coordinate(A.x - (B.y - A.y), A.y + (B.x - A.x))
-    const segment = TS.segment([A, P])
-    const projected = segment.project(TS.coordinate(read(new Point(coordinate))))
-    return write(TS.point(projected)).getFirstCoordinate()
+    console.log('[projectCoordinate]')
+    if (control !== point) {
+      // TODO: adjust width with shortest segment
+      return coordinate
+    } else {
+      // Project point onto normal vector of first segment:
+      const [A, B] = R.take(2, TS.coordinates([frame.line]))
+      const P = new TS.Coordinate(A.x - (B.y - A.y), A.y + (B.x - A.x))
+      const segmentAP = TS.segment([A, P])
+      const projected = segmentAP.project(TS.coordinate(read(new Point(coordinate))))
+      const min = (a, b) => Math.min(a, b)
+      const segments = TS.segments(frame.line)
+      const minLength = segments.map(segment => segment.getLength()).reduce(min)
+
+      if (TS.segment([A, projected]).getLength() > minLength / 4) {
+        const segmentAB = TS.segment(A, B)
+        const orientation = segmentAB.orientationIndex(projected)
+        const angle = segmentAB.angle() + orientation * Math.PI / 2
+        const point = TS.point(TS.projectCoordinate(A)([angle, minLength / 4]))
+        return write(point).getFirstCoordinate()
+      } else {
+        return write(TS.point(projected)).getFirstCoordinate()
+      }
+    }
   }
 
   return {
