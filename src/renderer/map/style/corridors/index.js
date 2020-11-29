@@ -1,3 +1,4 @@
+import * as R from 'ramda'
 import * as TS from '../../ts'
 import { format } from '../../format'
 import G_G_OAF from './G_G_OAF'
@@ -44,11 +45,26 @@ export const style = fn => options => {
     point
   ].map(TS.coordinate)).getLength()
 
-  const styles = options.styles(write)
+  const styleFactory = options.styleFactory(write)
+  const tryer = () => fn({ ...options, width, line, point, styles: styleFactory })
+  const catcher = err => {
+    const segments = TS.segments(line).sort((a, b) => b.getLength() - a.getLength())
+    return [
+      styleFactory.waspLine(TS.lineBuffer(line)(width / 2)),
+      styleFactory.text(TS.point(segments[0].midPoint()), {
+        text: `invalid geometry\n${err.message}`,
+        color: 'red',
+        flip: true,
+        textAlign: () => 'center',
+        rotation: Math.PI - segments[0].angle()
+      })
+    ]
+  }
+
   return [
-    ...fn({ ...options, width, line, point, styles }),
-    styles.wireFrame(line),
-    styles.handles(TS.multiPoint([point, ...TS.linePoints(line)]))
+    R.tryCatch(tryer, catcher)(),
+    styleFactory.wireFrame(line),
+    styleFactory.handles(TS.multiPoint([point, ...TS.linePoints(line)]))
   ].flat()
 }
 

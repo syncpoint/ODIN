@@ -69,38 +69,26 @@ export default feature => {
     listeners.forEach(register)
   }
 
-  const projectCoordinate = (control, coordinate) => {
-    console.log('[projectCoordinate]')
-    if (control !== point) {
-      // TODO: adjust width with shortest segment
-      return coordinate
-    } else {
+  const enforceConstraints = (segments, coordinate) => {
+    const feature = R.head(segments).feature
+    if (feature === point) {
+
       // Project point onto normal vector of first segment:
       const [A, B] = R.take(2, TS.coordinates([frame.line]))
       const P = new TS.Coordinate(A.x - (B.y - A.y), A.y + (B.x - A.x))
       const segmentAP = TS.segment([A, P])
       const projected = segmentAP.project(TS.coordinate(read(new Point(coordinate))))
-      const min = (a, b) => Math.min(a, b)
-      const segments = TS.segments(frame.line)
-      const minLength = segments.map(segment => segment.getLength()).reduce(min)
-
-      if (TS.segment([A, projected]).getLength() > minLength / 4) {
-        const segmentAB = TS.segment(A, B)
-        const orientation = segmentAB.orientationIndex(projected)
-        const angle = segmentAB.angle() + orientation * Math.PI / 2
-        const point = TS.point(TS.projectCoordinate(A)([angle, minLength / 4]))
-        return write(point).getFirstCoordinate()
-      } else {
-        return write(TS.point(projected)).getFirstCoordinate()
-      }
-    }
+      return write(TS.point(projected)).getFirstCoordinate()
+    } else if (feature === center) {
+      return coordinate
+    } return coordinate
   }
 
   return {
     feature,
     updateFeatures,
     updateGeometry,
-    projectCoordinate,
+    enforceConstraints,
     controlFeatures: [center, point],
     dispose: () => listeners.forEach(deregister)
   }

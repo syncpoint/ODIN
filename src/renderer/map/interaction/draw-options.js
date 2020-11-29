@@ -86,7 +86,7 @@ export const drawOptions = [
       const min = (a, b) => Math.min(a, b)
       const segments = TS.segments(line)
       const minLength = segments.map(segment => segment.getLength()).reduce(min)
-      const width = Math.min(minLength / 4, map.getView().getResolution() * 50)
+      const width = Math.min(minLength / 2, map.getView().getResolution() * 50)
       const A = TS.coordinate(TS.startPoint(line))
       const angle = segments[0].angle() - Math.PI / 2
       const point = TS.point(TS.projectCoordinate(A)([angle, width / 2]))

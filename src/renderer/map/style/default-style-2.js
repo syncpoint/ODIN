@@ -26,11 +26,12 @@ const styleOptions = feature => {
 }
 
 const styles = (mode, options) => write => ({
-  solidLine: inGeometry => {
+  solidLine: (inGeometry, opts = {}) => {
+    const primaryColor = opts.color || options.primaryColor
     const geometry = write(inGeometry)
     return [
       { width: options.thick, color: options.accentColor, lineDash: options.dashPattern },
-      { width: options.thin, color: options.primaryColor, lineDash: options.dashPattern }
+      { width: options.thin, color: primaryColor, lineDash: options.dashPattern }
     ].map(options => style({ stroke: stroke(options), geometry }))
   },
 
@@ -42,18 +43,26 @@ const styles = (mode, options) => write => ({
     ].map(options => style({ stroke: stroke(options), geometry }))
   },
 
+  waspLine: inGeometry => {
+    const geometry = write(inGeometry)
+    return [
+      { width: options.thick, color: 'black' },
+      { width: options.thin, color: 'yellow', lineDash: [10, 10] }
+    ].map(options => style({ stroke: stroke(options), geometry }))
+  },
+
   wireFrame: inGeometry => {
     if (mode !== 'selected') return []
     const options = { color: 'red', lineDash: [20, 8, 2, 8], width: 1.5 }
     return style({ geometry: write(inGeometry), stroke: stroke(options) })
   },
 
-  handles: inGeometry => {
+  handles: (inGeometry, options = {}) => {
     if (mode === 'selected') {
       return style({
         geometry: write(inGeometry),
         image: circle({
-          fill: fill({ color: 'rgba(255,0,0,0.6)' }),
+          fill: fill({ color: options.color || 'rgba(255,0,0,0.6)' }),
           stroke: stroke({ color: 'white', width: 3 }),
           radius: 7
         })
@@ -72,7 +81,6 @@ const styles = (mode, options) => write => ({
     } else return []
   },
 
-  // TODO: callbacks for text rotation/flipping/alignment
   text: (inGeometry, options) => {
     const flipped = α => α > Math.PI / 2 && α < 3 * Math.PI / 2
     const textAlign = options.flip
@@ -92,6 +100,7 @@ const styles = (mode, options) => write => ({
       text: text({
         font: '16px sans-serif',
         stroke: stroke({ color: 'white', width: 3 }),
+        fill: options.color ? fill({ color: options.color }) : null,
         ...options,
         rotation,
         textAlign,

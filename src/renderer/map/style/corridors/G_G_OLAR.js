@@ -8,83 +8,102 @@ import { arrowCoordinates } from './arrow'
  */
 export default options => {
   const { width, line, styles } = options
+
+  const segments = TS.segments(line)
+  const arrowRatio = Math.min(1, (R.last(segments).getLength() / width) / (3 / 4))
+  if (arrowRatio < 1) throw new Error('segment too short')
+
+  const [sx, sy] = [3 / 4, 1]
   const aps = arrowCoordinates(width, line)([
-    [0, 0], [3 / 4, 1], [3 / 4, 1 / 2], [3 / 4, 0], [3 / 4, -1 / 2], [3 / 4, -1]
+    [0, 0], [sx, sy], [sx, sy / 2], [sx, 0], [sx, -sy / 2], [sx, -sy]
   ])
 
-  const arrow = TS.polygon(R.props([0, 1, 5, 0], aps))
-  const centerline = TS.lineString([...R.init(line.getCoordinates()), aps[3]])
-  const buffer = TS.lineBuffer(centerline)(width / 2).buffer(1)
-  const linePoints = TS.coordinates([line])
-
-  const cutpoint = linePoints.length === 2
-    ? TS.point(linePoints[0])
-    : TS.point(linePoints[linePoints.length - 2])
-
-  const segments = R.aperture(2, linePoints).map(TS.segment)
-  const cutline = (() => {
-    const bisector = (a, b) => (a.angle() + b.angle()) / 2
-    const angle = segments.length === 1
-      ? segments[0].angle()
-      : bisector(segments[segments.length - 1], segments[segments.length - 2])
-
+  const bisection = (() => {
+    const angle = segment => segment.angle()
+    const average = xs => R.sum(xs) / xs.length
+    const points = TS.coordinates([line])
+    const point = TS.point(points[points.length - 2])
+    const bearing = average(R.drop(segments.length - 2, segments).map(angle))
     return TS.lineString(TS.coordinates([
-      TS.translate(angle + Math.PI / 2, cutpoint)(width),
-      TS.translate(angle - Math.PI / 2, cutpoint)(width)
+      TS.translate(bearing + Math.PI / 2, point)(width),
+      TS.translate(bearing - Math.PI / 2, point)(width)
     ]))
   })()
 
-  const [p1, p2] = TS.coordinates([TS.intersection([buffer.getBoundary(), cutline])])
-  var a = TS.lineString([p1, aps[2]])
-  var b = TS.lineString([p2, aps[4]])
-  if (!a.intersects(b)) {
-    a = TS.lineString([p1, aps[4]])
-    b = TS.lineString([p2, aps[2]])
-  }
+  const buffer = TS.lineBuffer(TS.lineString([...R.init(line.getCoordinates()), aps[3]]))(width / 2).buffer(1)
 
-  const crossing = TS.union([a, b])
-  const intersection = a.intersection(b)
+  const intersection = TS.boundary(buffer).intersection(bisection)
+  if (
+    intersection.getGeometryType() !== 'MultiPoint' ||
+    intersection.getNumGeometries() !== 2
+  ) throw new Error('bad intersection')
 
-  const xyz = TS.segment([aps[2], aps[4]])
-  const mp = xyz.midPoint()
-  const [tx, ty] = [
-    mp.x - intersection.getCoordinate().x,
-    mp.y - intersection.getCoordinate().y
-  ]
+  const crossing = (() => {
+    const [p1, p2] = TS.coordinates(intersection)
+    var a = TS.lineString([p1, aps[2]])
+    var b = TS.lineString([p2, aps[4]])
+    if (!a.intersects(b)) {
+      a = TS.lineString([p1, aps[4]])
+      b = TS.lineString([p2, aps[2]])
+    }
 
-  xyz.p0 = new TS.Coordinate(xyz.p0.x - tx, xyz.p0.y - ty)
-  xyz.p1 = new TS.Coordinate(xyz.p1.x - tx, xyz.p1.y - ty)
+    return [a, b]
+  })()
 
-  if (xyz.angle() < 0) xyz.reverse()
-  const lineClone = line.copy()
-  /* eslint-disable camelcase */
-  const abc_1 = xyz.toGeometry(TS.geometryFactory)
-  const abc_x = TS.segment([R.head(R.drop(1, lineClone.getCoordinates().reverse())), aps[3]]).toGeometry(TS.geometryFactory)
-  const abc_2 = TS.translate(xyz.angle() + Math.PI / 2, abc_1)(abc_x.getLength() * 0.2)
-  const abc_3 = TS.translate(xyz.angle() + Math.PI / 2, abc_1)(-abc_x.getLength() * 0.2)
+  const cross = TS.union(crossing)
 
-  const acs = arrowCoordinates(width, xyz.toGeometry(TS.geometryFactory))([
-    [5 / 26, 5 / 26], [0, 0], [5 / 26, -5 / 26],
-    [1, 5 / 26], [1, -5 / 26]
-  ])
+  const rotarySymbol = (() => {
+    // Move arrow base to crossing intersection point:
+    const intersection = crossing[0].intersection(crossing[1])
+    const segment = TS.segment([aps[2], aps[4]])
+    const mp = segment.midPoint()
+    const [tx, ty] = [
+      mp.x - intersection.getCoordinate().x,
+      mp.y - intersection.getCoordinate().y
+    ]
 
-  const cutout = TS
-    .geometryCollection([cutline, TS.point(aps[2]), TS.point(aps[4])])
-    .convexHull()
+    segment.p0 = new TS.Coordinate(segment.p0.x - tx, segment.p0.y - ty)
+    segment.p1 = new TS.Coordinate(segment.p1.x - tx, segment.p1.y - ty)
+    if (segment.angle() < 0) segment.reverse()
 
-  const body = TS.union([buffer, arrow]).getBoundary()
-  const opening = TS.pointBuffer(TS.startPoint(line))(width / 2)
-  const corridor = TS.union([
-    TS.difference([body, cutout, opening]),
-    crossing,
-    TS.union([
-      abc_1,
-      TS.lineString(R.props([0, 1, 2], acs)),
-      TS.lineString(R.props([3, 4], acs)),
-      TS.lineString((abc_2.intersection(crossing)).getCoordinates()),
-      TS.lineString((abc_3.intersection(crossing)).getCoordinates())
+    const points = arrowCoordinates(width, TS.lineString(segment))([
+      [5 / 26, 5 / 26], [0, 0], [5 / 26, -5 / 26],
+      [1, 5 / 26], [1, -5 / 26]
     ])
-  ])
 
-  return styles.solidLine(corridor)
+    const verticalLines = () => {
+      const offset = TS.segment([mp, TS.coordinate(intersection)]).getLength() * 0.5
+      return [+Math.PI, -Math.PI]
+        .map(angle => TS.translate(segment.angle() + angle / 2, TS.lineString(segment))(offset))
+        .map(line => line.intersection(cross))
+        .map(TS.coordinates)
+        .map(coords => TS.lineString(coords))
+    }
+
+    return TS.collect([
+      TS.lineString(segment),
+      TS.lineString(R.props([0, 1, 2], points)),
+      TS.lineString(R.props([3, 4], points)),
+
+      // If there are intersection problems with
+      // construction of the two vertical line, we simply drop them.
+      TS.collect(R.tryCatch(verticalLines, () => [])())
+    ])
+  })()
+
+  return [
+    styles.solidLine(rotarySymbol),
+    styles.solidLine(TS.union([
+      cross,
+      TS.lineString(R.props([4, 5, 0, 1, 2], aps)),
+      TS.difference([
+        TS.boundary(buffer),
+        TS.polygon(R.props([0, 1, 5, 0], aps)),
+        TS.pointBuffer(TS.startPoint(line))(width / 2),
+        TS
+          .geometryCollection([bisection, TS.point(aps[1]), TS.point(aps[5])])
+          .convexHull()
+      ])
+    ]))
+  ]
 }

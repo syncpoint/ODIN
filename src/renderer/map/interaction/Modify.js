@@ -4,6 +4,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable comma-dangle */
 
+import * as R from 'ramda'
 import Feature from 'ol/Feature'
 import { Point } from 'ol/geom'
 import * as olInteraction from 'ol/interaction'
@@ -25,7 +26,7 @@ import frames from './index'
 
 // >>> OL/ORIGINAL
 // The following code is copied from ol/Modify interaction.
-// DEBT: This should be considered tech-dept; issue reference
+// DEBT: This should be considered tech-debt; issue reference
 //
 
 /**
@@ -323,18 +324,34 @@ export class Modify extends olInteraction.Modify {
    */
   handleDragEvent(evt) {
 
-    // Enforce coordinate drag constraint if event matches some framer.
+    // NOTE: Drag segment array has an unusual format.
+    // this.dragSegments_ :: [[segment, index]]
 
-    const framers = this.dragSegments_
-      .map(segment => segment[0])
-      .map(({ feature }) => [feature, this.originatingFeature_(feature)])
-      .map(([controlFeature, feature]) => [controlFeature, this.framers_[feature.ol_uid]])
-      .filter(([_, framer]) => framer && framer.projectCoordinate)
+    const segments = [...this.dragSegments_]
+      .map(([segment, _]) => segment)
+      .sort((a, b) => a.index - b.index)
 
-    // Project coordinate if applicable:
-    if (framers.length !== 1) return super.handleDragEvent(evt)
-    evt.coordinate = framers[0][1].projectCoordinate(framers[0][0], evt.coordinate)
-    return super.handleDragEvent(evt)
+    // Enforce coordinate drag constraint if event matches a framer.
+    // In theory the segments currently dragged may belong to different
+    // Features. But since we can only modify a single feature at a time,
+    // it is suffice to consider only the first drag segment to determine
+    // the original feature (if any).
+
+    const { feature: controlFeature } = R.head(segments)
+    const feature = this.originatingFeature_(controlFeature)
+    const framer = this.framers_[feature.ol_uid]
+
+    // No framer, no contraints to enforce.
+    if (!framer) return super.handleDragEvent(evt)
+
+    const coordinate =
+      framer.enforceConstraints &&
+      framer.enforceConstraints(segments, evt.coordinate)
+    if (!coordinate) return super.handleDragEvent(evt)
+    else {
+      evt.coordinate = coordinate
+      return super.handleDragEvent(evt)
+    }
   }
 
   /**
@@ -344,7 +361,7 @@ export class Modify extends olInteraction.Modify {
    * In order to do so, we use 'modifyend' (a interaction level event)
    * to update control features of all framers.
    *
-   * DEBT: This should probably be considered tech-dept; issue reference
+   * DEBT: This should probably be considered tech-debt; issue reference
    *
    * @override
    */
