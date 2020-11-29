@@ -125,6 +125,12 @@ const removeFeature = feature => {
 // --
 // SECTION: Setup layers from project.
 
+const selectedFeaturesCount = () => selection
+  .selected(URI.isFeatureId)
+  .map(featureById)
+  .filter(Feature.showing)
+  .filter(Feature.unlocked)
+  .length
 
 /**
  * createLayers :: () -> (string ~> ol/layer/Vector)
@@ -142,14 +148,7 @@ const createLayers = () => {
   // Update layer opacity depending on selection.
 
   const updateOpacity = () => {
-    const hasSelection = selection
-      .selected(URI.isFeatureId)
-      .map(featureById)
-      .filter(Feature.showing)
-      .filter(Feature.unlocked)
-      .length
-
-    entries.forEach(([_, layer]) => layer.setOpacity(hasSelection ? 0.35 : 1))
+    entries.forEach(([_, layer]) => layer.setOpacity(selectedFeaturesCount() ? 0.35 : 1))
   }
 
   selection.on('selected', updateOpacity)
@@ -308,7 +307,7 @@ const createSelect = () => {
 /**
  * Modify interaction.
  */
-const createModify = select => {
+const createModify = () => {
   let initial = {} // Cloned geometries BEFORE modify.
 
   const interaction = new Modify({
@@ -334,9 +333,12 @@ const createModify = select => {
     inputLayers.updateGeometries(initial, features.getArray())
   })
 
-  select.on('select', () => {
-    interaction.setActive(select.getFeatures().getLength() === 1)
-  })
+  const activate = () => {
+    interaction.setActive(selectedFeaturesCount() === 1)
+  }
+
+  selection.on('selected', activate)
+  selection.on('deselected', activate)
 
   return interaction
 }
@@ -460,7 +462,7 @@ export default map => {
   addInteraction(select)
   addInteraction(createTranslate())
   addInteraction(createBoxSelect())
-  addInteraction(createModify(select))
+  addInteraction(createModify())
 
   inputLayers.register(event => (eventHandlers[event.type] || noop)(event))
 }
