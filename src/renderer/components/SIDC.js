@@ -26,6 +26,7 @@ export const modifierPart = part(MODIFIER)
 export const mobilityPart = part(MOBILITY, 2, true)
 export const installationPart = part(INSTALLATION, 1, false)
 export const echelonPart = part(ECHELON, 1, true)
-export const parameterized =
-  sidc =>
-    `${sidc[0]}*${sidc[2]}*${sidc.substring(4, 10)}`
+
+export const parameterized = sidc => sidc
+  ? `${sidc[0]}*${sidc[2]}*${sidc.substring(4, 10)}`
+  : undefined
