@@ -95,12 +95,13 @@ const styles = (mode, options) => write => ({
       ? options.offsetX && options.offsetX(flipped(options.rotation))
       : options.offsetX
 
+    const fillColor = options.color ? options.color : 'black'
     return style({
       geometry: write(inGeometry),
       text: text({
         font: '16px sans-serif',
         stroke: stroke({ color: 'white', width: 3 }),
-        fill: options.color ? fill({ color: options.color }) : null,
+        fill: fill({ color: fillColor }),
         ...options,
         rotation,
         textAlign,
