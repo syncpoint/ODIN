@@ -8,8 +8,14 @@ import { arrowCoordinates } from './arrow'
  */
 export default options => {
   const { width, line, styles } = options
+
+  const segments = TS.segments(line)
+  const arrowRatio = Math.min(1, (R.last(segments).getLength() / width) / (3 / 4))
+  if (arrowRatio < 1) throw new Error('segment too short')
+
+  const [sx, sy] = [3 / 4, 1]
   const aps = arrowCoordinates(width, line)([
-    [0, 0], [3 / 4, 1], [3 / 4, -1], [3 / 4, 0]
+    [0, 0], [sx, sy], [sx, -sy], [sx, 0]
   ])
 
   const arrow = TS.polygon(R.props([0, 2, 1, 0], aps))

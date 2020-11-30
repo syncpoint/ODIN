@@ -8,6 +8,11 @@ import { arrowCoordinates } from './arrow'
  */
 export default options => {
   const { width, line, styles, resolution } = options
+
+  const segments = TS.segments(line)
+  const arrowRatio = Math.min(1, (R.last(segments).getLength() / width) / (48 / 26))
+  if (arrowRatio < 1) throw new Error('segment too short')
+
   const aps = arrowCoordinates(width, line)([
     [28 / 26, 0], [48 / 26, 1], [48 / 26, -1], [48 / 26, 0],
     [37 / 26, 41 / 26], [15 / 26, 1], [15 / 26, -1], [37 / 26, -41 / 26],

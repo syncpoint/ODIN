@@ -8,9 +8,15 @@ import { arrowCoordinates } from './arrow'
  */
 export default options => {
   const { width, line, styles, resolution, feature } = options
+
+  const segments = TS.segments(line)
+  const arrowRatio = Math.min(1, (R.last(segments).getLength() / width) / (30 / 26))
+  if (arrowRatio < 1) throw new Error('segment too short')
+
+  const [sx, sy] = [30 / 26, 1]
   const aps = arrowCoordinates(width, line)([
-    [10 / 26, 0], [30 / 26, 1], [30 / 26, -1], [30 / 26, 0],
-    [23 / 26, 30 / 26], [0, 0], [23 / 26, -30 / 26]
+    [10 / 26, 0], [sx, sy], [sx, -sy], [sx, 0],
+    [23 / 26, sx], [0, 0], [23 / 26, -sx]
   ])
 
   const arrow = TS.polygon(R.props([0, 2, 1, 0], aps))
