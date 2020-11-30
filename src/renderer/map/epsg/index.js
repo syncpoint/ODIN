@@ -4,7 +4,6 @@ import { register } from 'ol/proj/proj4'
 import projections from './epsg.json'
 
 projections.forEach(projection => {
-  console.log('projection', projection)
   proj4.defs(projection.code, projection.definition)
 })
 
