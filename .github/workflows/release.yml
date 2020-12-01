@@ -1,8 +1,8 @@
 name: Create binaries for the current release
 on:
   push:
-    branches:
-      - 'release'
+    tags: 'v[0-9]+\.[0-9]+\.[0-9'
+    branches: 'master'
 
 jobs:
   build:
