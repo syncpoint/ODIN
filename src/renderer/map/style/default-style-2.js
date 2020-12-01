@@ -115,6 +115,19 @@ const styles = (mode, options) => write => ({
     fill: fill(options)
   }),
 
+  closedArrow: (inGeometry, options) => {
+    return style({
+      geometry: write(inGeometry),
+      image: regularShape({
+        fill: fill({ color: 'black' }),
+        stroke: stroke({ color: 'black', width: 3 }),
+        radius: 10,
+        points: 3,
+        ...options
+      })
+    })
+  },
+
   // =>> deprecated
 
   multiLineString: lines => {

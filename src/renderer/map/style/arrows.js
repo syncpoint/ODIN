@@ -10,15 +10,6 @@ export const closedArrowEnd = (line, resolution, widthFactor = 15, bearing = 145
   return [PA, line[1], PB, I, PA]
 }
 
-export const closedArrowStart = (line, resolution, widthFactor = 15, bearing = 145) => {
-  const initialBearing = G.initialBearing(line)
-  const arrowWidth = resolution * widthFactor
-  const PA = line[0].destinationPoint(arrowWidth, initialBearing - bearing + 180)
-  const PB = line[0].destinationPoint(arrowWidth, initialBearing + bearing - 180)
-  const I = LatLon.intersection(line[0], initialBearing, PA, initialBearing - 90)
-  return [PA, line[0], PB, I, PA]
-}
-
 export const simpleArrowEnd = (line, resolution, widthFactor = 15, bearing = 145) => {
   const finalBearing = G.finalBearing(line)
   const arrowWidth = resolution * widthFactor
