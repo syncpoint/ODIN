@@ -4,7 +4,7 @@ import Collection from 'ol/Collection'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
 import * as ol from 'ol'
-import { Select, Modify, Translate, DragBox } from 'ol/interaction'
+import { Select, Translate, DragBox } from 'ol/interaction'
 import { click, primaryAction, platformModifierKeyOnly } from 'ol/events/condition'
 import Style from 'ol/style/Style'
 
@@ -14,9 +14,8 @@ import inputLayers from '../project/input-layers'
 import Feature from '../project/Feature'
 import URI from '../project/URI'
 import selection from '../selection'
-import { featureGeometry } from '../components/feature-descriptors'
-import { ModifyCustom } from './interaction/ModifyCustom'
-import { geometryOptions } from './interaction/geometry-options'
+import { Modify } from './interaction/Modify'
+import * as descriptors from '../components/feature-descriptors'
 
 // --
 // SECTION: Module-global (utility) functions.
@@ -126,6 +125,12 @@ const removeFeature = feature => {
 // --
 // SECTION: Setup layers from project.
 
+const selectedFeaturesCount = () => selection
+  .selected(URI.isFeatureId)
+  .map(featureById)
+  .filter(Feature.showing)
+  .filter(Feature.unlocked)
+  .length
 
 /**
  * createLayers :: () -> (string ~> ol/layer/Vector)
@@ -137,20 +142,13 @@ const removeFeature = feature => {
 const createLayers = () => {
   const entries = ['Polygon', 'LineString', 'Point']
     .map(type => [type, new VectorSource({})])
-    .map(([type, source]) => [type, new VectorLayer({ source, style })])
+    .map(([type, source]) => [type, new VectorLayer({ source, style: style('default') })])
 
 
   // Update layer opacity depending on selection.
 
   const updateOpacity = () => {
-    const hasSelection = selection
-      .selected(URI.isFeatureId)
-      .map(featureById)
-      .filter(Feature.showing)
-      .filter(Feature.unlocked)
-      .length
-
-    entries.forEach(([_, layer]) => layer.setOpacity(hasSelection ? 0.35 : 1))
+    entries.forEach(([_, layer]) => layer.setOpacity(selectedFeaturesCount() ? 0.35 : 1))
   }
 
   selection.on('selected', updateOpacity)
@@ -285,7 +283,12 @@ const createSelect = () => {
     // Operates on all layers including selection (necessary to detect toggles).
     layers: [...Object.values(layers), selectionLayer],
     features: selectedFeatures,
-    style,
+    style: (feature, resolution) => {
+      const fn = interaction.getFeatures().getLength() < 2
+        ? style('selected')
+        : style('multi')
+      return fn(feature, resolution)
+    },
     condition: conjunction(click, noAltKey),
     toggleCondition: platformModifierKeyOnly, // macOS: command
     multi: false, // don't select all features under cursor at once.
@@ -305,30 +308,22 @@ const createSelect = () => {
  * Modify interaction.
  */
 const createModify = () => {
-  const feature = selectedFeatures.getArray()[0]
-  const geometry = featureGeometry(feature.get('sidc'))
   let initial = {} // Cloned geometries BEFORE modify.
 
-  const ctor = R.cond([
-    [R.equals('fan'), R.always(options => new ModifyCustom(options))],
-    [R.equals('corridor'), R.always(options => new ModifyCustom(options))],
-    [R.equals('orbit'), R.always(options => new ModifyCustom(options))],
-    [R.T, R.always(options => new Modify(options))]
-  ])(geometry ? geometry.layout : null)
-
-  const layout = geometry ? geometry.layout : null
-  const additionalOptions = geometryOptions[layout] || {}
-  const options = {
+  const interaction = new Modify({
     hitTolerance,
     features: selectedFeatures,
     // Allow translate while editing (with shift key pressed):
     condition: conjunction(primaryAction, noShiftKey),
-    insertVertexCondition: () => !geometry.maxPoints,
-    ...geometry,
-    ...additionalOptions
-  }
+    showVertexCondition: event => {
+      // Always show when snapped to exising geometry vertex:
+      if (event.snappedToVertex) return true
 
-  const interaction = ctor(options)
+      // Don't show when feature's max point is limited to two:
+      const sidc = event.feature.get('sidc')
+      return descriptors.maxPoints(sidc) !== 2
+    }
+  })
 
   interaction.on('modifystart', ({ features }) => {
     initial = cloneGeometries(features.getArray())
@@ -337,6 +332,13 @@ const createModify = () => {
   interaction.on('modifyend', ({ features }) => {
     inputLayers.updateGeometries(initial, features.getArray())
   })
+
+  const activate = () => {
+    interaction.setActive(selectedFeaturesCount() === 1)
+  }
+
+  selection.on('selected', activate)
+  selection.on('deselected', activate)
 
   return interaction
 }
@@ -444,43 +446,23 @@ const eventHandlers = {
 }
 
 export default map => {
-  const addLayer = map.addLayer.bind(map)
+  const addLayer = layer => K(layer)(layer => map.addLayer(layer))
   const addInteraction = map.addInteraction.bind(map)
-  const removeInteraction = map.removeInteraction.bind(map)
 
   layers = createLayers()
   Object.values(layers).forEach(addLayer)
 
   // Selection source and layer.
-  selectionLayer = new VectorLayer({ style, source: selectionSource })
-  addLayer(selectionLayer)
+  selectionLayer = addLayer(new VectorLayer({
+    source: selectionSource,
+    style: style('selected')
+  }))
 
-  addInteraction(createSelect())
+  const select = createSelect()
+  addInteraction(select)
   addInteraction(createTranslate())
   addInteraction(createBoxSelect())
-
-  const singleton = (attach, detach) => {
-    let current
-    return next => {
-      if (current && next !== current) detach(current)
-      if (next !== null) attach(next)
-      current = next
-    }
-  }
-
-  const modify = singleton(addInteraction, removeInteraction)
-
-  const activateModify = () => {
-    // Activate Modify interaction only for single-select:
-    const features = selection.selected(URI.isFeatureId)
-      .map(featureById)
-      .filter(Feature.showing)
-
-    modify(features.length === 1 ? createModify() : null)
-  }
-
-  selection.on('selected', activateModify)
-  selection.on('deselected', activateModify)
+  addInteraction(createModify())
 
   inputLayers.register(event => (eventHandlers[event.type] || noop)(event))
 }

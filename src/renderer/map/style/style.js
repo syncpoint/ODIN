@@ -59,7 +59,6 @@ const icon = symbol => {
   })
 }
 
-
 const symbolStyleModes = {
   default: {
     outlineWidth: 4,
@@ -88,13 +87,13 @@ const symbolStyle = (feature, resolution) => {
  * FEATURE STYLE FUNCTION.
  */
 
-export default (feature, resolution) => {
+export default mode => (feature, resolution) => {
   const provider = R.cond([
     [R.equals('Point'), R.always(symbolStyle)],
     [R.equals('Polygon'), R.always(polygonStyle)],
-    [R.equals('LineString'), R.always(lineStyle)],
-    [R.equals('MultiPoint'), R.always(multipointStyle)],
-    [R.equals('GeometryCollection'), R.always(collectionStyle)],
+    [R.equals('LineString'), R.always(lineStyle(mode))],
+    [R.equals('MultiPoint'), R.always(multipointStyle(mode))],
+    [R.equals('GeometryCollection'), R.always(collectionStyle(mode))],
     [R.T, R.always(defaultStyle)]
   ])
 

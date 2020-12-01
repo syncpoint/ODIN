@@ -1,15 +1,20 @@
 import * as R from 'ramda'
-import { defaultStyle, lineStyle, arc, arcLabel, lineLabel } from './default-style'
+import { defaultStyle, arc, arcLabel, lineLabel } from './default-style'
 import { parameterized } from '../../components/SIDC'
 import * as G from './geodesy'
 import { closedArrowEnd, simpleArrowEnd, simpleCrossEnd } from './arrows'
+import { format } from '../format'
+import styles from './default-style-2'
 
 const lastSegment = arc => [arc[arc.length - 2], arc[arc.length - 1]]
 
-const styles = {}
+const geometries = {}
 
-// TACGRP.C2GM.GNL.ARS.SRHARA
-styles['G*G*GAS---'] = (feature, resolution) => {
+/**
+ * TACGRP.C2GM.GNL.ARS.SRHARA
+ * SEARCH AREA/RECONNAISSANCE AREA
+ */
+geometries['G*G*GAS---'] = ({ feature, resolution, styles }) => {
   const points = G.coordinates(feature)
   if (points.length !== 3) return defaultStyle(feature)
 
@@ -17,11 +22,14 @@ styles['G*G*GAS---'] = (feature, resolution) => {
   const arrowA = closedArrowEnd([C, A], resolution)
   const arrowB = closedArrowEnd([C, B], resolution)
   const lines = [[C, arrowA[3]], [C, arrowB[3]], arrowA, arrowB]
-  return lineStyle(feature, lines)
+  return styles.multiLineString(lines)
 }
 
-// TACGRP.TSK.ISL
-styles['G*T*E-----'] = (feature, resolution) => {
+/**
+ * TACGRP.TSK.ISL
+ * TASKS / ISOLATE
+ */
+geometries['G*T*E-----'] = ({ feature, resolution, styles }) => {
   const points = G.coordinates(feature)
   if (points.length !== 2) return defaultStyle(feature)
 
@@ -33,15 +41,21 @@ styles['G*T*E-----'] = (feature, resolution) => {
     .filter(i => i % 5 === 0)
     .map(i => [outerArc[i - 1], innerArc[i], outerArc[i + 1]])
 
-  return lineStyle(feature, [
-    outerArc,
-    ...teeth,
-    simpleArrowEnd(lastSegment(outerArc), resolution)
-  ]).concat(arcLabel(C, radius, angle, 'I'))
+  return [
+    styles.multiLineString([
+      outerArc,
+      ...teeth,
+      simpleArrowEnd(lastSegment(outerArc), resolution)
+    ]),
+    arcLabel(C, radius, angle, 'I')
+  ]
 }
 
-// TACGRP.TSK.OCC
-styles['G*T*O-----'] = (feature, resolution) => {
+/**
+ * TACGRP.TSK.OCC
+ * TASKS / OCCUPY
+ */
+geometries['G*T*O-----'] = ({ feature, resolution, styles }) => {
   const points = G.coordinates(feature)
   if (points.length !== 2) return defaultStyle(feature)
 
@@ -49,14 +63,20 @@ styles['G*T*O-----'] = (feature, resolution) => {
   const [angle, radius] = G.bearingLine([C, A])
   const outerArc = arc(C, radius, angle, 330)
 
-  return lineStyle(feature, [
-    outerArc,
-    ...simpleCrossEnd(lastSegment(outerArc), resolution)
-  ]).concat(arcLabel(C, radius, angle, 'O'))
+  return [
+    styles.multiLineString([
+      outerArc,
+      ...simpleCrossEnd(lastSegment(outerArc), resolution)
+    ]),
+    arcLabel(C, radius, angle, 'O')
+  ]
 }
 
-// TACGRP.TSK.RTN
-styles['G*T*Q-----'] = (feature, resolution) => {
+/**
+ * TACGRP.TSK.RTN
+ * TASKS / RETAIN
+ */
+geometries['G*T*Q-----'] = ({ feature, resolution, styles }) => {
   const points = G.coordinates(feature)
   if (points.length !== 2) return defaultStyle(feature)
 
@@ -68,15 +88,21 @@ styles['G*T*Q-----'] = (feature, resolution) => {
     .filter(i => i % 2 === 0)
     .map(i => [outerArc[i], innerArc[i]])
 
-  return lineStyle(feature, [
-    innerArc,
-    ...spikes,
-    simpleArrowEnd(lastSegment(innerArc), resolution)
-  ]).concat(arcLabel(C, radius * 0.8, angle, 'R'))
+  return [
+    styles.multiLineString([
+      innerArc,
+      ...spikes,
+      simpleArrowEnd(lastSegment(innerArc), resolution)
+    ]),
+    arcLabel(C, radius * 0.8, angle, 'R')
+  ]
 }
 
-// TACGRP.TSK.SCE
-styles['G*T*S-----'] = (feature, resolution) => {
+/**
+ * TACGRP.TSK.SCE
+ * TASKS / SECURE
+ */
+geometries['G*T*S-----'] = ({ feature, resolution, styles }) => {
   const points = G.coordinates(feature)
   if (points.length !== 2) return defaultStyle(feature)
 
@@ -84,13 +110,16 @@ styles['G*T*S-----'] = (feature, resolution) => {
   const [angle, radius] = G.bearingLine([C, A])
   const outerArc = arc(C, radius, angle, 330)
 
-  return lineStyle(feature, [
-    outerArc,
-    simpleArrowEnd(lastSegment(outerArc), resolution)
-  ]).concat(arcLabel(C, radius, angle, 'S'))
+  return [
+    styles.multiLineString([
+      outerArc,
+      simpleArrowEnd(lastSegment(outerArc), resolution)
+    ]),
+    arcLabel(C, radius, angle, 'S')
+  ]
 }
 
-const fanLike = text => (feature, resolution) => {
+const fanLike = text => ({ feature, resolution, styles }) => {
   const points = G.coordinates(feature)
   if (points.length !== 3) return defaultStyle(feature)
 
@@ -104,23 +133,47 @@ const fanLike = text => (feature, resolution) => {
   const B1 = C.destinationPoint(distanceB / 1.95, bearingB + 4)
   const B2 = B.destinationPoint(-distanceB / 1.95, bearingB + 4)
 
-  return lineStyle(feature, [
-    [C, A1, A2, A],
-    [C, B1, B2, B],
-    arrowA,
-    arrowB
-  ]).concat([
+  return [
+    styles.multiLineString([
+      [C, A1, A2, A],
+      [C, B1, B2, B],
+      arrowA,
+      arrowB
+    ]),
     lineLabel([C, A1], text, 0.4),
     lineLabel([C, B1], text, 0.4)
-  ])
+  ]
 }
 
-styles['G*T*US----'] = fanLike('S') // TACGRP.TSK.SEC.SCN
-styles['G*T*UG----'] = fanLike('G') // TACGRP.TSK.SEC.GUD
-styles['G*T*UC----'] = fanLike('C') // TACGRP.TSK.SEC.COV
+/**
+ * TACGRP.TSK.SEC.SCN
+ * TASKS / SCREEN
+ */
+geometries['G*T*US----'] = fanLike('S')
 
-export const multipointStyle = (feature, resolution) => {
+/**
+ * TACGRP.TSK.SEC.GUD
+ * TASKS / GUARD
+ */
+geometries['G*T*UG----'] = fanLike('G')
+
+/**
+ * TACGRP.TSK.SEC.COV
+ * TASKS / COVER
+ */
+geometries['G*T*UC----'] = fanLike('C')
+
+export const multipointStyle = mode => (feature, resolution) => {
   const sidc = parameterized(feature.getProperties().sidc)
-  const geometryFns = styles[sidc] || defaultStyle
-  return [geometryFns].flatMap(fn => fn(feature, resolution))
+  const geometry = feature.getGeometry()
+  const reference = geometry.getFirstCoordinate()
+  const { read, write } = format(reference)
+  const points = read(geometry)
+  const styleFactory = styles(mode, feature)(write)
+  const options = { feature, resolution, styles: styleFactory }
+
+  return [
+    geometries[sidc] ? geometries[sidc](options).flat() : defaultStyle(feature),
+    styleFactory.handles(points)
+  ].flat()
 }

@@ -96,3 +96,12 @@ export const featureDescriptors = (filter, preset = {}) => {
     return []
   }
 }
+
+export const maxPoints = sidc => {
+  if (!sidc) return undefined
+  const descriptor = lookup[parameterized(sidc)]
+  if (!descriptor || !descriptor.geometry) return undefined
+
+  if (descriptor.geometry.layout === 'orbit') return 2
+  else return descriptor.geometry.maxPoints
+}

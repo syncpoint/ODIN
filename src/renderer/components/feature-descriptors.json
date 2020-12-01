@@ -3281,7 +3281,7 @@
       "LINEAR TARGET"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -3298,7 +3298,7 @@
       "FINAL PROTECTIVE FIRE (FPF)"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -3315,7 +3315,7 @@
       "LINEAR SMOKE TARGET"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -3735,8 +3735,8 @@
     ],
     "parameters": {
       "layout": "fan",
-      "maxPoints": "3",
-      "minPoints": "3"
+      "maxPoints": 3,
+      "minPoints": 3
     }
   },
   {
@@ -3955,8 +3955,8 @@
     ],
     "parameters": {
       "layout": "fan",
-      "maxPoints": "3",
-      "minPoints": "3"
+      "maxPoints": 3,
+      "minPoints": 3
     }
   },
   {
@@ -5631,7 +5631,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -5691,8 +5691,8 @@
     ],
     "parameters": {
       "layout": "fan",
-      "maxPoints": "3",
-      "minPoints": "3"
+      "maxPoints": 3,
+      "minPoints": 3
     }
   },
   {
@@ -5830,7 +5830,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -5847,7 +5847,7 @@
       "DIRECTION OF ATTACK AVIATION"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -5988,7 +5988,7 @@
       "DIRECTION OF ATTACK FOR FEINT"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6111,7 +6111,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6179,7 +6179,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6195,7 +6195,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6211,7 +6211,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6226,7 +6226,7 @@
       "FERRY"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6241,7 +6241,7 @@
       "LANE"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6268,7 +6268,7 @@
       "RAFT SITE"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6283,7 +6283,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6298,7 +6298,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6313,7 +6313,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6606,7 +6606,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6622,7 +6622,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6637,7 +6637,7 @@
       "FIX"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6695,7 +6695,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6898,7 +6898,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6914,7 +6914,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6930,7 +6930,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -6946,7 +6946,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -7169,7 +7169,7 @@
       "FOXHOLE, EMPLACEMENT OR WEAPON SITE"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -7183,7 +7183,7 @@
       "BEARING LINE"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -7198,7 +7198,7 @@
       "ACOUSTIC"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -7213,7 +7213,7 @@
       "ELECTRONIC"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -7228,7 +7228,7 @@
       "ELECTRO-OPTICAL INTERCEPT"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -7243,7 +7243,7 @@
       "TORPEDO"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -7354,7 +7354,7 @@
       "NAVIGATIONAL"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -7558,7 +7558,7 @@
       "HALTED CONVOY"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -7575,7 +7575,7 @@
       "MOVING CONVOY"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -7998,7 +7998,7 @@
       "FOLLOW AND ASSUME"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -8014,7 +8014,7 @@
       "FOLLOW AND SUPPORT"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -8029,7 +8029,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -8044,7 +8044,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -8071,8 +8071,8 @@
     "parameters": {
       "arc": "330",
       "layout": "fan",
-      "maxPoints": "2",
-      "minPoints": "2"
+      "maxPoints": 2,
+      "minPoints": 2
     }
   },
   {
@@ -8086,7 +8086,7 @@
       "FIX"
     ],
     "parameters": {
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -8101,7 +8101,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -8127,7 +8127,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -8211,8 +8211,8 @@
     "parameters": {
       "arc": "338",
       "layout": "fan",
-      "maxPoints": "2",
-      "minPoints": "2"
+      "maxPoints": 2,
+      "minPoints": 2
     }
   },
   {
@@ -8227,7 +8227,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -8243,8 +8243,8 @@
     "parameters": {
       "arc": "338",
       "layout": "fan",
-      "maxPoints": "2",
-      "minPoints": "2"
+      "maxPoints": 2,
+      "minPoints": 2
     }
   },
   {
@@ -8274,8 +8274,8 @@
     "parameters": {
       "arc": "338",
       "layout": "fan",
-      "maxPoints": "2",
-      "minPoints": "2"
+      "maxPoints": 2,
+      "minPoints": 2
     }
   },
   {
@@ -8290,7 +8290,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -8306,8 +8306,8 @@
     ],
     "parameters": {
       "layout": "fan",
-      "maxPoints": "3",
-      "minPoints": "3"
+      "maxPoints": 3,
+      "minPoints": 3
     }
   },
   {
@@ -8323,8 +8323,8 @@
     ],
     "parameters": {
       "layout": "fan",
-      "maxPoints": "3",
-      "minPoints": "3"
+      "maxPoints": 3,
+      "minPoints": 3
     }
   },
   {
@@ -8340,8 +8340,8 @@
     ],
     "parameters": {
       "layout": "fan",
-      "maxPoints": "3",
-      "minPoints": "3"
+      "maxPoints": 3,
+      "minPoints": 3
     }
   },
   {
@@ -8384,7 +8384,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
@@ -8399,7 +8399,7 @@
     ],
     "parameters": {
       "layout": "corridor",
-      "maxPoints": "2"
+      "maxPoints": 2
     }
   },
   {
