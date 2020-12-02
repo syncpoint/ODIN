@@ -1,29 +1,15 @@
 import * as R from 'ramda'
-import { defaultStyle, arc, arcLabel, lineLabel } from './default-style'
+import { defaultStyle, arc, arcLabel } from './default-style'
 import { parameterized } from '../../components/SIDC'
 import * as G from './geodesy'
-import { closedArrowEnd, simpleArrowEnd, simpleCrossEnd } from './arrows'
+import { simpleArrowEnd, simpleCrossEnd } from './arrows'
 import { format } from '../format'
 import styles from './default-style-2'
+import * as TS from '../ts'
 
 const lastSegment = arc => [arc[arc.length - 2], arc[arc.length - 1]]
 
 const geometries = {}
-
-/**
- * TACGRP.C2GM.GNL.ARS.SRHARA
- * SEARCH AREA/RECONNAISSANCE AREA
- */
-geometries['G*G*GAS---'] = ({ feature, resolution, styles }) => {
-  const points = G.coordinates(feature)
-  if (points.length !== 3) return defaultStyle(feature)
-
-  const [C, A, B] = points.map(G.toLatLon)
-  const arrowA = closedArrowEnd([C, A], resolution)
-  const arrowB = closedArrowEnd([C, B], resolution)
-  const lines = [[C, arrowA[3]], [C, arrowB[3]], arrowA, arrowB]
-  return styles.multiLineString(lines)
-}
 
 /**
  * TACGRP.TSK.ISL
@@ -119,29 +105,38 @@ geometries['G*T*S-----'] = ({ feature, resolution, styles }) => {
   ]
 }
 
-const fanLike = text => ({ feature, resolution, styles }) => {
-  const points = G.coordinates(feature)
-  if (points.length !== 3) return defaultStyle(feature)
+const fanLike = (arrowFn, label) => options => {
+  const { resolution, styles, points } = options
+  const [C, A, B] = TS.coordinates(points)
+  const segmentA = TS.segment([C, A])
+  const segmentB = TS.segment([C, B])
 
-  const [C, A, B] = points.map(G.toLatLon)
-  const [bearingA, distanceA] = G.bearingLine([C, A])
-  const [bearingB, distanceB] = G.bearingLine([C, B])
-  const arrowA = simpleArrowEnd([C, A], resolution)
-  const arrowB = simpleArrowEnd([C, B], resolution)
-  const A1 = C.destinationPoint(distanceA / 1.95, bearingA - 4)
-  const A2 = A.destinationPoint(-distanceA / 1.95, bearingA - 4)
-  const B1 = C.destinationPoint(distanceB / 1.95, bearingB + 4)
-  const B2 = B.destinationPoint(-distanceB / 1.95, bearingB + 4)
+  const distance = resolution * 4
+  const [A1, A2, B1, B2] = [
+    TS.projectCoordinates(distance, segmentA.angle(), segmentA.pointAlong(0.55))([[0, -1]]),
+    TS.projectCoordinates(distance, segmentA.angle(), segmentA.pointAlong(0.45))([[0, +1]]),
+    TS.projectCoordinates(distance, segmentB.angle(), segmentB.pointAlong(0.55))([[0, +1]]),
+    TS.projectCoordinates(distance, segmentB.angle(), segmentB.pointAlong(0.45))([[0, -1]])
+  ].flat()
+
+  const text = segment => styles.text(TS.point(segment.pointAlong(0.3)), {
+    rotation: Math.PI - segment.angle(),
+    text: label,
+    flip: true
+  })
+
+  const arrow = segment => arrowFn(TS.point(segment.p1), {
+    radius: 8,
+    rotation: 2.5 * Math.PI - segment.angle()
+  })
 
   return [
-    styles.multiLineString([
-      [C, A1, A2, A],
-      [C, B1, B2, B],
-      arrowA,
-      arrowB
-    ]),
-    lineLabel([C, A1], text, 0.4),
-    lineLabel([C, B1], text, 0.4)
+    styles.solidLine(TS.collect([
+      TS.lineString([C, A1, A2, A]),
+      TS.lineString([C, B1, B2, B])
+    ])),
+    ...(label ? [TS.segment([C, A1]), TS.segment([C, B1])].map(text) : []),
+    ...[TS.segment([A2, A]), TS.segment([B2, B])].map(arrow)
   ]
 }
 
@@ -149,19 +144,25 @@ const fanLike = text => ({ feature, resolution, styles }) => {
  * TACGRP.TSK.SEC.SCN
  * TASKS / SCREEN
  */
-geometries['G*T*US----'] = fanLike('S')
+geometries['G*T*US----'] = options => fanLike(options.styles.openArrow, 'S')(options)
 
 /**
  * TACGRP.TSK.SEC.GUD
  * TASKS / GUARD
  */
-geometries['G*T*UG----'] = fanLike('G')
+geometries['G*T*UG----'] = options => fanLike(options.styles.openArrow, 'G')(options)
 
 /**
  * TACGRP.TSK.SEC.COV
  * TASKS / COVER
  */
-geometries['G*T*UC----'] = fanLike('C')
+geometries['G*T*UC----'] = options => fanLike(options.styles.openArrow, 'C')(options)
+
+/**
+ * TACGRP.C2GM.GNL.ARS.SRHARA
+ * SEARCH AREA/RECONNAISSANCE AREA
+ */
+geometries['G*G*GAS---'] = options => fanLike(options.styles.closedArrow)(options)
 
 export const multipointStyle = mode => (feature, resolution) => {
   const sidc = parameterized(feature.getProperties().sidc)
@@ -170,7 +171,7 @@ export const multipointStyle = mode => (feature, resolution) => {
   const { read, write } = format(reference)
   const points = read(geometry)
   const styleFactory = styles(mode, feature)(write)
-  const options = { feature, resolution, styles: styleFactory }
+  const options = { feature, resolution, points, styles: styleFactory }
 
   return [
     geometries[sidc] ? geometries[sidc](options).flat() : defaultStyle(feature),

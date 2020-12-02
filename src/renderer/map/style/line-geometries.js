@@ -9,20 +9,6 @@ import {
   doubleArrow
 } from './arrows'
 
-
-const zigzag = (line, resolution) => {
-  const [initialBearing, finalBearing] = G.bearings(line)
-  const bearing = (initialBearing + finalBearing) / 2
-  const width = resolution * 10
-  const steps = G.distance(line) / width
-  const [PA1] = G.translateLine(resolution * 10, +90)(line)
-  const [PB1] = G.translateLine(resolution * 10, -90)(line)
-  return R.range(0, steps).reduce((acc, i) => K(acc)(acc => {
-    const point = i % 2 === 0 ? PA1 : PB1
-    acc.push(point.destinationPoint((i + 0.25) * width, bearing))
-  }), [])
-}
-
 const linearTarget = ({ feature, resolution, styles }) => {
   const line = G.coordinates(feature).map(G.toLatLon)
   const width = resolution * 10
@@ -154,11 +140,8 @@ geometries['G*M*BCR---'] = ({ feature, resolution, styles }) => {
   return styles.multiLineString([line, arrowEnd, arrowStart])
 }
 
-/**
- * TACGRP.MOBSU.OBST.OBSEFT.FIX
- * OBSTACLE EFFECT / FIX
- */
-geometries['G*M*OEF---'] = ({ resolution, styles, line }) => {
+const fixLike = arrowFn => options => {
+  const { line, styles, resolution } = options
   const coords = TS.coordinates(line)
   const segment = TS.segment(coords)
   const angle = segment.angle()
@@ -181,9 +164,21 @@ geometries['G*M*OEF---'] = ({ resolution, styles, line }) => {
       TS.lineString([p0, ...x, p1]),
       TS.lineString([coords[1], p1])
     ])),
-    styles.closedArrow(TS.endPoint(line), { rotation: 2 * Math.PI - angle + Math.PI / 2 })
+    arrowFn(TS.endPoint(line), { rotation: 2 * Math.PI - angle + Math.PI / 2 })
   ]
 }
+
+/**
+ * TACGRP.MOBSU.OBST.OBSEFT.FIX
+ * OBSTACLE EFFECT / FIX
+ */
+geometries['G*M*OEF---'] = options => fixLike(options.styles.closedArrow)(options)
+
+/**
+ * TACGRP.TSK.FIX
+ * TASKS / FIX
+ */
+geometries['G*T*F-----'] = options => fixLike(options.styles.openArrow)(options)
 
 /**
  * TACGRP.MOBSU.SU.FEWS
@@ -287,20 +282,4 @@ geometries['G*S*LCM---'] = ({ feature, resolution, styles }) => {
   const [PA1, PA2] = G.translateLine(width / 1.5, +90)([line[0], PB1])
   const [PA4, PA3] = G.translateLine(width / 1.5, -90)([line[0], PB1])
   return styles.multiLineString([[PA3, PA4, PA1, PA2, PB2, line[1], PB3, PA3]])
-}
-
-/**
- * TACGRP.TSK.FIX
- * TASKS / FIX
- */
-geometries['G*T*F-----'] = ({ feature, resolution, styles }) => {
-  const line = G.coordinates(feature).map(G.toLatLon)
-  const [initialBearing, finalBearing] = G.bearings(line)
-  const length = G.distance(line)
-  const PA = line[0].destinationPoint(length * 0.2, initialBearing)
-  const PB = line[1].destinationPoint(length * 0.2, finalBearing - 180)
-  return styles.multiLineString([
-    [line[0], PA, ...zigzag([PA, PB], resolution), PB, line[1]],
-    simpleArrowEnd(line, resolution)
-  ])
 }
