@@ -122,6 +122,11 @@ const labels = {
 // TODO: G*MPNB----, G*MPNC----, G*MPNL----, G*MPNR----, G*MPOFD---
 
 export const polygonStyle = (feature, resolution) => {
+  const geometry = feature.getGeometry()
+  const ring = geometry.getLinearRing()
+  const coordinates = ring.getCoordinates()
+  if (!ring || !coordinates || !coordinates.length) return []
+
   const sidc = parameterized(feature.getProperties().sidc)
   const labelFns = labels[sidc] || []
   const styleFns = [defaultStyle, ...labelFns]
