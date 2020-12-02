@@ -115,6 +115,35 @@ const styles = (mode, options) => write => ({
     fill: fill(options)
   }),
 
+  closedArrow: (inGeometry, options) => {
+    const radius = options.radius || 10
+    return style({
+      geometry: write(inGeometry),
+      image: regularShape({
+        fill: fill({ color: 'black' }),
+        stroke: stroke({ color: 'black', width: 3 }),
+        displacement: [0, -radius],
+        radius,
+        points: 3,
+        ...options
+      })
+    })
+  },
+
+  openArrow: (inGeometry, options) => {
+    const radius = options.radius || 10
+    return [+1, -1].map(orientation => style({
+      geometry: write(inGeometry),
+      image: regularShape({
+        stroke: stroke({ color: 'black', width: 3 }),
+        displacement: [0, -radius],
+        radius,
+        points: 2,
+        rotation: options.rotation + orientation * Math.PI / 5
+      })
+    }))
+  },
+
   // =>> deprecated
 
   multiLineString: lines => {

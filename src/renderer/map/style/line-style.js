@@ -13,10 +13,10 @@ export const lineStyle = mode => (feature, resolution) => {
   const { read, write } = format(reference)
   const line = read(geometry)
   const styleFactory = styles(mode, feature)(write)
-  const options = { feature, resolution, line, styles: styleFactory }
+  const options = { feature, resolution, line, styles: styleFactory, write }
 
   return [
-    geometries[sidc] ? geometries[sidc](options) : defaultStyle(feature),
+    geometries[sidc] ? geometries[sidc](options).flat() : defaultStyle(feature),
     styleFactory.handles(TS.multiPoint(TS.linePoints(line))),
     styleFactory.wireFrame(line),
     (labels[sidc] || []).flatMap(fn => fn(feature, resolution))

@@ -91,11 +91,9 @@ export const lineBuffer = buffer({
 export const polygon = coordinates => geometryFactory.createPolygon(coordinates)
 
 export const lineString = (...args) => {
-  // console.log('[lineString]', args.length)
   if (args.length === 1) {
     if (Types.isLineSegment(args[0])) return args[0].toGeometry(geometryFactory)
     else if (Types.isArray(args[0])) {
-      // console.log(args[0])
       return geometryFactory.createLineString(args[0])
     }
   } else return geometryFactory.createLineString(...args)
