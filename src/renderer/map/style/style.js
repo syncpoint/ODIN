@@ -97,6 +97,11 @@ export default mode => (feature, resolution) => {
     [R.T, R.always(defaultStyle)]
   ])
 
-  const type = feature.getGeometry().getType()
-  return provider(type)(feature, resolution)
+  try {
+    const type = feature.getGeometry().getType()
+    return provider(type)(feature, resolution)
+  } catch (err) {
+    console.error('[style]', feature, err)
+    return []
+  }
 }
