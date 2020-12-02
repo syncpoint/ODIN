@@ -34,4 +34,5 @@ jobs:
           WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EP_PRE_RELEASE: ${{ secrets.EP_PRE_RELEASE }}
+          EP_GH_IGNORE_TIME: ${{ secrets.EP_GH_IGNORE_TIME }}
       
