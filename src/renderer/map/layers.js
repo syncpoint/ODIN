@@ -307,12 +307,12 @@ const createSelect = () => {
 /**
  * Modify interaction.
  */
-const createModify = () => {
+const createModify = source => {
   let initial = {} // Cloned geometries BEFORE modify.
 
   const interaction = new Modify({
     hitTolerance,
-    features: selectedFeatures,
+    source,
     // Allow translate while editing (with shift key pressed):
     condition: conjunction(primaryAction, noShiftKey),
     showVertexCondition: event => {
@@ -332,13 +332,6 @@ const createModify = () => {
   interaction.on('modifyend', ({ features }) => {
     inputLayers.updateGeometries(initial, features.getArray())
   })
-
-  const activate = () => {
-    interaction.setActive(selectedFeaturesCount() === 1)
-  }
-
-  selection.on('selected', activate)
-  selection.on('deselected', activate)
 
   return interaction
 }
@@ -462,7 +455,28 @@ export default map => {
   addInteraction(select)
   addInteraction(createTranslate())
   addInteraction(createBoxSelect())
-  addInteraction(createModify())
+
+  // Decouple selected feature collection from modify source.
+  // Reason: We can only edit one feature at a time.
+  //   Adding/removing geometry segments to modify's spatial index
+  //   is slow for many features/segments.
+  //   By decoupling we make sure, only one feature is added
+  //   to the source (at max). Contains the selected feature collection
+  //   more than one feature, we clear the source.
+
+  const modifySource = new VectorSource()
+  selectedFeatures.on('add', ({ element }) => {
+    if (selectedFeatures.getLength() <= 1) modifySource.addFeature(element)
+    else modifySource.clear()
+  })
+
+  selectedFeatures.on('remove', ({ element }) => {
+    if (!modifySource.hasFeature(element)) return
+    modifySource.removeFeature(element)
+  })
+
+
+  addInteraction(createModify(modifySource))
 
   inputLayers.register(event => (eventHandlers[event.type] || noop)(event))
 }
