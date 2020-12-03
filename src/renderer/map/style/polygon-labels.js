@@ -22,59 +22,67 @@ const segmentIntersect = (y, z) => segment => {
  * Maximum of two intersection points of line segment yz
  * with all segments formed by points.
  */
-const axisIntersect = (points, y, z) => R
+export const axisIntersect = (points, y, z) => R
   .aperture(2, points)
   .map(segment => segmentIntersect(y, z)(segment))
   .reduce((acc, intersections) => acc.concat(intersections), [])
 
 
-/**
- * directionalPlacements :: ol/geom/Polygon -> string ~> [x, y]
- * Named placement points on polygon.
- * Supported placements: center, east, west, north, south
- */
-export const directionalPlacements = polygon => {
-  if (!(polygon instanceof geom.Polygon)) return
-
-  const ring = polygon.getLinearRing(0)
+export const placements = geometry => {
+  const ring = geometry.getLinearRing(0)
   const box = ring.getExtent()
-  const points = ring.getCoordinates()
-  const center = polygon.getInteriorPoint()
+  const coords = ring.getCoordinates()
+  const center = geometry.getInteriorPoint()
   const C = center.getCoordinates() // XYM layout
+  const points = {}
+
+  const northEW = () => {
+    const y = box[1] + (box[3] - box[1]) * 0.95
+    const xs = axisIntersect(coords, [box[0], y], [box[2], y])
+    if (xs.length === 2) {
+      points.northEast = () => new geom.Point(xs[0][0] > xs[1][0] ? xs[0] : xs[1])
+      points.northWest = () => new geom.Point(xs[0][0] > xs[1][0] ? xs[1] : xs[0])
+    } else {
+      delete points.northEast
+      delete points.northWest
+    }
+  }
 
   const hIntersect = () => {
-    const xs = axisIntersect(points, [box[0], C[1]], [box[2], C[1]])
-    return xs.length !== 2 ? {} : {
-      east: new geom.Point(xs[0][0] > xs[1][0] ? xs[0] : xs[1]),
-      west: new geom.Point(xs[0][0] > xs[1][0] ? xs[1] : xs[0])
+    const xs = axisIntersect(coords, [box[0], C[1]], [box[2], C[1]])
+    if (xs.length === 2) {
+      points.east = () => new geom.Point(xs[0][0] > xs[1][0] ? xs[0] : xs[1])
+      points.west = () => new geom.Point(xs[0][0] > xs[1][0] ? xs[1] : xs[0])
+    } else {
+      delete points.east
+      delete points.west
     }
   }
 
   const vIntersect = () => {
-    const xs = axisIntersect(points, [C[0], box[1]], [C[0], box[3]])
-    return xs.length !== 2 ? {} : {
-      south: new geom.Point(xs[0][1] > xs[1][1] ? xs[1] : xs[0]),
-      north: new geom.Point(xs[0][1] > xs[1][1] ? xs[0] : xs[1])
+    const xs = axisIntersect(coords, [C[0], box[1]], [C[0], box[3]])
+    if (xs.length === 2) {
+      points.south = () => new geom.Point(xs[0][1] > xs[1][1] ? xs[1] : xs[0])
+      points.north = () => new geom.Point(xs[0][1] > xs[1][1] ? xs[0] : xs[1])
+    } else {
+      delete points.south
+      delete points.north
     }
   }
 
-  const northEW = () => {
-    const y = box[1] + (box[3] - box[1]) * 0.95
-    const xs = axisIntersect(points, [box[0], y], [box[2], y])
-    return xs.length !== 2 ? {} : {
-      northEast: new geom.Point(xs[0][0] > xs[1][0] ? xs[0] : xs[1]),
-      northWest: new geom.Point(xs[0][0] > xs[1][0] ? xs[1] : xs[0])
-    }
-  }
+  points.center = () => geometry.getInteriorPoint()
+  points.footer = () => new geom.Point([C[0], box[1]])
+  points.northEast = () => { northEW(); return points.northEast() }
+  points.northWest = () => { northEW(); return points.northWest() }
+  points.east = () => { hIntersect(); return points.east() }
+  points.west = () => { hIntersect(); return points.west() }
+  points.south = () => { vIntersect(); return points.south() }
+  points.north = () => { vIntersect(); return points.north() }
 
-  const footer = () => ({
-    footer: new geom.Point([C[0], box[1]])
-  })
-
-  return { center, ...hIntersect(), ...vIntersect(), ...northEW(), ...footer() }
+  return points
 }
 
-const textStyle = ({ geometry, text, options }) => new style.Style({
+export const textStyle = ({ geometry, text, options }) => new style.Style({
   geometry,
   text: new style.Text({
     text,
@@ -84,21 +92,19 @@ const textStyle = ({ geometry, text, options }) => new style.Style({
   })
 })
 
-const axisLabels = (axes, options = {}) => lines => feature => {
-  const placements = directionalPlacements(feature.getGeometry())
-  const text = lines(feature.getProperties()).filter(x => x).join('\n')
+const axisLabels = (axis, options = {}) =>
+  lines =>
+    context =>
+      properties => {
+        const text = lines(properties).filter(x => x).join('\n')
+        if (!text) return []
+        return axis.map(point => textStyle({ geometry: context[point], text, options }))
+      }
 
-  return axes
-    .map(axis => ({ text, geometry: placements[axis], options }))
-    .filter(({ geometry }) => geometry)
-    .map(textStyle)
-}
-
-export const nsewLabel = axisLabels(['north', 'south', 'east', 'west'])
-export const ewLabels = axisLabels(['east', 'west'])
-export const nsLabels = axisLabels(['north', 'south'])
-export const southLabel = axisLabels(['south'])
-export const northLabel = axisLabels(['north'])
-export const centerLabel = axisLabels(['center'])
-export const nwLabel = axisLabels(['northWest'], { textAlign: 'right', offsetX: -20 })
-export const footerLabel = axisLabels(['footer'], { offsetY: 20 })
+export const c = axisLabels(['center'])
+export const n = axisLabels(['north'])
+export const ns = axisLabels(['north', 'south'])
+export const nw = axisLabels(['northWest'], { textAlign: 'right', offsetX: -20 })
+export const nsew = axisLabels(['north', 'south', 'east', 'west'])
+export const ew = axisLabels(['east', 'west'])
+export const f = axisLabels(['footer'], { offsetY: 20 })

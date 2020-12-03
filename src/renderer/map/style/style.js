@@ -90,7 +90,7 @@ const symbolStyle = (feature, resolution) => {
 export default mode => (feature, resolution) => {
   const provider = R.cond([
     [R.equals('Point'), R.always(symbolStyle)],
-    [R.equals('Polygon'), R.always(polygonStyle)],
+    [R.equals('Polygon'), R.always(polygonStyle(mode))],
     [R.equals('LineString'), R.always(lineStyle(mode))],
     [R.equals('MultiPoint'), R.always(multipointStyle(mode))],
     [R.equals('GeometryCollection'), R.always(collectionStyle(mode))],
