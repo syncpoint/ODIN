@@ -1,10 +1,10 @@
 import * as R from 'ramda'
-import { defaultStyle, arc, arcLabel } from './default-style'
+import { arc, arcLabel } from './default-style'
 import { parameterized } from '../../components/SIDC'
 import * as G from './geodesy'
 import { simpleArrowEnd, simpleCrossEnd } from './arrows'
 import { format } from '../format'
-import styles from './default-style-2'
+import { styleFactory, defaultStyle } from './default-style-2'
 import * as TS from '../ts'
 
 const lastSegment = arc => [arc[arc.length - 2], arc[arc.length - 1]]
@@ -170,11 +170,11 @@ export const multipointStyle = mode => (feature, resolution) => {
   const reference = geometry.getFirstCoordinate()
   const { read, write } = format(reference)
   const points = read(geometry)
-  const styleFactory = styles(mode, feature)(write)
-  const options = { feature, resolution, points, styles: styleFactory }
+  const factory = styleFactory(mode, feature)(write)
+  const options = { feature, resolution, points, styles: factory }
 
   return [
     geometries[sidc] ? geometries[sidc](options).flat() : defaultStyle(feature),
-    styleFactory.handles(points)
+    factory.handles(points)
   ].flat()
 }

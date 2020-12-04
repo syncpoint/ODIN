@@ -1,7 +1,8 @@
+import * as R from 'ramda'
 import * as geom from 'ol/geom'
 import { parameterized } from '../../components/SIDC'
 import * as L from './polygon-labels'
-import styles from './default-style-2'
+import { styleFactory } from './default-style-2'
 
 const when = s => fn => s ? fn(s) : null
 const W = (w, w1) => (w && w1) ? w + '-' + w1 : w || w1
@@ -128,14 +129,14 @@ export const polygonStyle = mode => (feature, resolution) => {
     else return geometry.simplify(resolution)
   })(mode)
 
-  const styleFactory = styles(mode, feature)(x => x)
+  const factory = styleFactory(mode, feature)(R.identity)
   const firstPoint = () => new geom.Point(simplified.getFirstCoordinate())
   const sidc = parameterized(feature.getProperties().sidc)
   const label = fn => fn(L.placements(simplified))(feature.getProperties())
 
   return [
-    styleFactory.solidLine(simplified),
-    mode === 'multi' ? styleFactory.handles(firstPoint()) : [],
+    factory.solidLine(simplified),
+    mode === 'multi' ? factory.handles(firstPoint()) : [],
     ...(labelFn[sidc] || []).flatMap(label)
   ].flat()
 }

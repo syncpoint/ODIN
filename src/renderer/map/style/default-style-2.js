@@ -1,16 +1,15 @@
-/* eslint-disable camelcase */
-import * as ol_style from 'ol/style'
+import * as styles from 'ol/style'
 import * as geom from 'ol/geom'
 import * as SIDC from './sidc'
 import { primaryColor, accentColor } from './color-schemes'
 import * as G from './geodesy'
 
-const style = options => new ol_style.Style(options)
-const stroke = options => new ol_style.Stroke(options)
-const circle = options => new ol_style.Circle(options)
-const fill = options => new ol_style.Fill(options)
-const text = options => new ol_style.Text(options)
-const regularShape = options => new ol_style.RegularShape(options)
+const style = options => new styles.Style(options)
+const stroke = options => new styles.Stroke(options)
+const circle = options => new styles.Circle(options)
+const fill = options => new styles.Fill(options)
+const text = options => new styles.Text(options)
+const regularShape = options => new styles.RegularShape(options)
 
 const scheme = 'medium'
 const styleOptions = feature => {
@@ -25,7 +24,7 @@ const styleOptions = feature => {
   }
 }
 
-const styles = (mode, options) => write => ({
+const factory = (mode, options) => write => ({
   solidLine: (inGeometry, opts = {}) => {
     const primaryColor = opts.color || options.primaryColor
     const geometry = write(inGeometry)
@@ -157,4 +156,24 @@ const styles = (mode, options) => write => ({
   // <<= deprecated
 })
 
-export default (mode, feature) => styles(mode, styleOptions(feature))
+export const defaultFont = '14px sans-serif'
+export const biggerFont = '16px sans-serif'
+
+const defaultImage = circle({
+  radius: 6,
+  fill: fill({ color: [0, 153, 255, 1] }),
+  stroke: stroke({ color: 'white', width: 1.5 })
+})
+
+
+export const defaultStyle = feature => {
+  const options = styleOptions(feature)
+  const geometry = feature.getGeometry()
+
+  return [
+    { width: options.thick, color: options.accentColor, lineDash: options.dashPattern, image: defaultImage },
+    { width: options.thin, color: options.primaryColor, lineDash: options.dashPattern }
+  ].map(options => style({ stroke: stroke(options), geometry }))
+}
+
+export const styleFactory = (mode, feature) => factory(mode, styleOptions(feature))

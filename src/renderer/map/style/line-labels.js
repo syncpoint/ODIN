@@ -1,7 +1,7 @@
 import * as R from 'ramda'
 import * as geom from 'ol/geom'
 import * as style from 'ol/style'
-import { defaultFont } from './default-style'
+import { defaultFont } from './default-style-2'
 import echelons from './echelons'
 
 /**
