@@ -69,8 +69,8 @@ export const label = options => lines => feature => {
   const segments = R.aperture(2, points)
 
   const segment = fraction => [
-    geometry.getCoordinateAt(fraction - 0.05),
-    geometry.getCoordinateAt(fraction + 0.05)
+    geometry.getCoordinateAt(Math.max(0, fraction - 0.05)),
+    geometry.getCoordinateAt(Math.min(1, fraction + 0.05))
   ]
 
   const alpha = R.cond([
@@ -131,6 +131,13 @@ const lineEndsT1 = title => lift(cloneLines(({ t1 }) => [t1 ? `${title} ${t1}` :
 const lineEndsT = title => lift(cloneLines(({ t }) => [t ? `${title} ${t} ` : null], cross([LEFT, RIGHT], MIDDLE)))
 const phaseLine = title => lift(cloneLines(({ t }) => [title, t ? `(PL ${t})` : ''], cross([LEFT, RIGHT], MIDDLE)))
 
+const numberProperty = feature => (key, value) => {
+  const raw = feature.get(key)
+  return typeof raw === 'number'
+    ? raw
+    : value
+}
+
 // Specific labels.
 
 export const labels = {
@@ -144,20 +151,27 @@ export const labels = {
   'G*F*LTF---': [topT, bottomT1('FPF')],
   'G*G*DLF---': [lineEndsTitle('FEBA')],
   'G*G*GLB---': [
-    label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [t]),
-    label({ textAlign: 0.5, verticalAlign: BOTTOM })(({ t1 }) => [t1]),
     (feature, resolution) => {
+      const echelonOffset = numberProperty(feature)('echelonOffset', 0.5)
       const modifier = feature.get('sidc')[11]
       const geometry = feature.getGeometry()
-      const segment = [geometry.getCoordinateAt(0.45), geometry.getCoordinateAt(0.55)]
-      return new style.Style({
-        geometry: new geom.Point(geometry.getCoordinateAt(0.5)),
-        image: new style.Icon({
-          src: 'data:image/svg+xml;utf8,' + echelons[modifier],
-          scale: 0.4,
-          rotation: segmentAngle(segment)
+      const segment = [
+        geometry.getCoordinateAt(Math.max(0.0, echelonOffset - 0.05)),
+        geometry.getCoordinateAt(Math.min(1.0, echelonOffset + 0.05))
+      ]
+
+      return [
+        label({ textAlign: echelonOffset, verticalAlign: TOP })(({ t }) => [t])(feature),
+        label({ textAlign: echelonOffset, verticalAlign: BOTTOM })(({ t1 }) => [t1])(feature),
+        new style.Style({
+          geometry: new geom.Point(geometry.getCoordinateAt(echelonOffset)),
+          image: new style.Icon({
+            src: 'data:image/svg+xml;utf8,' + echelons[modifier],
+            scale: 0.4,
+            rotation: segmentAngle(segment)
+          })
         })
-      })
+      ]
     }
   ],
   // TODO: G*G*GLC---
