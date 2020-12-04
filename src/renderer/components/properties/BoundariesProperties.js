@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
 const LineProperties = props => {
   const { properties } = props
   const classes = useStyles()
-  const [echelonOffset, setEchelonOffset] = React.useState(properties.echelonOffset)
+  const [echelonOffset, setEchelonOffset] = React.useState(properties.echelonOffset || 0.5)
 
   const handleChange = throttle((_, newValue) => {
     properties.echelonOffset = newValue
@@ -50,8 +50,8 @@ const LineProperties = props => {
       <TextProperty label={'Additional Information'} property={'h'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns }/>
       <HostilityProperty properties={props.properties} onCommit={props.update}/>
       <EchelonProperty properties={props.properties} onCommit={props.update}/>
-      <Typography component='div'>Offset</Typography>
-      <Slider value={echelonOffset} defaultValue={0.5} min={0} max={1} step={0.01} onChange={handleChange} color={'secondary'} className={ classes.twoColumns }/>
+      <Typography component='div'>Label Placement</Typography>
+      <Slider value={echelonOffset} min={0} max={1} step={0.01} onChange={handleChange} color={'secondary'} className={ classes.twoColumns }/>
       <StatusGroupReduced properties={props.properties} onCommit={props.update}/>
       <TextProperty label={'Effective (from)'} property={'w'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
       <TextProperty label={'Effective (to)'} property={'w1'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
