@@ -1,4 +1,4 @@
-const svg = body => `<svg width="210" height="50" version="1.1" xmlns="http://www.w3.org/2000/svg">${body}</svg>`
+const svg = (width, body) => `<svg width="${width}" height="50" version="1.1" xmlns="http://www.w3.org/2000/svg">${body}</svg>`
 
 const attrs = xs => Object.entries(xs)
   .filter(([key]) => key !== 'type')
@@ -14,8 +14,8 @@ const path = d => [strokeWhite, strokeBlack]
 
 const team = () => {
   const props = [
-    { type: 'circle', cx: 105, cy: 25, r: 15 },
-    { type: 'path', d: 'M85,35 l40,-20' }]
+    { type: 'circle', cx: 20, cy: 25, r: 15 },
+    { type: 'path', d: 'M0,35 l40,-20' }]
 
   return [strokeWhite, strokeBlack]
     .flatMap(stroke => props.map(p => ({ ...p, ...stroke })))
@@ -39,18 +39,18 @@ const cross = xs => path(xs.map(x => `M${x},12.5 l25,25 m0,-25 l-25,25`).join(' 
 const plus = xs => path(xs.map(x => `M${x},25 l25,0 m-12.5,12.5 l0,-25`).join(' '))
 
 export default {
-  A: svg(team()),
-  B: svg(dot([105])),
-  C: svg(dot([90, 120])),
-  D: svg(dot([75, 105, 135])),
-  E: svg(pipe([105])),
-  F: svg(pipe([95, 115])),
-  G: svg(pipe([85, 105, 125])),
-  H: svg(cross([92.5])),
-  I: svg(cross([75, 110])),
-  J: svg(cross([57.5, 92.5, 127.5])),
-  K: svg(cross([40, 75, 110, 145])),
-  L: svg(cross([22.5, 57.5, 92.5, 127.5, 162.5])),
-  M: svg(cross([5, 40, 75, 110, 145, 180])),
-  N: svg(plus([75, 110]))
+  A: svg(40, team()),
+  B: svg(22, dot([11])),
+  C: svg(52, dot([11, 41])),
+  D: svg(82, dot([11, 41, 71])),
+  E: svg(20, pipe([10])),
+  F: svg(40, pipe([10, 30])),
+  G: svg(60, pipe([10, 30, 50])),
+  H: svg(35, cross([5])),
+  I: svg(70, cross([5, 40])),
+  J: svg(105, cross([5, 40, 75])),
+  K: svg(140, cross([5, 40, 75, 110])),
+  L: svg(175, cross([5, 40, 75, 110, 145])),
+  M: svg(210, cross([5, 40, 75, 110, 145, 180])),
+  N: svg(70, plus([5, 40]))
 }
