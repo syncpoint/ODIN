@@ -1,39 +1,56 @@
 import * as R from 'ramda'
-import { arc, arcLabel } from './default-style'
 import { parameterized } from '../../components/SIDC'
-import * as G from './geodesy'
-import { simpleArrowEnd, simpleCrossEnd } from './arrows'
 import { format } from '../format'
-import { styleFactory, defaultStyle } from './default-style-2'
+import { styleFactory, defaultStyle, biggerFont } from './default-style'
 import * as TS from '../ts'
 
-const lastSegment = arc => [arc[arc.length - 2], arc[arc.length - 1]]
-
+const quads = 64
+const deg2rad = Math.PI / 180
 const geometries = {}
+
+const arcText = styles => (anchor, angle, text) => styles.text(anchor, {
+  text,
+  font: biggerFont,
+  flip: true,
+  textAlign: () => 'center',
+  rotation: 2 * Math.PI - angle + 330 / 2 * deg2rad
+})
+
+const arcArrow = (arc, angle, arrowFn) => arrowFn(
+  TS.point(arc[arc.length - 1]),
+  {
+    rotation: 330 * deg2rad - angle + Math.PI,
+    radius: 15
+  }
+)
 
 /**
  * TACGRP.TSK.ISL
  * TASKS / ISOLATE
  */
-geometries['G*T*E-----'] = ({ feature, resolution, styles }) => {
-  const points = G.coordinates(feature)
-  if (points.length !== 2) return defaultStyle(feature)
+geometries['G*T*E-----'] = ({ styles, points, resolution }) => {
+  const [C, A] = TS.coordinates(points)
+  const [angle, radius] = TS.bearingDistance(C, A)
+  const arcs = [
+    TS.arc(C, radius, angle, 330 * deg2rad, quads),
+    TS.arc(C, 0.8 * radius, angle, 330 * deg2rad, quads)
+  ]
 
-  const [C, A] = points.map(G.toLatLon)
-  const [angle, radius] = G.bearingLine([C, A])
-  const outerArc = arc(C, radius, angle, 330)
-  const innerArc = arc(C, radius * 0.8, angle, 330)
-  const teeth = R.range(1, outerArc.length)
+  const teeth = R.range(1, arcs[0].length)
     .filter(i => i % 5 === 0)
-    .map(i => [outerArc[i - 1], innerArc[i], outerArc[i + 1]])
+    .map(i => [arcs[0][i - 1], arcs[1][i], arcs[0][i + 1]])
+    .map(coords => TS.lineString(coords))
+
+  const textAnchor = TS.point(arcs[0][Math.floor(arcs[0].length / 2)])
+  const geometry = TS.difference([
+    TS.union([...teeth, TS.lineString(arcs[0])]),
+    TS.pointBuffer(textAnchor)(resolution * 10)
+  ])
 
   return [
-    styles.multiLineString([
-      outerArc,
-      ...teeth,
-      simpleArrowEnd(lastSegment(outerArc), resolution)
-    ]),
-    arcLabel(C, radius, angle, 'I')
+    styles.solidLine(geometry),
+    arcArrow(arcs[0], angle, styles.openArrow),
+    arcText(styles)(textAnchor, angle, 'I')
   ]
 }
 
@@ -41,20 +58,20 @@ geometries['G*T*E-----'] = ({ feature, resolution, styles }) => {
  * TACGRP.TSK.OCC
  * TASKS / OCCUPY
  */
-geometries['G*T*O-----'] = ({ feature, resolution, styles }) => {
-  const points = G.coordinates(feature)
-  if (points.length !== 2) return defaultStyle(feature)
-
-  const [C, A] = points.map(G.toLatLon)
-  const [angle, radius] = G.bearingLine([C, A])
-  const outerArc = arc(C, radius, angle, 330)
+geometries['G*T*O-----'] = ({ points, resolution, styles }) => {
+  const [C, A] = TS.coordinates(points)
+  const [angle, radius] = TS.bearingDistance(C, A)
+  const arc = TS.arc(C, radius, angle, 330 * deg2rad, quads)
+  const textAnchor = TS.point(arc[Math.floor(arc.length / 2)])
+  const geometry = TS.difference([
+    TS.lineString(arc),
+    TS.pointBuffer(textAnchor)(resolution * 10)
+  ])
 
   return [
-    styles.multiLineString([
-      outerArc,
-      ...simpleCrossEnd(lastSegment(outerArc), resolution)
-    ]),
-    arcLabel(C, radius, angle, 'O')
+    styles.solidLine(geometry),
+    arcArrow(arc, angle, styles.crossArrow),
+    arcText(styles)(textAnchor, angle, 'O')
   ]
 }
 
@@ -62,25 +79,29 @@ geometries['G*T*O-----'] = ({ feature, resolution, styles }) => {
  * TACGRP.TSK.RTN
  * TASKS / RETAIN
  */
-geometries['G*T*Q-----'] = ({ feature, resolution, styles }) => {
-  const points = G.coordinates(feature)
-  if (points.length !== 2) return defaultStyle(feature)
+geometries['G*T*Q-----'] = ({ points, resolution, styles }) => {
+  const [C, A] = TS.coordinates(points)
+  const [angle, radius] = TS.bearingDistance(C, A)
+  const arcs = [
+    TS.arc(C, radius, angle, 330 * deg2rad, quads),
+    TS.arc(C, 0.8 * radius, angle, 330 * deg2rad, quads)
+  ]
 
-  const [C, A] = points.map(G.toLatLon)
-  const [angle, radius] = G.bearingLine([C, A])
-  const outerArc = arc(C, radius, angle, 330)
-  const innerArc = arc(C, radius * 0.8, angle, 330)
-  const spikes = R.range(1, outerArc.length - 2)
+  const spikes = R.range(1, arcs[0].length - 2)
     .filter(i => i % 2 === 0)
-    .map(i => [outerArc[i], innerArc[i]])
+    .map(i => [arcs[0][i], arcs[1][i]])
+    .map(coords => TS.lineString(coords))
+
+  const textAnchor = TS.point(arcs[1][Math.floor(arcs[0].length / 2)])
+  const geometry = TS.difference([
+    TS.union([...spikes, TS.lineString(arcs[1])]),
+    TS.pointBuffer(textAnchor)(resolution * 10)
+  ])
 
   return [
-    styles.multiLineString([
-      innerArc,
-      ...spikes,
-      simpleArrowEnd(lastSegment(innerArc), resolution)
-    ]),
-    arcLabel(C, radius * 0.8, angle, 'R')
+    styles.solidLine(geometry),
+    arcArrow(arcs[1], angle, styles.openArrow),
+    arcText(styles)(textAnchor, angle, 'R')
   ]
 }
 
@@ -88,20 +109,20 @@ geometries['G*T*Q-----'] = ({ feature, resolution, styles }) => {
  * TACGRP.TSK.SCE
  * TASKS / SECURE
  */
-geometries['G*T*S-----'] = ({ feature, resolution, styles }) => {
-  const points = G.coordinates(feature)
-  if (points.length !== 2) return defaultStyle(feature)
-
-  const [C, A] = points.map(G.toLatLon)
-  const [angle, radius] = G.bearingLine([C, A])
-  const outerArc = arc(C, radius, angle, 330)
+geometries['G*T*S-----'] = ({ points, resolution, styles }) => {
+  const [C, A] = TS.coordinates(points)
+  const [angle, radius] = TS.bearingDistance(C, A)
+  const arc = TS.arc(C, radius, angle, 330 * deg2rad, quads)
+  const textAnchor = TS.point(arc[Math.floor(arc.length / 2)])
+  const geometry = TS.difference([
+    TS.lineString(arc),
+    TS.pointBuffer(textAnchor)(resolution * 10)
+  ])
 
   return [
-    styles.multiLineString([
-      outerArc,
-      simpleArrowEnd(lastSegment(outerArc), resolution)
-    ]),
-    arcLabel(C, radius, angle, 'S')
+    styles.solidLine(geometry),
+    arcArrow(arc, angle, styles.openArrow),
+    arcText(styles)(textAnchor, angle, 'S')
   ]
 }
 

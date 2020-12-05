@@ -102,10 +102,18 @@ export const lineString = (...args) => {
 export const point = coordinate => geometryFactory.createPoint(coordinate)
 export const multiPoint = points => geometryFactory.createMultiPoint(points)
 
+/**
+ * segment :: geom.LineSegment => geom.LineSegment
+ * segment :: [geom.Coordinate, geom.Coordinate] => geom.LineSegment
+ * segment :: (geom.Coordinate, geom.Coordinate) => geom.LineSegment
+ */
 export const segment = (...args) => {
-  if (args.every(Types.isCoordinate)) return new jsts.geom.LineSegment(args[0], args[1])
-  else if (Types.isArray(args[0])) return new jsts.geom.LineSegment(args[0][0], args[0][1])
-  return undefined
+  switch (args.length) {
+    case 1: return Types.isLineSegment(args[0]) ? args[0] : new jsts.geom.LineSegment(args[0][0], args[0][1])
+    case 2: return new jsts.geom.LineSegment(args[0], args[1])
+    // handle map(current, index, array):
+    case 3: return new jsts.geom.LineSegment(args[0][0], args[0][1])
+  }
 }
 
 export const segments = lineString => R
@@ -114,7 +122,6 @@ export const segments = lineString => R
 
 export const geometryCollection = geometries => geometryFactory.createGeometryCollection(geometries)
 export const collect = geometries => geometryFactory.createGeometryCollection(geometries)
-
 
 export const coordinates = (...args) => {
   if (Types.isArray(args[0])) return args[0].flatMap(coordinates)
@@ -181,3 +188,24 @@ export const projectCoordinates = (distance, angle, point) => fractions =>
 export const segmentize = (segment, n) => R
   .range(0, n + 1)
   .map(i => segment.pointAlong(i / n))
+
+/**
+ * bearingDistance :: (geom.LineSegment) => [number, number]
+ * bearingDistance :: ([geom.Coordinate, geom.Coordinate]) => [number, number]
+ * bearingDistance :: (geom.Coordinate, geom.Coordinate) => [number, number]
+ */
+export const bearingDistance = (...args) => {
+  const s = segment(...args)
+  return [Angle.normalizePositive(s.angle()), s.getLength()]
+}
+
+const appendHead = ([head, ...tail]) => [head, ...tail, head]
+export const circle = ({ x, y }, radius, n) => appendHead(R.range(0, n))
+  .map(i => (2 * Math.PI / n) * i)
+  .map(α => [x + radius * Math.cos(α), y + radius * Math.sin(α)])
+  .map(coordinate)
+
+export const arc = ({ x, y }, radius, α1, α2, n) => R.range(0, n)
+  .map(i => α1 - α2 / n * i)
+  .map(α => [x + radius * Math.cos(α), y + radius * Math.sin(α)])
+  .map(coordinate)

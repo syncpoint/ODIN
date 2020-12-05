@@ -2,7 +2,7 @@ import * as R from 'ramda'
 import * as geom from 'ol/geom'
 import { parameterized } from '../../components/SIDC'
 import * as L from './polygon-labels'
-import { styleFactory } from './default-style-2'
+import { styleFactory } from './default-style'
 
 const when = s => fn => s ? fn(s) : null
 const W = (w, w1) => (w && w1) ? w + '-' + w1 : w || w1

@@ -1,6 +1,6 @@
 import { parameterized } from '../../components/SIDC'
 import corridors from './corridors'
-import { styleFactory, defaultStyle } from './default-style-2'
+import { styleFactory, defaultStyle } from './default-style'
 
 export const collectionStyle = mode => (feature, resolution) => {
   const sidc = parameterized(feature.get('sidc'))

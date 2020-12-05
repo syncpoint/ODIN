@@ -1,7 +1,7 @@
 import { parameterized } from '../../components/SIDC'
 import { labels } from './line-labels'
 import { geometries } from './line-geometries'
-import { styleFactory, defaultStyle } from './default-style-2'
+import { styleFactory, defaultStyle } from './default-style'
 import * as TS from '../ts'
 import { format } from '../format'
 
