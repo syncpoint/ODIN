@@ -158,8 +158,6 @@ export const labels = {
       ]
     }
   ],
-  // TODO: G*G*GLC---
-  // TODO: G*G*GLF---
   'G*G*GLL---': [phaseLine('LL')],
   'G*G*GLP---': [lineEndsT('PL')],
   'G*G*OLC---': [phaseLine('LD/LC')],
