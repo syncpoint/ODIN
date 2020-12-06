@@ -12,13 +12,11 @@ const FeatureList = props => {
   const list = React.useCallback(element => {
     if (!element) return
     element.resetAfterIndex(0, true)
-    // element.scrollToItem(0, 'start')
   })
 
   const getItemSize = index => {
     const descriptor = listItems[index]
     const textLength = descriptor.name.length + descriptor.hierarchy.length
-    // console.log('##length', textLength, descriptor.name + ' ' + descriptor.hierarchy)
     if (textLength <= 45) return 80
     if (textLength <= 65) return 100
     if (textLength <= 85) return 120
