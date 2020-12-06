@@ -1,7 +1,9 @@
 import * as R from 'ramda'
+import * as style from 'ol/style'
 import * as TS from '../ts'
 import { K } from '../../../shared/combinators'
 import * as G from './geodesy'
+import echelons from './echelons'
 import {
   simpleArrowEnd,
   simpleArrowStart,
@@ -282,4 +284,48 @@ geometries['G*S*LCM---'] = ({ feature, resolution, styles }) => {
   const [PA1, PA2] = G.translateLine(width / 1.5, +90)([line[0], PB1])
   const [PA4, PA3] = G.translateLine(width / 1.5, -90)([line[0], PB1])
   return styles.multiLineString([[PA3, PA4, PA1, PA2, PB2, line[1], PB3, PA3]])
+}
+
+const numberProperty = feature => (key, value) => {
+  const raw = feature.get(key)
+  return typeof raw === 'number'
+    ? raw
+    : value
+}
+
+geometries['G*G*GLB---'] = options => {
+  const { feature, resolution, styles, line: geometry, write } = options
+  const echelonOffset = numberProperty(feature)('echelonOffset', 0.5)
+  const modifier = feature.get('sidc')[11]
+  const src = 'data:image/svg+xml;utf8,' + echelons[modifier]
+  const image = new style.Icon({ src, scale: 0.4 })
+  const size = image.getSize()
+  const width = size && size[0] && size[0] * resolution / 2
+
+  const line = TS.lengthIndexedLine(geometry)
+  const A = line.getStartIndex()
+  const D = line.getEndIndex()
+  const offset = (D - A) * echelonOffset
+  const B = offset - width / 2
+  const C = offset + width / 2
+
+  const icon = () => {
+    if (width > D - A) return [] // don't show icon
+    const segment = TS.segment(
+      line.extractPoint(offset - resolution),
+      line.extractPoint(offset + resolution)
+    )
+
+    const iconAnchor = TS.point(segment.pointAlong(0.5))
+    image.setRotation(2 * Math.PI - segment.angle())
+    return new style.Style({ image, geometry: write(iconAnchor) })
+  }
+
+  return [
+    icon(),
+    styles.solidLine(TS.union([
+      line.extractLine(A, B),
+      line.extractLine(C, D)
+    ]))
+  ]
 }

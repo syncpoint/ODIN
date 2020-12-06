@@ -40,10 +40,10 @@ const plus = xs => path(xs.map(x => `M${x},25 l25,0 m-12.5,12.5 l0,-25`).join(' 
 
 export default {
   A: svg(40, team()),
-  B: svg(22, dot([11])),
+  B: svg(32, dot([16])),
   C: svg(52, dot([11, 41])),
   D: svg(82, dot([11, 41, 71])),
-  E: svg(20, pipe([10])),
+  E: svg(30, pipe([15])),
   F: svg(40, pipe([10, 30])),
   G: svg(60, pipe([10, 30, 50])),
   H: svg(35, cross([5])),

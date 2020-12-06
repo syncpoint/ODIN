@@ -2,7 +2,6 @@ import * as R from 'ramda'
 import * as geom from 'ol/geom'
 import * as style from 'ol/style'
 import { defaultFont } from './default-style'
-import echelons from './echelons'
 
 /**
  * Horizontal and vertical label placement
@@ -153,24 +152,9 @@ export const labels = {
   'G*G*GLB---': [
     (feature, resolution) => {
       const echelonOffset = numberProperty(feature)('echelonOffset', 0.5)
-      const modifier = feature.get('sidc')[11]
-      const geometry = feature.getGeometry()
-      const segment = [
-        geometry.getCoordinateAt(Math.max(0.0, echelonOffset - 0.05)),
-        geometry.getCoordinateAt(Math.min(1.0, echelonOffset + 0.05))
-      ]
-
       return [
         label({ textAlign: echelonOffset, verticalAlign: TOP })(({ t }) => [t])(feature),
-        label({ textAlign: echelonOffset, verticalAlign: BOTTOM })(({ t1 }) => [t1])(feature),
-        new style.Style({
-          geometry: new geom.Point(geometry.getCoordinateAt(echelonOffset)),
-          image: new style.Icon({
-            src: 'data:image/svg+xml;utf8,' + echelons[modifier],
-            scale: 0.4,
-            rotation: segmentAngle(segment)
-          })
-        })
+        label({ textAlign: echelonOffset, verticalAlign: BOTTOM })(({ t1 }) => [t1])(feature)
       ]
     }
   ],

@@ -37,6 +37,7 @@ export const Angle = jsts.algorithm.Angle
 export const GeometryFactory = jsts.geom.GeometryFactory
 export const AffineTransformation = jsts.geom.util.AffineTransformation
 export const Coordinate = jsts.geom.Coordinate
+export const LengthIndexedLine = jsts.linearref.LengthIndexedLine
 
 export const geometryFactory = new GeometryFactory()
 
@@ -101,6 +102,7 @@ export const lineString = (...args) => {
 
 export const point = coordinate => geometryFactory.createPoint(coordinate)
 export const multiPoint = points => geometryFactory.createMultiPoint(points)
+export const lengthIndexedLine = geometry => new LengthIndexedLine(geometry)
 
 /**
  * segment :: geom.LineSegment => geom.LineSegment
@@ -112,7 +114,7 @@ export const segment = (...args) => {
     case 1: return Types.isLineSegment(args[0]) ? args[0] : new jsts.geom.LineSegment(args[0][0], args[0][1])
     case 2: return new jsts.geom.LineSegment(args[0], args[1])
     // handle map(current, index, array):
-    case 3: return new jsts.geom.LineSegment(args[0][0], args[0][1])
+    case 3: return segment(args[0])
   }
 }
 
@@ -198,6 +200,8 @@ export const bearingDistance = (...args) => {
   const s = segment(...args)
   return [Angle.normalizePositive(s.angle()), s.getLength()]
 }
+
+export const angle = (p0, p1) => Angle.angle(p0, p1)
 
 const appendHead = ([head, ...tail]) => [head, ...tail, head]
 export const circle = ({ x, y }, radius, n) => appendHead(R.range(0, n))
