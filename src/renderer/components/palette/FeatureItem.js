@@ -5,6 +5,7 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import Avatar from '@material-ui/core/Avatar'
 import ListItemText from '@material-ui/core/ListItemText'
+import Typography from '@material-ui/core/Typography'
 import ms from 'milsymbol'
 
 const useStyles = makeStyles((/* theme */) => ({
@@ -23,6 +24,11 @@ const FeatureItem = props => {
   const url = symbol.isValid(extended)
     ? symbol.asCanvas().toDataURL()
     : placeholderSymbol.asCanvas().toDataURL()
+
+  const secondardTextColor = props.geometry === 'Undefined' ? '#F00' : '000'
+  const hierarchy = props.geometry === 'Undefined'
+    ? `${props.hierarchy} (unsupported)`
+    : props.hierarchy
 
   return (
     <ListItem
@@ -44,8 +50,11 @@ const FeatureItem = props => {
         />
       </ListItemAvatar>
       <ListItemText
-        primary={props.name}
-        secondary={props.hierarchy}
+        primary={`${props.name}`}
+        secondary={
+          <Typography variant="body2" style={{ color: secondardTextColor }}>
+            {hierarchy}
+          </Typography>}
       />
     </ListItem>
   )
@@ -56,7 +65,8 @@ FeatureItem.propTypes = {
   sidc: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   hierarchy: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired
+  onClick: PropTypes.func.isRequired,
+  geometry: PropTypes.string.isRequired
 }
 
 
