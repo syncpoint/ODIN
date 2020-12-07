@@ -117,7 +117,7 @@ const labelFn = {
 // TODO: G*MPNB----, G*MPNC----, G*MPNL----, G*MPNR----, G*MPOFD---
 
 
-export const polygonStyle = context => (feature, resolution) => {
+export const polygonStyle = mode => (feature, resolution) => {
   const geometry = feature.getGeometry()
   const ring = geometry.getLinearRing()
   const coordinates = ring.getCoordinates()
@@ -127,9 +127,9 @@ export const polygonStyle = context => (feature, resolution) => {
     if (mode === 'selected') return geometry
     if (coordinates.length < 100) return geometry
     else return geometry.simplify(resolution)
-  })(context.mode)
+  })(mode)
 
-  const factory = styleFactory(context, feature)(R.identity)
+  const factory = styleFactory(mode, feature)(R.identity)
   const firstPoint = () => new geom.Point(simplified.getFirstCoordinate())
 
   const labels = () => {
@@ -142,7 +142,7 @@ export const polygonStyle = context => (feature, resolution) => {
 
   return [
     factory.solidLine(simplified),
-    context.mode === 'multi' ? factory.handles(firstPoint()) : [],
+    mode === 'multi' ? factory.handles(firstPoint()) : [],
     labels()
   ].flat()
 }

@@ -185,13 +185,13 @@ geometries['G*T*UC----'] = options => fanLike(options.styles.openArrow, 'C')(opt
  */
 geometries['G*G*GAS---'] = options => fanLike(options.styles.closedArrow)(options)
 
-export const multipointStyle = context => (feature, resolution) => {
+export const multipointStyle = mode => (feature, resolution) => {
   const sidc = parameterized(feature.getProperties().sidc)
   const geometry = feature.getGeometry()
   const reference = geometry.getFirstCoordinate()
   const { read, write } = format(reference)
   const points = read(geometry)
-  const factory = styleFactory(context, feature)(write)
+  const factory = styleFactory(mode, feature)(write)
   const options = { feature, resolution, points, styles: factory }
 
   return [

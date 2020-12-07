@@ -140,10 +140,9 @@ const selectedFeaturesCount = () => selection
  * and are automatically synced whenever input collection is updated.
  */
 const createLayers = () => {
-  const context = { mode: 'default' }
   const entries = ['Polygon', 'LineString', 'Point']
     .map(type => [type, new VectorSource({})])
-    .map(([type, source]) => [type, new VectorLayer({ source, style: style(context) })])
+    .map(([type, source]) => [type, new VectorLayer({ source, style: style('default') })])
 
 
   // Update layer opacity depending on selection.
@@ -286,8 +285,8 @@ const createSelect = () => {
     features: selectedFeatures,
     style: (feature, resolution) => {
       const fn = interaction.getFeatures().getLength() < 2
-        ? style({ mode: 'selected' })
-        : style({ mode: 'multi' })
+        ? style('selected')
+        : style('multi')
       return fn(feature, resolution)
     },
     condition: conjunction(click, noAltKey),
@@ -449,7 +448,7 @@ export default map => {
   // Selection source and layer.
   selectionLayer = addLayer(new VectorLayer({
     source: selectionSource,
-    style: style({ mode: 'selected' })
+    style: style('selected')
   }))
 
   const select = createSelect()

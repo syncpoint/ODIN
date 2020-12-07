@@ -1,7 +1,8 @@
+import * as R from 'ramda'
 import { Style, Icon } from 'ol/style'
 import ms from 'milsymbol'
 import { K } from '../../../shared/combinators'
-import { defaultStyle } from './default-style'
+import { defaultStyle, styleFactory } from './default-style'
 
 const MODIFIERS = {
   c: 'quantity',
@@ -42,36 +43,26 @@ const icon = symbol => {
   })
 }
 
-const symbolStyleModes = {
-  default: {
-    outlineWidth: 4,
-    outlineColor: 'white'
-  },
-  selected: {
-    outlineWidth: 6,
-    outlineColor: 'black',
-    monoColor: 'white'
-  },
-  multi: {
-    outlineWidth: 6,
-    outlineColor: 'black',
-    monoColor: 'white'
-  }
-}
-
 // Point geometry, aka symbol.
-export const symbolStyle = context => (feature, resolution) => {
-  const { mode } = context
+export const symbolStyle = mode => (feature, resolution) => {
   const { sidc, ...properties } = feature.getProperties()
-  const infoFields = mode === 'selected' || resolution < 62 // roughly 1:150,000
+  const infoFields = mode === 'selected' ||
+    mode === 'multi' ||
+    resolution < 62 // roughly 1:150,000
 
+  const outlineWidth = mode === 'selected' ? 6 : 4
   const symbol = new ms.Symbol(sidc, {
     ...modifiers(properties),
-    ...symbolStyleModes[mode],
+    outlineWidth,
+    outlineColor: 'white',
     infoFields
   })
 
+  const factory = styleFactory(mode, feature)(R.identity)
   return symbol.isValid()
-    ? new Style({ image: icon(symbol) })
+    ? [
+      new Style({ image: icon(symbol) }),
+      mode === 'multi' ? factory.handles(feature.getGeometry()) : []
+    ].flat()
     : defaultStyle(feature)
 }

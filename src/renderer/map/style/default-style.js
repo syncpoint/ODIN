@@ -24,7 +24,7 @@ const styleOptions = feature => {
   }
 }
 
-const factory = ({ mode }, options) => write => ({
+const factory = (mode, options) => write => ({
   solidLine: (inGeometry, opts = {}) => {
     const primaryColor = opts.color || options.primaryColor
     const geometry = write(inGeometry)
@@ -190,4 +190,4 @@ export const defaultStyle = feature => {
   ].map(options => style({ stroke: stroke(options), geometry }))
 }
 
-export const styleFactory = (context, feature) => factory(context, styleOptions(feature))
+export const styleFactory = (mode, feature) => factory(mode, styleOptions(feature))

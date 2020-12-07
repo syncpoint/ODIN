@@ -23,13 +23,13 @@ export const normalizeSIDC = sidc => sidc
  * FEATURE STYLE FUNCTION.
  */
 
-export default context => (feature, resolution) => {
+export default mode => (feature, resolution) => {
   const provider = R.cond([
-    [R.equals('Point'), R.always(symbolStyle(context))],
-    [R.equals('Polygon'), R.always(polygonStyle(context))],
-    [R.equals('LineString'), R.always(lineStyle(context))],
-    [R.equals('MultiPoint'), R.always(multipointStyle(context))],
-    [R.equals('GeometryCollection'), R.always(collectionStyle(context))],
+    [R.equals('Point'), R.always(symbolStyle(mode))],
+    [R.equals('Polygon'), R.always(polygonStyle(mode))],
+    [R.equals('LineString'), R.always(lineStyle(mode))],
+    [R.equals('MultiPoint'), R.always(multipointStyle(mode))],
+    [R.equals('GeometryCollection'), R.always(collectionStyle(mode))],
     [R.T, R.always(defaultStyle)]
   ])
 
