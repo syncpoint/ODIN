@@ -7,7 +7,7 @@ While currently in its early infancy, ODIN aims to become an Open Source alterna
 
 For details and tutorials please visit the [ODIN project website](http://odin.syncpoint.io).
 
-![ODIN C2IS](assets/splash-003.jpg?raw=true)
+![ODIN C2IS](assets/splash-004.png?raw=true)
 
 ## Contributing
 If you are interested in raising ODIN to become big and strong, there are several ways you can help: Feature request, bugs and other backlog items can be reported in the [issues section](https://github.com/syncpoint/ODIN/issues) of the repository. Pull requests are also highly appreciated. And finally, any form of testing and feedback is welcome.
