@@ -49,3 +49,8 @@ ipcMain.on('IPC_GRID_TOGGLED', (event, type) => {
   const menu = buildFromTemplate(i18n, { grid: type })
   Menu.setApplicationMenu(menu)
 })
+
+ipcMain.on('IPC_LABELS_TOGGLED', (event, show) => {
+  const menu = buildFromTemplate(i18n, { label: show })
+  Menu.setApplicationMenu(menu)
+})

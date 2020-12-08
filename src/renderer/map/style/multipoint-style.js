@@ -191,7 +191,7 @@ export const multipointStyle = mode => (feature, resolution) => {
   const reference = geometry.getFirstCoordinate()
   const { read, write } = format(reference)
   const points = read(geometry)
-  const factory = styleFactory(mode, feature)(write)
+  const factory = styleFactory({ mode, feature, resolution })(write)
   const options = { feature, resolution, points, styles: factory }
 
   return [

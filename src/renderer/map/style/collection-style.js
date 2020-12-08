@@ -4,7 +4,8 @@ import { styleFactory, defaultStyle } from './default-style'
 
 export const collectionStyle = mode => (feature, resolution) => {
   const sidc = parameterized(feature.get('sidc'))
-  const options = { feature, resolution, styleFactory: styleFactory(mode, feature) }
+  const factory = styleFactory({ mode, feature, resolution })
+  const options = { feature, resolution, styleFactory: factory }
   if (corridors[sidc]) return corridors[sidc](options).flat()
   else return defaultStyle(feature, resolution).flat()
 }

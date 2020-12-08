@@ -129,12 +129,11 @@ export const polygonStyle = mode => (feature, resolution) => {
     else return geometry.simplify(resolution)
   })(mode)
 
-  const factory = styleFactory(mode, feature)(R.identity)
+  const factory = styleFactory({ mode, feature, resolution })(R.identity)
   const firstPoint = () => new geom.Point(simplified.getFirstCoordinate())
 
   const labels = () => {
-    // Roughly 1:150,000
-    if (resolution > 62) return []
+    if (!factory.showLabels()) return []
     const label = fn => fn(L.placements(simplified))(feature.getProperties())
     const sidc = parameterized(feature.getProperties().sidc)
     return (labelFn[sidc] || []).flatMap(label)

@@ -45,10 +45,11 @@ const icon = symbol => {
 
 // Point geometry, aka symbol.
 export const symbolStyle = mode => (feature, resolution) => {
+  const factory = styleFactory({ mode, feature, resolution })(R.identity)
   const { sidc, ...properties } = feature.getProperties()
   const infoFields = mode === 'selected' ||
     mode === 'multi' ||
-    resolution < 62 // roughly 1:150,000
+    factory.showLabels()
 
   const outlineWidth = mode === 'selected' ? 6 : 4
   const symbol = new ms.Symbol(sidc, {
@@ -58,7 +59,6 @@ export const symbolStyle = mode => (feature, resolution) => {
     infoFields
   })
 
-  const factory = styleFactory(mode, feature)(R.identity)
   return symbol.isValid()
     ? [
       new Style({ image: icon(symbol) }),

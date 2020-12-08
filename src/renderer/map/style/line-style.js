@@ -11,11 +11,11 @@ export const lineStyle = mode => (feature, resolution) => {
   const reference = geometry.getFirstCoordinate()
   const { read, write } = format(reference)
   const line = read(geometry)
-  const factory = styleFactory(mode, feature)(write)
+  const factory = styleFactory({ mode, feature, resolution })(write)
   const options = { feature, resolution, line, styles: factory, write }
 
   const labels = () => {
-    if (resolution > 62) return []
+    if (!factory.showLabels()) return []
     return (lineLabels[sidc] || []).flatMap(fn => fn(feature, resolution))
   }
 

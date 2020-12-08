@@ -21,6 +21,12 @@ const menu = (i18n, args) => {
         label: i18n.t('view.grid.mgrs'),
         click: onclick(browserWindow => browserWindow.send('IPC_TOGGLE_GRID', 'mgrs'))
       },
+      {
+        type: 'checkbox',
+        checked: args.labels,
+        label: 'Labels',
+        click: onclick(browserWindow => browserWindow.send('IPC_TOGGLE_LABELS'))
+      },
       { type: 'separator' },
       { role: 'togglefullscreen', label: i18n.t('view.toggleFullscreen') }
     ]
