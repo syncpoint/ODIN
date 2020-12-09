@@ -169,7 +169,7 @@ const defaultImage = circle({
 
 
 export const defaultStyle = feature => {
-  const options = styleOptions(feature)
+  const options = styleOptions({ feature })
   const geometry = feature.getGeometry()
 
   return [
