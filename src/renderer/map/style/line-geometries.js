@@ -1,21 +1,22 @@
 import * as R from 'ramda'
 import * as style from 'ol/style'
 import * as TS from '../ts'
-import { K } from '../../../shared/combinators'
-import * as G from './geodesy'
 import echelons from './echelons'
-import {
-  simpleArrowEnd,
-  simpleArrowStart,
-  doubleArrow
-} from './arrows'
 
-const linearTarget = ({ feature, resolution, styles }) => {
-  const line = G.coordinates(feature).map(G.toLatLon)
-  const width = resolution * 10
-  const [PA1, PA2] = G.translateLine(width, +90)(line)
-  const [PB1, PB2] = G.translateLine(width, -90)(line)
-  return styles.multiLineString([line, [PA1, PB1], [PA2, PB2]])
+const linearTarget = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const length = segment.getLength()
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [0, 0.1], [0, -0.1], [1, 0.1], [1, -0.1]
+  ])
+
+  return styles.solidLine(TS.collect([
+    line,
+    TS.lineString(R.props([0, 1], xs)),
+    TS.lineString(R.props([2, 3], xs))
+  ]))
 }
 
 export const geometries = {
@@ -43,72 +44,90 @@ export const geometries = {
  * DIRECTION OF ATTACK / AVIATION
  * TACGRP.C2GM.OFF.LNE.DIRATK.AVN
  */
-geometries['G*G*OLKA--'] = ({ feature, resolution, styles }) => {
-  const line = G.coordinates(feature).map(G.toLatLon)
-  const initialBearing = G.initialBearing(line)
-  const length = G.distance(line)
-  const PA = line[0].destinationPoint(length / 4, initialBearing)
-  const PB = line[0].destinationPoint(length / 4 + resolution * 20, initialBearing)
-  const PA1 = PA.destinationPoint(resolution * 5, initialBearing + 90)
-  const PA2 = PA.destinationPoint(resolution * 5, initialBearing - 90)
-  const PB1 = PB.destinationPoint(resolution * 5, initialBearing + 90)
-  const PB2 = PB.destinationPoint(resolution * 5, initialBearing - 90)
-  return styles.multiLineString([
-    [line[0], PA], [PB, line[1]],
-    simpleArrowEnd(line, resolution),
-    [PA1, PA2, PB1, PB2, PA1]
+geometries['G*G*OLKA--'] = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const length = segment.getLength()
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [0.25, 0], [0.4, 0], [0.25, -0.04], [0.4, 0.04], [0.4, -0.04], [0.25, 0.04],
+    [0.95, -0.05], [1, 0], [0.95, 0.05]
   ])
+
+  return styles.solidLine(TS.collect([
+    TS.lineString([coords[0], xs[0]]),
+    TS.lineString([xs[1], coords[1]]),
+    TS.polygon(R.props([2, 3, 4, 5, 2], xs)),
+    TS.lineString(R.props([6, 7, 8], xs))
+  ]))
 }
 
 /**
  * TACGRP.C2GM.OFF.LNE.DIRATK.GRD.MANATK
  * DIRECTION OF ATTACK / MAIN ATTACK
  */
-geometries['G*G*OLKGM-'] = ({ feature, resolution, styles }) => {
-  const line = G.coordinates(feature).map(G.toLatLon)
-  const lastSegment = R.last(R.aperture(2, line))
-  const arrow = doubleArrow(lastSegment, resolution)
-  return styles.multiLineString([
-    R.init(line),
-    [lastSegment[0], arrow[4]],
-    arrow
+geometries['G*G*OLKGM-'] = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const length = segment.getLength()
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [0.86, -0.1], [1, 0], [0.86, 0.1], [0.86, 0.07], [0.965, 0], [0.86, -0.07]
   ])
+
+  return styles.solidLine(TS.collect([
+    TS.lineString([coords[0], xs[4]]),
+    TS.polygon(R.props([0, 1, 2, 3, 4, 5, 0], xs))
+  ]))
 }
 
 /**
  * TACGRP.C2GM.OFF.LNE.DIRATK.GRD.SUPATK
  * DIRECTION OF ATTACK / SUPPORTING ATTACK
  */
-geometries['G*G*OLKGS-'] = ({ feature, resolution, styles }) => {
-  const line = G.coordinates(feature).map(G.toLatLon)
-  const lastSegment = R.last(R.aperture(2, line))
-  return styles.multiLineString([
-    line,
-    simpleArrowEnd(lastSegment, resolution)
+geometries['G*G*OLKGS-'] = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const length = segment.getLength()
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [0.86, -0.1], [1, 0], [0.86, 0.1]
   ])
+
+  return styles.solidLine(TS.collect([
+    line,
+    TS.lineString(R.props([0, 1, 2], xs))
+  ]))
 }
 
 /**
  * TACGRP.C2GM.DCPN.DAFF
  * DIRECTION OF ATTACK FOR FEINT
  */
-geometries['G*G*PF----'] = ({ feature, resolution, styles }) => {
-  const line = G.coordinates(feature).map(G.toLatLon)
-  const finalBearing = G.finalBearing(line)
-  const PB = line[1].destinationPoint(resolution * -8, finalBearing)
+geometries['G*G*PF----'] = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const length = segment.getLength()
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [0.8, 0.2], [1, 0], [0.8, -0.2],
+    [0.8, -0.136], [0.94, 0], [0.8, 0.136]
+  ])
 
   return [
-    styles.multiLineString([[line[0], PB], simpleArrowEnd([line[0], PB], resolution, 20, 130)]),
-    styles.multiLineString([simpleArrowEnd(line, resolution, 20, 130)]).map(s => K(s)(s => s.getStroke().setLineDash([10, 7])))
-  ].flat()
+    styles.solidLine(TS.collect([
+      TS.lineString([coords[0], xs[4]]),
+      TS.lineString(R.props([3, 4, 5], xs))
+    ])),
+    styles.dashedLine(TS.lineString(R.props([0, 1, 2], xs)), { lineDash: [8, 8] })
+  ]
 }
 
 /**
  * TACGRP.MOBSU.OBSTBP.CSGSTE.FRY
  * CROSSING SITE / FERRY
  */
-geometries['G*M*BCF---'] = options => {
-  const { styles, line } = options
+geometries['G*M*BCF---'] = ({ styles, line }) => {
   const [segment] = TS.segments(line)
   const angle = 2 * Math.PI - segment.angle()
 
@@ -123,22 +142,42 @@ geometries['G*M*BCF---'] = options => {
  * TACGRP.MOBSU.OBSTBP.CSGSTE.LANE
  * CROSSING SITE / LANE
  */
-geometries['G*M*BCL---'] = ({ feature, resolution, styles }) => {
-  const line = G.coordinates(feature).map(G.toLatLon)
-  const arrowEnd = simpleArrowEnd(line, resolution, 15, -35)
-  const arrowStart = simpleArrowStart(line, resolution, 15, -35)
-  return styles.multiLineString([line, arrowEnd, arrowStart])
+geometries['G*M*BCL---'] = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const length = segment.getLength()
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [-0.09, -0.08], [0, 0], [-0.09, 0.08],
+    [1.09, -0.08], [1, 0], [1.09, 0.08]
+  ])
+
+  return styles.solidLine(TS.collect([
+    line,
+    TS.lineString(R.props([0, 1, 2], xs)),
+    TS.lineString(R.props([3, 4, 5], xs))
+  ]))
 }
 
 /**
  * TACGRP.MOBSU.OBSTBP.CSGSTE.RFT
  * CROSSING SITE / RAFT
  */
-geometries['G*M*BCR---'] = ({ feature, resolution, styles }) => {
-  const line = G.coordinates(feature).map(G.toLatLon)
-  const arrowEnd = simpleArrowEnd(line, resolution, 25, -60)
-  const arrowStart = simpleArrowStart(line, resolution, 25, -60)
-  return styles.multiLineString([line, arrowEnd, arrowStart])
+geometries['G*M*BCR---'] = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const length = segment.getLength()
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [-0.09, -0.2], [0, 0], [-0.09, 0.2],
+    [1.09, -0.2], [1, 0], [1.09, 0.2]
+  ])
+
+  return styles.solidLine(TS.collect([
+    line,
+    TS.lineString(R.props([0, 1, 2], xs)),
+    TS.lineString(R.props([3, 4, 5], xs))
+  ]))
 }
 
 const fixLike = arrowFn => options => {
@@ -185,24 +224,32 @@ geometries['G*T*F-----'] = options => fixLike(options.styles.openArrow)(options)
  * TACGRP.MOBSU.SU.FEWS
  * FOXHOLE, EMPLACEMENT OR WEAPON SITE
  */
-geometries['G*M*SW----'] = ({ feature, resolution, styles }) => {
-  const line = G.coordinates(feature).map(G.toLatLon)
-  const width = resolution * 20
-  const [PA1, PA2] = G.translateLine(width, +90)(line)
-  return styles.multiLineString([[PA1, ...line, PA2]])
+geometries['G*M*SW----'] = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const length = segment.getLength()
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [0, 0.18], [0, 0], [1, 0], [1, 0.18]
+  ])
+
+  return styles.solidLine(TS.lineString(R.props([0, 1, 2, 3], xs)))
 }
 
 /**
  * TACGRP.OTH.HAZ.NVGL
  * HAZARD / NAVIGATIONAL
  */
-geometries['G*O*HN----'] = ({ feature, resolution, styles }) => {
-  const line = G.coordinates(feature).map(G.toLatLon)
-  const [initialBearing, finalBearing] = G.bearings(line)
-  const width = resolution * 25
-  const PA = line[1].destinationPoint(width, finalBearing + 120)
-  const PB = line[0].destinationPoint(width, initialBearing - 60)
-  return styles.multiLineString([[PB, ...line, PA]])
+geometries['G*O*HN----'] = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const length = segment.getLength()
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [0.18, -0.2], [0, 0], [1, 0], [0.82, 0.2]
+  ])
+
+  return styles.solidLine(TS.lineString(R.props([0, 1, 2, 3], xs)))
 }
 
 /**

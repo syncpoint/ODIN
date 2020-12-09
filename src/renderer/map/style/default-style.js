@@ -1,8 +1,6 @@
 import * as styles from 'ol/style'
-import * as geom from 'ol/geom'
 import * as SIDC from './sidc'
 import { primaryColor, accentColor } from './color-schemes'
-import * as G from './geodesy'
 
 const style = options => new styles.Style(options)
 const stroke = options => new styles.Stroke(options)
@@ -43,11 +41,12 @@ const factory = (mode, options) => write => ({
     ].map(options => style({ stroke: stroke(options), geometry, fill: fill({ color: primaryColor }) }))
   },
 
-  dashedLine: inGeometry => {
+  dashedLine: (inGeometry, opts = {}) => {
+    const lineDash = opts.lineDash || [20, 10]
     const geometry = write(inGeometry)
     return [
-      { width: options.thick, color: options.accentColor, lineDash: [20, 10] },
-      { width: options.thin, color: options.primaryColor, lineDash: [20, 10] }
+      { width: options.thick, color: options.accentColor, lineDash },
+      { width: options.thin, color: options.primaryColor, lineDash }
     ].map(options => style({ stroke: stroke(options), geometry }))
   },
 
@@ -164,19 +163,7 @@ const factory = (mode, options) => write => ({
         rotation: options.rotation + orientation * Math.PI / 4
       })
     }))
-  },
-
-  // =>> deprecated
-
-  multiLineString: lines => {
-    const geometry = new geom.MultiLineString(lines.map(line => line.map(G.fromLatLon)))
-    return [
-      { width: options.thick, color: options.accentColor, lineDash: options.dashPattern },
-      { width: options.thin, color: options.primaryColor, lineDash: options.dashPattern }
-    ].map(options => style({ stroke: stroke(options), geometry }))
   }
-
-  // <<= deprecated
 })
 
 export const defaultFont = '14px sans-serif'
