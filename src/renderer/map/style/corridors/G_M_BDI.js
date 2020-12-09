@@ -20,15 +20,17 @@ export default options => {
     [[-d, d], [d, d], [-d, -d], [d, -d]]
   )
 
-  return styles.solidLine(TS.collect([
-    TS.difference([
-      TS.boundary(TS.lineBuffer(line)(width / 2)),
-      TS.pointBuffer(TS.endPoint(line))(width / 2),
-      TS.pointBuffer(TS.startPoint(line))(distance),
-      ...arrows
-    ]),
-    ...arrows,
-    TS.lineString([p00, p01]),
-    TS.lineString([p10, p11])
-  ]))
+  return [
+    styles.filledPolygon(TS.union(arrows)),
+    styles.solidLine(TS.collect([
+      TS.difference([
+        TS.boundary(TS.lineBuffer(line)(width / 2)),
+        TS.pointBuffer(TS.endPoint(line))(width / 2),
+        TS.pointBuffer(TS.startPoint(line))(distance),
+        ...arrows
+      ]),
+      TS.lineString([p00, p01]),
+      TS.lineString([p10, p11])
+    ]))
+  ]
 }

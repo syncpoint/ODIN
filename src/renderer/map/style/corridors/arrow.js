@@ -14,7 +14,7 @@ export const arrowCoordinates = (width, line, offset = 1) => {
 }
 
 const arrowPoints = (resolution, angle, point) =>
-  TS.projectCoordinates(resolution * 8, angle, point)([[-1, 0.8], [0, 0], [-1, -0.8]])
+  TS.projectCoordinates(resolution * 8, angle, point)([[-1, 0.6], [0, 0], [-1, -0.6]])
 
 export const openArrow = (resolution, angle, point) =>
   TS.lineString(R.props([0, 1, 2], arrowPoints(resolution, angle, point)))

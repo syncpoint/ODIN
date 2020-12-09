@@ -27,14 +27,16 @@ export default options => {
     TS.segmentize(TS.segment(p01, p11), n).filter((_, i) => i % 2 !== 0)
   ))
 
-  return styles.solidLine(TS.collect([
-    TS.difference([
-      TS.boundary(TS.lineBuffer(line)(width / 2)),
-      TS.pointBuffer(TS.startPoint(line))(width / 2),
-      TS.pointBuffer(TS.endPoint(line))(width / 2),
-      ...arrows
-    ]),
-    ...arrows,
-    TS.lineString([p0, ...x, p1])
-  ]))
+  return [
+    styles.filledPolygon(TS.union(arrows)),
+    styles.solidLine(TS.collect([
+      TS.difference([
+        TS.boundary(TS.lineBuffer(line)(width / 2)),
+        TS.pointBuffer(TS.startPoint(line))(width / 2),
+        TS.pointBuffer(TS.endPoint(line))(width / 2),
+        ...arrows
+      ]),
+      TS.lineString([p0, ...x, p1])
+    ]))
+  ]
 }

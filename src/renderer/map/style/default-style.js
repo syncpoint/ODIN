@@ -1,9 +1,7 @@
 import { ipcRenderer } from 'electron'
 import * as styles from 'ol/style'
-import * as geom from 'ol/geom'
 import * as SIDC from './sidc'
 import { primaryColor, accentColor } from './color-schemes'
-import * as G from './geodesy'
 import preferences from '../../project/preferences'
 import { noop } from '../../../shared/combinators'
 
@@ -31,7 +29,6 @@ preferences.register(event => (handlers[event.type] || noop)(event))
 ipcRenderer.on('IPC_TOGGLE_LABELS', () => {
   preferences.set('labels', !labels)
 })
-
 
 const style = options => new styles.Style(options)
 const stroke = options => new styles.Stroke(options)
@@ -61,16 +58,26 @@ const factory = options => write => {
       const primaryColor = opts.color || options.primaryColor
       const geometry = write(inGeometry)
       return [
-        { width: options.thick, color: options.accentColor, lineDash: options.dashPattern },
-        { width: options.thin, color: primaryColor, lineDash: options.dashPattern }
+        { width: options.thick, color: options.accentColor, lineDash: options.dashPattern, lineCap: 'butt' },
+        { width: options.thin, color: primaryColor, lineDash: options.dashPattern, lineCap: 'butt' }
       ].map(options => style({ stroke: stroke(options), geometry }))
     },
 
-    dashedLine: inGeometry => {
+    filledPolygon: (inGeometry, opts = {}) => {
+      const primaryColor = opts.color || options.primaryColor
       const geometry = write(inGeometry)
       return [
-        { width: options.thick, color: options.accentColor, lineDash: [20, 10] },
-        { width: options.thin, color: options.primaryColor, lineDash: [20, 10] }
+        { width: options.thick, color: options.accentColor, lineDash: options.dashPattern },
+        { width: options.thin, color: primaryColor, lineDash: options.dashPattern }
+      ].map(options => style({ stroke: stroke(options), geometry, fill: fill({ color: primaryColor }) }))
+    },
+
+    dashedLine: (inGeometry, opts = {}) => {
+      const lineDash = opts.lineDash || [20, 10]
+      const geometry = write(inGeometry)
+      return [
+        { width: options.thick, color: options.accentColor, lineDash },
+        { width: options.thin, color: options.primaryColor, lineDash }
       ].map(options => style({ stroke: stroke(options), geometry }))
     },
 
@@ -190,19 +197,7 @@ const factory = options => write => {
     },
 
     // roughly 1:150,000
-    showLabels: () => labels && resolution < 62,
-
-    // =>> deprecated
-
-    multiLineString: lines => {
-      const geometry = new geom.MultiLineString(lines.map(line => line.map(G.fromLatLon)))
-      return [
-        { width: options.thick, color: options.accentColor, lineDash: options.dashPattern },
-        { width: options.thin, color: options.primaryColor, lineDash: options.dashPattern }
-      ].map(options => style({ stroke: stroke(options), geometry }))
-    }
-
-    // <<= deprecated
+    showLabels: () => labels && resolution < 62
   }
 }
 
