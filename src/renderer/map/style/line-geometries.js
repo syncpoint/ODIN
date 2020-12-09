@@ -128,13 +128,20 @@ geometries['G*G*PF----'] = ({ styles, line }) => {
  * CROSSING SITE / FERRY
  */
 geometries['G*M*BCF---'] = ({ styles, line }) => {
-  const [segment] = TS.segments(line)
-  const angle = 2 * Math.PI - segment.angle()
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const length = segment.getLength()
+  const angle = segment.angle()
+
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [0, 0], [0.08, -0.06], [0.08, 0], [0.08, 0.06],
+    [1, 0], [0.92, -0.06], [0.92, 0], [0.92, 0.06]
+  ])
 
   return [
-    styles.solidLine(line),
-    styles.closedArrow(TS.startPoint(line), { rotation: angle - Math.PI / 2 }),
-    styles.closedArrow(TS.endPoint(line), { rotation: angle + Math.PI / 2 })
+    styles.solidLine(TS.lineString([xs[2], xs[6]])),
+    styles.filledPolygon(TS.polygon(R.props([0, 1, 2, 3, 0], xs))),
+    styles.filledPolygon(TS.polygon(R.props([4, 5, 6, 7, 4], xs)))
   ]
 }
 
@@ -180,11 +187,19 @@ geometries['G*M*BCR---'] = ({ styles, line }) => {
   ]))
 }
 
-const fixLike = arrowFn => options => {
-  const { line, styles, resolution } = options
+/**
+ * TACGRP.MOBSU.OBST.OBSEFT.FIX
+ * OBSTACLE EFFECT / FIX
+ */
+geometries['G*M*OEF---'] = ({ line, styles, resolution }) => {
   const coords = TS.coordinates(line)
   const segment = TS.segment(coords)
   const angle = segment.angle()
+  const length = segment.getLength()
+
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [1, 0], [0.9, -0.04], [0.9, 0], [0.9, 0.04], [1, 0]
+  ])
 
   const [p0, p1] = [segment.pointAlong(0.2), segment.pointAlong(0.8)]
   const [p00, p01, p10, p11] = [
@@ -192,7 +207,7 @@ const fixLike = arrowFn => options => {
     ...TS.projectCoordinates(resolution * 8, angle, p1)([[0, -1], [0, 1]])
   ]
 
-  const n = Math.floor(segment.getLength() / (resolution * 10))
+  const n = Math.floor(length / (resolution * 10))
   const x = R.flatten(R.zip(
     TS.segmentize(TS.segment(p00, p10), n).filter((_, i) => i % 2 === 0),
     TS.segmentize(TS.segment(p01, p11), n).filter((_, i) => i % 2 !== 0)
@@ -202,24 +217,45 @@ const fixLike = arrowFn => options => {
     styles.solidLine(TS.collect([
       TS.lineString([coords[0], p0]),
       TS.lineString([p0, ...x, p1]),
-      TS.lineString([coords[1], p1])
+      TS.lineString([p1, xs[2]])
     ])),
-    arrowFn(TS.endPoint(line), { rotation: 2 * Math.PI - angle + Math.PI / 2 })
+    styles.filledPolygon(TS.polygon(xs))
   ]
 }
-
-/**
- * TACGRP.MOBSU.OBST.OBSEFT.FIX
- * OBSTACLE EFFECT / FIX
- */
-geometries['G*M*OEF---'] = options => fixLike(options.styles.closedArrow)(options)
 
 /**
  * TACGRP.TSK.FIX
  * TASKS / FIX
  */
-geometries['G*T*F-----'] = options => fixLike(options.styles.openArrow)(options)
+geometries['G*T*F-----'] = ({ line, styles, resolution }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const length = segment.getLength()
 
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [0.95, -0.04], [1, 0], [0.95, 0.04]
+  ])
+
+  const [p0, p1] = [segment.pointAlong(0.2), segment.pointAlong(0.8)]
+  const [p00, p01, p10, p11] = [
+    ...TS.projectCoordinates(resolution * 8, angle, p0)([[0, -1], [0, 1]]),
+    ...TS.projectCoordinates(resolution * 8, angle, p1)([[0, -1], [0, 1]])
+  ]
+
+  const n = Math.floor(length / (resolution * 10))
+  const x = R.flatten(R.zip(
+    TS.segmentize(TS.segment(p00, p10), n).filter((_, i) => i % 2 === 0),
+    TS.segmentize(TS.segment(p01, p11), n).filter((_, i) => i % 2 !== 0)
+  ))
+
+  return styles.solidLine(TS.collect([
+    TS.lineString([coords[0], p0]),
+    TS.lineString([p0, ...x, p1]),
+    TS.lineString([p1, coords[1]]),
+    TS.lineString(xs)
+  ]))
+}
 /**
  * TACGRP.MOBSU.SU.FEWS
  * FOXHOLE, EMPLACEMENT OR WEAPON SITE

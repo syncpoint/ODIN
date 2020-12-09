@@ -13,33 +13,33 @@ const arcText = styles => (anchor, angle, text) => styles.text(anchor, {
   font: biggerFont,
   flip: true,
   textAlign: () => 'center',
-  rotation: 2 * Math.PI - angle + 330 / 2 * deg2rad
+  rotation: Math.PI - angle + 330 / 2 * deg2rad
 })
-
-const arcArrow = (arc, angle, arrowFn) => arrowFn(
-  TS.point(arc[arc.length - 1]),
-  {
-    rotation: 330 * deg2rad - angle + Math.PI,
-    radius: 15
-  }
-)
 
 /**
  * TACGRP.TSK.ISL
  * TASKS / ISOLATE
  */
 geometries['G*T*E-----'] = ({ styles, points, resolution }) => {
-  const [C, A] = TS.coordinates(points)
-  const [angle, radius] = TS.bearingDistance(C, A)
+  const delta = 330 * deg2rad
+  const coords = TS.coordinates(points)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const radius = segment.getLength()
+
   const arcs = [
-    TS.arc(C, radius, angle, 330 * deg2rad, quads),
-    TS.arc(C, 0.8 * radius, angle, 330 * deg2rad, quads)
+    TS.arc(coords[0], radius, angle, delta, quads),
+    TS.arc(coords[0], 0.8 * radius, angle, delta, quads)
   ]
 
   const teeth = R.range(1, arcs[0].length)
     .filter(i => i % 5 === 0)
     .map(i => [arcs[0][i - 1], arcs[1][i], arcs[0][i + 1]])
     .map(coords => TS.lineString(coords))
+
+  const xs = TS.projectCoordinates(radius, angle - delta + Math.PI / 2, R.last(arcs[0]))([
+    [0.2, -0.2], [0, 0], [0.2, 0.2]
+  ])
 
   const textAnchor = TS.point(arcs[0][Math.floor(arcs[0].length / 2)])
   const geometry = TS.difference([
@@ -48,8 +48,7 @@ geometries['G*T*E-----'] = ({ styles, points, resolution }) => {
   ])
 
   return [
-    styles.solidLine(geometry),
-    arcArrow(arcs[0], angle, styles.openArrow),
+    styles.solidLine(TS.union([geometry, TS.lineString(xs)])),
     arcText(styles)(textAnchor, angle, 'I')
   ]
 }
@@ -59,9 +58,18 @@ geometries['G*T*E-----'] = ({ styles, points, resolution }) => {
  * TASKS / OCCUPY
  */
 geometries['G*T*O-----'] = ({ points, resolution, styles }) => {
-  const [C, A] = TS.coordinates(points)
-  const [angle, radius] = TS.bearingDistance(C, A)
-  const arc = TS.arc(C, radius, angle, 330 * deg2rad, quads)
+  const delta = 330 * deg2rad
+  const coords = TS.coordinates(points)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const radius = segment.getLength()
+
+  const arc = TS.arc(coords[0], radius, angle, delta, quads)
+
+  const xs = TS.projectCoordinates(radius, angle - delta + Math.PI / 2, R.last(arc))([
+    [0.2, -0.2], [-0.2, 0.2], [0.2, 0.2], [-0.2, -0.2]
+  ])
+
   const textAnchor = TS.point(arc[Math.floor(arc.length / 2)])
   const geometry = TS.difference([
     TS.lineString(arc),
@@ -69,8 +77,11 @@ geometries['G*T*O-----'] = ({ points, resolution, styles }) => {
   ])
 
   return [
-    styles.solidLine(geometry),
-    arcArrow(arc, angle, styles.crossArrow),
+    styles.solidLine(TS.union([
+      geometry,
+      TS.lineString([xs[0], xs[1]]),
+      TS.lineString([xs[2], xs[3]])
+    ])),
     arcText(styles)(textAnchor, angle, 'O')
   ]
 }
@@ -80,17 +91,25 @@ geometries['G*T*O-----'] = ({ points, resolution, styles }) => {
  * TASKS / RETAIN
  */
 geometries['G*T*Q-----'] = ({ points, resolution, styles }) => {
-  const [C, A] = TS.coordinates(points)
-  const [angle, radius] = TS.bearingDistance(C, A)
+  const delta = 330 * deg2rad
+  const coords = TS.coordinates(points)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const radius = segment.getLength()
+
   const arcs = [
-    TS.arc(C, radius, angle, 330 * deg2rad, quads),
-    TS.arc(C, 0.8 * radius, angle, 330 * deg2rad, quads)
+    TS.arc(coords[0], radius, angle, delta, quads),
+    TS.arc(coords[0], 0.8 * radius, angle, delta, quads)
   ]
 
   const spikes = R.range(1, arcs[0].length - 2)
     .filter(i => i % 2 === 0)
     .map(i => [arcs[0][i], arcs[1][i]])
     .map(coords => TS.lineString(coords))
+
+  const xs = TS.projectCoordinates(radius, angle - delta + Math.PI / 2, R.last(arcs[1]))([
+    [0.2, -0.2], [0, 0], [0.2, 0.2]
+  ])
 
   const textAnchor = TS.point(arcs[1][Math.floor(arcs[0].length / 2)])
   const geometry = TS.difference([
@@ -99,8 +118,7 @@ geometries['G*T*Q-----'] = ({ points, resolution, styles }) => {
   ])
 
   return [
-    styles.solidLine(geometry),
-    arcArrow(arcs[1], angle, styles.openArrow),
+    styles.solidLine(TS.union([geometry, TS.lineString(xs)])),
     arcText(styles)(textAnchor, angle, 'R')
   ]
 }
@@ -110,9 +128,17 @@ geometries['G*T*Q-----'] = ({ points, resolution, styles }) => {
  * TASKS / SECURE
  */
 geometries['G*T*S-----'] = ({ points, resolution, styles }) => {
-  const [C, A] = TS.coordinates(points)
-  const [angle, radius] = TS.bearingDistance(C, A)
-  const arc = TS.arc(C, radius, angle, 330 * deg2rad, quads)
+  const delta = 330 * deg2rad
+  const coords = TS.coordinates(points)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const radius = segment.getLength()
+
+  const arc = TS.arc(coords[0], radius, angle, delta, quads)
+  const xs = TS.projectCoordinates(radius, angle - delta + Math.PI / 2, R.last(arc))([
+    [0.2, -0.2], [0, 0], [0.2, 0.2]
+  ])
+
   const textAnchor = TS.point(arc[Math.floor(arc.length / 2)])
   const geometry = TS.difference([
     TS.lineString(arc),
@@ -120,25 +146,32 @@ geometries['G*T*S-----'] = ({ points, resolution, styles }) => {
   ])
 
   return [
-    styles.solidLine(geometry),
-    arcArrow(arc, angle, styles.openArrow),
+    styles.solidLine(TS.union([geometry, TS.lineString(xs)])),
     arcText(styles)(textAnchor, angle, 'S')
   ]
 }
 
-const fanLike = (arrowFn, label) => options => {
+const fanLike = label => options => {
   const { resolution, styles, points } = options
   const [C, A, B] = TS.coordinates(points)
   const segmentA = TS.segment([C, A])
   const segmentB = TS.segment([C, B])
+  const angleA = segmentA.angle()
+  const angleB = segmentB.angle()
 
   const distance = resolution * 4
   const [A1, A2, B1, B2] = [
-    TS.projectCoordinates(distance, segmentA.angle(), segmentA.pointAlong(0.55))([[0, -1]]),
-    TS.projectCoordinates(distance, segmentA.angle(), segmentA.pointAlong(0.45))([[0, +1]]),
-    TS.projectCoordinates(distance, segmentB.angle(), segmentB.pointAlong(0.55))([[0, +1]]),
-    TS.projectCoordinates(distance, segmentB.angle(), segmentB.pointAlong(0.45))([[0, -1]])
+    TS.projectCoordinates(distance, angleA, segmentA.pointAlong(0.55))([[0, -1]]),
+    TS.projectCoordinates(distance, angleA, segmentA.pointAlong(0.45))([[0, +1]]),
+    TS.projectCoordinates(distance, angleB, segmentB.pointAlong(0.55))([[0, +1]]),
+    TS.projectCoordinates(distance, angleB, segmentB.pointAlong(0.45))([[0, -1]])
   ].flat()
+
+  const arrowOffsets = [[-0.08, -0.08], [0, 0], [-0.08, 0.08]]
+  const arrows = [
+    TS.projectCoordinates(segmentA.getLength(), angleA, A)(arrowOffsets),
+    TS.projectCoordinates(segmentB.getLength(), angleB, B)(arrowOffsets)
+  ]
 
   const text = segment => styles.text(TS.point(segment.pointAlong(0.3)), {
     rotation: Math.PI - segment.angle(),
@@ -146,18 +179,13 @@ const fanLike = (arrowFn, label) => options => {
     flip: true
   })
 
-  const arrow = segment => arrowFn(TS.point(segment.p1), {
-    radius: 8,
-    rotation: 2.5 * Math.PI - segment.angle()
-  })
-
   return [
     styles.solidLine(TS.collect([
       TS.lineString([C, A1, A2, A]),
-      TS.lineString([C, B1, B2, B])
+      TS.lineString([C, B1, B2, B]),
+      ...arrows.map(coords => TS.lineString(coords))
     ])),
-    ...(label ? [TS.segment([C, A1]), TS.segment([C, B1])].map(text) : []),
-    ...[TS.segment([A2, A]), TS.segment([B2, B])].map(arrow)
+    ...(label ? [TS.segment([C, A1]), TS.segment([C, B1])].map(text) : [])
   ]
 }
 
@@ -165,25 +193,53 @@ const fanLike = (arrowFn, label) => options => {
  * TACGRP.TSK.SEC.SCN
  * TASKS / SCREEN
  */
-geometries['G*T*US----'] = options => fanLike(options.styles.openArrow, 'S')(options)
+geometries['G*T*US----'] = fanLike('S')
 
 /**
  * TACGRP.TSK.SEC.GUD
  * TASKS / GUARD
  */
-geometries['G*T*UG----'] = options => fanLike(options.styles.openArrow, 'G')(options)
+geometries['G*T*UG----'] = fanLike('G')
 
 /**
  * TACGRP.TSK.SEC.COV
  * TASKS / COVER
  */
-geometries['G*T*UC----'] = options => fanLike(options.styles.openArrow, 'C')(options)
+geometries['G*T*UC----'] = fanLike('C')
 
 /**
  * TACGRP.C2GM.GNL.ARS.SRHARA
  * SEARCH AREA/RECONNAISSANCE AREA
  */
-geometries['G*G*GAS---'] = options => fanLike(options.styles.closedArrow)(options)
+geometries['G*G*GAS---'] = ({ resolution, styles, points }) => {
+  const [C, A, B] = TS.coordinates(points)
+  const segmentA = TS.segment([C, A])
+  const segmentB = TS.segment([C, B])
+  const angleA = segmentA.angle()
+  const angleB = segmentB.angle()
+
+  const distance = resolution * 4
+  const [A1, A2, B1, B2] = [
+    TS.projectCoordinates(distance, angleA, segmentA.pointAlong(0.55))([[0, -1]]),
+    TS.projectCoordinates(distance, angleA, segmentA.pointAlong(0.45))([[0, +1]]),
+    TS.projectCoordinates(distance, angleB, segmentB.pointAlong(0.55))([[0, +1]]),
+    TS.projectCoordinates(distance, angleB, segmentB.pointAlong(0.45))([[0, -1]])
+  ].flat()
+
+  const arrowOffsets = [[-0.06, -0.03], [0, 0], [-0.06, 0.03], [-0.06, 0], [-0.06, -0.03]]
+  const arrows = [
+    TS.projectCoordinates(segmentA.getLength(), angleA, A)(arrowOffsets),
+    TS.projectCoordinates(segmentB.getLength(), angleB, B)(arrowOffsets)
+  ]
+
+  return [
+    styles.solidLine(TS.collect([
+      TS.lineString([C, A1, A2, arrows[0][3]]),
+      TS.lineString([C, B1, B2, arrows[1][3]])
+    ])),
+    styles.filledPolygon(TS.union(arrows.map(TS.polygon)))
+  ]
+}
 
 export const multipointStyle = mode => (feature, resolution) => {
   const sidc = parameterized(feature.getProperties().sidc)

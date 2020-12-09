@@ -46,6 +46,6 @@ export default options => {
       rotation: Math.PI - lastSegment.angle(),
       offsetX: flipped => flipped ? -10 : 10
     }),
-    styles.fill(TS.polygon(R.props([10, 11, 12, 10], aps)), { color: 'black' })
+    styles.filledPolygon(TS.polygon(R.props([10, 11, 12, 10], aps)))
   ]
 }
