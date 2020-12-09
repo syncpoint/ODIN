@@ -14,12 +14,12 @@ export default options => {
     .projectCoordinates(width / 2, angle, coords[1])([[0, 1], [0, -1]])
     .map(point => closedArrow(resolution, angle, point))
 
-  return styles.solidLine(TS.collect([
-    TS.difference([
+  return [
+    styles.filledPolygon(TS.union(arrows)),
+    styles.solidLine(TS.difference([
       TS.boundary(TS.lineBuffer(line)(width / 2)),
       TS.pointBuffer(TS.endPoint(line))(width / 2),
       ...arrows
-    ]),
-    ...arrows
-  ]))
+    ]))
+  ]
 }

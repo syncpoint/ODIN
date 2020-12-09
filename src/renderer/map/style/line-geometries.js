@@ -7,7 +7,6 @@ import echelons from './echelons'
 import {
   simpleArrowEnd,
   simpleArrowStart,
-  closedArrowEnd,
   doubleArrow
 } from './arrows'
 
@@ -210,80 +209,75 @@ geometries['G*O*HN----'] = ({ feature, resolution, styles }) => {
  * TACGRP.TSK.FLWASS
  * TASKS / FOLLOW AND ASSUME
  */
-geometries['G*T*A-----'] = ({ feature, resolution, styles }) => {
-  const line = G.coordinates(feature).map(G.toLatLon)
-  const initialBearing = G.initialBearing(line)
-  const length = G.distance(line)
-  const arrow = doubleArrow(line, resolution, 40, 140)
-  const width = resolution * 15
-  const PB1 = line[0].destinationPoint(width, initialBearing + 90)
-  const PB2 = PB1.destinationPoint(length / 3, initialBearing)
-  const PB5 = line[0].destinationPoint(width, initialBearing - 90)
-  const PB4 = PB5.destinationPoint(length / 3, initialBearing)
-  const PB3 = line[0].destinationPoint(width + length / 3, initialBearing)
-  return [
-    styles.multiLineString([[PB3, arrow[4]]]).map(s => K(s)(s => s.getStroke().setLineDash([10, 7]))),
-    styles.multiLineString([arrow, [PB1, PB2, PB3, PB4, PB5, PB1]])
-  ].flat()
+geometries['G*T*A-----'] = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const length = segment.getLength()
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [0, 0.08], [0, -0.08], [0.32, -0.08], [0.4, 0], [0.32, 0.08],
+    [0.8, 0.2], [1, 0], [0.8, -0.2], [0.8, -0.16], [0.96, 0], [0.8, 0.16],
+    [0, 0.2]
+  ])
+
+  return styles.solidLine(TS.collect([
+    TS.lineString(R.props([3, 9], xs)),
+    TS.polygon(R.props([0, 1, 2, 3, 4, 0], xs)),
+    TS.polygon(R.props([5, 6, 7, 8, 9, 10, 5], xs))
+  ]))
 }
 
 /**
  * TACGRP.TSK.FLWASS.FLWSUP
  * TASKS / FOLLOW AND SUPPORT
  */
-geometries['G*T*AS----'] = ({ feature, resolution, styles }) => {
-  const line = G.coordinates(feature).map(G.toLatLon)
-  const initialBearing = G.initialBearing(line)
-  const length = G.distance(line)
-  const arrow = closedArrowEnd(line, resolution, 30, 160)
-  const width = resolution * 15
-  const PB0 = line[0].destinationPoint(width, initialBearing)
-  const PB1 = line[0].destinationPoint(width, initialBearing + 90)
-  const PB2 = PB1.destinationPoint(length / 3, initialBearing)
-  const PB5 = line[0].destinationPoint(width, initialBearing - 90)
-  const PB4 = PB5.destinationPoint(length / 3, initialBearing)
-  const PB3 = line[0].destinationPoint(width + length / 3, initialBearing)
-
-  return styles.multiLineString([
-    [PB3, arrow[3]],
-    arrow,
-    [PB1, PB2, PB3, PB4, PB5, PB0, PB1]
+geometries['G*T*AS----'] = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const xs = TS.projectCoordinates(segment.getLength(), segment.angle(), coords[0])([
+    [0, 0], [-0.08, -0.08], [0.32, -0.08], [0.4, 0], [0.32, 0.08], [-0.08, 0.08],
+    [0.82, -0.08], [1, 0], [0.82, 0.08], [0.82, 0]
   ])
+
+  return [
+    styles.solidLine(TS.collect([
+      TS.lineString(R.props([3, 9], xs)),
+      TS.polygon(R.props([0, 1, 2, 3, 4, 5, 0], xs))
+    ])),
+    styles.filledPolygon(TS.polygon(R.props([6, 7, 8, 6], xs)))
+  ]
 }
 
 /**
  * TACGRP.CSS.LNE.CNY.HCNY
  * HALTED CONVOY
  */
-geometries['G*S*LCH---'] = ({ feature, resolution, styles }) => {
-  const line = G.coordinates(feature).map(G.toLatLon)
-  const finalBearing = G.finalBearing(line)
-  const width = resolution * 25
-  const PB1 = line[1].destinationPoint(-width, finalBearing)
-  const PB2 = line[1].destinationPoint(width, finalBearing + 90)
-  const PB3 = line[1].destinationPoint(width, finalBearing - 90)
-  const [PA1, PA2] = G.translateLine(width / 1.5, +90)([line[0], PB1])
-  const [PA4, PA3] = G.translateLine(width / 1.5, -90)([line[0], PB1])
-  return styles.multiLineString([
-    [PA1, PA2, PA3, PA4, PA1],
-    [PB1, PB2, PB3, PB1]
+geometries['G*S*LCH---'] = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const xs = TS.projectCoordinates(segment.getLength(), segment.angle(), coords[0])([
+    [0, -0.1], [1, -0.1], [1, 0.1], [0, 0.1],
+    [1, 0], [1.16, -0.15], [1.16, 0.15]
   ])
+
+  return styles.solidLine(TS.collect([
+    TS.polygon(R.props([0, 1, 2, 3, 0], xs)),
+    TS.polygon(R.props([4, 5, 6, 4], xs))
+  ]))
 }
 
 /**
  * TACGRP.CSS.LNE.CNY.MCNY
  * MOVING CONVOY
  */
-geometries['G*S*LCM---'] = ({ feature, resolution, styles }) => {
-  const line = G.coordinates(feature).map(G.toLatLon)
-  const finalBearing = G.finalBearing(line)
-  const width = resolution * 25
-  const PB1 = line[1].destinationPoint(-width, finalBearing)
-  const PB2 = PB1.destinationPoint(width, finalBearing + 90)
-  const PB3 = PB1.destinationPoint(width, finalBearing - 90)
-  const [PA1, PA2] = G.translateLine(width / 1.5, +90)([line[0], PB1])
-  const [PA4, PA3] = G.translateLine(width / 1.5, -90)([line[0], PB1])
-  return styles.multiLineString([[PA3, PA4, PA1, PA2, PB2, line[1], PB3, PA3]])
+geometries['G*S*LCM---'] = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const xs = TS.projectCoordinates(segment.getLength(), segment.angle(), coords[0])([
+    [0, -0.1], [0.8, -0.1], [0.8, -0.16], [1, 0], [0.8, 0.16], [0.8, 0.1], [0, 0.1]
+  ])
+
+  return styles.solidLine(TS.lineString(R.props([0, 1, 2, 3, 4, 5, 6, 0], xs)))
 }
 
 const numberProperty = feature => (key, value) => {
@@ -378,7 +372,6 @@ geometries['G*G*GLF---'] = options => {
   const n = Math.floor(length / width)
   const offset = (length - n * width) / 2
 
-  /* eslint-disable */
   const point = index => line.extractPoint(index)
   const segments = R.range(0, n)
     .map(i => [point(offset + i * width), point(offset + (i + 1) * width)])

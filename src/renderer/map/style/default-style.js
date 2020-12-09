@@ -29,9 +29,18 @@ const factory = (mode, options) => write => ({
     const primaryColor = opts.color || options.primaryColor
     const geometry = write(inGeometry)
     return [
+      { width: options.thick, color: options.accentColor, lineDash: options.dashPattern, lineCap: 'butt' },
+      { width: options.thin, color: primaryColor, lineDash: options.dashPattern, lineCap: 'butt' }
+    ].map(options => style({ stroke: stroke(options), geometry }))
+  },
+
+  filledPolygon: (inGeometry, opts = {}) => {
+    const primaryColor = opts.color || options.primaryColor
+    const geometry = write(inGeometry)
+    return [
       { width: options.thick, color: options.accentColor, lineDash: options.dashPattern },
       { width: options.thin, color: primaryColor, lineDash: options.dashPattern }
-    ].map(options => style({ stroke: stroke(options), geometry }))
+    ].map(options => style({ stroke: stroke(options), geometry, fill: fill({ color: primaryColor }) }))
   },
 
   dashedLine: inGeometry => {
