@@ -188,7 +188,6 @@ const factory = options => write => {
         geometry: write(inGeometry),
         image: regularShape({
           stroke: stroke({ color: 'black', width: 3 }),
-          // displacement: [0, -radius],
           radius,
           points: 2,
           rotation: options.rotation + orientation * Math.PI / 4
