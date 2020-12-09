@@ -129,14 +129,19 @@ export const polygonStyle = mode => (feature, resolution) => {
     else return geometry.simplify(resolution)
   })(mode)
 
-  const factory = styleFactory(mode, feature)(R.identity)
+  const factory = styleFactory({ mode, feature, resolution })(R.identity)
   const firstPoint = () => new geom.Point(simplified.getFirstCoordinate())
-  const sidc = parameterized(feature.getProperties().sidc)
-  const label = fn => fn(L.placements(simplified))(feature.getProperties())
+
+  const labels = () => {
+    if (!factory.showLabels()) return []
+    const label = fn => fn(L.placements(simplified))(feature.getProperties())
+    const sidc = parameterized(feature.getProperties().sidc)
+    return (labelFn[sidc] || []).flatMap(label)
+  }
 
   return [
     factory.solidLine(simplified),
     mode === 'multi' ? factory.handles(firstPoint()) : [],
-    ...(labelFn[sidc] || []).flatMap(label)
+    labels()
   ].flat()
 }

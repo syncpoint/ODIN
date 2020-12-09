@@ -475,8 +475,6 @@ export default map => {
     modifySource.removeFeature(element)
   })
 
-
   addInteraction(createModify(modifySource))
-
   inputLayers.register(event => (eventHandlers[event.type] || noop)(event))
 }

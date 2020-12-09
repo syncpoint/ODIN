@@ -1,5 +1,5 @@
 import { parameterized } from '../../components/SIDC'
-import { labels } from './line-labels'
+import { labels as lineLabels } from './line-labels'
 import { geometries } from './line-geometries'
 import { styleFactory, defaultStyle } from './default-style'
 import * as TS from '../ts'
@@ -11,13 +11,18 @@ export const lineStyle = mode => (feature, resolution) => {
   const reference = geometry.getFirstCoordinate()
   const { read, write } = format(reference)
   const line = read(geometry)
-  const factory = styleFactory(mode, feature)(write)
+  const factory = styleFactory({ mode, feature, resolution })(write)
   const options = { feature, resolution, line, styles: factory, write }
+
+  const labels = () => {
+    if (!factory.showLabels()) return []
+    return (lineLabels[sidc] || []).flatMap(fn => fn(feature, resolution))
+  }
 
   return [
     geometries[sidc] ? geometries[sidc](options).flat() : defaultStyle(feature),
     factory.handles(TS.multiPoint(TS.linePoints(line))),
     factory.wireFrame(line),
-    (labels[sidc] || []).flatMap(fn => fn(feature, resolution))
+    labels()
   ].flat()
 }

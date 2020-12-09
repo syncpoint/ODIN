@@ -8,6 +8,7 @@ import 'ol/ol.css'
 import { fromLonLat, toLonLat } from 'ol/proj'
 import { ScaleLine } from 'ol/control'
 import { defaults as defaultInteractions } from 'ol/interaction'
+import { Vector as VectorLayer } from 'ol/layer'
 import getGridLayerGroup from './grids/group'
 import basemapLayerGroup from './basemap/group'
 
@@ -74,15 +75,21 @@ const effect = props => () => {
   share(map)
 
   // restore viewport and active layer name from preferences.
-  preferences.register(({ type, preferences }) => {
-    if (type !== 'preferences') return
+  preferences.register(event => {
+    const { type, preferences, key } = event
+    if (type === 'preferences') {
+      const { activeLayer } = preferences
+      if (activeLayer) evented.emit('OSD_MESSAGE', { message: activeLayer, slot: 'A2' })
 
-    const { activeLayer } = preferences
-    if (activeLayer) evented.emit('OSD_MESSAGE', { message: activeLayer, slot: 'A2' })
+      const { center, zoom } = preferences.viewport
+      view.setCenter(fromLonLat(center))
+      view.setZoom(zoom)
+    } else if (key === 'labels') {
+      map.getLayers().forEach(layer => {
+        if (layer instanceof VectorLayer) layer.changed()
+      })
+    }
 
-    const { center, zoom } = preferences.viewport
-    view.setCenter(fromLonLat(center))
-    view.setZoom(zoom)
   })
 }
 
