@@ -3,7 +3,7 @@ import * as R from 'ramda'
 import Collection from 'ol/Collection'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
-import { Select, Translate, DragBox } from 'ol/interaction'
+import { Select, Translate, DragBox, Snap } from 'ol/interaction'
 import { click, primaryAction, platformModifierKeyOnly } from 'ol/events/condition'
 import Style from 'ol/style/Style'
 
@@ -441,5 +441,10 @@ export default map => {
   })
 
   addInteraction(createModify(modifySource))
+
+  addInteraction(new Snap({
+    source: layer.getSource()
+  }))
+
   inputLayers.register(event => (eventHandlers[event.type] || noop)(event))
 }

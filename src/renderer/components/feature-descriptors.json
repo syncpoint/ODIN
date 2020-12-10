@@ -6478,13 +6478,17 @@
   {
     "sidc": "G*M*NM----*****",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "MOBILITY / SURVIVABILITY",
       "CHEMICAL, BIOLOGICAL, RADIOLOGICAL, AND NUCLEAR",
       "MINIMUM SAFE DISTANCE ZONES"
-    ]
+    ],
+    "parameters": {
+      "layout": "fan",
+      "maxPoints": 2
+    }
   },
   {
     "sidc": "G*M*NR----*****",
@@ -8070,8 +8074,7 @@
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "TASKS",
-      "ISOLATE"
-    ],
+      "ISOLATE"    ],
     "parameters": {
       "arc": "330",
       "layout": "fan",

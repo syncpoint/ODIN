@@ -241,6 +241,20 @@ geometries['G*G*GAS---'] = ({ resolution, styles, points }) => {
   ]
 }
 
+geometries['G*M*NM----'] = ({ feature, styles, points }) => {
+  const [C, A] = TS.coordinates(points)
+  const segment = TS.segment([C, A])
+
+  const label = feature.get('t')
+    ? styles.text(TS.point(A), { text: feature.get('t'), flip: false })
+    : []
+
+  return [
+    styles.solidLine(TS.pointBuffer(TS.point(C))(segment.getLength())),
+    label
+  ]
+}
+
 export const multipointStyle = mode => (feature, resolution) => {
   const sidc = parameterized(feature.getProperties().sidc)
   const geometry = feature.getGeometry()
