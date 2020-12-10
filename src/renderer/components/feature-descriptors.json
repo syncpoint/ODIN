@@ -6157,14 +6157,18 @@
   {
     "sidc": "G*M*BCA---*****",
     "scope": "CONTROL",
-    "geometry": "Point",
+    "geometry": "GeometryCollection",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "MOBILITY / SURVIVABILITY",
       "OBSTACLE BYPASS",
       "CROSSING SITE / WATER CROSSING",
       "ASSAULT CROSSING AREA"
-    ]
+    ],
+    "parameters": {
+      "layout": "corridor",
+      "maxPoints": 2
+    }
   },
   {
     "sidc": "G*M*BCB---*****",
@@ -6474,7 +6478,7 @@
   {
     "sidc": "G*M*NM----*****",
     "scope": "CONTROL",
-    "geometry": "point",
+    "geometry": "Undefined",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "MOBILITY / SURVIVABILITY",
@@ -6643,7 +6647,7 @@
   {
     "sidc": "G*M*OET---*****",
     "scope": "CONTROL",
-    "geometry": "MultiPoint",
+    "geometry": "Undefined",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "MOBILITY / SURVIVABILITY",
@@ -8405,7 +8409,7 @@
   {
     "sidc": "G*T*Z-----*****",
     "scope": "CONTROL",
-    "geometry": "MultiPoint",
+    "geometry": "Undefined",
     "dimension": "TASK",
     "hierarchy": [
       "TACTICAL GRAPHICS",

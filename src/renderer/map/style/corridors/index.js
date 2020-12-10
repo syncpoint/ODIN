@@ -8,12 +8,15 @@ import G_G_OLAGS from './G_G_OLAGS'
 import G_G_OLAR from './G_G_OLAR'
 import G_G_OLAV from './G_G_OLAV'
 import G_G_PA from './G_G_PA'
+import G_M_BCA from './G_M_BCA'
+import G_M_BCB from './G_M_BCB'
 import G_M_BCD from './G_M_BCD'
 import G_M_BCE from './G_M_BCE'
 import G_M_BDD from './G_M_BDD'
 import G_M_BDE from './G_M_BDE'
 import G_M_BDI from './G_M_BDI'
 import G_M_OEB from './G_M_OEB'
+import G_M_OFG from './G_M_OFG'
 import G_M_ORA from './G_M_ORA'
 import G_M_ORC from './G_M_ORC'
 import G_M_ORS from './G_M_ORS'
@@ -76,12 +79,15 @@ export default {
   'G*G*OLAR--': style(G_G_OLAR),
   'G*G*OLAV--': style(G_G_OLAV),
   'G*G*PA----': style(G_G_PA),
+  'G*M*BCA---': style(G_M_BCA),
+  'G*M*BCB---': style(G_M_BCB),
   'G*M*BCD---': style(G_M_BCD),
   'G*M*BCE---': style(G_M_BCE),
   'G*M*BDD---': style(G_M_BDD),
   'G*M*BDE---': style(G_M_BDE),
   'G*M*BDI---': style(G_M_BDI),
   'G*M*OEB---': style(G_M_OEB),
+  'G*M*OFG---': style(G_M_OFG),
   'G*M*ORA---': style(G_M_ORA),
   'G*M*ORC---': style(G_M_ORC),
   'G*M*ORS---': style(G_M_ORS),
