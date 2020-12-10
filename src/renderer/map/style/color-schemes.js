@@ -37,6 +37,6 @@ export const primaryColor = scheme => R.cond([
 ])
 
 export const accentColor = R.cond([
-  [R.equals('*'), R.always('white')],
+  [R.equals('-'), R.always('white')],
   [R.T, R.always('black')]
 ])

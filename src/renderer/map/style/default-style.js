@@ -56,11 +56,12 @@ const factory = options => write => {
   return {
     solidLine: (inGeometry, opts = {}) => {
       const primaryColor = opts.color || options.primaryColor
+      const fill = opts.fill
       const geometry = write(inGeometry)
       return [
         { width: options.thick, color: options.accentColor, lineDash: options.dashPattern, lineCap: 'butt' },
         { width: options.thin, color: primaryColor, lineDash: options.dashPattern, lineCap: 'butt' }
-      ].map(options => style({ stroke: stroke(options), geometry }))
+      ].map(options => style({ stroke: stroke(options), geometry, fill }))
     },
 
     filledPolygon: (inGeometry, opts = {}) => {
@@ -148,10 +149,7 @@ const factory = options => write => {
       })
     },
 
-    fill: (inGeometry, options) => style({
-      geometry: write(inGeometry),
-      fill: fill(options)
-    }),
+    fill: color => fill({ color: color(options) }),
 
     // roughly 1:150,000
     showLabels: () => labels && resolution < 62

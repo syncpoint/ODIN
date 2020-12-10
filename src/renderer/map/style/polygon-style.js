@@ -2,6 +2,7 @@ import * as R from 'ramda'
 import * as geom from 'ol/geom'
 import { parameterized } from '../../components/SIDC'
 import * as L from './polygon-labels'
+import { fills } from './polygon-fills'
 import { styleFactory } from './default-style'
 
 const when = s => fn => s ? fn(s) : null
@@ -118,6 +119,7 @@ const labelFn = {
 
 
 export const polygonStyle = mode => (feature, resolution) => {
+  const sidc = parameterized(feature.getProperties().sidc)
   const geometry = feature.getGeometry()
   const ring = geometry.getLinearRing()
   const coordinates = ring.getCoordinates()
@@ -135,12 +137,13 @@ export const polygonStyle = mode => (feature, resolution) => {
   const labels = () => {
     if (!factory.showLabels()) return []
     const label = fn => fn(L.placements(simplified))(feature.getProperties())
-    const sidc = parameterized(feature.getProperties().sidc)
     return (labelFn[sidc] || []).flatMap(label)
   }
 
+  const fill = fills[sidc] && fills[sidc]({ styles: factory })
+
   return [
-    factory.solidLine(simplified),
+    factory.solidLine(simplified, { fill }),
     mode === 'multi' ? factory.handles(firstPoint()) : [],
     labels()
   ].flat()
