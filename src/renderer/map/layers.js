@@ -3,7 +3,6 @@ import * as R from 'ramda'
 import Collection from 'ol/Collection'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
-import * as ol from 'ol'
 import { Select, Translate, DragBox } from 'ol/interaction'
 import { click, primaryAction, platformModifierKeyOnly } from 'ol/events/condition'
 import Style from 'ol/style/Style'
@@ -21,23 +20,6 @@ import * as descriptors from '../components/feature-descriptors'
 // SECTION: Module-global (utility) functions.
 
 /**
- * geometryType :: (ol/Feature | ol/geom/Geometry) -> string
- * Map feature or feature geometry to rendered layer type.
- */
-const geometryType = object => {
-  const type = object instanceof ol.Feature
-    ? object.getGeometry().getType()
-    : object.getType()
-
-  switch (type) {
-    case 'Point':
-    case 'LineString':
-    case 'Polygon': return type
-    default: return 'Polygon'
-  }
-}
-
-/**
  * cloneGeometries :: ol/Collection<ol/Feature> -> (string ~> ol/Geometry)
  * Map features to cloned featue geometries identified by feature ids.
  */
@@ -52,11 +34,7 @@ const unhideFeature = feature => feature.setStyle(null)
 // --
 // SECTION: Geometry-specific vector sources and layers.
 
-/**
- * layers :: string ~> ol/layer/Vector
- * Geometry-specific feature vector layers with underlying sources.
- */
-let layers = {}
+let layer
 
 /**
  * selectionLayer :: ol/layer/Vector
@@ -75,7 +53,7 @@ const selectionSource = new VectorSource()
  * Underlying layer sources incl. selection source.
  */
 const sources = () => [
-  ...Object.values(layers).map(layer => layer.getSource()),
+  layer.getSource(),
   selectionSource
 ]
 
@@ -83,11 +61,7 @@ const layerFeatures = layerId => sources()
   .reduce((acc, source) => acc.concat(source.getFeatures()), [])
   .filter(Feature.hasLayerId(layerId))
 
-/**
- * geometrySource :: (ol/Feature | ol/geom/Geometry) -> ol/source/Vector
- * Source for given feature or feature geometry.
- */
-const geometrySource = object => layers[geometryType(object)].getSource()
+const geometrySource = () => layer.getSource()
 
 /**
  * featureById :: string -> ol/Feature
@@ -132,29 +106,20 @@ const selectedFeaturesCount = () => selection
   .filter(Feature.unlocked)
   .length
 
-/**
- * createLayers :: () -> (string ~> ol/layer/Vector)
- *
- * Setup geometry-specific layers.
- * Layer sources are downstream to input feature collections
- * and are automatically synced whenever input collection is updated.
- */
-const createLayers = () => {
-  const entries = ['Polygon', 'LineString', 'Point']
-    .map(type => [type, new VectorSource({})])
-    .map(([type, source]) => [type, new VectorLayer({ source, style: style('default') })])
-
+const createLayer = () => {
+  const source = new VectorSource({})
+  const layer = new VectorLayer({ source, style: style('default') })
 
   // Update layer opacity depending on selection.
 
   const updateOpacity = () => {
-    entries.forEach(([_, layer]) => layer.setOpacity(selectedFeaturesCount() ? 0.35 : 1))
+    layer.setOpacity(selectedFeaturesCount() ? 0.35 : 1)
   }
 
   selection.on('selected', updateOpacity)
   selection.on('deselected', updateOpacity)
 
-  return Object.fromEntries(entries)
+  return layer
 }
 
 
@@ -281,7 +246,7 @@ const createSelect = () => {
     hitTolerance,
 
     // Operates on all layers including selection (necessary to detect toggles).
-    layers: [...Object.values(layers), selectionLayer],
+    layers: [layer, selectionLayer],
     features: selectedFeatures,
     style: (feature, resolution) => {
       const fn = interaction.getFeatures().getLength() < 2
@@ -442,8 +407,8 @@ export default map => {
   const addLayer = layer => K(layer)(layer => map.addLayer(layer))
   const addInteraction = map.addInteraction.bind(map)
 
-  layers = createLayers()
-  Object.values(layers).forEach(addLayer)
+  layer = createLayer()
+  map.addLayer(layer)
 
   // Selection source and layer.
   selectionLayer = addLayer(new VectorLayer({
