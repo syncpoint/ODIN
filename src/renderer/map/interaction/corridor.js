@@ -3,8 +3,11 @@ import Feature from 'ol/Feature'
 import { Point } from 'ol/geom'
 import * as TS from '../ts'
 import { format } from '../format'
+import disposable from '../../../shared/disposable'
+import { setGeometry, setCoordinates } from './helper'
 
 export default feature => {
+  const disposables = disposable.of({})
   const geometry = feature.getGeometry()
   const geometries = geometry.getGeometries()
   const reference = geometries[0].getFirstCoordinate()
@@ -35,38 +38,51 @@ export default feature => {
     return { line, point, copy, geometry }
   })(params((geometry)))
 
-  const centerChanged = ({ target: control }) => {
-    const line = read(control.getGeometry())
-    frame = frame.copy({ line })
-    feature.setGeometry(write(frame.geometry))
-  }
 
-  const pointChanged = ({ target: control }) => {
-    const point = read(control.getGeometry())
-    const segment = TS.segment(R.take(2, TS.coordinates([frame.line])))
-    const orientation = segment.orientationIndex(TS.coordinate(point))
-    const coords = [TS.startPoint(frame.line), point].map(TS.coordinate)
-    const width = TS.segment(coords).getLength()
-    frame = frame.copy({ orientation, width })
-    feature.setGeometry(write(frame.geometry))
-  }
+  // Register control feature geometry change listeners:
+  var changing = false
+  ;(() => {
+    const centerChanged = ({ target: geometry }) => {
+      if (changing) return
+      frame = frame.copy({ line: read(geometry) })
+      setGeometry(feature, write(frame.geometry))
+    }
 
-  const listeners = R.zip([center, point], [centerChanged, pointChanged])
-  const register = ([feature, handler]) => feature.on('change', handler)
-  const deregister = ([feature, handler]) => feature.un('change', handler)
-  listeners.forEach(register)
+    const pointChanged = ({ target: geometry }) => {
+      if (changing) return
+      const point = read(geometry)
+      const segment = TS.segment(R.take(2, TS.coordinates([frame.line])))
+      const orientation = segment.orientationIndex(TS.coordinate(point))
+      const coords = [TS.startPoint(frame.line), point].map(TS.coordinate)
+      const width = TS.segment(coords).getLength()
+      frame = frame.copy({ orientation, width })
+      setGeometry(feature, write(frame.geometry))
+    }
+
+    const centerGeometry = center.getGeometry()
+    const pointGeometry = point.getGeometry()
+
+    centerGeometry.on('change', centerChanged)
+    pointGeometry.on('change', pointChanged)
+
+    disposables.addDisposable(() => {
+      centerGeometry.un('change', centerChanged)
+      pointGeometry.un('change', pointChanged)
+    })
+  })()
 
   const updateFeatures = () => {
-    point.setGeometry(write(frame.point))
+    setCoordinates(point, write(frame.point))
   }
 
   const updateGeometry = geometry => {
     frame = frame.copy(params(geometry))
-    listeners.forEach(deregister)
+
+    changing = true
     const geometries = geometry.getGeometries()
-    center.setGeometry(geometries[0])
-    point.setGeometry(geometries[1])
-    listeners.forEach(register)
+    setCoordinates(center, geometries[0])
+    setCoordinates(point, geometries[1])
+    changing = false
   }
 
   const enforceConstraints = (segments, coordinate) => {
@@ -90,6 +106,6 @@ export default feature => {
     updateGeometry,
     enforceConstraints,
     controlFeatures: [center, point],
-    dispose: () => listeners.forEach(deregister)
+    dispose: () => disposables.dispose()
   }
 }

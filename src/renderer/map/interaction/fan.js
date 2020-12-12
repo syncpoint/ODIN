@@ -2,8 +2,11 @@ import * as R from 'ramda'
 import Feature from 'ol/Feature'
 import * as TS from '../ts'
 import { format } from '../format'
+import disposable from '../../../shared/disposable'
+import { setCoordinates } from './helper'
 
 export default feature => {
+  const disposables = disposable.of({})
   const geometry = feature.getGeometry()
   const reference = geometry.getFirstCoordinate()
   const { read, write } = format(reference)
@@ -31,48 +34,62 @@ export default feature => {
     return { center, points, copy, geometry }
   })(params(geometry))
 
-  const centerChanged = ({ target: control }) => {
-    const center = read(control.getGeometry())
-    frame = frame.copy({ center })
-    feature.setGeometry(write(frame.geometry))
-  }
+  var changing = false
+  ;(() => {
+    const centerChanged = ({ target: geometry }) => {
+      if (changing) return
+      frame = frame.copy({ center: read(geometry) })
+      setCoordinates(feature, write(frame.geometry))
+    }
 
-  const pointChanged = R.range(0, points.length).map(index => ({ target: control }) => {
-    const points = frame.points
-    points[index] = read(control.getGeometry())
-    const vectors = points
-      .map(point => TS.segment(TS.coordinates([frame.center, point])))
-      .map(segment => ({ angle: segment.angle(), length: segment.getLength() }))
+    const pointChanged = R.range(0, points.length).map(index => ({ target: geometry }) => {
+      if (changing) return
+      const points = frame.points
+      points[index] = read(geometry)
+      const vectors = points
+        .map(point => TS.segment(TS.coordinates([frame.center, point])))
+        .map(segment => ({ angle: segment.angle(), length: segment.getLength() }))
 
-    frame = frame.copy({ vectors })
-    feature.setGeometry(write(frame.geometry))
-  })
+      frame = frame.copy({ vectors })
+      setCoordinates(feature, write(frame.geometry))
+    })
 
-  const listeners = R.zip([center, ...points], [centerChanged, ...pointChanged])
-  const register = ([feature, handler]) => feature.on('change', handler)
-  const deregister = ([feature, handler]) => feature.un('change', handler)
-  listeners.forEach(register)
+    const centerGeometry = center.getGeometry()
+    centerGeometry.on('change', centerChanged)
+
+    points
+      .map(feature => feature.getGeometry())
+      .forEach((geometry, index) => geometry.on('change', pointChanged[index]))
+
+    disposables.addDisposable(() => {
+      centerGeometry.un('change', centerChanged)
+      points
+        .map(feature => feature.getGeometry())
+        .forEach((geometry, index) => geometry.un('change', pointChanged[index]))
+    })
+  })()
 
   const updateFeatures = () => {
     frame.points.forEach((point, index) => {
-      points[index].setGeometry(write(point))
+      setCoordinates(points[index], write(point))
     })
   }
 
   const updateGeometry = geometry => {
     frame = frame.copy(params(geometry))
-    listeners.forEach(deregister)
+
+    changing = true
     const [head, ...tail] = geometry.getPoints()
-    center.setGeometry(head)
-    tail.forEach((geometry, index) => points[index].setGeometry(geometry))
-    listeners.forEach(register)
+    setCoordinates(center, head)
+    tail.forEach((geometry, index) => setCoordinates(points[index], geometry))
+    changing = false
   }
 
   return {
     feature,
     updateFeatures,
     updateGeometry,
-    dispose: () => listeners.forEach(deregister),
+    dispose: () => disposables.dispose(),
     controlFeatures: [center, ...points]
   }
 }
