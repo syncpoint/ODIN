@@ -4,7 +4,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable comma-dangle */
 
-import * as R from 'ramda'
 import Feature from 'ol/Feature'
 import { Point } from 'ol/geom'
 import * as olInteraction from 'ol/interaction'
@@ -21,7 +20,6 @@ import { fromUserExtent, toUserExtent, fromUserCoordinate, toUserCoordinate } fr
 import { createOrUpdateFromCoordinate as createExtent, buffer as bufferExtent } from 'ol/extent'
 import { getUid } from 'ol/util.js';
 import { framer } from './index'
-
 
 // >>> OL/ORIGINAL
 // The following code is copied from ol/Modify interaction.
@@ -107,15 +105,15 @@ export class Modify extends olInteraction.Modify {
     // Callback is evaluated in handlePointerAtPixel_().
     this.showVertexCondition_ = options.showVertexCondition
       ? options.showVertexCondition
-      : always;
+      : always
 
-    /**
-     * frames_ :: feature.ol_uid ~> framer
-     *
-     * Probably not necessary, but for now we support modifiying
-     * muliple features at once, thus we need a frame per complex feature.
-     */
-    this.framers_ = {}
+    this.boundFeatureGeometryChanged_ = this.featureGeometryChanged_.bind(this)
+  }
+
+  featureGeometryChanged_ ({ target: geometry }) {
+    if (this.changingFeature_) return
+    if (!this.framer_) return
+    this.framer_.updateGeometry(geometry)
   }
 
   /**
@@ -124,7 +122,6 @@ export class Modify extends olInteraction.Modify {
    * @override
    */
   addFeature_ (feature) {
-    console.log('addFeature_', feature)
     const addFeature = feature => super.addFeature_(feature)
 
     // TODO: file OL issue
@@ -137,16 +134,11 @@ export class Modify extends olInteraction.Modify {
     if (!factory) return addFeature(feature)
 
     // Add control features instead of originating feature:
-    this.framers_[feature.ol_uid] = factory(feature)
-    this.framers_[feature.ol_uid].controlFeatures.forEach(addFeature)
+    this.framer_ = factory(feature)
+    this.framer_.controlFeatures.forEach(addFeature)
 
-    // To support external geometry updates (e.g. translate interaction),
-    // we have to update framers geometry whenever appropriate.
-    feature.addEventListener('change', () => {
-      if (this.changingFeature_) return
-      if (!this.framers_[feature.ol_uid]) return
-      this.framers_[feature.ol_uid].updateGeometry(feature.getGeometry())
-    })
+    // To support external geometry updates (e.g. translate interaction).
+    feature.getGeometry().on('change', this.boundFeatureGeometryChanged_)
   }
 
   /**
@@ -155,26 +147,41 @@ export class Modify extends olInteraction.Modify {
    * @override
    */
   removeFeature_ (feature) {
-    console.log('removeFeature_', feature)
     const removeFeature = feature => super.removeFeature_(feature)
-    if (!this.framers_[feature.ol_uid]) return removeFeature(feature)
+
+    if (!this.framer_) return removeFeature(feature)
+    if (this.framer_.feature !== feature) return removeFeature(feature)
 
     // Remove control features instead originating feature:
-    const { controlFeatures, dispose } = this.framers_[feature.ol_uid]
-    controlFeatures.forEach(removeFeature)
+    feature.getGeometry().un('change', this.boundFeatureGeometryChanged_)
+    this.framer_.controlFeatures.forEach(removeFeature)
+    this.framer_.dispose()
+    delete this.framer_
+  }
 
-    // Dispose and delete framer:
-    dispose()
-    delete this.framers_[feature.ol_uid]
+  /**
+   * Little hack ahead:
+   * We need a hook to sync control features with
+   * feature geometry after a modification.
+   * In order to do so, we use 'modifyend' (a interaction level event)
+   * to update control features of all framers.
+   *
+   * DEBT: This should probably be considered tech-debt; issue reference
+   *
+   * @override
+   */
+  dispatchEvent (event) {
+    super.dispatchEvent(event)
+
+    if (event.type !== 'modifyend') return
+    if (!this.framer_) return
+    this.framer_.updateFeatures()
   }
 
   originatingFeature_ (feature) {
-    if (this.framers_[feature.ol_uid]) return feature
-    else {
-      const map = framer => framer.controlFeatures.map(control => [framer.feature, control])
-      const control = Object.values(this.framers_).flatMap(map).find(([_, control]) => control === feature)
-      return control ? control[0] : feature
-    }
+    return this.framer_
+      ? this.framer_.feature
+      : feature
   }
 
   /**
@@ -202,6 +209,9 @@ export class Modify extends olInteraction.Modify {
   }
 
   /**
+   * Override original to suppress vertex if necessary.
+   * See also showVertexCondition_().
+   *
    * @param {import("../pixel.js").Pixel} pixel Pixel
    * @param {import("../PluggableMap.js").default} map Map.
    * @param {import("../coordinate.js").Coordinate=} opt_coordinate The pixel Coordinate.
@@ -331,46 +341,16 @@ export class Modify extends olInteraction.Modify {
       .map(([segment, _]) => segment)
       .sort((a, b) => a.index - b.index)
 
-    // Enforce coordinate drag constraint if event matches a framer.
-    // In theory the segments currently dragged may belong to different
-    // Features. But since we can only modify a single feature at a time,
-    // it is suffice to consider only the first drag segment to determine
-    // the original feature (if any).
-
-    const { feature: controlFeature } = R.head(segments)
-    const feature = this.originatingFeature_(controlFeature)
-    const framer = this.framers_[feature.ol_uid]
-
     // No framer, no contraints to enforce.
-    if (!framer) return super.handleDragEvent(evt)
+    if (!this.framer_) return super.handleDragEvent(evt)
 
     const coordinate =
-      framer.enforceConstraints &&
-      framer.enforceConstraints(segments, evt.coordinate)
+      this.framer_.enforceConstraints &&
+      this.framer_.enforceConstraints(segments, evt.coordinate)
     if (!coordinate) return super.handleDragEvent(evt)
     else {
       evt.coordinate = coordinate
       return super.handleDragEvent(evt)
-    }
-  }
-
-  /**
-   * Little hack ahead:
-   * We need a hook to sync control features with
-   * feature geometry after a modification.
-   * In order to do so, we use 'modifyend' (a interaction level event)
-   * to update control features of all framers.
-   *
-   * DEBT: This should probably be considered tech-debt; issue reference
-   *
-   * @override
-   */
-  dispatchEvent (event) {
-    super.dispatchEvent(event)
-
-    if (event.type === 'modifyend') {
-      const updateFeatures = framer => framer.updateFeatures()
-      Object.values(this.framers_).forEach(updateFeatures)
     }
   }
 }
