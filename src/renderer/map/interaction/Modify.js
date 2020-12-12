@@ -20,9 +20,8 @@ import {
 import { fromUserExtent, toUserExtent, fromUserCoordinate, toUserCoordinate } from 'ol/proj'
 import { createOrUpdateFromCoordinate as createExtent, buffer as bufferExtent } from 'ol/extent'
 import { getUid } from 'ol/util.js';
+import { framer } from './index'
 
-import { geometryType } from './feature'
-import frames from './index'
 
 // >>> OL/ORIGINAL
 // The following code is copied from ol/Modify interaction.
@@ -125,6 +124,7 @@ export class Modify extends olInteraction.Modify {
    * @override
    */
   addFeature_ (feature) {
+    console.log('addFeature_', feature)
     const addFeature = feature => super.addFeature_(feature)
 
     // TODO: file OL issue
@@ -133,8 +133,7 @@ export class Modify extends olInteraction.Modify {
 
     // `factory` is defined for special geometry only.
     // If undefined, default behavior kicks in (aka add simple feature).
-    const type = geometryType(feature.getGeometry())
-    const factory = frames[type]
+    const factory = framer(feature)
     if (!factory) return addFeature(feature)
 
     // Add control features instead of originating feature:
@@ -156,6 +155,7 @@ export class Modify extends olInteraction.Modify {
    * @override
    */
   removeFeature_ (feature) {
+    console.log('removeFeature_', feature)
     const removeFeature = feature => super.removeFeature_(feature)
     if (!this.framers_[feature.ol_uid]) return removeFeature(feature)
 

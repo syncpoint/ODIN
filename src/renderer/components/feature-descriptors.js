@@ -74,6 +74,12 @@ export const featureGeometry = sidc => {
   return feature ? feature.geometry : undefined
 }
 
+export const descriptor = feature => {
+  if (!feature) return
+  if (!feature.get('sidc')) return
+  return lookup[parameterized(feature.get('sidc'))]
+}
+
 /**
  * featureDescriptors :: () => [object]
  */

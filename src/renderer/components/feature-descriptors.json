@@ -8412,7 +8412,7 @@
   {
     "sidc": "G*T*Z-----*****",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "dimension": "TASK",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -8421,7 +8421,7 @@
     ],
     "parameters": {
       "arc": "90",
-      "layout": "fan"
+      "layout": "seize"
     }
   },
   {

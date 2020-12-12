@@ -46,7 +46,7 @@ export const drawOptions = [
     }
   },
 
-  /* MultiPoint/fan (2-point) */
+  /* MultiPoint/fan (3-point) */
   {
     match: descriptor => descriptor.layout === 'fan' && Number.parseInt(descriptor.maxPoints) === 3,
     options: () => ({ type: GeometryType.POINT }),
@@ -60,7 +60,21 @@ export const drawOptions = [
     }
   },
 
-  /* MultiPoint/fan (3-point) */
+  /* MultiPoint/seize (3-point) */
+  {
+    match: descriptor => descriptor.layout === 'seize',
+    options: () => ({ type: GeometryType.POINT }),
+    complete: (map, feature) => {
+      const resolution = map.getView().getResolution()
+      const point = feature.getGeometry()
+      const C = G.toLatLon(G.coordinates(point))
+      const A = C.destinationPoint(resolution * 40, 90)
+      const B = C.destinationPoint(resolution * 60, 0)
+      feature.setGeometry(new geom.MultiPoint([G.fromLatLon(C), G.fromLatLon(A), G.fromLatLon(B)]))
+    }
+  },
+
+  /* MultiPoint/fan (2-point) */
   {
     match: descriptor => descriptor.layout === 'fan' && Number.parseInt(descriptor.maxPoints) === 2,
     options: () => ({ type: GeometryType.POINT }),
