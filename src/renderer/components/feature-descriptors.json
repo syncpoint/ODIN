@@ -6651,7 +6651,7 @@
   {
     "sidc": "G*M*OET---*****",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "MOBILITY / SURVIVABILITY",
@@ -6661,7 +6661,7 @@
     ],
     "parameters": {
       "arc": "90",
-      "layout": "fan"
+      "layout": "turn"
     }
   },
   {

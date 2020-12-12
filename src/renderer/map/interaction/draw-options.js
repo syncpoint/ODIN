@@ -74,6 +74,19 @@ export const drawOptions = [
     }
   },
 
+  /* MultiPoint/turn (2-point) */
+  {
+    match: descriptor => descriptor.layout === 'turn',
+    options: () => ({ type: GeometryType.POINT }),
+    complete: (map, feature) => {
+      const resolution = map.getView().getResolution()
+      const point = feature.getGeometry()
+      const C = G.toLatLon(G.coordinates(point))
+      const O = C.destinationPoint(resolution * 50, 0)
+      feature.setGeometry(new geom.MultiPoint([G.fromLatLon(C), G.fromLatLon(O)]))
+    }
+  },
+
   /* MultiPoint/fan (2-point) */
   {
     match: descriptor => descriptor.layout === 'fan' && Number.parseInt(descriptor.maxPoints) === 2,
