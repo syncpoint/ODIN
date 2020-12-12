@@ -1,7 +1,7 @@
 import { descriptor } from '../../components/feature-descriptors'
 import corridor from './corridor'
 import fan from './fan'
-import { geometryType } from './feature'
+import seize from './seize'
 
 const key = descriptor =>
   descriptor
@@ -10,14 +10,10 @@ const key = descriptor =>
       : `${descriptor.geometry.type}`
     : undefined
 
-export const framer = feature => {
-  const framers = {
-    '[LineString,Point]': corridor,
-    MultiPoint: fan
-  }
-
-  console.log(key(descriptor(feature)))
-  const type = geometryType(feature.getGeometry())
-  return framers[type]
+const framers = {
+  'GeometryCollection-corridor': corridor,
+  'MultiPoint-fan': fan,
+  'MultiPoint-seize': seize
 }
 
+export const framer = feature => framers[key(descriptor(feature))]

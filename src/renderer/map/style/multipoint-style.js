@@ -241,6 +241,10 @@ geometries['G*G*GAS---'] = ({ resolution, styles, points }) => {
   ]
 }
 
+/**
+ * TACGRP.MOBSU.CBRN.MSDZ
+ * MINIMUM SAFE DISTANCE ZONES
+ */
 geometries['G*M*NM----'] = ({ feature, styles, points }) => {
   const [C, A] = TS.coordinates(points)
   const segment = TS.segment([C, A])
@@ -252,6 +256,46 @@ geometries['G*M*NM----'] = ({ feature, styles, points }) => {
   return [
     styles.solidLine(TS.pointBuffer(TS.point(C))(segment.getLength())),
     label
+  ]
+}
+
+/**
+ * TACGRP.TSK.SZE
+ * TASKS / SEIZE
+ */
+geometries['G*T*Z-----'] = ({ styles, points, resolution }) => {
+  const [C, O, S] = TS.coordinates(points)
+  const segmentO = TS.segment([C, O])
+  const segmentS = TS.segment([C, S])
+  const radius = segmentO.getLength() - segmentS.getLength()
+
+  const [X] = TS.projectCoordinates(radius, segmentO.angle(), O)([[-1, -1]])
+  const arcCoords = TS.arc(C, segmentS.getLength(), segmentO.angle(), Math.PI / 2, 32)
+  const textAnchor = TS.point(arcCoords[Math.floor(arcCoords.length / 2)])
+
+  const arc = TS.difference([
+    TS.lineString(arcCoords),
+    TS.pointBuffer(textAnchor)(resolution * 10)
+  ])
+
+  const xs = TS.projectCoordinates(segmentS.getLength(), segmentS.angle() + Math.PI / 2, R.last(arcCoords))([
+    [0.1, -0.1], [0, 0], [0.1, 0.1]
+  ])
+
+  return [
+    styles.solidLine(TS.collect([
+      arc,
+      TS.pointBuffer(TS.point(X))(radius),
+      TS.lineString(xs)
+    ])),
+    styles.wireFrame(TS.union([
+      TS.lineString(segmentO),
+      TS.lineString(segmentS)
+    ])),
+    styles.text(textAnchor, {
+      text: 'S',
+      flip: false
+    })
   ]
 }
 

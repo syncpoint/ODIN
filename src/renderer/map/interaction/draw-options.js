@@ -68,9 +68,9 @@ export const drawOptions = [
       const resolution = map.getView().getResolution()
       const point = feature.getGeometry()
       const C = G.toLatLon(G.coordinates(point))
-      const A = C.destinationPoint(resolution * 40, 90)
-      const B = C.destinationPoint(resolution * 60, 0)
-      feature.setGeometry(new geom.MultiPoint([G.fromLatLon(C), G.fromLatLon(A), G.fromLatLon(B)]))
+      const O = C.destinationPoint(resolution * 60, 0)
+      const S = C.destinationPoint(resolution * 40, 90)
+      feature.setGeometry(new geom.MultiPoint([G.fromLatLon(C), G.fromLatLon(O), G.fromLatLon(S)]))
     }
   },
 
