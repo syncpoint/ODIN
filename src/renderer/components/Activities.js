@@ -1,11 +1,12 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
-import Category from '@material-ui/icons/Category'
-import PermDataSettingIcon from '@material-ui/icons/PermDataSetting'
-import MapIcon from '@material-ui/icons/Map'
-import PhotoCameraIcon from '@material-ui/icons/PhotoCamera'
-import { LayersTriple, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 'mdi-material-ui'
+import Category from '@material-ui/icons/CategoryOutlined'
+import PermDataSettingIcon from '@material-ui/icons/PermDataSettingOutlined'
+import MapIcon from '@material-ui/icons/MapOutlined'
+import PhotoCameraIcon from '@material-ui/icons/PhotoCameraOutlined'
+// import InfoIcon from '@material-ui/icons/InfoOutlined'
+import { LayersTripleOutline, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 'mdi-material-ui'
 
 import ActivityBar from './ActivityBar'
 import BasemapPanel from './basemapPanel/BasemapPanel'
@@ -36,7 +37,7 @@ const initialActivities = (classes, t) => [
   {
     id: 'layers',
     type: 'activity',
-    icon: <LayersTriple/>,
+    icon: <LayersTripleOutline/>,
     panel: () => <LayerList/>,
     tooltip: t('activities.tooltips.layers')
   },
