@@ -1,6 +1,6 @@
 import path from 'path'
 import url from 'url'
-import { app, BrowserWindow, ipcMain, dialog } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
 import settings from 'electron-settings'
 import projects from '../shared/projects'
 import { exportProject, importProject } from './ipc/share-project'
@@ -76,6 +76,28 @@ const createProjectWindow = async (options) => {
       }
     })
 
+    /*
+      We allow attributions for basemaps to contain links to the source but
+      we do not want to allow these links to hijack the content of ODIN's
+      main browser window. So we prevent the default behaviour (navigate to
+      the url) and open the url in the system browser instead.
+
+      All navigation events triggered by the localhost dev server are still
+      propagated.
+    */
+    const openLinksInSystemBrowser = (event, url) => {
+      if (url && url.toLowerCase().includes('localhost')) return
+
+      event.preventDefault()
+      shell.openExternal(url).catch(error => {
+        console.error(error)
+      })
+    }
+
+    /* will be unregistered in the window.on('close') handler */
+    window.webContents.on('will-navigate', openLinksInSystemBrowser)
+    window.webContents.on('new-window', openLinksInSystemBrowser)
+
     /** the path property is required to identify the project */
     window.path = projectOptions.path
 
@@ -102,7 +124,11 @@ const createProjectWindow = async (options) => {
       sendi18Info(window, lng)
     }
     i18n.on('languageChanged', languageChangedHandler)
-    window.on('close', () => i18n.off('languageChanged', languageChangedHandler))
+    window.on('close', () => {
+      i18n.off('languageChanged', languageChangedHandler)
+      window.webContents.off('will-navigate', openLinksInSystemBrowser)
+      window.webContents.on('new-window', openLinksInSystemBrowser)
+    })
 
     /* (re)establish electron's normal "quit the app if no more windows are open" behavior */
     appShallQuit = true
