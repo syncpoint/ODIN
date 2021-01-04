@@ -5863,7 +5863,10 @@
       "LINES",
       "DIRECTION OF ATTACK GROUND",
       "MAIN ATTACK"
-    ]
+    ],
+    "parameters": {
+      "maxPoints": 2
+    }
   },
   {
     "sidc": "G*G*OLKGS-*****",
@@ -5878,7 +5881,10 @@
       "LINES",
       "DIRECTION OF ATTACK GROUND",
       "SUPPORTING ATTACK"
-    ]
+    ],
+    "parameters": {
+      "maxPoints": 2
+    }
   },
   {
     "sidc": "G*G*OLL---*****",
