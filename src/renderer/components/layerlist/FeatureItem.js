@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ListItem from '@material-ui/core/ListItem'
+import { ListItem, ListItemText } from '@material-ui/core'
 import selection from '../../selection'
 
 export const FeatureItem = props => {
@@ -15,7 +15,7 @@ export const FeatureItem = props => {
       onClick={handleClick(props.id)}
       button
     >
-      { props.name }
+      <ListItemText>{ props.name }</ListItemText>
     </ListItem>
   )
 }
