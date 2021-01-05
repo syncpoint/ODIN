@@ -1,9 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
+import { List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core'
 import Collapse from '@material-ui/core/Collapse'
 import IconButton from '@material-ui/core/IconButton'
 import LockIcon from '@material-ui/icons/Lock'
@@ -64,7 +62,7 @@ export const LayerLineEntry = props => {
         onClick={props.selectLayer}
         selected={props.selected}
       >
-        { props.active ? <b>{props.name}</b> : props.name }
+        <ListItemText>{ props.active ? <b>{props.name}</b> : props.name }</ListItemText>
         <ListItemSecondaryAction>
           <IconButton
             disabled={lockToggleDisabled}
