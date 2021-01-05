@@ -1,6 +1,6 @@
 import path from 'path'
 import url from 'url'
-import { app, BrowserWindow, ipcMain, dialog } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
 import settings from 'electron-settings'
 import projects from '../shared/projects'
 import { exportProject, importProject } from './ipc/share-project'
@@ -75,6 +75,28 @@ const createProjectWindow = async (options) => {
         nodeIntegration: true
       }
     })
+
+    /*
+       We allow attributions for basemaps to contain links to the source but
+       we do not want to allow these links to hijack the content of ODIN's
+       main browser window. So we prevent the default behaviour (navigate to
+       the url) and open the url in the system browser instead.
+
+       All navigation events triggered by the localhost dev server are still
+       propagated.
+     */
+    const openLinksInSystemBrowser = (event, url) => {
+      if (url && url.toLowerCase().includes('localhost')) return
+
+      event.preventDefault()
+      shell.openExternal(url).catch(error => {
+        console.error(error)
+      })
+    }
+
+    /* will be unregistered in the window.on('close') handler */
+    window.webContents.on('will-navigate', openLinksInSystemBrowser)
+    window.webContents.on('new-window', openLinksInSystemBrowser)
 
     /** the path property is required to identify the project */
     window.path = projectOptions.path
@@ -212,6 +234,13 @@ const bootstrap = () => {
   ipcMain.on('IPC_APP_RENDERING_COMPLETED', event => {
     const sender = event.sender.getOwnerBrowserWindow()
     sendi18Info(sender, i18n.language)
+  })
+
+  ipcMain.on('IPC_OPEN_WITH_SHELL', (event, args) => {
+    console.dir(args)
+    shell.openExternal(args.url).catch(error => {
+      console.error(error)
+    })
   })
 
 }
