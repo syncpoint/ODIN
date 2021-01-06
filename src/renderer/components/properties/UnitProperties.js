@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
-import { Paper, Tab, Tabs } from '@material-ui/core'
+import { Badge, Paper, Tab, Tabs } from '@material-ui/core'
 import EchelonProperty from './EchelonProperty'
 import ReinforcedReduced from './ReinforcedReduced'
 import ModifierProperty from './ModifierProperty'
@@ -12,6 +12,8 @@ import TextProperty from './TextProperty'
 import { ipcRenderer } from 'electron'
 import ReferenceList from '../references/ReferenceList'
 import DropObjectTarget from '../references/DropObjectTarget'
+import LinkIcon from '@material-ui/icons/LinkOutlined'
+import DescriptionIcon from '@material-ui/icons/DescriptionOutlined'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -66,7 +68,7 @@ const UnitProperties = props => {
   const [references, setReferences] = React.useState([])
 
   const handleObjectDropped = addedReference => {
-    setReferences(existingReferences => [...existingReferences, addedReference])
+    setReferences(current => [...current, addedReference])
   }
 
   const handleReferenceDeleted = (id) => {
@@ -92,8 +94,12 @@ const UnitProperties = props => {
         variant='fullWidth'
         className={classes.tabs}
       >
-        <Tab label='Properties' />
-        <Tab label='References' />
+        <Tab icon={<DescriptionIcon />} />
+        <Tab icon={
+          <Badge badgeContent={4} color="primary">
+            <LinkIcon />
+          </Badge>
+        }/>
       </Tabs>
       <TabContent value={tabIndex} index={0} className={classes.tabContent}>
         <TextProperty label='Name' property='name' properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>

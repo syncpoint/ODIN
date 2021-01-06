@@ -52,7 +52,6 @@ export const LayerLineEntry = props => {
     ? inputLayers.showLayer(props.id)
     : inputLayers.hideLayer(props.id)
 
-
   return (
     <div key={props.id}>
       <ListItem
@@ -62,7 +61,9 @@ export const LayerLineEntry = props => {
         onClick={props.selectLayer}
         selected={props.selected}
       >
+
         <ListItemText>{ props.active ? <b>{props.name}</b> : props.name }</ListItemText>
+
         <ListItemSecondaryAction>
           <IconButton
             disabled={lockToggleDisabled}

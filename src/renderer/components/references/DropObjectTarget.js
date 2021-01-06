@@ -60,7 +60,7 @@ const DropObjectTarget = props => {
       onDrop={dropHandler} onDragOver={dragOverHandler} onDragLeave={dragLeaveHandler}
       onDragEnter={dragEnterHandler} id='drop-object-target'
     >
-      drop new objects here
+      drop new documents or links here
     </div>
   )
 }
