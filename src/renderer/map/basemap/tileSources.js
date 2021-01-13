@@ -15,7 +15,8 @@ const highDPI = DEVICE_PIXEL_RATIO > 1
 export const DEFAULT_SOURCE_DESCRIPTOR = Object.freeze({
   name: 'Open Street Map',
   type: 'OSM',
-  id: '708b7f83-12a2-4a8b-a49d-9f2683586bcf'
+  id: '708b7f83-12a2-4a8b-a49d-9f2683586bcf',
+  attributions: '<a href="openstreetmap.org">OpenStreetMap</a> contributors'
 })
 
 const wmsOptionsFromDescriptor = descriptor => {
@@ -43,6 +44,7 @@ const sources = {
     const wmtsOptions = optionsFromCapabilities(capabilities, descriptor.options)
     wmtsOptions.tilePixelRatio = (highDPI ? 2 : 1)
     wmtsOptions.crossOrigin = 'anonymous'
+    wmtsOptions.attributions = descriptor.options.attributions
     return new WMTS(wmtsOptions)
   },
   WMS: async descriptor => {

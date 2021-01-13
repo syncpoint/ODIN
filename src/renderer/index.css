@@ -12,3 +12,12 @@
   background-color: rgba(255,255,255,0.4);
   border-color: rgba(100,150,0,1);
 }
+
+.ol-attribution {
+  text-align: right;
+  font-family: Roboto;
+  font-size: small;
+  bottom: .5em;
+  right: .5em;
+  max-width: calc(100% - 1.3em);
+}
