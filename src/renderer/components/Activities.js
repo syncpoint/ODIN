@@ -53,7 +53,10 @@ const initialActivities = (classes, t) => [
     type: 'activity',
     icon: <PermDataSettingIcon/>,
     tooltip: t('activities.tooltips.tools'),
-    panel: () => <Paper className={classes.toolsPanel} elevation={6}>{t('activities.tooltips.tools')}</Paper>
+    panel: () => <Paper className={classes.toolsPanel} elevation={6}>
+      <p onClick={event => evented.emit('MAP_MEASURE_LENGTH')}>Strecke messen</p>
+
+    </Paper>
   },
   {
     type: 'divider'

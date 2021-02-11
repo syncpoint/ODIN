@@ -17,6 +17,7 @@ import preferences from '../project/preferences'
 import coordinateFormat from '../../shared/coord-format'
 import layers from './layers'
 import draw from './interaction/draw'
+import measure from './interaction/measure'
 import dropImport from './interaction/drop-import'
 import share from './share'
 
@@ -76,6 +77,7 @@ const effect = props => () => {
 
   layers(map)
   draw(map)
+  measure(map)
   share(map)
 
   // restore viewport and active layer name from preferences.
