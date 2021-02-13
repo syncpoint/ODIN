@@ -2,6 +2,7 @@ import Draw from 'ol/interaction/Draw'
 import Feature from 'ol/Feature'
 import LineString from 'ol/geom/LineString'
 import Overlay from 'ol/Overlay'
+import { getLength } from 'ol/sphere'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
 import { Circle as CircleStyle, Fill, Stroke, Style, Text as TextStyle } from 'ol/style'
@@ -20,6 +21,7 @@ const formatLength = length => {
 }
 
 const LINE_STRING_TEXT_STYLE = new TextStyle({
+  geometry: GeometryType.LINE_STRING,
   font: '16px sans-serif',
   fill: new Fill({
     color: 'black'
@@ -30,41 +32,47 @@ const LINE_STRING_TEXT_STYLE = new TextStyle({
   textBaseline: 'bottom'
 })
 
-const DEFAULT_STYLE = new Style({
-  fill: new Fill({
-    color: 'rgba(255, 255, 255, 0.2)'
-  }),
-  stroke: new Stroke({
-    color: 'rgba(0, 0, 0, 0.5)',
-    lineDash: [10, 10],
-    width: 2
-  }),
-  image: new CircleStyle({
-    radius: 5,
+const DEFAULT_STYLE = text => [
+  new Style({
     stroke: new Stroke({
-      color: 'rgba(0, 0, 0, 0.7)'
-    }),
-    fill: new Fill({
-      color: 'rgba(255, 255, 255, 0.2)'
+      color: 'red',
+      width: 3
     })
   }),
-  text: LINE_STRING_TEXT_STYLE
-})
+  new Style({
+    stroke: new Stroke({
+      color: 'white',
+      lineDash: [10, 10],
+      width: 3
+    })
+  }),
+  new Style({
+    text: new TextStyle({
+      font: '16px sans-serif',
+      fill: new Fill({
+        color: 'black'
+      }),
+      text: text,
+      textAlign: 'end',
+      placement: 'line',
+      overflow: true,
+      textBaseline: 'bottom'
+    })
+  }),
+  new Style({
+    geometry: GeometryType.POINT,
+    image: new CircleStyle({
+      radius: 5,
+      stroke: new Stroke({
+        color: 'rgba(0, 0, 0, 0.7)'
+      }),
+      fill: new Fill({
+        color: 'rgba(255, 255, 255, 0.2)'
+      })
+    })
+  })
+]
 
-const source = new VectorSource()
-
-const vector = new VectorLayer({
-  source: source,
-  style: DEFAULT_STYLE
-})
-
-
-
-const measureOptions = {
-  type: GeometryType.LINE_STRING,
-  source: source,
-  style: DEFAULT_STYLE
-}
 
 const getLastSegmentCoordinates = lineStringGeometry => {
   const coordinates = lineStringGeometry.getCoordinates()
@@ -86,7 +94,19 @@ const createMeasureOverlay = () => {
 
 
 export default map => {
+  const source = new VectorSource()
+  const vector = new VectorLayer({
+    source: source,
+    style: DEFAULT_STYLE()
+  })
   map.getLayers().push(vector)
+
+  const interaction = new Draw({
+    type: GeometryType.LINE_STRING,
+    source: source,
+    style: DEFAULT_STYLE()
+  })
+
   evented.on('MAP_MEASURE_LENGTH', () => {
 
     const circleFeature = new Feature(new Circle({ x: 0, y: 0 }, 0))
@@ -97,14 +117,12 @@ export default map => {
       const lineStringGeometry = event.target.getGeometry()
       const lastSegment = new LineString(getLastSegmentCoordinates(lineStringGeometry))
 
-      measureOverlay.getElement().innerHTML = `${formatLength(lastSegment.getLength())}/${formatLength(lineStringGeometry.getLength())}`
+      measureOverlay.getElement().innerHTML = `${formatLength(getLength(lastSegment))} / ${formatLength(getLength(lineStringGeometry))}`
       measureOverlay.setPosition(lineStringGeometry.getLastCoordinate())
 
 
       circleFeature.getGeometry().setCenterAndRadius(lastSegment.getFirstCoordinate(), lastSegment.getLength())
     }
-
-    const interaction = new Draw(measureOptions)
 
     interaction.on('drawstart', event => {
       source.addFeature(circleFeature)
@@ -118,8 +136,9 @@ export default map => {
       source.removeFeature(circleFeature)
 
       event.feature.un('change', handleLineStringChanged)
-      event.feature.setStyle(DEFAULT_STYLE)
-      event.feature.getStyle().getText().setText(formatLength(event.feature.getGeometry().getLength()))
+      event.feature.setStyle(DEFAULT_STYLE(formatLength(getLength(event.feature.getGeometry()))))
+      measureOverlay.dispose()
+      circleFeature.dispose()
 
       map.removeOverlay(measureOverlay)
       map.removeInteraction(interaction)
