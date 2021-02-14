@@ -5,7 +5,7 @@ import Category from '@material-ui/icons/CategoryOutlined'
 import PermDataSettingIcon from '@material-ui/icons/PermDataSettingOutlined'
 import MapIcon from '@material-ui/icons/MapOutlined'
 import PhotoCameraIcon from '@material-ui/icons/PhotoCameraOutlined'
-// import InfoIcon from '@material-ui/icons/InfoOutlined'
+import Button from '@material-ui/core/Button'
 import { LayersTripleOutline, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 'mdi-material-ui'
 
 import ActivityBar from './ActivityBar'
@@ -54,8 +54,7 @@ const initialActivities = (classes, t) => [
     icon: <PermDataSettingIcon/>,
     tooltip: t('activities.tooltips.tools'),
     panel: () => <Paper className={classes.toolsPanel} elevation={6}>
-      <p onClick={event => evented.emit('MAP_MEASURE_LENGTH')}>Strecke messen</p>
-
+      <Button variant='outlined' fullWidth={true} onClick={() => evented.emit('MAP_MEASURE_LENGTH')}>{t('measure.length')}</Button>
     </Paper>
   },
   {
