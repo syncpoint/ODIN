@@ -17,7 +17,7 @@ import preferences from '../project/preferences'
 import coordinateFormat from '../../shared/coord-format'
 import layers from './layers'
 import draw from './interaction/draw'
-import measure from './interaction/measure'
+import measure from './interaction/measure/'
 import dropImport from './interaction/drop-import'
 import share from './share'
 
