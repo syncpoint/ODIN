@@ -1,14 +1,17 @@
-import Draw from 'ol/interaction/Draw'
+import { Draw, Modify, Select } from 'ol/interaction'
+import Collection from 'ol/Collection'
 import Feature from 'ol/Feature'
 import LineString from 'ol/geom/LineString'
 import Overlay from 'ol/Overlay'
 import { getLength } from 'ol/sphere'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
-import { Circle as CircleStyle, Fill, Stroke, Style, Text as TextStyle } from 'ol/style'
+import { Fill, Stroke, Style, Text as TextStyle } from 'ol/style'
 import Circle from 'ol/geom/Circle'
 import GeometryType from 'ol/geom/GeometryType'
+import uuid from 'uuid-random'
 import evented from '../../evented'
+import { registerHandler } from '../../clipboard'
 
 const meterFormatter = new Intl.NumberFormat(window.navigator.userLanguage || window.navigator.language, { maximumFractionDigits: 2, style: 'unit', unit: 'meter' })
 const kilometerFormatter = new Intl.NumberFormat(window.navigator.userLanguage || window.navigator.language, { maximumFractionDigits: 2, style: 'unit', unit: 'kilometer' })
@@ -20,19 +23,7 @@ const formatLength = length => {
   return kilometerFormatter.format(length / 1000)
 }
 
-const LINE_STRING_TEXT_STYLE = new TextStyle({
-  geometry: GeometryType.LINE_STRING,
-  font: '16px sans-serif',
-  fill: new Fill({
-    color: 'black'
-  }),
-  textAlign: 'end',
-  placement: 'line',
-  overflow: true,
-  textBaseline: 'bottom'
-})
-
-const DEFAULT_STYLE = text => [
+const defaultStyle = text => [
   new Style({
     stroke: new Stroke({
       color: 'red',
@@ -58,17 +49,34 @@ const DEFAULT_STYLE = text => [
       overflow: true,
       textBaseline: 'bottom'
     })
+  })
+]
+
+const selectedStyle = text => [
+  new Style({
+    stroke: new Stroke({
+      color: 'blue',
+      width: 3
+    })
   }),
   new Style({
-    geometry: GeometryType.POINT,
-    image: new CircleStyle({
-      radius: 5,
-      stroke: new Stroke({
-        color: 'rgba(0, 0, 0, 0.7)'
-      }),
+    stroke: new Stroke({
+      color: 'white',
+      lineDash: [10, 10],
+      width: 3
+    })
+  }),
+  new Style({
+    text: new TextStyle({
+      font: '16px sans-serif',
       fill: new Fill({
-        color: 'rgba(255, 255, 255, 0.2)'
-      })
+        color: 'black'
+      }),
+      text: text,
+      textAlign: 'end',
+      placement: 'line',
+      overflow: true,
+      textBaseline: 'bottom'
     })
   })
 ]
@@ -94,56 +102,96 @@ const createMeasureOverlay = () => {
 
 
 export default map => {
+
+  const selectedFeatures = new Collection()
+
   const source = new VectorSource()
   const vector = new VectorLayer({
     source: source,
-    style: DEFAULT_STYLE()
+    style: defaultStyle()
   })
-  map.getLayers().push(vector)
 
-  const interaction = new Draw({
+  map.addLayer(vector)
+
+  const selectionInteraction = new Select({
+    hitTolerance: 3,
+    layers: [vector],
+    features: selectedFeatures,
+    style: selectedStyle(),
+    filter: feature => feature.getGeometry().getType() === GeometryType.LINE_STRING
+  })
+  selectionInteraction.on('select', event => {
+    event.selected.forEach(lineString => lineString.setStyle(selectedStyle(formatLength(getLength(lineString.getGeometry())))))
+    event.deselected.forEach(lineString => lineString.setStyle(defaultStyle(formatLength(getLength(lineString.getGeometry())))))
+  })
+
+  const drawInteraction = new Draw({
     type: GeometryType.LINE_STRING,
     source: source,
-    style: DEFAULT_STYLE()
+    style: defaultStyle()
+  })
+
+  const modifyInteraction = new Modify({
+    features: selectedFeatures
+  })
+  modifyInteraction.on('modifyend', event => {
+    const lineStrings = event.features.getArray()
+    lineStrings.forEach(lineString => lineString.setStyle(selectedStyle(formatLength(getLength(lineString.getGeometry())))))
+  })
+
+  map.addInteraction(modifyInteraction)
+  map.addInteraction(selectionInteraction)
+
+  registerHandler('measure:', {
+    delete: () => {
+      selectedFeatures.getArray().forEach(feature => {
+        source.removeFeature(feature)
+      })
+      selectedFeatures.clear()
+    }
+  })
+
+
+  let circleFeature
+  let measureOverlay
+
+
+  const handleLineStringChanged = event => {
+    const lineStringGeometry = event.target.getGeometry()
+    const lastSegment = new LineString(getLastSegmentCoordinates(lineStringGeometry))
+
+    measureOverlay.getElement().innerHTML = `${formatLength(getLength(lastSegment))} / ${formatLength(getLength(lineStringGeometry))}`
+    measureOverlay.setPosition(lineStringGeometry.getLastCoordinate())
+    circleFeature.getGeometry().setCenterAndRadius(lastSegment.getFirstCoordinate(), lastSegment.getLength())
+  }
+
+  drawInteraction.on('drawstart', event => {
+    circleFeature = new Feature(new Circle({ x: 0, y: 0 }, 0))
+    source.addFeature(circleFeature)
+
+    measureOverlay = createMeasureOverlay()
+    map.addOverlay(measureOverlay)
+    const feature = event.feature
+    feature.on('change', handleLineStringChanged)
+  })
+
+  drawInteraction.on('drawend', event => {
+
+    source.removeFeature(circleFeature)
+    circleFeature.dispose()
+
+    event.feature.un('change', handleLineStringChanged)
+    event.feature.setStyle(defaultStyle(formatLength(getLength(event.feature.getGeometry()))))
+    event.feature.setId(`measure:${uuid()}`)
+
+    map.removeOverlay(measureOverlay)
+    measureOverlay.dispose()
+
+    map.removeInteraction(drawInteraction)
+
   })
 
   evented.on('MAP_MEASURE_LENGTH', () => {
-
-    const circleFeature = new Feature(new Circle({ x: 0, y: 0 }, 0))
-    const measureOverlay = createMeasureOverlay()
-
-
-    const handleLineStringChanged = event => {
-      const lineStringGeometry = event.target.getGeometry()
-      const lastSegment = new LineString(getLastSegmentCoordinates(lineStringGeometry))
-
-      measureOverlay.getElement().innerHTML = `${formatLength(getLength(lastSegment))} / ${formatLength(getLength(lineStringGeometry))}`
-      measureOverlay.setPosition(lineStringGeometry.getLastCoordinate())
-
-
-      circleFeature.getGeometry().setCenterAndRadius(lastSegment.getFirstCoordinate(), lastSegment.getLength())
-    }
-
-    interaction.on('drawstart', event => {
-      source.addFeature(circleFeature)
-      map.addOverlay(measureOverlay)
-      const feature = event.feature
-      feature.on('change', handleLineStringChanged)
-    })
-
-    interaction.on('drawend', event => {
-
-      source.removeFeature(circleFeature)
-
-      event.feature.un('change', handleLineStringChanged)
-      event.feature.setStyle(DEFAULT_STYLE(formatLength(getLength(event.feature.getGeometry()))))
-      measureOverlay.dispose()
-      circleFeature.dispose()
-
-      map.removeOverlay(measureOverlay)
-      map.removeInteraction(interaction)
-
-    })
-    map.addInteraction(interaction)
+    map.addInteraction(drawInteraction)
   })
 }
