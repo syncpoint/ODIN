@@ -120,6 +120,12 @@ export default map => {
       for deleting features
   */
   registerHandler('measure:', {
+    copy: () => {},
+    paste: () => {},
+    cut: () => {
+      selectedFeatures.getArray().forEach(feature => source.removeFeature(feature))
+      selectedFeatures.clear()
+    },
     delete: () => {
       selectedFeatures.getArray().forEach(feature => source.removeFeature(feature))
       selectedFeatures.clear()
