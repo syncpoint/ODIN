@@ -1,4 +1,4 @@
-import { Fill, Stroke, Style, Text as TextStyle } from 'ol/style'
+import { Circle as CircleStyle, Fill, Stroke, Style, Text as TextStyle } from 'ol/style'
 
 export const defaultStyle = text => [
   new Style({
@@ -12,6 +12,14 @@ export const defaultStyle = text => [
       color: 'white',
       lineDash: [15, 15],
       width: 4
+    })
+  }),
+  new Style({
+    image: new CircleStyle({
+      radius: 4,
+      fill: new Fill({
+        color: 'hsl(0, 100%, 40%)'
+      })
     })
   }),
   new Style({
@@ -44,6 +52,14 @@ export const selectedStyle = text => [
       color: 'white',
       lineDash: [15, 15],
       width: 4
+    })
+  }),
+  new Style({
+    image: new CircleStyle({
+      radius: 4,
+      fill: new Fill({
+        color: 'blue'
+      })
     })
   }),
   new Style({
