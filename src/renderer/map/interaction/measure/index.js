@@ -14,7 +14,6 @@ import { registerHandler } from '../../../clipboard'
 import { defaultStyle, selectedStyle } from './style'
 import { length, getLastSegmentCoordinates } from './tools'
 
-
 const createMeasureOverlay = () => {
   const overlayElement = document.createElement('div')
   overlayElement.className = 'ol-tooltip'
@@ -29,6 +28,9 @@ const createMeasureOverlay = () => {
 
 export default map => {
 
+  /*  initialize OL container that will hold our
+      measurement features
+  */
   const selectedFeatures = new Collection()
 
   const source = new VectorSource()
@@ -37,6 +39,7 @@ export default map => {
     style: defaultStyle()
   })
 
+  /*  ** SELECT ** */
   const selectionInteraction = new Select({
     hitTolerance: 3,
     layers: [vector],
@@ -49,12 +52,7 @@ export default map => {
     event.deselected.forEach(lineString => lineString.setStyle(defaultStyle(length(lineString.getGeometry()))))
   })
 
-  const drawInteraction = new Draw({
-    type: GeometryType.LINE_STRING,
-    source: source,
-    style: defaultStyle()
-  })
-
+  /*  ** MODIFY ** */
   const modifyInteraction = new Modify({
     features: selectedFeatures
   })
@@ -78,8 +76,16 @@ export default map => {
     circleFeature.getGeometry().setCenterAndRadius(lastSegment.getFirstCoordinate(), lastSegment.getLength())
   }
 
+  /*  ** DRAW ** */
+  const drawInteraction = new Draw({
+    type: GeometryType.LINE_STRING,
+    source: source,
+    style: selectedStyle()
+  })
+
   drawInteraction.on('drawstart', event => {
     circleFeature = new Feature(new Circle({ x: 0, y: 0 }, 0))
+    circleFeature.setStyle(selectedStyle())
     source.addFeature(circleFeature)
 
     measureOverlay = createMeasureOverlay()
@@ -89,7 +95,6 @@ export default map => {
   })
 
   drawInteraction.on('drawend', event => {
-
     /*  when drawing ends get rid of the circle fature */
     source.removeFeature(circleFeature)
     circleFeature.dispose()
@@ -103,7 +108,6 @@ export default map => {
     measureOverlay.dispose()
 
     map.removeInteraction(drawInteraction)
-
   })
 
   // vector layer contains all measurement features
@@ -123,6 +127,8 @@ export default map => {
   })
 
   evented.on('MAP_MEASURE_LENGTH', () => {
+    /* make this idempotent */
+    if (map.getInteractions().getArray().includes(drawInteraction)) return
     /* gets removed when drawing ends */
     map.addInteraction(drawInteraction)
   })
