@@ -54,7 +54,8 @@ const initialActivities = (classes, t) => [
     icon: <PermDataSettingIcon/>,
     tooltip: t('activities.tooltips.tools'),
     panel: () => <Paper className={classes.toolsPanel} elevation={6}>
-      <Button variant='outlined' fullWidth={true} onClick={() => evented.emit('MAP_MEASURE_LENGTH')}>{t('measure.length')}</Button>
+      <Button variant='outlined' fullWidth={true} style={{ marginBottom: '0.5em' }} onClick={() => evented.emit('MAP_MEASURE_LENGTH')}>{t('measure.length')}</Button>
+      <Button variant='outlined' fullWidth={true} style={{ marginBottom: '0.5em' }} onClick={() => evented.emit('MAP_MEASURE_AREA')}>{t('measure.area')}</Button>
     </Paper>
   },
   {
