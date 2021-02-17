@@ -1,3 +1,4 @@
+import GeometryType from 'ol/geom/GeometryType'
 import { getLength } from 'ol/sphere'
 
 const meterFormatter = new Intl.NumberFormat(window.navigator.userLanguage || window.navigator.language, { maximumFractionDigits: 2, style: 'unit', unit: 'meter' })
@@ -27,9 +28,13 @@ export const angle = lineStringSegment => {
   return formatAngle((-1 * Math.atan2(end[1] - start[1], end[0] - start[0]) * 180 / Math.PI + 450) % 360)
 }
 
-
 export const getLastSegmentCoordinates = lineStringGeometry => {
   const coordinates = lineStringGeometry.getCoordinates()
   if (coordinates.length <= 2) return coordinates
   return [coordinates[coordinates.length - 2], coordinates[coordinates.length - 1]]
+}
+
+export const isSingleSegment = lineStringGeometry => {
+  if (lineStringGeometry.getType() !== GeometryType.LINE_STRING) return false
+  return lineStringGeometry.getCoordinates().length === 2
 }

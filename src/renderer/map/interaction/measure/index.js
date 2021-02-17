@@ -12,7 +12,7 @@ import uuid from 'uuid-random'
 import evented from '../../../evented'
 import { registerHandler } from '../../../clipboard'
 import { defaultStyle, selectedStyle } from './style'
-import { length, getLastSegmentCoordinates, angle } from './tools'
+import { angle, isSingleSegment, length, getLastSegmentCoordinates } from './tools'
 
 const createMeasureOverlay = () => {
   const overlayElement = document.createElement('div')
@@ -24,6 +24,11 @@ const createMeasureOverlay = () => {
     positioning: 'center-left'
   })
   return measureOverlay
+}
+
+const getLineStringText = feature => {
+  const geometry = feature.getGeometry()
+  return (isSingleSegment(geometry) ? `${length(geometry)} @ ${angle(geometry)}` : length(geometry))
 }
 
 export default map => {
@@ -48,8 +53,8 @@ export default map => {
     filter: feature => feature.getGeometry().getType() === GeometryType.LINE_STRING
   })
   selectionInteraction.on('select', event => {
-    event.selected.forEach(lineString => lineString.setStyle(selectedStyle(length(lineString.getGeometry()))))
-    event.deselected.forEach(lineString => lineString.setStyle(defaultStyle(length(lineString.getGeometry()))))
+    event.selected.forEach(lineString => lineString.setStyle(selectedStyle(getLineStringText(lineString))))
+    event.deselected.forEach(lineString => lineString.setStyle(defaultStyle(getLineStringText(lineString))))
   })
 
   /*  ** MODIFY ** */
@@ -58,7 +63,7 @@ export default map => {
   })
   modifyInteraction.on('modifyend', event => {
     const lineStrings = event.features.getArray()
-    lineStrings.forEach(lineString => lineString.setStyle(selectedStyle(length(lineString.getGeometry()))))
+    lineStrings.forEach(lineString => lineString.setStyle(selectedStyle(getLineStringText(lineString))))
   })
 
   /*  circle feature is is used for giving the user a visual feedback for the last segement of
@@ -100,7 +105,7 @@ export default map => {
     circleFeature.dispose()
 
     event.feature.un('change', handleLineStringChanged)
-    event.feature.setStyle(defaultStyle(length(event.feature.getGeometry())))
+    event.feature.setStyle(defaultStyle(getLineStringText(event.feature)))
     /*  schema:id is required in order to make deleting a feature work */
     event.feature.setId(`measure:${uuid()}`)
 
