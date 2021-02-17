@@ -1,5 +1,4 @@
 import { Circle as CircleStyle, Fill, Stroke, Style, Text as TextStyle } from 'ol/style'
-import GeometryType from 'ol/geom/GeometryType'
 
 export const defaultStyle = text => [
   new Style({
