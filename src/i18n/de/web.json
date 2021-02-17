@@ -75,6 +75,7 @@
     }
   },
   "measure": {
-    "length": "Entfernung messen"
+    "length": "Entfernung messen",
+    "area": "Fläche messen"
   }
 }
