@@ -12,7 +12,7 @@ import uuid from 'uuid-random'
 import evented from '../../../evented'
 import { registerHandler } from '../../../clipboard'
 import { defaultStyle, selectedStyle } from './style'
-import { length, getLastSegmentCoordinates } from './tools'
+import { length, getLastSegmentCoordinates, angle } from './tools'
 
 const createMeasureOverlay = () => {
   const overlayElement = document.createElement('div')
@@ -61,7 +61,7 @@ export default map => {
     lineStrings.forEach(lineString => lineString.setStyle(selectedStyle(length(lineString.getGeometry()))))
   })
 
-  /*  circle feature is is ued for giving the user a visual feedback for the last segement of
+  /*  circle feature is is used for giving the user a visual feedback for the last segement of
       the measurement
   */
   let circleFeature
@@ -71,7 +71,7 @@ export default map => {
     const lineStringGeometry = event.target.getGeometry()
     const lastSegment = new LineString(getLastSegmentCoordinates(lineStringGeometry))
 
-    measureOverlay.getElement().innerHTML = `${length(lastSegment)} / ${length(lineStringGeometry)}`
+    measureOverlay.getElement().innerHTML = `${length(lastSegment)} @ ${angle(lastSegment)} / ${length(lineStringGeometry)}`
     measureOverlay.setPosition(lineStringGeometry.getLastCoordinate())
     circleFeature.getGeometry().setCenterAndRadius(lastSegment.getFirstCoordinate(), lastSegment.getLength())
   }
