@@ -61,8 +61,8 @@ export const symbolStyle = mode => (feature, resolution) => {
 
   return symbol.isValid()
     ? [
-      new Style({ image: icon(symbol) }),
-      mode === 'multi' ? factory.handles(feature.getGeometry()) : []
-    ].flat()
+        new Style({ image: icon(symbol) }),
+        mode === 'multi' ? factory.handles(feature.getGeometry()) : []
+      ].flat()
     : defaultStyle(feature)
 }

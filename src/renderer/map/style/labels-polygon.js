@@ -44,27 +44,33 @@ export const directionalPlacements = polygon => {
 
   const hIntersect = () => {
     const xs = axisIntersect(points, [box[0], C[1]], [box[2], C[1]])
-    return xs.length !== 2 ? {} : {
-      east: new geom.Point(xs[0][0] > xs[1][0] ? xs[0] : xs[1]),
-      west: new geom.Point(xs[0][0] > xs[1][0] ? xs[1] : xs[0])
-    }
+    return xs.length !== 2
+      ? {}
+      : {
+          east: new geom.Point(xs[0][0] > xs[1][0] ? xs[0] : xs[1]),
+          west: new geom.Point(xs[0][0] > xs[1][0] ? xs[1] : xs[0])
+        }
   }
 
   const vIntersect = () => {
     const xs = axisIntersect(points, [C[0], box[1]], [C[0], box[3]])
-    return xs.length !== 2 ? {} : {
-      south: new geom.Point(xs[0][1] > xs[1][1] ? xs[1] : xs[0]),
-      north: new geom.Point(xs[0][1] > xs[1][1] ? xs[0] : xs[1])
-    }
+    return xs.length !== 2
+      ? {}
+      : {
+          south: new geom.Point(xs[0][1] > xs[1][1] ? xs[1] : xs[0]),
+          north: new geom.Point(xs[0][1] > xs[1][1] ? xs[0] : xs[1])
+        }
   }
 
   const northEW = () => {
     const y = box[1] + (box[3] - box[1]) * 0.95
     const xs = axisIntersect(points, [box[0], y], [box[2], y])
-    return xs.length !== 2 ? {} : {
-      northEast: new geom.Point(xs[0][0] > xs[1][0] ? xs[0] : xs[1]),
-      northWest: new geom.Point(xs[0][0] > xs[1][0] ? xs[1] : xs[0])
-    }
+    return xs.length !== 2
+      ? {}
+      : {
+          northEast: new geom.Point(xs[0][0] > xs[1][0] ? xs[0] : xs[1]),
+          northWest: new geom.Point(xs[0][0] > xs[1][0] ? xs[1] : xs[0])
+        }
   }
 
   const footer = () => ({

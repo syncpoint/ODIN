@@ -17,7 +17,7 @@ const patternDescriptor = options => {
   const d = Math.round(options.spacing) || 10
   const pattern = patterns[options.pattern]
 
-  var a = Math.round(((options.angle || 0) - 90) % 360)
+  let a = Math.round(((options.angle || 0) - 90) % 360)
   if (a > 180) a -= 360
   a *= Math.PI / 180
   const cos = Math.cos(a)
@@ -71,12 +71,12 @@ const fillPattern = options => {
     const repeat = descriptor.repeat || [[0, 0]]
 
     if (descriptor.lines) {
-      for (var i = 0; i < descriptor.lines.length; i++) {
-        for (var r = 0; r < repeat.length; r++) {
+      for (let i = 0; i < descriptor.lines.length; i++) {
+        for (let r = 0; r < repeat.length; r++) {
           const line = descriptor.lines[i]
           context.beginPath()
           context.moveTo(line[0] + repeat[r][0], line[1] + repeat[r][1])
-          for (var k = 2; k < line.length; k += 2) {
+          for (let k = 2; k < line.length; k += 2) {
             context.lineTo(line[k] + repeat[r][0], line[k + 1] + repeat[r][1])
           }
           context.stroke()

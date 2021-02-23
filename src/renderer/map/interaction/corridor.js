@@ -19,7 +19,7 @@ export default feature => {
   })()
 
   const params = geometry => {
-    var [line, point] = TS.geometries(read(geometry))
+    const [line, point] = TS.geometries(read(geometry))
     const coords = [TS.startPoint(line), point].map(TS.coordinate)
     const [A, B] = R.take(2, TS.coordinates([line]))
     const segment = TS.segment(A, B)
@@ -40,7 +40,7 @@ export default feature => {
 
 
   // Register control feature geometry change listeners:
-  var changing = false
+  let changing = false
   ;(() => {
     const centerChanged = ({ target: geometry }) => {
       if (changing) return
