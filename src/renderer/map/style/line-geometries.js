@@ -46,20 +46,30 @@ export const geometries = {
  */
 geometries['G*G*OLKA--'] = ({ styles, line }) => {
   const coords = TS.coordinates(line)
-  const segment = TS.segment(coords)
+  const segment = R.last(TS.segments(line))
   const angle = segment.angle()
   const length = segment.getLength()
-  const xs = TS.projectCoordinates(length, angle, coords[0])([
+  const xs = TS.projectCoordinates(length, angle, coords[coords.length - 2])([
     [0.25, 0], [0.4, 0], [0.25, -0.04], [0.4, 0.04], [0.4, -0.04], [0.25, 0.04],
     [0.95, -0.05], [1, 0], [0.95, 0.05]
   ])
 
-  return styles.solidLine(TS.collect([
-    TS.lineString([coords[0], xs[0]]),
-    TS.lineString([xs[1], coords[1]]),
-    TS.polygon(R.props([2, 3, 4, 5, 2], xs)),
-    TS.lineString(R.props([6, 7, 8], xs))
-  ]))
+  if (coords.length > 2) {
+    return styles.solidLine(TS.collect([
+      TS.lineString(R.dropLast(1, coords)),
+      TS.lineString([coords[coords.length - 2], xs[0]]),
+      TS.lineString([xs[1], coords[coords.length - 1]]),
+      TS.polygon(R.props([2, 3, 4, 5, 2], xs)),
+      TS.lineString(R.props([6, 7, 8], xs))
+    ]))
+  } else {
+    return styles.solidLine(TS.collect([
+      TS.lineString([coords[coords.length - 2], xs[0]]),
+      TS.lineString([xs[1], coords[coords.length - 1]]),
+      TS.polygon(R.props([2, 3, 4, 5, 2], xs)),
+      TS.lineString(R.props([6, 7, 8], xs))
+    ]))
+  }
 }
 
 /**
@@ -68,16 +78,17 @@ geometries['G*G*OLKA--'] = ({ styles, line }) => {
  */
 geometries['G*G*OLKGM-'] = ({ styles, line }) => {
   const coords = TS.coordinates(line)
-  const segment = TS.segment(coords)
+  const segment = R.last(TS.segments(line))
   const angle = segment.angle()
   const length = segment.getLength()
-  const xs = TS.projectCoordinates(length, angle, coords[0])([
+
+  const arrow = TS.projectCoordinates(length, angle, coords[coords.length - 2])([
     [0.86, -0.1], [1, 0], [0.86, 0.1], [0.86, 0.07], [0.965, 0], [0.86, -0.07]
   ])
 
   return styles.solidLine(TS.collect([
-    TS.lineString([coords[0], xs[4]]),
-    TS.polygon(R.props([0, 1, 2, 3, 4, 5, 0], xs))
+    TS.lineString(coords),
+    TS.polygon(R.props([0, 1, 2, 3, 4, 5, 0], arrow))
   ]))
 }
 
@@ -87,10 +98,10 @@ geometries['G*G*OLKGM-'] = ({ styles, line }) => {
  */
 geometries['G*G*OLKGS-'] = ({ styles, line }) => {
   const coords = TS.coordinates(line)
-  const segment = TS.segment(coords)
+  const segment = R.last(TS.segments(line))
   const angle = segment.angle()
   const length = segment.getLength()
-  const xs = TS.projectCoordinates(length, angle, coords[0])([
+  const xs = TS.projectCoordinates(length, angle, coords[coords.length - 2])([
     [0.86, -0.1], [1, 0], [0.86, 0.1]
   ])
 
@@ -106,21 +117,32 @@ geometries['G*G*OLKGS-'] = ({ styles, line }) => {
  */
 geometries['G*G*PF----'] = ({ styles, line }) => {
   const coords = TS.coordinates(line)
-  const segment = TS.segment(coords)
+  const segment = R.last(TS.segments(line))
   const angle = segment.angle()
   const length = segment.getLength()
-  const xs = TS.projectCoordinates(length, angle, coords[0])([
+  const xs = TS.projectCoordinates(length, angle, coords[coords.length - 2])([
     [0.8, 0.2], [1, 0], [0.8, -0.2],
     [0.8, -0.136], [0.94, 0], [0.8, 0.136]
   ])
 
-  return [
-    styles.solidLine(TS.collect([
-      TS.lineString([coords[0], xs[4]]),
-      TS.lineString(R.props([3, 4, 5], xs))
-    ])),
-    styles.dashedLine(TS.lineString(R.props([0, 1, 2], xs)), { lineDash: [8, 8] })
-  ]
+  if (coords.length > 2) {
+    return [
+      styles.solidLine(TS.collect([
+        TS.lineString(R.dropLast(1, coords)),
+        TS.lineString([coords[coords.length - 2], xs[4]]),
+        TS.lineString(R.props([3, 4, 5], xs))
+      ])),
+      styles.dashedLine(TS.lineString(R.props([0, 1, 2], xs)), { lineDash: [8, 8] })
+    ]
+  } else {
+    return [
+      styles.solidLine(TS.collect([
+        TS.lineString([coords[coords.length - 2], xs[4]]),
+        TS.lineString(R.props([3, 4, 5], xs))
+      ])),
+      styles.dashedLine(TS.lineString(R.props([0, 1, 2], xs)), { lineDash: [8, 8] })
+    ]
+  }
 }
 
 /**
