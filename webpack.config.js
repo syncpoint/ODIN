@@ -2,6 +2,7 @@ const path = require('path')
 const { spawn } = require('child_process')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
+const ESLintPlugin = require('eslint-webpack-plugin')
 
 const hash = 'hash:base64:8'
 
@@ -9,7 +10,7 @@ const RULES = {
   javascript: {
     test: /\.js$/,
     exclude: /node_modules/,
-    use: ['babel-loader', 'eslint-loader']
+    use: ['babel-loader']
   },
 
   css: {
@@ -56,7 +57,8 @@ const rendererConfig = (env, argv) => ({
 
   plugins: [
     new HtmlWebpackPlugin({ title: 'ODIN - C2IS' }),
-    new webpack.IgnorePlugin(/^pg-native$/)
+    new webpack.IgnorePlugin(/^pg-native$/),
+    new ESLintPlugin()
   ]
 })
 
