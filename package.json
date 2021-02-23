@@ -15,8 +15,7 @@
     "builder:linux": "electron-builder --linux",
     "release": "electron-builder -mlw --publish always",
     "eslint": "eslint src/",
-    "test": "mocha --require ./test/register.js --require ignore-styles --recursive",
-    "spectron": "mocha --require @babel/register --recursive spectron"
+    "test": "mocha --require ./test/register.js --require ignore-styles --recursive"
   },
   "repository": {
     "type": "git",
@@ -95,7 +94,6 @@
     "react-i18next": "^11.8.7",
     "react-window": "^1.8.6",
     "sanitize-filename": "^1.6.3",
-    "spectron": "^10.0.1",
     "typeface-roboto": "1.1.13",
     "uuid-random": "^1.3.2"
   }
