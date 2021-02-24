@@ -7,12 +7,15 @@ import Overlay from 'ol/Overlay'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
 import Circle from 'ol/geom/Circle'
+import Point from 'ol/geom/Point'
 import GeometryType from 'ol/geom/GeometryType'
 import uuid from 'uuid-random'
 import evented from '../../../evented'
 import { registerHandler } from '../../../clipboard'
 import { defaultStyle, selectedStyle } from './style'
 import { angle, area, length, isSingleSegment, getLastSegmentCoordinates } from './tools'
+import { Circle as CircleStyle, Fill, Style, Stroke, Text as TextStyle } from 'ol/style'
+
 
 const createMeasureOverlay = () => {
   const overlayElement = document.createElement('div')
@@ -108,7 +111,77 @@ export default map => {
     const drawInteraction = new Draw({
       type: geometryType,
       source: source,
-      style: selectedStyle()
+      style: (feature) => {
+        // selectedStyle()
+        const styles = []
+        styles.push(new Style({
+          stroke: new Stroke({
+            color: 'blue',
+            width: 4
+          })
+        }),
+        new Style({
+          stroke: new Stroke({
+            color: 'white',
+            lineDash: [15, 15],
+            width: 4
+          })
+        }),
+        new Style({
+          image: new CircleStyle({
+            radius: 4,
+            fill: new Fill({
+              color: 'blue'
+            })
+          })
+        })
+        )
+        const geometry = feature.getGeometry()
+        if (geometry.getType() !== GeometryType.LINE_STRING) return styles
+
+        geometry.forEachSegment((start, end) => {
+          const segment = new LineString([start, end])
+          styles.push(new Style({
+            geometry: segment,
+            text: new TextStyle({
+              text: `${length(segment)}\n\n${angle(segment)}`,
+              font: '16px sans-serif',
+              fill: new Fill({
+                color: 'black'
+              }),
+              stroke: new Stroke({
+                color: 'white',
+                width: 4
+              }),
+              placement: 'line',
+              overflow: true,
+              textBaseline: 'middle'
+            })
+          }))
+        })
+
+        styles.push(new Style({
+          geometry: new Point(geometry.getFirstCoordinate()),
+          image: new CircleStyle({
+            radius: 6,
+            fill: new Fill({
+              color: 'green'
+            })
+          })
+        }))
+
+        styles.push(new Style({
+          geometry: new Point(geometry.getLastCoordinate()),
+          image: new CircleStyle({
+            radius: 6,
+            fill: new Fill({
+              color: 'red'
+            })
+          })
+        }))
+
+        return styles
+      }
     })
 
     drawInteraction.on('drawstart', event => {
