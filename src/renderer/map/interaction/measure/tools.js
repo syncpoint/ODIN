@@ -29,9 +29,13 @@ export const length = geometry => {
 }
 
 export const angle = lineStringSegment => {
+  return formatAngle((-1 * radiansAngle(lineStringSegment) * 180 / Math.PI + 450) % 360)
+}
+
+export const radiansAngle = lineStringSegment => {
   const start = lineStringSegment.getFirstCoordinate()
   const end = lineStringSegment.getLastCoordinate()
-  return formatAngle((-1 * Math.atan2(end[1] - start[1], end[0] - start[0]) * 180 / Math.PI + 450) % 360)
+  return Math.atan2(end[1] - start[1], end[0] - start[0])
 }
 
 export const area = polygonGeometry => {

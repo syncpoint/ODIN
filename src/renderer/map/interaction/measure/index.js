@@ -2,7 +2,6 @@ import { Draw, Modify, Select } from 'ol/interaction'
 import Collection from 'ol/Collection'
 import Feature from 'ol/Feature'
 import LineString from 'ol/geom/LineString'
-import Overlay from 'ol/Overlay'
 
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
@@ -13,21 +12,9 @@ import uuid from 'uuid-random'
 import evented from '../../../evented'
 import { registerHandler } from '../../../clipboard'
 import { defaultStyle, selectedStyle } from './style'
-import { angle, area, length, isSingleSegment, getLastSegmentCoordinates } from './tools'
+import { angle, radiansAngle, area, length, isSingleSegment, getLastSegmentCoordinates } from './tools'
 import { Circle as CircleStyle, Fill, Style, Stroke, Text as TextStyle } from 'ol/style'
 
-
-const createMeasureOverlay = () => {
-  const overlayElement = document.createElement('div')
-  overlayElement.className = 'ol-tooltip'
-  overlayElement.style = 'font: 16px sans-serif; background-color: hsl(0, 0%, 100%)'
-  const measureOverlay = new Overlay({
-    element: overlayElement,
-    offset: [20, 5],
-    positioning: 'center-left'
-  })
-  return measureOverlay
-}
 
 const getLineStringText = feature => {
   const geometry = feature.getGeometry()
@@ -94,14 +81,12 @@ export default map => {
     const lineStringGeometry = event.target.getGeometry()
     const lastSegment = new LineString(getLastSegmentCoordinates(lineStringGeometry))
 
-    measureOverlay.getElement().innerHTML = `${length(lastSegment)} @ ${angle(lastSegment)} / ${length(lineStringGeometry)}`
-    measureOverlay.setPosition(lineStringGeometry.getLastCoordinate())
     circleFeature.getGeometry().setCenterAndRadius(lastSegment.getFirstCoordinate(), lastSegment.getLength())
   }
 
   const handlePolygonChanged = event => {
     const geometry = event.target.getGeometry()
-    console.dir(geometry)
+
     measureOverlay.getElement().innerHTML = area(geometry)
     measureOverlay.setPosition(geometry.getInteriorPoint().getCoordinates())
   }
@@ -112,8 +97,9 @@ export default map => {
       type: geometryType,
       source: source,
       style: (feature) => {
-        // selectedStyle()
+
         const styles = []
+
         styles.push(new Style({
           stroke: new Stroke({
             color: 'blue',
@@ -138,6 +124,8 @@ export default map => {
         )
         const geometry = feature.getGeometry()
         if (geometry.getType() !== GeometryType.LINE_STRING) return styles
+
+        /* process segment style */
 
         geometry.forEachSegment((start, end) => {
           const segment = new LineString([start, end])
@@ -170,6 +158,11 @@ export default map => {
           })
         }))
 
+        /* set style and label for last point */
+
+        const lastSegment = new LineString(getLastSegmentCoordinates(geometry))
+        const alpha = radiansAngle(lastSegment)
+
         styles.push(new Style({
           geometry: new Point(geometry.getLastCoordinate()),
           image: new CircleStyle({
@@ -177,6 +170,23 @@ export default map => {
             fill: new Fill({
               color: 'red'
             })
+          }),
+          text: new TextStyle({
+            text: length(geometry),
+            font: '16px sans-serif',
+            fill: new Fill({
+              color: 'black'
+            }),
+            stroke: new Stroke({
+              color: 'white',
+              width: 4
+            }),
+            offsetX: 25 * Math.cos(alpha),
+            offsetY: -25 * Math.sin(alpha),
+            placement: 'point',
+            textAlign: Math.abs(alpha) < Math.PI / 2 ? 'left' : 'right',
+            overflow: true,
+            textBaseline: 'ideographic'
           })
         }))
 
@@ -196,8 +206,6 @@ export default map => {
         event.feature.on('change', handlePolygonChanged)
       }
 
-      measureOverlay = createMeasureOverlay()
-      map.addOverlay(measureOverlay)
     })
 
     drawInteraction.on('drawend', event => {
@@ -213,9 +221,6 @@ export default map => {
       event.feature.setStyle(defaultStyle(getTextFor(event.feature)))
       /*  schema:id is required in order to make deleting a feature work */
       event.feature.setId(`measure:${uuid()}`)
-
-      map.removeOverlay(measureOverlay)
-      measureOverlay.dispose()
 
       map.removeInteraction(drawInteraction)
       currentDrawInteraction = null
