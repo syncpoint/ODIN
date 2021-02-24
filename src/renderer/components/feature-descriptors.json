@@ -3724,7 +3724,7 @@
     "sidc": "G*G*DLP---*****",
     "class": "L",
     "scope": "CONTROL",
-    "geometry": "MultiPoint",
+    "geometry": "Undefined",
     "dimension": "C2",
     "hierarchy": [
       "TACTICAL GRAPHICS",
