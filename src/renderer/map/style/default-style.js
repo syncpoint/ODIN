@@ -38,7 +38,7 @@ const text = options => new styles.Text(options)
 const regularShape = options => new styles.RegularShape(options)
 
 const scheme = 'medium'
-const styleOptions = ({ feature }) => {
+export const styleOptions = ({ feature }) => {
   const sidc = feature.get('sidc')
 
   return {
