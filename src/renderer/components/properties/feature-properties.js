@@ -24,6 +24,7 @@ const panelTypes = {
   SO: (key, props) => <StabilityOperationsProperties key={key} { ...props }/>,
   P: (key, props) => <PointProperties key={key} { ...props }/>,
   I: (key, props) => <InstallationProperties key={key} { ...props }/>,
+  EI: (key, props) => <InstallationProperties key={key} { ...props }/>,
   EEI: (key, props) => <EEIProperties key={key} { ...props }/>,
   GP: (key, props) => <GenericPointProperties key={key} { ...props }/>,
   BL: (key, props) => <BoundariesProperties key={key} { ...props }/>
