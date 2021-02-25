@@ -1,8 +1,12 @@
 import GeometryType from 'ol/geom/GeometryType'
 import { getArea, getLength } from 'ol/sphere'
 
-const meterFormatter = new Intl.NumberFormat(window.navigator.userLanguage || window.navigator.language, { maximumFractionDigits: 2, style: 'unit', unit: 'meter' })
-const kilometerFormatter = new Intl.NumberFormat(window.navigator.userLanguage || window.navigator.language, { maximumFractionDigits: 2, style: 'unit', unit: 'kilometer' })
+const meterFormatter = new Intl.NumberFormat(window.navigator.userLanguage || window.navigator.language, { maximumFractionDigits: 1, style: 'unit', unit: 'meter' })
+const kilometerFormatter = new Intl.NumberFormat(window.navigator.userLanguage || window.navigator.language, { maximumFractionDigits: 1, style: 'unit', unit: 'kilometer' })
+const oneDigitFormatter = new Intl.NumberFormat(window.navigator.userLanguage || window.navigator.language, {
+  maximumFractionDigits: 1
+})
+
 const twoDigitsFormatter = new Intl.NumberFormat(window.navigator.userLanguage || window.navigator.language, {
   maximumFractionDigits: 2
 })
@@ -15,7 +19,7 @@ const formatLength = length => {
 }
 
 export const formatAngle = angle => {
-  return `${twoDigitsFormatter.format(angle)}°`
+  return `${oneDigitFormatter.format(angle)}°`
 }
 
 export const formatArea = area => {
