@@ -29,6 +29,7 @@ export const baseStyle = isSelected => [
   })
 ]
 
+/* style function for POLYGON */
 const polygonStyle = feature => {
 
   const styles = []
@@ -81,10 +82,12 @@ const polygonStyle = feature => {
   return styles
 }
 
+/* style function for LINE_STRING */
 const linestringStyle = feature => {
-  const styles = []
 
+  const styles = []
   const geometry = feature.getGeometry()
+
   geometry.forEachSegment((start, end) => {
     const segment = new LineString([start, end])
     styles.push(new Style({
@@ -153,29 +156,15 @@ const linestringStyle = feature => {
   return styles
 }
 
-
 export const stylist = (isSelected = false) => (feature) => {
-
   const geometry = feature.getGeometry()
-  const styles = baseStyle(isSelected)
-
-  /*  When in DRAW mode for a POLYGON, OL calls the styling function for
-      the followig geometries: POINT, LINE_STRING, POLYGON. Since we want
-      to style the POLYGON only, we will return as soon as possible.
-  */
-
-
-  if (geometry.getType() === GeometryType.POLYGON) {
-    return [...styles, ...polygonStyle(feature)]
-  } else if (geometry.getType() === GeometryType.LINE_STRING) {
-    return [...styles, ...linestringStyle(feature)]
-  }
-
-  return styles
+  return stylefunctionForGeometryType(geometry.getType(), isSelected)(feature)
 }
 
+/* returns a style function for the given geometry type and selection state */
 export const stylefunctionForGeometryType = (geometryType, isSelected = false) => {
   const styles = baseStyle(isSelected)
+
   if (geometryType === GeometryType.POLYGON) {
     return feature => [...styles, ...polygonStyle(feature)]
   } else if (geometryType === GeometryType.LINE_STRING) {
