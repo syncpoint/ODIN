@@ -11,7 +11,7 @@ import GeometryType from 'ol/geom/GeometryType'
 import uuid from 'uuid-random'
 import evented from '../../../evented'
 import { registerHandler } from '../../../clipboard'
-import { stylist, baseStyle } from './style'
+import { stylist, baseStyle, stylefunctionForGeometryType } from './style'
 import { getLastSegmentCoordinates } from './tools'
 
 export default map => {
@@ -38,6 +38,7 @@ export default map => {
       feature.getGeometry().getType() === GeometryType.POLYGON
     )
   })
+  selectionInteraction.on('select', event => console.dir(event))
 
   /*  ** MODIFY ** */
   const modifyInteraction = new Modify({
@@ -64,10 +65,11 @@ export default map => {
     const drawInteraction = new Draw({
       type: geometryType,
       source: source,
-      style: stylist(true)
+      style: baseStyle(true)
     })
 
     drawInteraction.on('drawstart', event => {
+      event.feature.setStyle(stylefunctionForGeometryType(geometryType, true))
       if (geometryType !== GeometryType.LINE_STRING) return
 
       /* circle helper is only supported when measuring distances */
@@ -82,6 +84,7 @@ export default map => {
 
       /*  schema:id is required in order to make deleting a feature work */
       event.feature.setId(`measure:${uuid()}`)
+      event.feature.setStyle(null)
 
       map.removeInteraction(drawInteraction)
       currentDrawInteraction = null

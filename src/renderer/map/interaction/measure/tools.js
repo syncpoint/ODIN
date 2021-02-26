@@ -7,10 +7,6 @@ const oneDigitFormatter = new Intl.NumberFormat(window.navigator.userLanguage ||
   maximumFractionDigits: 1
 })
 
-const twoDigitsFormatter = new Intl.NumberFormat(window.navigator.userLanguage || window.navigator.language, {
-  maximumFractionDigits: 2
-})
-
 const formatLength = length => {
   if (length < 1000) {
     return meterFormatter.format(length)
@@ -25,7 +21,7 @@ export const formatAngle = angle => {
 export const formatArea = area => {
   const unit = area > 100000 ? 'km²' : 'm²'
   const factor = area > 100000 ? 1000000 : 1
-  return `${twoDigitsFormatter.format(area / factor)}${unit}`
+  return `${oneDigitFormatter.format(area / factor)}${unit}`
 }
 
 export const length = geometry => {
