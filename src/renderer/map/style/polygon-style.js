@@ -4,6 +4,7 @@ import { parameterized } from '../../components/SIDC'
 import * as L from './polygon-labels'
 import { fills } from './polygon-fills'
 import { styleFactory } from './default-style'
+import { geometries } from './polygon-geometries'
 
 const when = s => fn => s ? fn(s) : null
 const W = (w, w1) => (w && w1) ? w + '-' + w1 : w || w1
@@ -141,10 +142,16 @@ export const polygonStyle = mode => (feature, resolution) => {
   }
 
   const fill = fills[sidc] && fills[sidc]({ styles: factory })
+  const options = { feature, geometry: simplified, resolution, styles: factory }
+
+  const geometryStyle = geometries[sidc]
+    ? geometries[sidc](options)
+    : [factory.solidLine(simplified, { fill })]
+
 
   return [
-    factory.solidLine(simplified, { fill }),
     mode === 'multi' ? factory.handles(firstPoint()) : [],
-    labels()
+    labels(),
+    ...geometryStyle
   ].flat()
 }

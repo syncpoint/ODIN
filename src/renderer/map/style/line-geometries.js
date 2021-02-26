@@ -278,6 +278,7 @@ geometries['G*T*F-----'] = ({ line, styles, resolution }) => {
     TS.lineString(xs)
   ]))
 }
+
 /**
  * TACGRP.MOBSU.SU.FEWS
  * FOXHOLE, EMPLACEMENT OR WEAPON SITE
