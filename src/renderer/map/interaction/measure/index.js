@@ -2,44 +2,17 @@ import { Draw, Modify, Select } from 'ol/interaction'
 import Collection from 'ol/Collection'
 import Feature from 'ol/Feature'
 import LineString from 'ol/geom/LineString'
-import Overlay from 'ol/Overlay'
 
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
 import Circle from 'ol/geom/Circle'
+
 import GeometryType from 'ol/geom/GeometryType'
 import uuid from 'uuid-random'
 import evented from '../../../evented'
 import { registerHandler } from '../../../clipboard'
-import { defaultStyle, selectedStyle } from './style'
-import { angle, area, length, isSingleSegment, getLastSegmentCoordinates } from './tools'
-
-const createMeasureOverlay = () => {
-  const overlayElement = document.createElement('div')
-  overlayElement.className = 'ol-tooltip'
-  overlayElement.style = 'font: 16px sans-serif; background-color: hsl(0, 0%, 100%)'
-  const measureOverlay = new Overlay({
-    element: overlayElement,
-    offset: [20, 5],
-    positioning: 'center-left'
-  })
-  return measureOverlay
-}
-
-const getLineStringText = feature => {
-  const geometry = feature.getGeometry()
-  return (isSingleSegment(geometry) ? `${length(geometry)} @ ${angle(geometry)}` : length(geometry))
-}
-
-const getPolygonText = feature => {
-  const geometry = feature.getGeometry()
-  return area(geometry)
-}
-
-const getTextFor = feature => (feature.getGeometry().getType() === GeometryType.LINE_STRING
-  ? getLineStringText(feature)
-  : getPolygonText(feature))
-
+import { stylist, baseStyle, stylefunctionForGeometryType } from './style'
+import { getLastSegmentCoordinates } from './tools'
 
 export default map => {
 
@@ -51,7 +24,7 @@ export default map => {
   const source = new VectorSource()
   const vector = new VectorLayer({
     source: source,
-    style: defaultStyle()
+    style: stylist()
   })
 
   /*  ** SELECT ** */
@@ -59,30 +32,22 @@ export default map => {
     hitTolerance: 3,
     layers: [vector],
     features: selectedFeatures,
-    style: selectedStyle(),
-    filter: feature => (feature.getGeometry().getType() === GeometryType.LINE_STRING ||
+    style: stylist(true),
+    filter: feature => (
+      feature.getGeometry().getType() === GeometryType.LINE_STRING ||
       feature.getGeometry().getType() === GeometryType.POLYGON
     )
-  })
-  selectionInteraction.on('select', event => {
-    event.selected.forEach(feature => feature.setStyle(selectedStyle(getTextFor(feature))))
-    event.deselected.forEach(feature => feature.setStyle(defaultStyle(getTextFor(feature))))
   })
 
   /*  ** MODIFY ** */
   const modifyInteraction = new Modify({
     features: selectedFeatures
   })
-  modifyInteraction.on('modifyend', event => {
-    const features = event.features.getArray()
-    features.forEach(feature => feature.setStyle(selectedStyle(getTextFor(feature))))
-  })
 
   /*  circle feature is is used for giving the user a visual feedback for the last segement of
       the distance measurement
   */
   let circleFeature
-  let measureOverlay
 
   /* reference to the current draw interaction */
   let currentDrawInteraction
@@ -91,16 +56,7 @@ export default map => {
     const lineStringGeometry = event.target.getGeometry()
     const lastSegment = new LineString(getLastSegmentCoordinates(lineStringGeometry))
 
-    measureOverlay.getElement().innerHTML = `${length(lastSegment)} @ ${angle(lastSegment)} / ${length(lineStringGeometry)}`
-    measureOverlay.setPosition(lineStringGeometry.getLastCoordinate())
     circleFeature.getGeometry().setCenterAndRadius(lastSegment.getFirstCoordinate(), lastSegment.getLength())
-  }
-
-  const handlePolygonChanged = event => {
-    const geometry = event.target.getGeometry()
-    console.dir(geometry)
-    measureOverlay.getElement().innerHTML = area(geometry)
-    measureOverlay.setPosition(geometry.getInteriorPoint().getCoordinates())
   }
 
   /*  ** DRAW ** */
@@ -108,44 +64,40 @@ export default map => {
     const drawInteraction = new Draw({
       type: geometryType,
       source: source,
-      style: selectedStyle()
+      style: baseStyle(true)
     })
 
     drawInteraction.on('drawstart', event => {
-      if (geometryType === GeometryType.LINE_STRING) {
-        /* circle helper is only supported when measuring distances */
-        circleFeature = new Feature(new Circle({ x: 0, y: 0 }, 0))
-        circleFeature.setStyle(selectedStyle())
-        source.addFeature(circleFeature)
+      event.feature.setStyle(stylefunctionForGeometryType(geometryType, true))
+      if (geometryType !== GeometryType.LINE_STRING) return
 
-        event.feature.on('change', handleLineStringChanged)
-      } else {
-        event.feature.on('change', handlePolygonChanged)
-      }
+      /* circle helper is only supported when measuring distances */
+      circleFeature = new Feature(new Circle({ x: 0, y: 0 }, 0))
+      circleFeature.setStyle(baseStyle(true))
+      source.addFeature(circleFeature)
 
-      measureOverlay = createMeasureOverlay()
-      map.addOverlay(measureOverlay)
+      event.feature.on('change', handleLineStringChanged)
     })
 
     drawInteraction.on('drawend', event => {
-      if (geometryType === GeometryType.LINE_STRING) {
-        /*  when drawing ends get rid of the circle fature */
-        source.removeFeature(circleFeature)
-        circleFeature.dispose()
 
-        event.feature.un('change', handleLineStringChanged)
-      } else {
-        event.feature.un('change', handlePolygonChanged)
-      }
-      event.feature.setStyle(defaultStyle(getTextFor(event.feature)))
       /*  schema:id is required in order to make deleting a feature work */
       event.feature.setId(`measure:${uuid()}`)
-
-      map.removeOverlay(measureOverlay)
-      measureOverlay.dispose()
+      event.feature.setStyle(null)
 
       map.removeInteraction(drawInteraction)
       currentDrawInteraction = null
+
+      /*  event my be fired by ending the draw interaction with
+          geometry LINE_STRING or POLYGON
+      */
+      if (geometryType !== GeometryType.LINE_STRING) return
+
+      /*  when drawing ends get rid of the circle fature */
+      source.removeFeature(circleFeature)
+      circleFeature.dispose()
+
+      event.feature.un('change', handleLineStringChanged)
     })
 
     return drawInteraction
