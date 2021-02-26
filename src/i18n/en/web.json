@@ -75,7 +75,7 @@
     }
   },
   "measure": {
-    "length": "measure distance",
+    "length": "measure distance/bearing",
     "area": "measure area"
   }
 }
