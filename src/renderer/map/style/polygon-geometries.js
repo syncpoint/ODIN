@@ -57,7 +57,7 @@ geometries['G*M*SP----'] = ({ feature, styles, geometry, resolution }) => {
     const offset = (length - pointCount * delta) / 2
     return R.range(0, pointCount + 1).map(i => {
       const P1 = line.extractPoint(start + offset + i * delta)
-      const P2 = TS.projectCoordinate(P1)([angle + Math.PI / 2, resolution * 20])
+      const P2 = TS.projectCoordinate(P1)([angle - Math.PI / 2, resolution * 20])
       const lineString = TS.write(TS.lineString([P1, P2]))
       return styles.solidLine(lineString)
     })
