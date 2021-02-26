@@ -38,7 +38,6 @@ export default map => {
       feature.getGeometry().getType() === GeometryType.POLYGON
     )
   })
-  selectionInteraction.on('select', event => console.dir(event))
 
   /*  ** MODIFY ** */
   const modifyInteraction = new Modify({
