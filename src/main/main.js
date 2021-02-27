@@ -30,17 +30,18 @@ const buildApplicationMenu = () => {
   Menu.setApplicationMenu(menu)
 }
 
-i18n.on('languageChanged', lng => {
-  settings.set(languageKey, lng)
-  buildApplicationMenu()
-})
-
 i18n.on('initialized', () => {
   /*
     By using an environment variable or a ".env" file users may change the language used.
     The ".env" file must be placed in the working directory and is NOT part of the
     software distribution.
   */
+
+  i18n.on('languageChanged', lng => {
+    settings.set(languageKey, lng)
+    buildApplicationMenu()
+  })
+
   i18n.changeLanguage(config.language || settings.get(languageKey, 'en'))
   bootstrap()
 })
