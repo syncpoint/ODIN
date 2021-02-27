@@ -72,7 +72,8 @@ const createProjectWindow = async (options) => {
       title: title,
       show: false,
       webPreferences: {
-        nodeIntegration: true
+        nodeIntegration: true,
+        enableRemoteModule: true
       }
     })
 
