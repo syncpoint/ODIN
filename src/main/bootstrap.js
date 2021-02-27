@@ -72,19 +72,20 @@ const createProjectWindow = async (options) => {
       title: title,
       show: false,
       webPreferences: {
-        nodeIntegration: true
+        nodeIntegration: true,
+        enableRemoteModule: true
       }
     })
 
     /*
-       We allow attributions for basemaps to contain links to the source but
-       we do not want to allow these links to hijack the content of ODIN's
-       main browser window. So we prevent the default behaviour (navigate to
-       the url) and open the url in the system browser instead.
+      We allow attributions for basemaps to contain links to the source but
+      we do not want to allow these links to hijack the content of ODIN's
+      main browser window. So we prevent the default behaviour (navigate to
+      the url) and open the url in the system browser instead.
 
-       All navigation events triggered by the localhost dev server are still
-       propagated.
-     */
+      All navigation events triggered by the localhost dev server are still
+      propagated.
+    */
     const openLinksInSystemBrowser = (event, url) => {
       if (url && url.toLowerCase().includes('localhost')) return
 
@@ -124,7 +125,11 @@ const createProjectWindow = async (options) => {
       sendi18Info(window, lng)
     }
     i18n.on('languageChanged', languageChangedHandler)
-    window.on('close', () => i18n.off('languageChanged', languageChangedHandler))
+    window.on('close', () => {
+      i18n.off('languageChanged', languageChangedHandler)
+      window.webContents.off('will-navigate', openLinksInSystemBrowser)
+      window.webContents.on('new-window', openLinksInSystemBrowser)
+    })
 
     /* (re)establish electron's normal "quit the app if no more windows are open" behavior */
     appShallQuit = true

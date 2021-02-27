@@ -28,4 +28,4 @@ linux:
     - 'dist'
 publish:
   - github
-electronVersion: 8.5.3
+electronVersion: 11.3.0

@@ -40,7 +40,7 @@ export default feature => {
     return { center, angle, size, maxRange, minRange, copy, geometry }
   })(params(geometry))
 
-  var changing = false
+  let changing = false
   ;(() => {
     const centerChanged = ({ target: geometry }) => {
       if (changing) return

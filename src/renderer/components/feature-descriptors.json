@@ -3724,7 +3724,7 @@
     "sidc": "G*G*DLP---*****",
     "class": "L",
     "scope": "CONTROL",
-    "geometry": "MultiPoint",
+    "geometry": "Undefined",
     "dimension": "C2",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -5845,10 +5845,7 @@
       "OFFENSE",
       "LINES",
       "DIRECTION OF ATTACK AVIATION"
-    ],
-    "parameters": {
-      "maxPoints": 2
-    }
+    ]
   },
   {
     "sidc": "G*G*OLKGM-*****",
@@ -5863,10 +5860,7 @@
       "LINES",
       "DIRECTION OF ATTACK GROUND",
       "MAIN ATTACK"
-    ],
-    "parameters": {
-      "maxPoints": 2
-    }
+    ]
   },
   {
     "sidc": "G*G*OLKGS-*****",
@@ -5881,10 +5875,7 @@
       "LINES",
       "DIRECTION OF ATTACK GROUND",
       "SUPPORTING ATTACK"
-    ],
-    "parameters": {
-      "maxPoints": 2
-    }
+    ]
   },
   {
     "sidc": "G*G*OLL---*****",
@@ -5992,10 +5983,7 @@
       "COMMAND AND CONTROL AND GENERAL MANEUVER",
       "DECEPTION",
       "DIRECTION OF ATTACK FOR FEINT"
-    ],
-    "parameters": {
-      "maxPoints": 2
-    }
+    ]
   },
   {
     "sidc": "G*G*PM----*****",

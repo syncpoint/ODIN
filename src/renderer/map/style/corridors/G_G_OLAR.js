@@ -40,8 +40,8 @@ export default options => {
 
   const crossing = (() => {
     const [p1, p2] = TS.coordinates(intersection)
-    var a = TS.lineString([p1, aps[2]])
-    var b = TS.lineString([p2, aps[4]])
+    let a = TS.lineString([p1, aps[2]])
+    let b = TS.lineString([p2, aps[4]])
     if (!a.intersects(b)) {
       a = TS.lineString([p1, aps[4]])
       b = TS.lineString([p2, aps[2]])

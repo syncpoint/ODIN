@@ -7,8 +7,8 @@ import { createLine, wrapX, splitWorlds } from '../utils'
 import { equals } from 'ol/extent'
 
 
-var loadedExtent
-var loadedWrapBack
+let loadedExtent
+let loadedWrapBack
 
 /**
  * generates Mgrs grid (not including gzd Zones) for extents that overlap the view projection

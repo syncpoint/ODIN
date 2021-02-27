@@ -129,6 +129,9 @@ const SourceDescriptorDetails = props => {
           classes={classes}
           // eslint-disable-next-line react/prop-types
           name={metadata.name}
+          // eslint-disable-next-line react/prop-types
+          attributions={options.attributions}
+          merge={mergeOptions}
           onValidation={setAllowNextStep}
           onNameReady={name => mergeMetadata('name', name)}
         />

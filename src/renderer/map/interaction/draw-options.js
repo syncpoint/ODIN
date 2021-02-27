@@ -23,7 +23,12 @@ export const drawOptions = [
   /* Polygon. */
   {
     match: descriptor => descriptor.geometry === GeometryType.POLYGON,
-    options: () => ({ type: GeometryType.POLYGON })
+    options: () => ({ type: GeometryType.POLYGON }),
+    complete: (_, feature) => {
+      const geometry = feature.getGeometry()
+      const right = true
+      geometry.setCoordinates(geometry.getCoordinates(right))
+    }
   },
 
   /* LineString. */

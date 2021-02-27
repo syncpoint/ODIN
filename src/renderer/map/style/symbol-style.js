@@ -2,7 +2,7 @@ import * as R from 'ramda'
 import { Style, Icon } from 'ol/style'
 import ms from 'milsymbol'
 import { K } from '../../../shared/combinators'
-import { defaultStyle, styleFactory } from './default-style'
+import { defaultStyle, styleFactory, styleOptions } from './default-style'
 
 const MODIFIERS = {
   c: 'quantity',
@@ -52,17 +52,36 @@ export const symbolStyle = mode => (feature, resolution) => {
     factory.showLabels()
 
   const outlineWidth = mode === 'selected' ? 6 : 4
-  const symbol = new ms.Symbol(sidc, {
+  const options = {
     ...modifiers(properties),
     outlineWidth,
     outlineColor: 'white',
     infoFields
-  })
+  }
+
+  let actualSIDC = sidc
+  if (sidc && sidc[0] === 'G') {
+    // MilSymbols cannot handle with undefined hostility
+    // state ('-') for TACGRP symbols => Use Friend, but don't
+    // use hostility color.
+    if (sidc[1] === '-') {
+      const chars = [...sidc]
+      chars[1] = 'F'
+      actualSIDC = chars.join('')
+    } else {
+      // Set mono color according to hostility state.
+      const color = styleOptions({ feature }).primaryColor
+      options.monoColor = color
+      options.outlineColor = styleOptions({ feature }).accentColor
+    }
+  }
+
+  const symbol = new ms.Symbol(actualSIDC, options)
 
   return symbol.isValid()
     ? [
-      new Style({ image: icon(symbol) }),
-      mode === 'multi' ? factory.handles(feature.getGeometry()) : []
-    ].flat()
+        new Style({ image: icon(symbol) }),
+        mode === 'multi' ? factory.handles(feature.getGeometry()) : []
+      ].flat()
     : defaultStyle(feature)
 }

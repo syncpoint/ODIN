@@ -27,6 +27,7 @@
     "stepFinalize": "Benennen und Speichern",
     "descriptorUrl": "URL der Karte",
     "descriptorName": "Bezeichnung der Karte",
+    "attributions": "Namensnennungen",
     "xyzZoomOptions": "Minimale und maximale Zoomstufe",
     "unknownSource": "Kartentyp konnte anhand der URL nicht erkannt werden",
     "usePreview": "Benutzen Sie die Vorschau um die Karte zu überprüfen",
@@ -72,5 +73,9 @@
     "featureList": {
       "noResults": "Keine Ergebnisse. Bitte ändern Sie die Such- bzw. Filterkriterien"
     }
+  },
+  "measure": {
+    "length": "Entfernung/Richtung messen",
+    "area": "Fläche messen"
   }
 }

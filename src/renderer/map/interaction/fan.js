@@ -16,7 +16,7 @@ export default feature => {
   })()
 
   const params = geometry => {
-    var [center, ...points] = TS.geometries(read(geometry))
+    const [center, ...points] = TS.geometries(read(geometry))
     const vectors = points
       .map(point => TS.segment(TS.coordinates([center, point])))
       .map(segment => ({ angle: segment.angle(), length: segment.getLength() }))
@@ -34,7 +34,7 @@ export default feature => {
     return { center, points, copy, geometry }
   })(params(geometry))
 
-  var changing = false
+  let changing = false
   ;(() => {
     const centerChanged = ({ target: geometry }) => {
       if (changing) return

@@ -96,6 +96,7 @@ const FeaturePalette = (/* props */) => {
   }
 
   const itemSelected = descriptor => () => {
+    if (!descriptor.geometry || descriptor.geometry === 'Undefined') return
     selection.deselect()
     evented.emit('MAP_DRAW', descriptor)
   }

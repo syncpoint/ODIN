@@ -27,6 +27,7 @@
     "stepFinalize": "Choose name and save",
     "descriptorUrl": "URL of the map",
     "descriptorName": "Name of the map",
+    "attributions": "Attributions",
     "xyzZoomOptions": "Minimum and maximum zoom level",
     "unknownSource": "Type of the map could no be detected by inspecting the URL",
     "usePreview": "Use the map preview to verify the basemap",
@@ -72,5 +73,9 @@
     "featureList": {
       "noResults": "No results. Please change the search or filter criteria."
     }
+  },
+  "measure": {
+    "length": "measure distance/bearing",
+    "area": "measure area"
   }
 }
