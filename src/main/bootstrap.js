@@ -1,6 +1,7 @@
 import path from 'path'
-import url from 'url'
-import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
+import URL from 'url'
+
+import { app, BrowserWindow, dialog, ipcMain } from 'electron'
 import settings from 'electron-settings'
 import projects from '../shared/projects'
 import { exportProject, importProject } from './ipc/share-project'
@@ -8,6 +9,7 @@ import { exportLayer } from './ipc/share-layer'
 import { viewAsPng } from './ipc/share-view'
 import autoUpdate from './autoUpdate'
 import handleCreatePreview from './ipc/create-preview'
+import { handleNavigationEvent } from './navigationEvent'
 import i18n from '../i18n'
 import './ipc/source-descriptors'
 
@@ -62,8 +64,8 @@ const createProjectWindow = async (options) => {
       /[\\/]electron[\\/]/.test(process.execPath)
 
     const windowUrl = (hotDeployment && devServer)
-      ? url.format({ protocol: 'http:', host: 'localhost:8080', pathname: 'index.html', slashes: true })
-      : url.format({ protocol: 'file:', pathname: path.join(app.getAppPath(), 'dist', 'index.html'), slashes: true })
+      ? URL.format({ protocol: 'http:', host: 'localhost:8080', pathname: 'index.html', slashes: true })
+      : URL.format({ protocol: 'file:', pathname: path.join(app.getAppPath(), 'dist', 'index.html'), slashes: true })
 
     const title = await windowTitle(projectOptions.path)
 
@@ -76,28 +78,6 @@ const createProjectWindow = async (options) => {
         enableRemoteModule: true
       }
     })
-
-    /*
-      We allow attributions for basemaps to contain links to the source but
-      we do not want to allow these links to hijack the content of ODIN's
-      main browser window. So we prevent the default behaviour (navigate to
-      the url) and open the url in the system browser instead.
-
-      All navigation events triggered by the localhost dev server are still
-      propagated.
-    */
-    const openLinksInSystemBrowser = (event, url) => {
-      if (url && url.toLowerCase().includes('localhost')) return
-
-      event.preventDefault()
-      shell.openExternal(url).catch(error => {
-        console.error(error)
-      })
-    }
-
-    /* will be unregistered in the window.on('close') handler */
-    window.webContents.on('will-navigate', openLinksInSystemBrowser)
-    window.webContents.on('new-window', openLinksInSystemBrowser)
 
     /** the path property is required to identify the project */
     window.path = projectOptions.path
@@ -127,8 +107,6 @@ const createProjectWindow = async (options) => {
     i18n.on('languageChanged', languageChangedHandler)
     window.on('close', () => {
       i18n.off('languageChanged', languageChangedHandler)
-      window.webContents.off('will-navigate', openLinksInSystemBrowser)
-      window.webContents.on('new-window', openLinksInSystemBrowser)
     })
 
     /* (re)establish electron's normal "quit the app if no more windows are open" behavior */
@@ -194,6 +172,13 @@ const bootstrap = () => {
     if (!appShallQuit) return
     autoUpdate.cancel()
     app.quit()
+  })
+
+  /* security */
+  app.on('web-contents-created', (_, contents) => {
+    contents.on('new-window', handleNavigationEvent)
+    contents.on('will-navigate', handleNavigationEvent)
+    contents.on('will-redirect', handleNavigationEvent)
   })
 
   ipcMain.on('IPC_VIEWPORT_CHANGED', (event, viewport) => {

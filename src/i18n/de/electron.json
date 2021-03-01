@@ -66,5 +66,18 @@
     "versionMessage": "Aktualisierung von {{currentVersion}} auf {{newVersion}}.",
     "updateMessage": "'Jetzt laden und installieren!' lädt und installiert die neue Version. ODIN wird dabei neu gestartet.",
     "error": "Update Fehler"
+  },
+  "navigationEvent": {
+    "harmful": {
+      "title": "Öffnen der URL verhindert",
+      "subtitle": "Öffnen der URL könnte Schäden verursachen"
+    },
+    "ask": {
+      "permit": "Erlauben",
+      "decline": "Ablehnen",
+      "question": "Soll die URL geöffnet werden?"
+    },
+    "succeeded": "Öffnen der URL erfolgreich",
+    "failed": "Öffnen der URL fehlgeschlagen"
   }
 }

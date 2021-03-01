@@ -66,5 +66,18 @@
     "versionMessage": "Update available from {{currentVersion}} to {{newVersion}}.",
     "updateMessage": "If you select 'Download and update now!' this will download and install the new version and restart ODIN immediately.",
     "error": "Update error"
+  },
+  "navigationEvent": {
+    "harmful": {
+      "title": "Prevented opening URL",
+      "subtitle": "Opening the target could harm your system"
+    },
+    "ask": {
+      "permit": "Permit",
+      "decline": "Decline",
+      "question": "Do you want to open the following URL?"
+    },
+    "succeeded": "Opening URL succeeded",
+    "failed": "Opening URL failed"
   }
 }
