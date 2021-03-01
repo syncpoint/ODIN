@@ -12,7 +12,7 @@ const ReferenceList = props => {
         reference => <ListItem key={reference.id} >
           <Link variant='body2' href={reference.url} >{reference.name}</Link>
           <ListItemSecondaryAction>
-            <DeleteIcon onClick={() => onDelete(reference.id)}/>
+            <DeleteIcon onClick={() => onDelete(reference.url)}/>
           </ListItemSecondaryAction>
         </ListItem>
       )}

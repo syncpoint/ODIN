@@ -8,10 +8,16 @@ const TextProperty = props => {
   const [value, setValue] = React.useState(property())
 
   const commit = () => {
+    try {
+      properties.maus = 'Haus'
+    } catch (e) {
+      console.error(e)
+    }
     const cleanValue = value.toString().trim()
-    properties[props.property] = cleanValue
     setValue(cleanValue)
-    props.onCommit(properties)
+    props.onCommit(featureProperties => {
+      featureProperties[props.property] = cleanValue
+    })
   }
 
   const handleKeyDown = event => {

@@ -1,4 +1,5 @@
 import React from 'react'
+import create from 'zustand/vanilla'
 import providers from '../../properties-providers'
 import URI from '../../project/URI'
 import inputLayers from '../../project/input-layers'
@@ -14,6 +15,8 @@ import GenericPointProperties from './GenericPointProperties'
 import InstallationProperties from './InstallationProperties'
 import EEIProperties from './EEIProperties'
 import BoundariesProperties from './BoundariesProperties'
+
+import PropertyPanelContent from './PropertyPanelContent'
 
 const panelTypes = {
   U: (key, props) => <UnitProperties key={key} { ...props }/>,
@@ -39,7 +42,9 @@ providers.register(selected => {
   const featureProperties = inputLayers.featureProperties(featureIds[0])
   if (!featureProperties.sidc) return null
 
-  const update = properties => inputLayers.updateFeatureProperties(featureIds[0], properties)
+  const store = create(() => (featureProperties))
+
+  store.subscribe(currentFeatureProperties => inputLayers.updateFeatureProperties(featureIds[0], currentFeatureProperties))
 
   const featureClass = properties => {
     const clazz = descriptors.featureClass(properties.sidc)
@@ -56,7 +61,13 @@ providers.register(selected => {
   }
 
   const key = featureIds[0]
-  const props = { properties: featureProperties, update }
+  const props = { properties: store.getState(), update: store.setState }
   const panel = (panelTypes[clazz] || (() => null))
-  return panel(key, props)
+
+  console.log('rerendered feature-properties')
+  return (
+    <PropertyPanelContent {...props}>
+      { panel(key, props) }
+    </PropertyPanelContent>
+  )
 })

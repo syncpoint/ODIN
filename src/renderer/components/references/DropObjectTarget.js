@@ -1,8 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles } from '@material-ui/core/styles'
-
 import uuid from 'uuid-random'
+import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(theme => ({
   dropContainer: {
@@ -35,7 +34,7 @@ const DropObjectTarget = props => {
         item.getAsString(function (arg) {
           const url = new URL(arg)
           if (url.hostname && url.href) {
-            onDropped({ id: uuid(), name: url.hostname, url: url.href })
+            onDropped({ name: url.hostname, url: url.href })
           }
         })
       }

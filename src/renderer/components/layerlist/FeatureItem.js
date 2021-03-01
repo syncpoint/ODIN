@@ -6,12 +6,13 @@ import LinkIcon from '@material-ui/icons/LinkOutlined'
 import selection from '../../selection'
 
 export const FeatureItem = props => {
+
+  const { name, references } = props
+
   const handleClick = id => () => {
     selection.deselect()
     selection.select([id])
   }
-
-  const showIcon = length => length > 21
 
   return (
     <ListItem
@@ -20,10 +21,10 @@ export const FeatureItem = props => {
       button
     >
 
-      <ListItemText >{ props.name } </ListItemText>
-      { showIcon(props.name.length) && (
+      <ListItemText >{ name } </ListItemText>
+      { (references.length > 0) && (
         <ListItemSecondaryAction>
-          <Badge badgeContent={4} color='primary'>
+          <Badge badgeContent={references.length} color='primary'>
             <LinkIcon />
           </Badge>
         </ListItemSecondaryAction>
@@ -36,5 +37,6 @@ export const FeatureItem = props => {
 FeatureItem.propTypes = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string,
+  references: PropTypes.array,
   selected: PropTypes.bool // optional, false if omitted
 }
