@@ -34,7 +34,7 @@ export const handleNavigationEvent = (navigationEvent, navigationUrl) => {
         If the target is a file we need to check if it's executable.
         If so, we do not open it.
       */
-      const fsStats = statSync(candidateUrl.pathname, { throwIfNoEntry: false })
+      const fsStats = statSync(decodeURI(candidateUrl.pathname), { throwIfNoEntry: false })
       if (fsStats && !fsStats.isDirectory()) {
         try {
           accessSync(candidateUrl.pathname, constants.X_OK)
