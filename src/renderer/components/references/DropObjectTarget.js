@@ -26,7 +26,7 @@ const DropObjectTarget = props => {
     for (const file of event.dataTransfer.files) {
       if (file.type) {
         // only add files with a known mime type
-        onDropped({ id: uuid(), name: file.name, url: `file://${file.path}` })
+        onDropped({ id: uuid(), name: file.name, url: `file:${file.path}` })
       }
     }
 
