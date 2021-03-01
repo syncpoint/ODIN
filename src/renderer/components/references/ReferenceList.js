@@ -4,13 +4,13 @@ import { Link, List, ListItem, ListItemSecondaryAction } from '@material-ui/core
 import DeleteIcon from '@material-ui/icons/DeleteForeverOutlined'
 
 const ReferenceList = props => {
-  const { references = [], onClick, onDelete = () => {} } = props
+  const { references = [], onDelete = () => {} } = props
 
   return (
     <List>
       {references.map(
         reference => <ListItem key={reference.id} >
-          <Link variant='body2' href={reference.url} onClick={onClick}>{reference.name}</Link>
+          <Link variant='body2' href={reference.url} >{reference.name}</Link>
           <ListItemSecondaryAction>
             <DeleteIcon onClick={() => onDelete(reference.id)}/>
           </ListItemSecondaryAction>
@@ -22,7 +22,6 @@ const ReferenceList = props => {
 }
 ReferenceList.propTypes = {
   references: PropTypes.array.isRequired,
-  onClick: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired
 }
 
