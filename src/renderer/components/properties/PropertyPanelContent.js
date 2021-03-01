@@ -36,7 +36,7 @@ const PropertyPanelContent = props => {
   React.useEffect(() => {
     const properties = { ...featureProperties }
     properties.references = references
-    update(properties)
+    update({ references: references })
   }, [references])
 
   React.useEffect(() => {
