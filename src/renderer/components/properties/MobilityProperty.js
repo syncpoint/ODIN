@@ -9,8 +9,7 @@ const MobilityProperty = props => {
 
   const handleChange = ({ target }) => {
     setValue(target.value)
-    properties.sidc = mobilityPart.replace(target.value)(properties.sidc)
-    props.onCommit(properties)
+    props.onCommit({ sidc: mobilityPart.replace(target.value)(properties.sidc) })
   }
 
   return (

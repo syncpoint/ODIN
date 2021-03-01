@@ -11,8 +11,9 @@ const TextProperty = props => {
     const cleanValue = value.toString().trim()
     setValue(cleanValue)
     props.onCommit(featureProperties => {
-      console.log(`commiting ${props.property} to ${cleanValue}`)
-      featureProperties[props.property] = cleanValue
+      const mergeMe = {}
+      mergeMe[props.property] = cleanValue
+      return mergeMe
     })
   }
 

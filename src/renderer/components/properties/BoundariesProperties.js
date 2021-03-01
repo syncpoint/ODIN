@@ -22,7 +22,7 @@ const LineProperties = props => {
   const handleChange = throttle((_, newValue) => {
     properties.echelonOffset = newValue
     setEchelonOffset(properties.echelonOffset)
-    props.update(properties)
+    props.update({ echelonOffset: properties.echelonOffset })
   }, 75)
 
   return (
