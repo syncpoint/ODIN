@@ -5,7 +5,7 @@
 
 While currently in its early infancy, ODIN aims to become an Open Source alternative to industry-led commercial Command and Control Information Systems. Our main goal is __simplicity__. Coming from a military background, we think it's time for a paradigm shift. Together with a vibrant community, we want to lead the way towards lightweight and user-friendly systems.
 
-For details and tutorials please visit the [ODIN project website](http://odin.syncpoint.io).
+For details and tutorials please visit the [ODIN project website](https://odin.syncpoint.io).
 
 ![ODIN C2IS](assets/splash-004.png?raw=true)
 
