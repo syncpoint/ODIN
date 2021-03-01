@@ -226,13 +226,6 @@ const bootstrap = () => {
     sendi18Info(sender, i18n.language)
   })
 
-  ipcMain.on('IPC_OPEN_WITH_SHELL', (event, args) => {
-    console.dir(args)
-    shell.openExternal(args.url).catch(error => {
-      console.error(error)
-    })
-  })
-
 }
 
 export default bootstrap
