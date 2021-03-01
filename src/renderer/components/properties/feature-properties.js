@@ -40,6 +40,7 @@ providers.register(selected => {
   // For now we need to have a SIDC to infer properties panel.
   // In the future we have to be more flexible.
   const featureProperties = inputLayers.featureProperties(featureIds[0])
+  if (!featureProperties.references) featureProperties.references = []
   if (!featureProperties.sidc) return null
 
   const store = create(() => (featureProperties))
@@ -64,7 +65,6 @@ providers.register(selected => {
   const props = { properties: store.getState(), update: store.setState }
   const panel = (panelTypes[clazz] || (() => null))
 
-  console.log('rerendered feature-properties')
   return (
     <PropertyPanelContent {...props}>
       { panel(key, props) }
