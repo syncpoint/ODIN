@@ -3,7 +3,7 @@ import { accessSync, constants, statSync } from 'fs'
 import { dialog, Notification, shell } from 'electron'
 import i18n from '../i18n'
 
-const ASK_FOR_PERMISSION_TO_OPEN_EXTERNAL_URLS = true
+let ASK_FOR_PERMISSION_TO_OPEN_EXTERNAL_URLS = true
 
 const openExternal = url => {
   setImmediate(() => {
@@ -62,8 +62,10 @@ export const handleNavigationEvent = (navigationEvent, navigationUrl) => {
         message: i18n.t('navigationEvent.ask.question'),
         detail: navigationUrl,
         defaultId: 1,
-        cancelId: 0
+        cancelId: 0,
+        checkboxLabel: i18n.t('navigationEvent.ask.permitUntilRestart')
       }).then(result => {
+        if (result.checkboxChecked) ASK_FOR_PERMISSION_TO_OPEN_EXTERNAL_URLS = false
         if (result.response === 1) openExternal(navigationUrl)
       })
     }

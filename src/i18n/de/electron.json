@@ -75,7 +75,8 @@
     "ask": {
       "permit": "Erlauben",
       "decline": "Ablehnen",
-      "question": "Soll die URL geöffnet werden?"
+      "question": "Soll die URL geöffnet werden?",
+      "permitUntilRestart": "Bis zum nächsten Neustart von ODIN immer erlauben"
     },
     "succeeded": "Öffnen der URL erfolgreich",
     "failed": "Öffnen der URL fehlgeschlagen"

@@ -75,7 +75,8 @@
     "ask": {
       "permit": "Permit",
       "decline": "Decline",
-      "question": "Do you want to open the following URL?"
+      "question": "Do you want to open the following URL?",
+      "permitUntilRestart": "Always permit until ODIN is restarted"
     },
     "succeeded": "Opening URL succeeded",
     "failed": "Opening URL failed"
