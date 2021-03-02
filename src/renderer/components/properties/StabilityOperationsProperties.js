@@ -18,21 +18,21 @@ const StabilityOperationsProperties = props => {
 
   return (
     <>
-      <TextProperty label='Name' property='name' properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
-      <TextProperty label='Unique Designation' property='t' properties={props.properties} onCommit={props.update}/>
-      <HostilityProperty properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
-      <TextProperty label='Date-Time Group' property='w' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
-      <TextProperty label='Speed' property='z' properties={props.properties} onCommit={props.update}/>
-      <TextProperty label='Direction' property='q' properties={props.properties} onCommit={props.update}/>
-      <TextProperty label='Staff Comments' property='g' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
-      <TextProperty label='Additional Information' property='h' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
-      <StatusGroupFull properties={props.properties} onCommit={props.update}/>
+      <TextProperty label='Name' property='name' properties={props.getProperties()} onCommit={props.update} className={classes.twoColumns}/>
+      <TextProperty label='Unique Designation' property='t' properties={props.getProperties()} onCommit={props.update}/>
+      <HostilityProperty properties={props.getProperties()} onCommit={props.update} className={classes.twoColumns}/>
+      <TextProperty label='Date-Time Group' property='w' className={classes.twoColumns} properties={props.getProperties()} onCommit={props.update}/>
+      <TextProperty label='Speed' property='z' properties={props.getProperties()} onCommit={props.update}/>
+      <TextProperty label='Direction' property='q' properties={props.getProperties()} onCommit={props.update}/>
+      <TextProperty label='Staff Comments' property='g' className={classes.twoColumns} properties={props.getProperties()} onCommit={props.update}/>
+      <TextProperty label='Additional Information' property='h' className={classes.twoColumns} properties={props.getProperties()} onCommit={props.update}/>
+      <StatusGroupFull properties={props.getProperties()} onCommit={props.update}/>
     </>
   )
 }
 
 StabilityOperationsProperties.propTypes = {
-  properties: PropTypes.object.isRequired,
+  getProperties: PropTypes.func.isRequired,
   update: PropTypes.func.isRequired
 }
 

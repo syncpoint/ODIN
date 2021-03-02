@@ -15,23 +15,23 @@ const AreaProperties = props => {
 
   return (
     <>
-      <TextProperty label='Name' property='name' properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
-      <TextProperty label={'Unique Designation'} property={'t'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
-      <TextProperty label={'Additional Information'} property={'h'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns }/>
-      <HostilityProperty properties={props.properties} onCommit={props.update}/>
-      <EchelonProperty properties={props.properties} onCommit={props.update}/>
-      <StatusGroupReduced properties={props.properties} onCommit={props.update}/>
-      <TextProperty label={'Effective (from)'} property={'w'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
-      <TextProperty label={'Effective (to)'} property={'w1'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
-      <TextProperty label={'Altitude (from)'} property={'x'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
-      <TextProperty label={'Altitude (to)'} property={'x1'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
+      <TextProperty label='Name' property='name' properties={props.getProperties()} onCommit={props.update} className={classes.twoColumns}/>
+      <TextProperty label={'Unique Designation'} property={'t'} properties={props.getProperties()} onCommit={props.update} className={ classes.twoColumns } />
+      <TextProperty label={'Additional Information'} property={'h'} properties={props.getProperties()} onCommit={props.update} className={ classes.twoColumns }/>
+      <HostilityProperty properties={props.getProperties()} onCommit={props.update}/>
+      <EchelonProperty properties={props.getProperties()} onCommit={props.update}/>
+      <StatusGroupReduced properties={props.getProperties()} onCommit={props.update}/>
+      <TextProperty label={'Effective (from)'} property={'w'} properties={props.getProperties()} onCommit={props.update} className={ classes.twoColumns } />
+      <TextProperty label={'Effective (to)'} property={'w1'} properties={props.getProperties()} onCommit={props.update} className={ classes.twoColumns } />
+      <TextProperty label={'Altitude (from)'} property={'x'} properties={props.getProperties()} onCommit={props.update} className={ classes.twoColumns } />
+      <TextProperty label={'Altitude (to)'} property={'x1'} properties={props.getProperties()} onCommit={props.update} className={ classes.twoColumns } />
       {/* TODO: ENY property */}
     </>
   )
 }
 
 AreaProperties.propTypes = {
-  properties: PropTypes.object.isRequired,
+  getProperties: PropTypes.func.isRequired,
   update: PropTypes.func.isRequired
 }
 

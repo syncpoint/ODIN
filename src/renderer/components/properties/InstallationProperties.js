@@ -14,21 +14,21 @@ const InstallationProperties = props => {
 
   return (
     <>
-      <TextProperty label='Name' property='name' properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
-      <TextProperty label='Unique Designation' property='t' properties={props.properties} onCommit={props.update} />
-      <TextProperty label='Higher Formation' property='m' properties={props.properties} onCommit={props.update} />
-      <TextProperty label='Special C2 HQ' property='aa' properties={props.properties} onCommit={props.update}/>
-      <HostilityProperty properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
-      <TextProperty label='Date-Time Group' property='w' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
-      <TextProperty label='Staff Comments' property='g' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
-      <TextProperty label='Additional Information' property='h' className={classes.twoColumns} properties={props.properties} onCommit={props.update}/>
-      <StatusGroupFull properties={props.properties} onCommit={props.update}/>
+      <TextProperty label='Name' property='name' properties={props.getProperties()} onCommit={props.update} className={classes.twoColumns}/>
+      <TextProperty label='Unique Designation' property='t' properties={props.getProperties()} onCommit={props.update} />
+      <TextProperty label='Higher Formation' property='m' properties={props.getProperties()} onCommit={props.update} />
+      <TextProperty label='Special C2 HQ' property='aa' properties={props.getProperties()} onCommit={props.update}/>
+      <HostilityProperty properties={props.getProperties()} onCommit={props.update} className={classes.twoColumns}/>
+      <TextProperty label='Date-Time Group' property='w' className={classes.twoColumns} properties={props.getProperties()} onCommit={props.update}/>
+      <TextProperty label='Staff Comments' property='g' className={classes.twoColumns} properties={props.getProperties()} onCommit={props.update}/>
+      <TextProperty label='Additional Information' property='h' className={classes.twoColumns} properties={props.getProperties()} onCommit={props.update}/>
+      <StatusGroupFull properties={props.getProperties()} onCommit={props.update}/>
     </>
   )
 }
 
 InstallationProperties.propTypes = {
-  properties: PropTypes.object.isRequired,
+  getProperties: PropTypes.func.isRequired,
   update: PropTypes.func.isRequired
 }
 

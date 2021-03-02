@@ -28,20 +28,18 @@ const useStyles = makeStyles(theme => ({
 
 const PropertyPanelContent = props => {
   const classes = useStyles()
-  const { children, properties: featureProperties, update } = props
+  const { children, getProperties, update } = props
 
   const [tabIndex, setTabIndex] = React.useState(0)
-  const [references, setReferences] = React.useState(featureProperties.references)
+  const [references, setReferences] = React.useState(getProperties().references)
 
   React.useEffect(() => {
-    const properties = { ...featureProperties }
-    properties.references = references
     update({ references: references })
   }, [references])
 
   React.useEffect(() => {
-    setReferences(featureProperties.references)
-  }, [featureProperties])
+    setReferences(getProperties().references)
+  })
 
   const handleTabIndexChange = (_, index) => setTabIndex(index)
 
@@ -85,7 +83,7 @@ const PropertyPanelContent = props => {
 
 PropertyPanelContent.propTypes = {
   children: PropTypes.object,
-  properties: PropTypes.object,
+  getProperties: PropTypes.func,
   update: PropTypes.func
 }
 

@@ -70,7 +70,7 @@ providers.register(selected => {
   }
 
   const key = featureIds[0]
-  const props = { properties: store.getState(), update: store.setState }
+  const props = { getProperties: store.getState, update: store.setState }
   const panel = (panelTypes[clazz] || (() => null))
 
   return (

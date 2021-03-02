@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const LineProperties = props => {
-  const { properties } = props
+  const properties = props.getProperties()
   const classes = useStyles()
   const [echelonOffset, setEchelonOffset] = React.useState(properties.echelonOffset || 0.5)
 
@@ -27,26 +27,26 @@ const LineProperties = props => {
 
   return (
     <>
-      <TextProperty label='Name' property='name' properties={props.properties} onCommit={props.update} className={classes.twoColumns}/>
-      <TextProperty label={'Unique Designation (Left)'} property={'t'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
-      <TextProperty label={'Unique Designation (Right)'} property={'t1'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
-      <TextProperty label={'Additional Information'} property={'h'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns }/>
-      <HostilityProperty properties={props.properties} onCommit={props.update}/>
-      <EchelonProperty properties={props.properties} onCommit={props.update}/>
+      <TextProperty label='Name' property='name' properties={props.getProperties()} onCommit={props.update} className={classes.twoColumns}/>
+      <TextProperty label={'Unique Designation (Left)'} property={'t'} properties={props.getProperties()} onCommit={props.update} className={ classes.twoColumns } />
+      <TextProperty label={'Unique Designation (Right)'} property={'t1'} properties={props.getProperties()} onCommit={props.update} className={ classes.twoColumns } />
+      <TextProperty label={'Additional Information'} property={'h'} properties={props.getProperties()} onCommit={props.update} className={ classes.twoColumns }/>
+      <HostilityProperty properties={props.getProperties()} onCommit={props.update}/>
+      <EchelonProperty properties={props.getProperties()} onCommit={props.update}/>
       <Typography component='div'>Label Placement</Typography>
       <Slider value={echelonOffset} min={0} max={1} step={0.01} onChange={handleChange} color={'secondary'} className={ classes.twoColumns }/>
-      <StatusGroupReduced properties={props.properties} onCommit={props.update}/>
-      <TextProperty label={'Effective (from)'} property={'w'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
-      <TextProperty label={'Effective (to)'} property={'w1'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
-      <TextProperty label={'Altitude (from)'} property={'x'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
-      <TextProperty label={'Altitude (to)'} property={'x1'} properties={props.properties} onCommit={props.update} className={ classes.twoColumns } />
+      <StatusGroupReduced properties={props.getProperties()} onCommit={props.update}/>
+      <TextProperty label={'Effective (from)'} property={'w'} properties={props.getProperties()} onCommit={props.update} className={ classes.twoColumns } />
+      <TextProperty label={'Effective (to)'} property={'w1'} properties={props.getProperties()} onCommit={props.update} className={ classes.twoColumns } />
+      <TextProperty label={'Altitude (from)'} property={'x'} properties={props.getProperties()} onCommit={props.update} className={ classes.twoColumns } />
+      <TextProperty label={'Altitude (to)'} property={'x1'} properties={props.getProperties()} onCommit={props.update} className={ classes.twoColumns } />
       {/* TODO: ENY property */}
     </>
   )
 }
 
 LineProperties.propTypes = {
-  properties: PropTypes.object.isRequired,
+  getProperties: PropTypes.func.isRequired,
   update: PropTypes.func.isRequired
 }
 

@@ -10,7 +10,7 @@ const TextProperty = props => {
   const commit = () => {
     const cleanValue = value.toString().trim()
     setValue(cleanValue)
-    props.onCommit(featureProperties => {
+    props.onCommit(() => {
       const mergeMe = {}
       mergeMe[props.property] = cleanValue
       return mergeMe
