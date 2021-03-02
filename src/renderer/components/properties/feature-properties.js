@@ -33,9 +33,17 @@ const panelTypes = {
   BL: (key, props) => <BoundariesProperties key={key} { ...props }/>
 }
 
+/* create an empty store for properties */
+const store = create(() => ({}))
+
 providers.register(selected => {
+
   const featureIds = selected.filter(URI.isFeatureId)
-  if (featureIds.length !== 1) return null /* no multiselect */
+  if (featureIds.length !== 1) {
+    store.destroy() // remove all listeners FIRST!
+    store.setState({}, true) // THEN overwrite current state with empty object
+    return null /* no multiselect */
+  }
 
   // For now we need to have a SIDC to infer properties panel.
   // In the future we have to be more flexible.
@@ -43,8 +51,8 @@ providers.register(selected => {
   if (!featureProperties.references) featureProperties.references = []
   if (!featureProperties.sidc) return null
 
-  const store = create(() => (featureProperties))
-
+  store.destroy() // remove all listeners
+  store.setState(featureProperties, true) // overwrite current state
   store.subscribe(currentFeatureProperties => inputLayers.updateFeatureProperties(featureIds[0], currentFeatureProperties))
 
   const featureClass = properties => {
