@@ -15,23 +15,24 @@ const useStyles = makeStyles((/* theme */) => ({
 
 const UnitProperties = props => {
   const classes = useStyles()
+  const properties = props.getProperties()
 
   return (
     <>
-      <TextProperty label='Name' property='name' properties={props.getProperties()} onCommit={props.update} className={classes.twoColumns}/>
-      <TextProperty label='Unique Designation' property='t' properties={props.getProperties()} onCommit={props.update}/>
-      <TextProperty label='Higher Formation' property='m' properties={props.getProperties()} onCommit={props.update}/>
-      <TextProperty label='Special C2 HQ' property='aa' properties={props.getProperties()} onCommit={props.update}/>
-      <EchelonProperty properties={props.getProperties()} onCommit={props.update}/>
-      <HostilityProperty properties={props.getProperties()} onCommit={props.update} className={classes.twoColumns}/>
-      <TextProperty label='Date-Time Group' property='w' className={classes.twoColumns} properties={props.getProperties()} onCommit={props.update}/>
-      <TextProperty label='Speed' property='z' properties={props.getProperties()} onCommit={props.update}/>
-      <TextProperty label='Direction' property='q' properties={props.getProperties()} onCommit={props.update}/>
-      <TextProperty label='Staff Comments' property='g' className={classes.twoColumns} properties={props.getProperties()} onCommit={props.update}/>
-      <TextProperty label='Additional Information' property='h' className={classes.twoColumns} properties={props.getProperties()} onCommit={props.update}/>
-      <StatusGroupFull properties={props.getProperties()} onCommit={props.update}/>
-      <ModifierProperty properties={props.getProperties()} onCommit={props.update}/>
-      <ReinforcedReduced property='f' properties={props.getProperties()} onCommit={props.update}/>
+      <TextProperty label='Name' property='name' properties={properties} onCommit={props.update} className={classes.twoColumns}/>
+      <TextProperty label='Unique Designation' property='t' properties={properties} onCommit={props.update}/>
+      <TextProperty label='Higher Formation' property='m' properties={properties} onCommit={props.update}/>
+      <TextProperty label='Special C2 HQ' property='aa' properties={properties} onCommit={props.update}/>
+      <EchelonProperty properties={properties} onCommit={props.update}/>
+      <HostilityProperty properties={properties} onCommit={props.update} className={classes.twoColumns}/>
+      <TextProperty label='Date-Time Group' property='w' className={classes.twoColumns} properties={properties} onCommit={props.update}/>
+      <TextProperty label='Speed' property='z' properties={properties} onCommit={props.update}/>
+      <TextProperty label='Direction' property='q' properties={properties} onCommit={props.update}/>
+      <TextProperty label='Staff Comments' property='g' className={classes.twoColumns} properties={properties} onCommit={props.update}/>
+      <TextProperty label='Additional Information' property='h' className={classes.twoColumns} properties={properties} onCommit={props.update}/>
+      <StatusGroupFull properties={properties} onCommit={props.update}/>
+      <ModifierProperty properties={properties} onCommit={props.update}/>
+      <ReinforcedReduced property='f' properties={properties} onCommit={props.update}/>
     </>
   )
 }

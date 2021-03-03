@@ -11,18 +11,19 @@ const useStyles = makeStyles(theme => ({
 
 const InstallationProperties = props => {
   const classes = useStyles()
+  const properties = props.getProperties()
 
   return (
     <>
-      <TextProperty label='Name' property='name' properties={props.getProperties()} onCommit={props.update} className={classes.twoColumns}/>
-      <TextProperty label='Unique Designation' property='t' properties={props.getProperties()} onCommit={props.update} />
-      <TextProperty label='Higher Formation' property='m' properties={props.getProperties()} onCommit={props.update} />
-      <TextProperty label='Special C2 HQ' property='aa' properties={props.getProperties()} onCommit={props.update}/>
-      <HostilityProperty properties={props.getProperties()} onCommit={props.update} className={classes.twoColumns}/>
-      <TextProperty label='Date-Time Group' property='w' className={classes.twoColumns} properties={props.getProperties()} onCommit={props.update}/>
-      <TextProperty label='Staff Comments' property='g' className={classes.twoColumns} properties={props.getProperties()} onCommit={props.update}/>
-      <TextProperty label='Additional Information' property='h' className={classes.twoColumns} properties={props.getProperties()} onCommit={props.update}/>
-      <StatusGroupFull properties={props.getProperties()} onCommit={props.update}/>
+      <TextProperty label='Name' property='name' properties={properties} onCommit={props.update} className={classes.twoColumns}/>
+      <TextProperty label='Unique Designation' property='t' properties={properties} onCommit={props.update} />
+      <TextProperty label='Higher Formation' property='m' properties={properties} onCommit={props.update} />
+      <TextProperty label='Special C2 HQ' property='aa' properties={properties} onCommit={props.update}/>
+      <HostilityProperty properties={properties} onCommit={props.update} className={classes.twoColumns}/>
+      <TextProperty label='Date-Time Group' property='w' className={classes.twoColumns} properties={properties} onCommit={props.update}/>
+      <TextProperty label='Staff Comments' property='g' className={classes.twoColumns} properties={properties} onCommit={props.update}/>
+      <TextProperty label='Additional Information' property='h' className={classes.twoColumns} properties={properties} onCommit={props.update}/>
+      <StatusGroupFull properties={properties} onCommit={props.update}/>
     </>
   )
 }
