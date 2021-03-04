@@ -34,7 +34,7 @@ const DropObjectTarget = props => {
         item.getAsString(function (arg) {
           const url = new URL(arg)
           if (url.hostname && url.href) {
-            onDropped({ name: url.hostname, url: url.href })
+            onDropped({ id: uuid(), name: url.origin, url: url.href })
           }
         })
       }
@@ -43,15 +43,17 @@ const DropObjectTarget = props => {
 
   const dragOverHandler = event => {
     event.preventDefault()
-    event.dataTransfer.dropAffect = 'link'
+    event.dataTransfer.dropEffect = 'link'
   }
 
   const dragEnterHandler = event => {
     event.preventDefault()
+    event.dataTransfer.dropEffect = 'link'
   }
 
   const dragLeaveHandler = event => {
     event.preventDefault()
+    event.dataTransfer.dropEffect = 'link'
   }
 
   return (
