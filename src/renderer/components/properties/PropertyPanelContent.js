@@ -73,9 +73,12 @@ const PropertyPanelContent = props => {
       <TabContent value={tabIndex} index={0} className={classes.tabContent}>
         { children }
       </TabContent>
-      <TabContent value={tabIndex} index={1} className={[classes.tabContent, classes.twoColumns]}>
+      <TabContent value={tabIndex} index={1} className={[classes.tabContent, classes.twoColumns]} style={{ height: '100%' }}>
         <DropObjectTarget onDropped={handleObjectDropped}/>
-        <ReferenceList references={references} onDelete={handleReferenceDeleted}/>
+          <div style={{ maxHeight: '85%', overflow: 'scroll' }}>
+            <ReferenceList references={references} onDelete={handleReferenceDeleted} />
+          </div>
+
       </TabContent>
     </Paper>
   )
