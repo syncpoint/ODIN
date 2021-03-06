@@ -29,7 +29,7 @@ const useStyles = makeStyles((/* theme */) => ({
     zIndex: 20,
     display: 'grid',
     gridTemplateColumns: 'auto',
-    gridTemplateRows: '5em auto',
+    gridTemplateRows: '1fr 9fr',
     gridGap: '1em'
   },
 
@@ -41,6 +41,11 @@ const useStyles = makeStyles((/* theme */) => ({
     // Activity Bar width: 40px = 24px icon + 2 x 8px padding
     gridTemplateColumns: '48px 20em auto 26em',
     gridGap: '0.5em',
+    // minHeight and minmax for template rows are required to limit the height of the panel
+    // otherwise it will be 'auto' which allows the panel to grow
+    // by content size
+    gridTemplateRows: 'minmax(0, 1fr)',
+    minHeight: 0,
 
     // A: activity bar (buttons to show specific tool panel),
     // L: left/tools panel (tools, palette, layers, ORBAT, etc.)
