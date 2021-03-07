@@ -8,7 +8,10 @@ const ReferenceList = props => {
 
   return (
     <List>
-      {references.map(
+      {references.sort((l, r) => {
+        if (l.name === r.name) return 0
+        return (l.name < r.name ? -1 : 1)
+      }).map(
         reference => <ListItem key={reference.id} >
           <Link variant='body2' href={reference.url} style={{ overflow: 'hidden' }}>{reference.name}</Link>
           <ListItemSecondaryAction>
