@@ -23,10 +23,10 @@ const useStyles = makeStyles(theme => ({
     overflow: 'auto'
   },
   itemList: {
-    listStyleType: 'none', padding: '4px', backgroundColor: theme.palette.background.paper, maxHeight: '0px' // ?!
+    listStyleType: 'none', padding: '4px', backgroundColor: theme.palette.background.paper
   },
   itemListActive: {
-    listStyleType: 'none', padding: '4px', backgroundColor: theme.palette.action.hover, maxHeight: '0px' // ?!
+    listStyleType: 'none', padding: '4px', backgroundColor: theme.palette.action.hover
   },
   controls: {
     width: '90%',
