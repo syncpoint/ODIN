@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import uuid from 'uuid-random'
+import SaveAltIcon from '@material-ui/icons/SaveAlt'
 import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(theme => ({
@@ -61,7 +62,7 @@ const DropObjectTarget = props => {
       onDrop={dropHandler} onDragOver={dragOverHandler} onDragLeave={dragLeaveHandler}
       onDragEnter={dragEnterHandler} id='drop-object-target'
     >
-      drop new documents or links here
+      <SaveAltIcon />
     </div>
   )
 }

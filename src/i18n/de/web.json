@@ -77,5 +77,14 @@
   "measure": {
     "length": "Entfernung/Richtung messen",
     "area": "Fläche messen"
+  },
+  "propertyPanel": {
+    "tabs": {
+      "properties": "Eigenschaften",
+      "references": "Verweise auf Dokumente oder Links"
+    },
+    "references": {
+      "dropObjectTarget": "Dokumente oder Links hierher ziehen und ablegen"
+    }
   }
 }

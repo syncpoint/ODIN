@@ -77,5 +77,14 @@
   "measure": {
     "length": "measure distance/bearing",
     "area": "measure area"
+  },
+  "propertyPanel": {
+    "tabs": {
+      "properties": "Properties",
+      "references": "References to documents or links"
+    },
+    "references": {
+      "dropObjectTarget": "Drag & drop documents or links here"
+    }
   }
 }

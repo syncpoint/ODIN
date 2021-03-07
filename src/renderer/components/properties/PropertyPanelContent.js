@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
-import { Badge, Paper, Tab, Tabs } from '@material-ui/core'
+import { useTranslation } from 'react-i18next'
+import { Badge, Paper, Tab, Tabs, Tooltip } from '@material-ui/core'
 import LinkIcon from '@material-ui/icons/LinkOutlined'
 import DescriptionIcon from '@material-ui/icons/DescriptionOutlined'
 import TabContent from './TabContent'
@@ -28,6 +29,7 @@ const useStyles = makeStyles(theme => ({
 
 const PropertyPanelContent = props => {
   const classes = useStyles()
+  const { t } = useTranslation()
   const { children, getProperties, update } = props
 
   const [tabIndex, setTabIndex] = React.useState(0)
@@ -63,22 +65,28 @@ const PropertyPanelContent = props => {
         variant='fullWidth'
         className={classes.tabs}
       >
-        <Tab icon={<DescriptionIcon />} />
-        <Tab icon={
-          <Badge badgeContent={references.length} color="primary">
-            <LinkIcon />
-          </Badge>
-        }/>
+        <Tooltip title={t('propertyPanel.tabs.properties')}>
+          <Tab icon={<DescriptionIcon />} />
+        </Tooltip>
+        <Tooltip title={t('propertyPanel.tabs.references')}>
+          <Tab icon={
+            <Badge badgeContent={references.length} color="primary">
+              <LinkIcon />
+            </Badge>} />
+        </Tooltip>
       </Tabs>
       <TabContent value={tabIndex} index={0} className={classes.tabContent}>
         { children }
       </TabContent>
       <TabContent value={tabIndex} index={1} className={[classes.tabContent, classes.twoColumns]} style={{ height: '100%' }}>
-        <DropObjectTarget onDropped={handleObjectDropped}/>
-          <div style={{ maxHeight: '85%', overflow: 'scroll' }}>
-            <ReferenceList references={references} onDelete={handleReferenceDeleted} />
+        <Tooltip title={t('propertyPanel.references.dropObjectTarget')}>
+          <div comment='this is required in order to make the tooltip work'>
+            <DropObjectTarget onDropped={handleObjectDropped}/>
           </div>
-
+        </Tooltip>
+        <div style={{ maxHeight: '85%', overflow: 'scroll' }} >
+          <ReferenceList references={references} onDelete={handleReferenceDeleted} />
+        </div>
       </TabContent>
     </Paper>
   )
