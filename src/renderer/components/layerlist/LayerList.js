@@ -35,10 +35,6 @@ const useStyles = makeStyles((/* theme */) => ({
   listContainer: {
     height: '100%',
     overflow: 'auto'
-  },
-
-  list: {
-    maxHeight: '0px' // ?!
   }
 }))
 
@@ -139,7 +135,7 @@ const LayerList = (/* props */) => {
 
       {/* Necessary to make overflow/scroll work. */}
       <div className={classes.listContainer}>
-        <List className={classes.list}>
+        <List>
           { sortedLayers() }
         </List>
       </div>
