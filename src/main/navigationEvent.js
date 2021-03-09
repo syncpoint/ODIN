@@ -33,18 +33,21 @@ export const handleNavigationEvent = (navigationEvent, navigationUrl) => {
     /* prevent links from beeing opened */
     navigationEvent.preventDefault()
 
+    /* SHAME ON MS WINDOWS
+
+    The same old story: using MS Windows ALL files seem to be
+      executable :-( So the following code is kinda useless
+      since it prevents ANY file from being opened
+
     if (candidateUrl.protocol === 'file:') {
-      /*
-        If the target is a file we need to check if it's executable.
-        If so, we do not open it.
-      */
+      // If the target is a file we need to check if it's executable.
+      // If so, we do not open it.
       const fsStats = statSync(platformSpecificPath, { throwIfNoEntry: false })
       if (fsStats && !fsStats.isDirectory()) {
         try {
           accessSync(platformSpecificPath, constants.X_OK)
-          /*  if the file is executable ==> there IS NO error
-              we'll consider it to be UNSAFE
-          */
+          //  if the file is executable ==> there IS NO error
+          //    we'll consider it to be UNSAFE
           new Notification({
             title: i18n.t('navigationEvent.harmful.title'),
             subtitle: i18n.t('navigationEvent.harmful.subtitle'),
@@ -52,10 +55,11 @@ export const handleNavigationEvent = (navigationEvent, navigationUrl) => {
           }).show()
           return
         } catch (accessError) {
-          /* intentionally ignored */
+          // intentionally ignored
         }
       }
     }
+    */
 
     if (!ASK_FOR_PERMISSION_TO_OPEN_EXTERNAL_URLS) {
       openExternal(candidateUrl.href)
