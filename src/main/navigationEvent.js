@@ -7,26 +7,29 @@ let ASK_FOR_PERMISSION_TO_OPEN_EXTERNAL_URLS = true
 
 const openExternal = url => {
   setImmediate(() => {
-    shell.openExternal(url).catch(error => {
-      new Notification({
-        title: i18n.t('navigationEvent.failed'),
-        body: `${url} : ${error.message}`
-      }).show()
-    })
+    shell.openExternal(url)
+      .then(
+        new Notification({
+          title: i18n.t('navigationEvent.succeeded'),
+          body: url
+        }).show()
+      )
+      .catch(error => {
+        new Notification({
+          title: i18n.t('navigationEvent.failed'),
+          body: `${url} : ${error.message}`
+        }).show()
+      })
   })
-  new Notification({
-    title: i18n.t('navigationEvent.succeeded'),
-    body: url
-  }).show()
 }
 
 export const handleNavigationEvent = (navigationEvent, navigationUrl) => {
-
+  console.log(`willNavigate to ${navigationUrl}`)
   try {
     const candidateUrl = new URL.URL(navigationUrl)
     if (candidateUrl.hostname === 'localhost') return
 
-    /* prevent executables from beeing opened */
+    /* prevent links from beeing opened */
     navigationEvent.preventDefault()
 
     if (candidateUrl.protocol === 'file:') {
@@ -34,6 +37,8 @@ export const handleNavigationEvent = (navigationEvent, navigationUrl) => {
         If the target is a file we need to check if it's executable.
         If so, we do not open it.
       */
+      console.log(`URL is ${candidateUrl.pathname}`)
+      console.log(`URL decoded: ${decodeURI(candidateUrl.pathname)}`)
       const fsStats = statSync(decodeURI(candidateUrl.pathname), { throwIfNoEntry: false })
       if (fsStats && !fsStats.isDirectory()) {
         try {
