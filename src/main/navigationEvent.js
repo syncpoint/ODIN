@@ -11,20 +11,21 @@ const openExternal = url => {
       .then(
         new Notification({
           title: i18n.t('navigationEvent.succeeded'),
-          body: url
+          body: URL.fileURLToPath(url)
         }).show()
       )
       .catch(error => {
         new Notification({
           title: i18n.t('navigationEvent.failed'),
-          body: `${url} : ${error.message}`
+          body: `${URL.fileURLToPath(url)} : ${error.message}`
         }).show()
       })
   })
 }
 
 export const handleNavigationEvent = (navigationEvent, navigationUrl) => {
-  console.log(`willNavigate to ${navigationUrl}`)
+
+  const platformSpecificPath = URL.fileURLToPath(navigationUrl)
   try {
     const candidateUrl = new URL.URL(navigationUrl)
     if (candidateUrl.hostname === 'localhost') return
@@ -37,19 +38,17 @@ export const handleNavigationEvent = (navigationEvent, navigationUrl) => {
         If the target is a file we need to check if it's executable.
         If so, we do not open it.
       */
-      console.log(`URL is ${candidateUrl.pathname}`)
-      console.log(`URL decoded: ${decodeURI(candidateUrl.pathname)}`)
-      const fsStats = statSync(decodeURI(candidateUrl.pathname), { throwIfNoEntry: false })
+      const fsStats = statSync(platformSpecificPath, { throwIfNoEntry: false })
       if (fsStats && !fsStats.isDirectory()) {
         try {
-          accessSync(candidateUrl.pathname, constants.X_OK)
+          accessSync(platformSpecificPath, constants.X_OK)
           /*  if the file is executable ==> there IS NO error
               we'll consider it to be UNSAFE
           */
           new Notification({
             title: i18n.t('navigationEvent.harmful.title'),
             subtitle: i18n.t('navigationEvent.harmful.subtitle'),
-            body: navigationUrl
+            body: platformSpecificPath
           }).show()
           return
         } catch (accessError) {
@@ -59,19 +58,19 @@ export const handleNavigationEvent = (navigationEvent, navigationUrl) => {
     }
 
     if (!ASK_FOR_PERMISSION_TO_OPEN_EXTERNAL_URLS) {
-      openExternal(navigationUrl)
+      openExternal(candidateUrl.href)
     } else {
       dialog.showMessageBox(null, {
         type: 'info',
         buttons: [i18n.t('navigationEvent.ask.decline'), i18n.t('navigationEvent.ask.permit')],
         message: i18n.t('navigationEvent.ask.question'),
-        detail: navigationUrl,
+        detail: platformSpecificPath,
         defaultId: 1,
         cancelId: 0,
         checkboxLabel: i18n.t('navigationEvent.ask.permitUntilRestart')
       }).then(result => {
         if (result.checkboxChecked) ASK_FOR_PERMISSION_TO_OPEN_EXTERNAL_URLS = false
-        if (result.response === 1) openExternal(navigationUrl)
+        if (result.response === 1) openExternal(candidateUrl.href)
       })
     }
 
