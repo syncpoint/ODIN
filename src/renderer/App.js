@@ -29,7 +29,7 @@ const useStyles = makeStyles((/* theme */) => ({
     zIndex: 20,
     display: 'grid',
     gridTemplateColumns: 'auto',
-    gridTemplateRows: '1fr 9fr',
+    gridTemplateRows: '1fr 12fr',
     gridGap: '1em'
   },
 
