@@ -27,7 +27,9 @@ const DropObjectTarget = props => {
       if (file.type) {
         // only add files with a known mime type
         console.dir(file)
-        onDropped({ id: uuid(), name: file.name, url: `file:${file.path}` })
+        const fileUrl = new URL(`file:${file.path}`)
+        console.log(`persisted file url ${fileUrl.href}`)
+        onDropped({ id: uuid(), name: file.name, url: fileUrl.href })
       }
     }
 
