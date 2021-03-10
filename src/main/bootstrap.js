@@ -1,5 +1,5 @@
 import path from 'path'
-import URL from 'url'
+import { URL } from 'url'
 
 import { app, BrowserWindow, dialog, ipcMain } from 'electron'
 import settings from 'electron-settings'
@@ -64,8 +64,8 @@ const createProjectWindow = async (options) => {
       /[\\/]electron[\\/]/.test(process.execPath)
 
     const windowUrl = (hotDeployment && devServer)
-      ? URL.format({ protocol: 'http:', host: 'localhost:8080', pathname: 'index.html', slashes: true })
-      : URL.format({ protocol: 'file:', pathname: path.join(app.getAppPath(), 'dist', 'index.html'), slashes: true })
+      ? new URL('http://localhost:8080/index.html')
+      : new URL(`file:${path.join(app.getAppPath(), 'dist', 'index.html')}`)
 
     const title = await windowTitle(projectOptions.path)
 
@@ -119,7 +119,7 @@ const createProjectWindow = async (options) => {
           use it on startup ('app-ready') and when we switch projects ('IPC_SWITCH_PROJECT').
       */
     merge(RECENT_WINDOW_KEY)(() => projectOptions.path)
-    await window.loadURL(windowUrl)
+    await window.loadURL(windowUrl.href)
     window.show()
   }
 
