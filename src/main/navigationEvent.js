@@ -1,27 +1,24 @@
 import URL from 'url'
-import { accessSync, constants, statSync } from 'fs'
 import { dialog, Notification, shell } from 'electron'
 import i18n from '../i18n'
 
 let ASK_FOR_PERMISSION_TO_OPEN_EXTERNAL_URLS = true
 
 const openExternal = url => {
-  setImmediate(() => {
-    shell.openExternal(url)
-      .then(
-        new Notification({
-          title: i18n.t('navigationEvent.succeeded'),
-          body: URL.fileURLToPath(url)
-        }).show()
-      )
-      .catch(error => {
-        console.error(error)
-        new Notification({
-          title: i18n.t('navigationEvent.failed'),
-          body: `${URL.fileURLToPath(url)} : ${error.message}`
-        }).show()
-      })
-  })
+  shell.openExternal(url)
+    .then(
+      new Notification({
+        title: i18n.t('navigationEvent.succeeded'),
+        body: URL.fileURLToPath(url)
+      }).show()
+    )
+    .catch(error => {
+      console.error(error)
+      new Notification({
+        title: i18n.t('navigationEvent.failed'),
+        body: `${URL.fileURLToPath(url)} : ${error.message}`
+      }).show()
+    })
 }
 
 export const handleNavigationEvent = (navigationEvent, navigationUrl) => {
