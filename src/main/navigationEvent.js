@@ -15,6 +15,7 @@ const openExternal = url => {
         }).show()
       )
       .catch(error => {
+        console.error(error)
         new Notification({
           title: i18n.t('navigationEvent.failed'),
           body: `${URL.fileURLToPath(url)} : ${error.message}`
@@ -79,6 +80,7 @@ export const handleNavigationEvent = (navigationEvent, navigationUrl) => {
     }
 
   } catch (error) {
+    console.error(error)
     new Notification({
       title: i18n.t('navigationEvent.failed'),
       body: error.message
