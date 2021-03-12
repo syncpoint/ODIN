@@ -24,13 +24,8 @@ const DropObjectTarget = props => {
     event.preventDefault()
     console.dir(event)
     for (const file of event.dataTransfer.files) {
-      if (file.type) {
-        // only add files with a known mime type
-        console.dir(file)
-        const fileUrl = new URL(`file:${file.path}`)
-        console.log(`persisted file url ${fileUrl.href}`)
-        onDropped({ id: uuid(), name: file.name, url: fileUrl.href })
-      }
+      const fileUrl = new URL(`file:${file.path}`)
+      onDropped({ id: uuid(), name: file.name, url: fileUrl.href })
     }
 
     for (const item of event.dataTransfer.items) {
@@ -47,13 +42,11 @@ const DropObjectTarget = props => {
 
   const dragOverHandler = event => {
     event.preventDefault()
-    console.dir(event)
     event.dataTransfer.dropEffect = 'link'
   }
 
   const dragEnterHandler = event => {
     event.preventDefault()
-    console.dir(event)
     event.dataTransfer.dropEffect = 'link'
   }
 
