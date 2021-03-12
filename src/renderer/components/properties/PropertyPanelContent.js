@@ -84,7 +84,7 @@ const PropertyPanelContent = props => {
             <DropObjectTarget onDropped={handleObjectDropped}/>
           </div>
         </Tooltip>
-        <div style={{ maxHeight: '85%', overflow: 'scroll' }} >
+        <div style={{ maxHeight: '85%', overflow: 'auto' }} >
           <ReferenceList references={references} onDelete={handleReferenceDeleted} />
         </div>
       </TabContent>

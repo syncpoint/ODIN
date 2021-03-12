@@ -22,7 +22,7 @@ const DropObjectTarget = props => {
 
   const dropHandler = event => {
     event.preventDefault()
-
+    console.dir(event)
     for (const file of event.dataTransfer.files) {
       if (file.type) {
         // only add files with a known mime type
@@ -47,11 +47,13 @@ const DropObjectTarget = props => {
 
   const dragOverHandler = event => {
     event.preventDefault()
+    console.dir(event)
     event.dataTransfer.dropEffect = 'link'
   }
 
   const dragEnterHandler = event => {
     event.preventDefault()
+    console.dir(event)
     event.dataTransfer.dropEffect = 'link'
   }
 
