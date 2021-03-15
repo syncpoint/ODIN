@@ -18,7 +18,8 @@ import {
 } from 'ol/coordinate'
 import { fromUserExtent, toUserExtent, fromUserCoordinate, toUserCoordinate } from 'ol/proj'
 import { createOrUpdateFromCoordinate as createExtent, buffer as bufferExtent } from 'ol/extent'
-import { getUid } from 'ol/util.js';
+import { getUid } from 'ol/util'
+import Event from 'ol/events/Event'
 import { framer } from './index'
 
 // >>> OL/ORIGINAL
@@ -89,6 +90,14 @@ function closestOnSegmentData(pointCoordinates, segmentData, projection) {
   return toUserCoordinate(closestOnSegment(coordinate, tempSegment), projection);
 }
 
+class ModifyEvent extends Event {
+  constructor(type, features, mapBrowserEvent) {
+    super(type)
+    this.features = features
+    this.mapBrowserEvent = mapBrowserEvent
+  }
+}
+
 // <<< OL/ORIGINAL
 
 /**
@@ -157,6 +166,26 @@ export class Modify extends olInteraction.Modify {
     this.framer_.controlFeatures.forEach(removeFeature)
     this.framer_.dispose()
     delete this.framer_
+  }
+
+  /**
+   *
+   */
+  willModifyFeatures_ (evt, segments) {
+    if (this.featuresBeingModified_) return
+
+    // Restore old behavior (prior to v6.5.0):
+    // Ignore drag segments and simply use feature collection
+    // for modifystart and (implicitly) modifyend events.
+
+    this.featuresBeingModified_ = this.features_
+    const event = new ModifyEvent(
+      'modifystart',
+      this.featuresBeingModified_,
+      evt
+    )
+
+    this.dispatchEvent(event)
   }
 
   /**
