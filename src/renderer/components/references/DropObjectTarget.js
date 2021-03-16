@@ -22,7 +22,6 @@ const DropObjectTarget = props => {
 
   const dropHandler = event => {
     event.preventDefault()
-    console.dir(event)
     for (const file of event.dataTransfer.files) {
       const fileUrl = new URL(`file:${file.path}`)
       onDropped({ id: uuid(), name: file.name, url: fileUrl.href })
