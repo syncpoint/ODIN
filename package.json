@@ -65,6 +65,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "archiver": "^5.2.0",
+    "dompurify": "^2.2.7",
     "dotenv": "^8.2.0",
     "electron-settings": "^3.2.0",
     "electron-updater": "^4.3.5",

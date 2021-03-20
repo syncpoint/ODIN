@@ -7,6 +7,7 @@ import editMenu from './edit-menu'
 import languageMenu from './language-menu'
 
 let oldArgs = {}
+
 const template = (i18n, args) => ([
   // darwin only (must be filtered for other platforms)
   applicationMenu(i18n),

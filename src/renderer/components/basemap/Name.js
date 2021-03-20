@@ -1,15 +1,23 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Card, CardContent, FormControl, Input, InputLabel } from '@material-ui/core'
-
+import DOMPurify from 'dompurify'
 import { useTranslation } from 'react-i18next'
+
+const SANITIZE_OPTIONS = {
+  ALLOWED_TAGS: ['a'],
+  ALLOWED_ATTR: ['href'],
+  ALLOW_DATA_ATTR: false
+}
 
 const Name = props => {
   const { classes, merge } = props
   const { t } = useTranslation()
 
   const [name, setName] = React.useState(props.name)
-  const [attributions, setAttributions] = React.useState(props.attributions)
+  const [attributions, setAttributions] = React.useState(
+    DOMPurify.sanitize(props.attributions, SANITIZE_OPTIONS)
+  )
   const [isValid, setIsValid] = React.useState(false)
 
   React.useEffect(() => {
@@ -26,6 +34,10 @@ const Name = props => {
 
   const handleAttributionsChanged = (event) => {
     setAttributions(event.target.value)
+  }
+
+  const saveAttributions = () => {
+    merge('attributions', DOMPurify.sanitize(attributions, SANITIZE_OPTIONS))
   }
 
   return (
@@ -45,7 +57,7 @@ const Name = props => {
             <InputLabel htmlFor="attributions">{t('basemapManagement.attributions')}</InputLabel>
             <Input id="attributions" name="attributions" defaultValue={attributions}
               onChange={handleAttributionsChanged}
-              onBlur={() => merge('attributions', attributions)}
+              onBlur={saveAttributions}
             />
           </FormControl>
         </div>
