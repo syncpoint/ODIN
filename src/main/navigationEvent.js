@@ -7,19 +7,28 @@ let ASK_FOR_PERMISSION_TO_OPEN_EXTERNAL_URLS = true
 const openExternal = url => {
   const open = (url.protocol === 'file:') ? shell.openPath : shell.openExternal
   const target = (url.protocol === 'file:') ? URL.fileURLToPath(url.href) : url.href
+
+  const showErrorMessage = message => {
+    new Notification({
+      title: i18n.t('navigationEvent.failed'),
+      body: `${target} : ${message}`
+    }).show()
+  }
+
   open(target)
-    .then(
-      new Notification({
-        title: i18n.t('navigationEvent.succeeded'),
-        body: target
-      }).show()
-    )
+    .then(result => {
+      // OMG shell.openPath resolves! with an error
+      if (result) showErrorMessage(result)
+      else {
+        new Notification({
+          title: i18n.t('navigationEvent.succeeded'),
+          body: target
+        }).show()
+      }
+    })
     .catch(error => {
       console.error(error)
-      new Notification({
-        title: i18n.t('navigationEvent.failed'),
-        body: `${target} : ${error.message}`
-      }).show()
+      showErrorMessage(error.message)
     })
 }
 
