@@ -39,19 +39,24 @@ const DropObjectTarget = props => {
     }
   }
 
+  const dropEffect = event => {
+    const types = [...event.dataTransfer.types]
+    return types.some(t => t === 'text/uri-list') ? 'copy' : 'link'
+  }
+
   const dragOverHandler = event => {
     event.preventDefault()
-    event.dataTransfer.dropEffect = 'link'
+    event.dataTransfer.dropEffect = dropEffect(event)
   }
 
   const dragEnterHandler = event => {
     event.preventDefault()
-    event.dataTransfer.dropEffect = 'link'
+    event.dataTransfer.dropEffect = dropEffect(event)
   }
 
   const dragLeaveHandler = event => {
     event.preventDefault()
-    event.dataTransfer.dropEffect = 'link'
+    event.dataTransfer.dropEffect = dropEffect(event)
   }
 
   return (
