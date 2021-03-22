@@ -9,10 +9,10 @@ const HostilityProperty = props => {
 
   const handleChange = ({ target }) => {
     setValue(target.value)
-    properties.sidc = hostilityPart.replace(target.value)(properties.sidc)
-    if (target.value === 'H') properties.n = 'ENY'
-    else delete properties.n
-    props.onCommit(properties)
+    props.onCommit(featureProperties => ({
+      sidc: hostilityPart.replace(target.value)(featureProperties.sidc),
+      n: (target.value === 'H' ? 'ENY' : null)
+    }))
   }
 
   return (

@@ -4,11 +4,13 @@ import URI from '../../project/URI'
 
 const addFeatures = (next, features) =>
   features.forEach(feature => {
+
     const layerId = Feature.layerId(feature)
     const featureId = Feature.id(feature)
     next[layerId].features[featureId] = {
       id: featureId,
-      name: feature.get('name') || feature.get('t') || 'N/A'
+      name: feature.get('name') || feature.get('t') || 'N/A',
+      references: feature.get('references') || []
     }
   })
 
@@ -76,7 +78,8 @@ export default {
     const layer = next[URI.layerId(featureId)]
     layer.features[featureId] = {
       ...layer.features[featureId],
-      name: properties.name || properties.t || 'N/A'
+      name: properties.name || properties.t || 'N/A',
+      references: properties.references || []
     }
   }),
 

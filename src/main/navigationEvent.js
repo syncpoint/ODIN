@@ -1,23 +1,35 @@
 import URL from 'url'
-import { accessSync, constants, statSync } from 'fs'
 import { dialog, Notification, shell } from 'electron'
 import i18n from '../i18n'
 
 let ASK_FOR_PERMISSION_TO_OPEN_EXTERNAL_URLS = true
 
 const openExternal = url => {
-  setImmediate(() => {
-    shell.openExternal(url).catch(error => {
-      new Notification({
-        title: i18n.t('navigationEvent.failed'),
-        body: `${url} : ${error.message}`
-      }).show()
+  const open = (url.protocol === 'file:') ? shell.openPath : shell.openExternal
+  const target = (url.protocol === 'file:') ? URL.fileURLToPath(url.href) : url.href
+
+  const showErrorMessage = message => {
+    new Notification({
+      title: i18n.t('navigationEvent.failed'),
+      body: `${target} : ${message}`
+    }).show()
+  }
+
+  open(target)
+    .then(result => {
+      // OMG shell.openPath resolves! with an error
+      if (result) showErrorMessage(result)
+      else {
+        new Notification({
+          title: i18n.t('navigationEvent.succeeded'),
+          body: target
+        }).show()
+      }
     })
-  })
-  new Notification({
-    title: i18n.t('navigationEvent.succeeded'),
-    body: url
-  }).show()
+    .catch(error => {
+      console.error(error)
+      showErrorMessage(error.message)
+    })
 }
 
 export const handleNavigationEvent = (navigationEvent, navigationUrl) => {
@@ -26,51 +38,28 @@ export const handleNavigationEvent = (navigationEvent, navigationUrl) => {
     const candidateUrl = new URL.URL(navigationUrl)
     if (candidateUrl.hostname === 'localhost') return
 
-    /* prevent executables from beeing opened */
+    /* prevent links from beeing opened */
     navigationEvent.preventDefault()
 
-    if (candidateUrl.protocol === 'file:') {
-      /*
-        If the target is a file we need to check if it's executable.
-        If so, we do not open it.
-      */
-      const fsStats = statSync(candidateUrl.pathname, { throwIfNoEntry: false })
-      if (fsStats && !fsStats.isDirectory()) {
-        try {
-          accessSync(candidateUrl.pathname, constants.X_OK)
-          /*  if the file is executable ==> there IS NO error
-              we'll consider it to be UNSAFE
-          */
-          new Notification({
-            title: i18n.t('navigationEvent.harmful.title'),
-            subtitle: i18n.t('navigationEvent.harmful.subtitle'),
-            body: navigationUrl
-          }).show()
-          return
-        } catch (accessError) {
-          /* intentionally ignored */
-        }
-      }
-    }
-
     if (!ASK_FOR_PERMISSION_TO_OPEN_EXTERNAL_URLS) {
-      openExternal(navigationUrl)
+      openExternal(candidateUrl)
     } else {
       dialog.showMessageBox(null, {
         type: 'info',
         buttons: [i18n.t('navigationEvent.ask.decline'), i18n.t('navigationEvent.ask.permit')],
         message: i18n.t('navigationEvent.ask.question'),
-        detail: navigationUrl,
+        detail: (candidateUrl.protocol === 'file:') ? URL.fileURLToPath(candidateUrl.href) : candidateUrl.href,
         defaultId: 1,
         cancelId: 0,
         checkboxLabel: i18n.t('navigationEvent.ask.permitUntilRestart')
       }).then(result => {
         if (result.checkboxChecked) ASK_FOR_PERMISSION_TO_OPEN_EXTERNAL_URLS = false
-        if (result.response === 1) openExternal(navigationUrl)
+        if (result.response === 1) openExternal(candidateUrl)
       })
     }
 
   } catch (error) {
+    console.error(error)
     new Notification({
       title: i18n.t('navigationEvent.failed'),
       body: error.message

@@ -21,8 +21,7 @@ const StatusGroupReduced = props => {
 
   const handleChange = ({ target }) => {
     setStatus(target.value)
-    properties.sidc = statusPart.replace(target.value)(properties.sidc)
-    props.onCommit(properties)
+    props.onCommit({ sidc: statusPart.replace(target.value)(properties.sidc) })
   }
 
   return (

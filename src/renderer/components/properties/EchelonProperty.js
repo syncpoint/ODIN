@@ -10,8 +10,7 @@ const EchelonProperty = props => {
 
   const handleChange = ({ target }) => {
     setValue(target.value)
-    properties.sidc = echelonPart.replace(target.value)(properties.sidc)
-    props.onCommit(properties)
+    props.onCommit(featureProperties => ({ sidc: echelonPart.replace(target.value)(featureProperties.sidc) }))
   }
 
   return (
@@ -23,6 +22,7 @@ const EchelonProperty = props => {
         labelId="label"
         value={value}
         onChange={handleChange}
+        onBlur={() => 'blurred seceltion for echelon ...'}
       >
         <MenuItem value={'-'}>N/A</MenuItem>
         <MenuItem value={'A'}>Team/Crew</MenuItem>

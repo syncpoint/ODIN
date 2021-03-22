@@ -45,8 +45,7 @@ const ModifierProperty = props => {
     const nextState = { ...state }
     nextState[property] = target.checked
     setState(nextState)
-    properties.sidc = modifierPart.replace(encode(nextState))(properties.sidc)
-    onCommit(properties)
+    onCommit({ sidc: modifierPart.replace(encode(nextState))(properties.sidc) })
   }
 
   return (

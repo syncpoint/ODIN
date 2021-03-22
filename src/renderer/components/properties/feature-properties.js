@@ -1,4 +1,5 @@
 import React from 'react'
+import create from 'zustand/vanilla'
 import providers from '../../properties-providers'
 import URI from '../../project/URI'
 import inputLayers from '../../project/input-layers'
@@ -15,6 +16,8 @@ import InstallationProperties from './InstallationProperties'
 import EEIProperties from './EEIProperties'
 import BoundariesProperties from './BoundariesProperties'
 
+import PropertyPanelContent from './PropertyPanelContent'
+
 const panelTypes = {
   U: (key, props) => <UnitProperties key={key} { ...props }/>,
   A: (key, props) => <AreaProperties key={key} { ...props }/>,
@@ -30,16 +33,27 @@ const panelTypes = {
   BL: (key, props) => <BoundariesProperties key={key} { ...props }/>
 }
 
+/* create an empty store for properties */
+const store = create(() => ({}))
+
 providers.register(selected => {
+
   const featureIds = selected.filter(URI.isFeatureId)
-  if (featureIds.length !== 1) return null /* no multiselect */
+  if (featureIds.length !== 1) {
+    store.destroy() // remove all listeners FIRST!
+    store.setState({}, true) // THEN overwrite current state with empty object
+    return null /* no multiselect */
+  }
 
   // For now we need to have a SIDC to infer properties panel.
   // In the future we have to be more flexible.
   const featureProperties = inputLayers.featureProperties(featureIds[0])
+  if (!featureProperties.references) featureProperties.references = []
   if (!featureProperties.sidc) return null
 
-  const update = properties => inputLayers.updateFeatureProperties(featureIds[0], properties)
+  store.destroy() // remove all listeners
+  store.setState(featureProperties, true) // overwrite current state
+  store.subscribe(currentFeatureProperties => inputLayers.updateFeatureProperties(featureIds[0], currentFeatureProperties))
 
   const featureClass = properties => {
     const clazz = descriptors.featureClass(properties.sidc)
@@ -56,7 +70,12 @@ providers.register(selected => {
   }
 
   const key = featureIds[0]
-  const props = { properties: featureProperties, update }
+  const props = { getProperties: store.getState, update: store.setState }
   const panel = (panelTypes[clazz] || (() => null))
-  return panel(key, props)
+
+  return (
+    <PropertyPanelContent {...props}>
+      { panel(key, props) }
+    </PropertyPanelContent>
+  )
 })

@@ -21,7 +21,7 @@ const ReinforcedReduced = props => {
   const handleChange = ({ target }) => {
     properties.f = target.value
     setValue(properties.f)
-    onCommit(properties)
+    onCommit({ f: properties.f })
   }
 
   return (

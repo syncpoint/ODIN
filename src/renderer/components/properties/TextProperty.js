@@ -9,9 +9,12 @@ const TextProperty = props => {
 
   const commit = () => {
     const cleanValue = value.toString().trim()
-    properties[props.property] = cleanValue
     setValue(cleanValue)
-    props.onCommit(properties)
+    props.onCommit(() => {
+      const mergeMe = {}
+      mergeMe[props.property] = cleanValue
+      return mergeMe
+    })
   }
 
   const handleKeyDown = event => {
