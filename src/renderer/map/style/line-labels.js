@@ -41,10 +41,10 @@ const vAlign = v => ({ verticalAlign }) => verticalAlign === v
 const hAlign = v => ({ textAlign }) => textAlign === v
 
 const textAlign = α => R.cond([
-  [hAlign(LEFT), R.always(flip(α) ? 'end' : 'start')],
-  [hAlign(END), R.always(flip(α) ? 'end' : 'start')],
-  [hAlign(START), R.always(flip(α) ? 'start' : 'end')],
-  [hAlign(RIGHT), R.always(flip(α) ? 'start' : 'end')],
+  [hAlign(LEFT), R.always(flip(α) ? 'start' : 'end')],
+  [hAlign(END), R.always(flip(α) ? 'start' : 'end')],
+  [hAlign(START), R.always(flip(α) ? 'end' : 'start')],
+  [hAlign(RIGHT), R.always(flip(α) ? 'end' : 'start')],
   [R.T, R.always(null)]
 ])
 

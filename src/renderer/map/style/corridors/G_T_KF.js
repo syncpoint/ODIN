@@ -42,7 +42,7 @@ export default options => {
       font,
       text: 'CATK',
       flip: true,
-      textAlign: flipped => flipped ? 'start' : 'end',
+      textAlign: flipped => flipped ? 'end' : 'start',
       rotation: Math.PI - lastSegment.angle(),
       offsetX: flipped => flipped ? -10 : 10
     }),

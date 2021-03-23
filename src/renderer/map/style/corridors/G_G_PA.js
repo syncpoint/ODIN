@@ -36,7 +36,7 @@ export default options => {
     if (!t) return []
     return styles.text(TS.point(aps[3]), {
       font,
-      textAlign: flipped => flipped ? 'start' : 'end',
+      textAlign: flipped => flipped ? 'end' : 'start',
       offsetX: flipped => flipped ? -10 : 10,
       rotation: Math.PI - lastSegment.angle(),
       text: t,
