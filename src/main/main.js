@@ -41,5 +41,5 @@ if (!app.requestSingleInstanceLock()) app.quit()
 else {
   i18n.on('initialized', initialized)
   ipcMain.on('IPC_GRID_TOGGLED', (_, type) => setApplicationMenu({ grid: type }))
-  ipcMain.on('IPC_LABELS_TOGGLED', (_, show) => setApplicationMenu({ label: show }))
+  ipcMain.on('IPC_LABELS_TOGGLED', (_, show) => setApplicationMenu({ labels: show }))
 }

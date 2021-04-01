@@ -12,14 +12,17 @@ const handlers = {
     labels = preferences.labels === false
       ? false
       : preferences.labels || true
+    ipcRenderer.send('IPC_LABELS_TOGGLED', labels)
   },
   set: ({ key, value }) => {
     if (key !== 'labels') return
     labels = value
+    ipcRenderer.send('IPC_LABELS_TOGGLED', labels)
   },
   unset: ({ key }) => {
     if (key !== 'labels') return
     labels = false
+    ipcRenderer.send('IPC_LABELS_TOGGLED', false)
   }
 }
 
@@ -28,6 +31,7 @@ preferences.register(event => (handlers[event.type] || noop)(event))
 
 ipcRenderer.on('IPC_TOGGLE_LABELS', () => {
   preferences.set('labels', !labels)
+  ipcRenderer.send('IPC_LABELS_TOGGLED', false)
 })
 
 const style = options => new styles.Style(options)
