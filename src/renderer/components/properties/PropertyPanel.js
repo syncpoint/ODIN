@@ -10,11 +10,9 @@ const PropertyPanel = () => {
   React.useEffect(() => {
     const selectionUpdated = (content = null) => setContent(content)
     providers.on('selected', selectionUpdated)
-    console.log('mounted PropertyPanel')
 
     return () => {
       providers.off('selected', selectionUpdated)
-      console.log('un-mounted PropertyPanel')
     }
   }, [])
 

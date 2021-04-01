@@ -257,14 +257,6 @@ const updateGeometriesCommand = (initial, current) => ({
   inverse: () => updateGeometriesCommand(current, initial),
   apply: () => {
     const features = Object.entries(initial)
-      /*
-      .map(([id, geometry]) => {
-        console.log('id ' + id)
-        console.dir(geometry)
-        console.dir(featureList)
-        return [id, geometry]
-      })
-      */
       .map(([id, geometry]) => [featureList[id], geometry])
       .map(([feature, geometry]) => K(feature)(feature => {
         feature.setGeometry(geometry)
