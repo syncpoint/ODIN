@@ -60,10 +60,11 @@ const factory = options => write => {
   return {
     solidLine: (inGeometry, opts = {}) => {
       const primaryColor = opts.color || options.primaryColor
+      const accentColor = opts.accent || options.accentColor
       const fill = opts.fill
       const geometry = write(inGeometry)
       return [
-        { width: options.thick, color: options.accentColor, lineDash: options.dashPattern, lineCap: 'butt' },
+        { width: options.thick, color: accentColor, lineDash: options.dashPattern, lineCap: 'butt' },
         { width: options.thin, color: primaryColor, lineDash: options.dashPattern, lineCap: 'butt' }
       ].map(options => style({ stroke: stroke(options), geometry, fill }))
     },

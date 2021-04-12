@@ -5,6 +5,7 @@ import { lineStyle } from './line-style'
 import { multipointStyle } from './multipoint-style'
 import { collectionStyle } from './collection-style'
 import { symbolStyle } from './symbol-style'
+import * as features from '../../components/feature-descriptors'
 
 /**
  * normalizeSIDC :: String -> String
@@ -13,29 +14,28 @@ export const normalizeSIDC = sidc => sidc
   ? `${sidc[0]}-${sidc[2]}-${sidc.substring(4, 10)}`
   : 'MUZP------*****'
 
-/**
- * (MIL) SYMBOL STYLING.
- */
+const isGeometry = type => feature => feature.getGeometry().getType() === type
+const isSymbol = feature => {
+  const descriptor = features.descriptor(feature)
+  if (descriptor && descriptor.geometry && descriptor.geometry.type === 'Point') return true
+  else return isGeometry('Point')(feature)
+}
 
-
-
-/**
- * FEATURE STYLE FUNCTION.
- */
+/** [feature -> boolean, styleFN] */
+const providers = [
+  [isSymbol, symbolStyle],
+  [isGeometry('Polygon'), polygonStyle],
+  [isGeometry('LineString'), lineStyle],
+  [isGeometry('MultiPoint'), multipointStyle],
+  [isGeometry('GeometryCollection'), collectionStyle],
+  [R.T, defaultStyle]
+]
 
 export default mode => (feature, resolution) => {
-  const provider = R.cond([
-    [R.equals('Point'), R.always(symbolStyle(mode))],
-    [R.equals('Polygon'), R.always(polygonStyle(mode))],
-    [R.equals('LineString'), R.always(lineStyle(mode))],
-    [R.equals('MultiPoint'), R.always(multipointStyle(mode))],
-    [R.equals('GeometryCollection'), R.always(collectionStyle(mode))],
-    [R.T, R.always(defaultStyle)]
-  ])
 
   try {
-    const type = feature.getGeometry().getType()
-    return provider(type)(feature, resolution)
+    const provider = providers.find(([p]) => p(feature))
+    return provider[1](mode)(feature, resolution)
   } catch (err) {
     console.error('[style]', feature, err)
     return []
