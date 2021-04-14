@@ -1,5 +1,6 @@
 import * as R from 'ramda'
 import { Style, Icon } from 'ol/style'
+import * as geom from 'ol/geom'
 import ms from 'milsymbol'
 import { K } from '../../../shared/combinators'
 import { defaultStyle, styleFactory, styleOptions } from './default-style'
@@ -61,7 +62,7 @@ export const symbolStyle = mode => (feature, resolution) => {
 
   let actualSIDC = sidc
   if (sidc && sidc[0] === 'G') {
-    // MilSymbols cannot handle with undefined hostility
+    // MilSymbols cannot handle undefined hostility
     // state ('-') for TACGRP symbols => Use Friend, but don't
     // use hostility color.
     if (sidc[1] === '-') {
@@ -77,11 +78,29 @@ export const symbolStyle = mode => (feature, resolution) => {
   }
 
   const symbol = new ms.Symbol(actualSIDC, options)
+  const geometry = feature.getGeometry()
+  const pointStyle = () => [new Style({ image: icon(symbol) })]
 
-  return symbol.isValid()
-    ? [
-        new Style({ image: icon(symbol) }),
-        mode === 'multi' ? factory.handles(feature.getGeometry()) : []
-      ].flat()
-    : defaultStyle(feature)
+  const lineStringStyle = () => {
+    const point = new geom.Point(geometry.getFirstCoordinate())
+    return [
+      new Style({
+        image: icon(symbol),
+        geometry: point
+      }),
+      factory.solidLine(geometry, { color: 'black', accent: 'white' })
+    ]
+  }
+
+  if (symbol.isValid()) {
+    const marker = geometry.getType() === 'Point'
+      ? pointStyle()
+      : lineStringStyle()
+
+    return [
+      ...marker,
+      mode === 'multi' ? factory.handles(feature.getGeometry()) : []
+    ].flat()
+
+  } else return defaultStyle(feature)
 }

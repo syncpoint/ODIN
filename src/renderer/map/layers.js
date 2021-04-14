@@ -14,6 +14,7 @@ import Feature from '../project/Feature'
 import URI from '../project/URI'
 import selection from '../selection'
 import { Modify } from './interaction/Modify'
+import { OffsetLocation } from './interaction/offset-location'
 import * as descriptors from '../components/feature-descriptors'
 
 // --
@@ -302,6 +303,22 @@ const createModify = source => {
 }
 
 
+const createOffsetLocation = source => {
+  let initial = {} // Cloned geometries BEFORE offset.
+  const interaction = new OffsetLocation({ source })
+
+  interaction.on('offsetstart', ({ features }) => {
+    initial = cloneGeometries(features.getArray())
+  })
+
+  interaction.on('offsetend', ({ features }) => {
+    inputLayers.updateGeometries(initial, features.getArray())
+  })
+
+  return interaction
+}
+
+
 /**
  * Translate, i.e. move feature(s) interaction.
  */
@@ -441,6 +458,7 @@ export default map => {
   })
 
   addInteraction(createModify(modifySource))
+  addInteraction(createOffsetLocation(modifySource))
 
   addInteraction(new Snap({
     source: layer.getSource()
