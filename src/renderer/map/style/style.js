@@ -5,6 +5,7 @@ import { lineStyle } from './line-style'
 import { multipointStyle } from './multipoint-style'
 import { collectionStyle } from './collection-style'
 import { symbolStyle } from './symbol-style'
+import { supplementalStyle } from './supplemental'
 import * as features from '../../components/feature-descriptors'
 
 /**
@@ -21,8 +22,14 @@ const isSymbol = feature => {
   else return isGeometry('Point')(feature)
 }
 
+const isSupplemental = feature => {
+  const sidc = feature.get('sidc')
+  return sidc && sidc.startsWith('X')
+}
+
 /** [feature -> boolean, styleFN] */
 const providers = [
+  [isSupplemental, supplementalStyle],
   [isSymbol, symbolStyle],
   [isGeometry('Polygon'), polygonStyle],
   [isGeometry('LineString'), lineStyle],
@@ -35,7 +42,8 @@ export default mode => (feature, resolution) => {
 
   try {
     const provider = providers.find(([p]) => p(feature))
-    return provider[1](mode)(feature, resolution)
+    const styles = provider[1](mode)(feature, resolution)
+    return styles
   } catch (err) {
     console.error('[style]', feature, err)
     return []

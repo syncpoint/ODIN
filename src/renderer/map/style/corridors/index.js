@@ -67,7 +67,7 @@ export const style = fn => options => {
   return [
     R.tryCatch(tryer, catcher)(),
     styleFactory.wireFrame(line),
-    styleFactory.handles(TS.multiPoint([point, ...TS.linePoints(line)]))
+    ...styleFactory.handles(TS.multiPoint([point, ...TS.linePoints(line)]))
   ].flat()
 }
 

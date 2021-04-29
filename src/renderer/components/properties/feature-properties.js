@@ -15,6 +15,9 @@ import GenericPointProperties from './GenericPointProperties'
 import InstallationProperties from './InstallationProperties'
 import EEIProperties from './EEIProperties'
 import BoundariesProperties from './BoundariesProperties'
+import SupplementalTextProperties from './SupplementalTextProperties'
+import SupplementalLineProperties from './SupplementalLineProperties'
+import SupplementalPolygonProperties from './SupplementalPolygonProperties'
 
 import PropertyPanelContent from './PropertyPanelContent'
 
@@ -30,7 +33,10 @@ const panelTypes = {
   EI: (key, props) => <InstallationProperties key={key} { ...props }/>,
   EEI: (key, props) => <EEIProperties key={key} { ...props }/>,
   GP: (key, props) => <GenericPointProperties key={key} { ...props }/>,
-  BL: (key, props) => <BoundariesProperties key={key} { ...props }/>
+  BL: (key, props) => <BoundariesProperties key={key} { ...props }/>,
+  ST: (key, props) => <SupplementalTextProperties key={key} { ...props }/>,
+  SL: (key, props) => <SupplementalLineProperties key={key} { ...props }/>,
+  SP: (key, props) => <SupplementalPolygonProperties key={key} { ...props }/>
 }
 
 /* create an empty store for properties */

@@ -99,7 +99,7 @@ export const symbolStyle = mode => (feature, resolution) => {
 
     return [
       ...marker,
-      mode === 'multi' ? factory.handles(feature.getGeometry()) : []
+      ...(mode === 'multi' ? factory.handles(feature.getGeometry()) : [])
     ].flat()
 
   } else return defaultStyle(feature)

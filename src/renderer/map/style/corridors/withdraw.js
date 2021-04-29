@@ -29,6 +29,6 @@ export default text => options => {
       rotation: Math.PI - angle
     }),
     styles.wireFrame(line),
-    styles.handles(TS.multiPoint([point, ...TS.linePoints(line)]))
+    ...styles.handles(TS.multiPoint([point, ...TS.linePoints(line)]))
   ]
 }

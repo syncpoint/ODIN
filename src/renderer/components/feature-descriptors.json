@@ -22034,5 +22034,32 @@
       "SUBSURFACE TRACK",
       "UNEXPLODED ORDNANCE AREA"
     ]
+  },
+  {
+    "sidc": "X---T-----*****",
+    "class": "ST",
+    "geometry": "Point",
+    "hierarchy": [
+      "SUPPLEMENTAL",
+      "TEXT"
+    ]
+  },
+  {
+    "sidc": "X---L-----*****",
+    "class": "SL",
+    "geometry": "LineString",
+    "hierarchy": [
+      "SUPPLEMENTAL",
+      "LINE"
+    ]
+  },
+  {
+    "sidc": "X---P-----*****",
+    "class": "SP",
+    "geometry": "Polygon",
+    "hierarchy": [
+      "SUPPLEMENTAL",
+      "POLYGIN"
+    ]
   }
 ]

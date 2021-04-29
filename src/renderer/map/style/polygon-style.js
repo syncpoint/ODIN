@@ -150,7 +150,7 @@ export const polygonStyle = mode => (feature, resolution) => {
 
 
   return [
-    mode === 'multi' ? factory.handles(firstPoint()) : [],
+    ...(mode === 'multi' ? factory.handles(firstPoint()) : []),
     labels(),
     ...geometryStyle
   ].flat()

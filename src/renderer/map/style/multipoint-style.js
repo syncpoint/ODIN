@@ -335,6 +335,6 @@ export const multipointStyle = mode => (feature, resolution) => {
 
   return [
     geometries[sidc] ? geometries[sidc](options).flat() : defaultStyle(feature),
-    factory.handles(points)
+    ...factory.handles(points)
   ].flat()
 }

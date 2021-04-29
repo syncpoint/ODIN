@@ -69,6 +69,16 @@ const factory = options => write => {
       ].map(options => style({ stroke: stroke(options), geometry, fill }))
     },
 
+    singleLine: (inGeometry, opts = {}) => {
+      const width = opts.width || 3
+      const color = opts.color || options.primaryColor
+      const fill = opts.fill
+      const geometry = write(inGeometry)
+      return [
+        { width, color, lineCap: 'butt' }
+      ].map(options => style({ stroke: stroke(options), geometry, fill }))
+    },
+
     filledPolygon: (inGeometry, opts = {}) => {
       const primaryColor = opts.color || options.primaryColor
       const geometry = write(inGeometry)
@@ -103,16 +113,16 @@ const factory = options => write => {
 
     handles: (inGeometry, options = {}) => {
       if (mode === 'selected') {
-        return style({
+        return [style({
           geometry: write(inGeometry),
           image: circle({
             fill: fill({ color: options.color || 'rgba(255,0,0,0.6)' }),
             stroke: stroke({ color: 'white', width: 3 }),
             radius: 7
           })
-        })
+        })]
       } else if (mode === 'multi') {
-        return style({
+        return [style({
           geometry: write(inGeometry),
           image: regularShape({
             fill: fill({ color: 'white' }),
@@ -121,7 +131,7 @@ const factory = options => write => {
             points: 4,
             angle: Math.PI / 4
           })
-        })
+        })]
       } else return []
     },
 
