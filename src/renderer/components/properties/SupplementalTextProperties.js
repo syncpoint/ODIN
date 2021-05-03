@@ -105,9 +105,11 @@ const SupplementalTextProperties = props => {
           max={6}
           onChange={setValue('outlineWidth')}
         />
+
         <Checkbox style={{ gridRow: 4, gridColumn: '1' }} checked={background()} onChange={setChecked('background')}></Checkbox>
         <FormLabel style={{ gridRow: 4, gridColumn: '2' }}>Background</FormLabel>
         <PopoverPicker style={{ gridRow: 4, gridColumn: '3' }} color={backgroundColor()} onChange={setColor('backgroundColor')} />
+
         <Checkbox style={{ gridRow: 5, gridColumn: '1' }} checked={border()} onChange={setChecked('border')}></Checkbox>
         <FormLabel style={{ gridRow: 5, gridColumn: '2' }}>Border</FormLabel>
         <PopoverPicker style={{ gridRow: 5, gridColumn: '3' }} color={borderColor()} onChange={setColor('borderColor')} />
@@ -124,6 +126,7 @@ const SupplementalTextProperties = props => {
           max={9}
           onChange={setValue('borderWidth')}
         />
+
         <FormLabel style={{ gridRow: 7, gridColumn: '2' }}>Rotation</FormLabel>
         <Slider style={{ gridRow: 7, gridColumn: '3', gridColumnEnd: 8 }}
           value={rotation()}
