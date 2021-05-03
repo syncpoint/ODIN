@@ -32,7 +32,8 @@ const TextareaProperty = props => {
       onChange={({ target }) => setValue(target.value)}
       onKeyDown={handleKeyDown}
       onBlur={commit}
-      multiline
+      multiline={true}
+      rows={4}
     />
   )
 }
