@@ -26,15 +26,15 @@ const SupplementalTextProperties = props => {
   const [properties, setProperties] = React.useState(props.getProperties())
 
   const textColor = () => properties.textColor || '#000000'
-  const fontSize = () => properties.fontSize || ''
+  const fontSize = () => properties.fontSize || 16
   const borderColor = () => properties.borderColor || '#000000'
   const background = () => properties.background || false
   const backgroundColor = () => properties.backgroundColor || '#fefefe'
   const outlineColor = () => properties.outlineColor || '#fefefe'
   const outline = () => properties.outline || false
-  const outlineWidth = () => properties.outlineWidth || ''
+  const outlineWidth = () => properties.outlineWidth || 2
   const border = () => properties.border || false
-  const borderWidth = () => properties.borderWidth || ''
+  const borderWidth = () => properties.borderWidth || 3
   const rotation = () => properties.rotation || 0
 
   const set = property => value => {
