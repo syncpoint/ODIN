@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Checkbox from '@material-ui/core/Checkbox'
-import TextField from '@material-ui/core/TextField'
 import FormLabel from '@material-ui/core/FormLabel'
+import Slider from '@material-ui/core/Slider'
 import TextProperty from './TextProperty'
 import TextareaProperty from './TextareaProperty'
 import PopoverPicker from './PopoverPicker'
@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
     display: 'grid',
     gridGap: '0.75em',
     gridTemplateColumns: '24px auto 48px 12px 48px 12px 48px',
-    gridTemplateRows: 'repeat(8, 24px)',
+    gridTemplateRows: 'repeat(8, 32px)',
     alignItems: 'center',
     marginTop: theme.spacing(2)
   }
@@ -27,7 +27,6 @@ const SupplementalTextProperties = props => {
 
   const textColor = () => properties.textColor || '#000000'
   const fontSize = () => properties.fontSize || ''
-  const padding = () => properties.padding || ''
   const borderColor = () => properties.borderColor || '#000000'
   const background = () => properties.background || false
   const backgroundColor = () => properties.backgroundColor || '#fefefe'
@@ -36,7 +35,7 @@ const SupplementalTextProperties = props => {
   const outlineWidth = () => properties.outlineWidth || ''
   const border = () => properties.border || false
   const borderWidth = () => properties.borderWidth || ''
-  const rotation = () => properties.rotation || ''
+  const rotation = () => properties.rotation || 0
 
   const set = property => value => {
     const kv = {}
@@ -55,8 +54,7 @@ const SupplementalTextProperties = props => {
     props.update(kv)
   }
 
-  const setText = property => event => {
-    const value = event.target.value
+  const setValue = property => (_, value) => {
     const kv = {}
     kv[property] = value
     const state = { ...properties, ...kv }
@@ -71,25 +69,78 @@ const SupplementalTextProperties = props => {
       <TextProperty label='Name' property='name' properties={props.getProperties()} onCommit={props.update} className={classes.twoColumns}/>
       <TextareaProperty label='Text' property='text' properties={props.getProperties()} onCommit={props.update} className={classes.twoColumns}/>
       <div className={classes.styleProperties}>
+        <Slider style={{ gridRow: 1, gridColumn: '5', gridColumnEnd: 8 }}
+          value={fontSize()}
+          getAriaValueText={fontSize}
+          aria-labelledby="discrete-slider"
+          valueLabelDisplay="auto"
+          step={8}
+          marks={[
+            { value: 16, label: '16' },
+            { value: 24, label: '24' },
+            { value: 32, label: '32' },
+            { value: 48, label: '48' },
+            { value: 64, label: '64' }
+          ]}
+          min={16}
+          max={64}
+          onChange={setValue('fontSize')}
+        />
         <FormLabel style={{ gridRow: 1, gridColumn: '2' }}>Color</FormLabel>
         <PopoverPicker style={{ gridRow: 1, gridColumn: '3' }} color={textColor()} onChange={setColor('textColor')} />
-        <Checkbox style={{ gridRow: 2, gridColumn: '1' }} checked={outline()} onChange={setChecked('outline')}></Checkbox>
-        <FormLabel style={{ gridRow: 2, gridColumn: '2' }}>Outline</FormLabel>
-        <PopoverPicker style={{ gridRow: 2, gridColumn: '3' }} color={outlineColor()} onChange={setColor('outlineColor')} />
-        <TextField style={{ gridRow: 2, gridColumn: '5' }} value={outlineWidth()} onChange={setText('outlineWidth')}/>
-        <Checkbox style={{ gridRow: 3, gridColumn: '1' }} checked={background()} onChange={setChecked('background')}></Checkbox>
-        <FormLabel style={{ gridRow: 3, gridColumn: '2' }}>Background</FormLabel>
-        <PopoverPicker style={{ gridRow: 3, gridColumn: '3' }} color={backgroundColor()} onChange={setColor('backgroundColor')} />
-        <Checkbox style={{ gridRow: 4, gridColumn: '1' }} checked={border()} onChange={setChecked('border')}></Checkbox>
-        <FormLabel style={{ gridRow: 4, gridColumn: '2' }}>Border</FormLabel>
-        <PopoverPicker style={{ gridRow: 4, gridColumn: '3' }} color={borderColor()} onChange={setColor('borderColor')} />
-        <TextField style={{ gridRow: 4, gridColumn: '5' }} value={borderWidth()} onChange={setText('borderWidth')}/>
-        <FormLabel style={{ gridRow: 5, gridColumn: '2' }}>Padding</FormLabel>
-        <TextField style={{ gridRow: 5, gridColumn: '3' }} value={padding()} onChange={setText('padding')}/>
-        <FormLabel style={{ gridRow: 6, gridColumn: '2' }}>Size</FormLabel>
-        <TextField style={{ gridRow: 6, gridColumn: '3' }} value={fontSize()} onChange={setText('fontSize')}/>
+        <Checkbox style={{ gridRow: 3, gridColumn: '1' }} checked={outline()} onChange={setChecked('outline')}></Checkbox>
+        <FormLabel style={{ gridRow: 3, gridColumn: '2' }}>Outline</FormLabel>
+        <PopoverPicker style={{ gridRow: 3, gridColumn: '3' }} color={outlineColor()} onChange={setColor('outlineColor')} />
+        <Slider
+          style={{ gridRow: 3, gridColumn: '5', gridColumnEnd: 8 }}
+          value={outlineWidth()}
+          step={2}
+          marks={[
+            { value: 2, label: 'S' },
+            { value: 4, label: 'M' },
+            { value: 6, label: 'L' }
+          ]}
+          min={2}
+          max={6}
+          onChange={setValue('outlineWidth')}
+        />
+        <Checkbox style={{ gridRow: 4, gridColumn: '1' }} checked={background()} onChange={setChecked('background')}></Checkbox>
+        <FormLabel style={{ gridRow: 4, gridColumn: '2' }}>Background</FormLabel>
+        <PopoverPicker style={{ gridRow: 4, gridColumn: '3' }} color={backgroundColor()} onChange={setColor('backgroundColor')} />
+        <Checkbox style={{ gridRow: 5, gridColumn: '1' }} checked={border()} onChange={setChecked('border')}></Checkbox>
+        <FormLabel style={{ gridRow: 5, gridColumn: '2' }}>Border</FormLabel>
+        <PopoverPicker style={{ gridRow: 5, gridColumn: '3' }} color={borderColor()} onChange={setColor('borderColor')} />
+        <Slider
+          style={{ gridRow: 5, gridColumn: '5', gridColumnEnd: 8 }}
+          value={borderWidth()}
+          step={3}
+          marks={[
+            { value: 3, label: 'S' },
+            { value: 6, label: 'M' },
+            { value: 9, label: 'L' }
+          ]}
+          min={3}
+          max={9}
+          onChange={setValue('borderWidth')}
+        />
         <FormLabel style={{ gridRow: 7, gridColumn: '2' }}>Rotation</FormLabel>
-        <TextField style={{ gridRow: 7, gridColumn: '3' }} value={rotation()} onChange={setText('rotation')}/>
+        <Slider style={{ gridRow: 7, gridColumn: '3', gridColumnEnd: 8 }}
+          value={rotation()}
+          getAriaValueText={rotation}
+          aria-labelledby="discrete-slider"
+          valueLabelDisplay="auto"
+          step={15}
+          marks={[
+            { value: 0, label: '0°' },
+            { value: 90, label: '90°' },
+            { value: 180, label: '180°' },
+            { value: 270, label: '270°' },
+            { value: 360, label: '360°' }
+          ]}
+          min={0}
+          max={360}
+          onChange={setValue('rotation')}
+        />
       </div>
     </>
   )
