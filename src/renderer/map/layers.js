@@ -277,7 +277,7 @@ const createModify = source => {
   let initial = {} // Cloned geometries BEFORE modify.
 
   const interaction = new Modify({
-    hitTolerance,
+    hitDetection: true,
     source,
     // Allow translate while editing (with shift key pressed):
     condition: conjunction(primaryAction, noShiftKey),
