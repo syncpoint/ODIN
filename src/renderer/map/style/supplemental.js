@@ -10,11 +10,11 @@ const styleFn = {
     const rotation = parseInt(feature.get('rotation') || 0) / 180 * Math.PI
     const color = feature.get('textColor') || 'black'
     const outlineColor = feature.get('outlineColor') || '#fefefe'
-    const outlineWidth = parseInt(feature.get('outlineWidth') || '3')
+    const outlineWidth = parseInt(feature.get('outlineWidth') || 2)
     const backgroundColor = feature.get('backgroundColor') || '#fefefe'
-    const borderColor = feature.get('borderColor')
-    const borderWidth = parseInt(feature.get('borderWidth') || '1')
-    const fontSize = parseInt(feature.get('fontSize') || '18')
+    const borderColor = feature.get('borderColor') || 'black'
+    const borderWidth = parseInt(feature.get('borderWidth') || 3)
+    const fontSize = parseInt(feature.get('fontSize') || 16)
 
     const stroke = feature.get('outline')
       ? new Stroke({ color: outlineColor, width: outlineWidth })
@@ -34,21 +34,24 @@ const styleFn = {
     })()
 
     const font = `${fontSize}px sans-serif`
-
     const geometry = feature.getGeometry()
 
     return [
-      styles.text(geometry, {
-        text,
-        textAlign: 'left',
-        color,
-        rotation,
-        backgroundFill,
-        backgroundStroke,
-        stroke,
-        padding,
-        font
-      }),
+      styles.text(
+        new geom.Point(geometry.getFirstCoordinate())
+        , {
+          text,
+          textAlign: 'start',
+          color,
+          rotation,
+          backgroundFill,
+          backgroundStroke,
+          stroke,
+          padding,
+          font,
+          offsetX: (feature.get('padding') || 6)
+        }),
+      styles.solidLine(geometry, { color: color, accent: 'white' }),
       ...styles.handles(geometry)
     ].flat()
   },
