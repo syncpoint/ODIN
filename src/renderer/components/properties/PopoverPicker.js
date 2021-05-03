@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useRef, useState } from 'react'
-import { HexColorPicker } from 'react-colorful'
+import { RgbaStringColorPicker } from 'react-colorful'
 import { makeStyles } from '@material-ui/core/styles'
 import useClickOutside from './useClickOutside'
 
@@ -42,7 +42,7 @@ const PopoverPicker = ({ color, onChange, style }) => {
 
       {isOpen && (
         <div className={classes.popover} ref={popover}>
-          <HexColorPicker color={color} onChange={onChange} />
+          <RgbaStringColorPicker color={color} onChange={onChange} />
         </div>
       )}
     </div>
