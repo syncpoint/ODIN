@@ -69,6 +69,8 @@ const SupplementalTextProperties = props => {
       <TextProperty label='Name' property='name' properties={props.getProperties()} onCommit={props.update} className={classes.twoColumns}/>
       <TextareaProperty label='Text' property='text' properties={props.getProperties()} onCommit={props.update} className={classes.twoColumns}/>
       <div className={classes.styleProperties}>
+        <FormLabel style={{ gridRow: 1, gridColumn: '2' }}>Font</FormLabel>
+        <PopoverPicker style={{ gridRow: 1, gridColumn: '3' }} color={textColor()} onChange={setColor('textColor')} />
         <Slider style={{ gridRow: 1, gridColumn: '5', gridColumnEnd: 8 }}
           value={fontSize()}
           getAriaValueText={fontSize}
@@ -86,8 +88,7 @@ const SupplementalTextProperties = props => {
           max={64}
           onChange={setValue('fontSize')}
         />
-        <FormLabel style={{ gridRow: 1, gridColumn: '2' }}>Color</FormLabel>
-        <PopoverPicker style={{ gridRow: 1, gridColumn: '3' }} color={textColor()} onChange={setColor('textColor')} />
+
         <Checkbox style={{ gridRow: 3, gridColumn: '1' }} checked={outline()} onChange={setChecked('outline')}></Checkbox>
         <FormLabel style={{ gridRow: 3, gridColumn: '2' }}>Outline</FormLabel>
         <PopoverPicker style={{ gridRow: 3, gridColumn: '3' }} color={outlineColor()} onChange={setColor('outlineColor')} />
