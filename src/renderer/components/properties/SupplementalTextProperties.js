@@ -9,6 +9,8 @@ import TextareaProperty from './TextareaProperty'
 import PopoverPicker from './PopoverPicker'
 import debounce from 'lodash.debounce'
 
+import { useTranslation } from 'react-i18next'
+
 const useStyles = makeStyles(theme => ({
   twoColumns: { gridColumn: '1 / span 2' },
   styleProperties: {
@@ -23,6 +25,7 @@ const useStyles = makeStyles(theme => ({
 
 const SupplementalTextProperties = props => {
   const classes = useStyles()
+  const { t } = useTranslation()
   const [properties, setProperties] = React.useState(props.getProperties())
 
   const textColor = () => properties.textColor || '#000000'
@@ -69,7 +72,7 @@ const SupplementalTextProperties = props => {
       <TextProperty label='Name' property='name' properties={props.getProperties()} onCommit={props.update} className={classes.twoColumns}/>
       <TextareaProperty label='Text' property='text' properties={props.getProperties()} onCommit={props.update} className={classes.twoColumns}/>
       <div className={classes.styleProperties}>
-        <FormLabel style={{ gridRow: 1, gridColumn: '2' }}>Font</FormLabel>
+        <FormLabel style={{ gridRow: 1, gridColumn: '2' }}>{t('text.font')}</FormLabel>
         <PopoverPicker style={{ gridRow: 1, gridColumn: '3' }} color={textColor()} onChange={setColor('textColor')} />
         <Slider style={{ gridRow: 1, gridColumn: '5', gridColumnEnd: 8 }}
           value={fontSize()}
@@ -90,7 +93,7 @@ const SupplementalTextProperties = props => {
         />
 
         <Checkbox style={{ gridRow: 3, gridColumn: '1' }} checked={outline()} onChange={setChecked('outline')}></Checkbox>
-        <FormLabel style={{ gridRow: 3, gridColumn: '2' }}>Outline</FormLabel>
+        <FormLabel style={{ gridRow: 3, gridColumn: '2' }}>{t('text.outline')}</FormLabel>
         <PopoverPicker style={{ gridRow: 3, gridColumn: '3' }} color={outlineColor()} onChange={setColor('outlineColor')} />
         <Slider
           style={{ gridRow: 3, gridColumn: '5', gridColumnEnd: 8 }}
@@ -107,11 +110,11 @@ const SupplementalTextProperties = props => {
         />
 
         <Checkbox style={{ gridRow: 4, gridColumn: '1' }} checked={background()} onChange={setChecked('background')}></Checkbox>
-        <FormLabel style={{ gridRow: 4, gridColumn: '2' }}>Background</FormLabel>
+        <FormLabel style={{ gridRow: 4, gridColumn: '2' }}>{t('text.background')}</FormLabel>
         <PopoverPicker style={{ gridRow: 4, gridColumn: '3' }} color={backgroundColor()} onChange={setColor('backgroundColor')} />
 
         <Checkbox style={{ gridRow: 5, gridColumn: '1' }} checked={border()} onChange={setChecked('border')}></Checkbox>
-        <FormLabel style={{ gridRow: 5, gridColumn: '2' }}>Border</FormLabel>
+        <FormLabel style={{ gridRow: 5, gridColumn: '2' }}>{t('text.border')}</FormLabel>
         <PopoverPicker style={{ gridRow: 5, gridColumn: '3' }} color={borderColor()} onChange={setColor('borderColor')} />
         <Slider
           style={{ gridRow: 5, gridColumn: '5', gridColumnEnd: 8 }}
@@ -127,7 +130,7 @@ const SupplementalTextProperties = props => {
           onChange={setValue('borderWidth')}
         />
 
-        <FormLabel style={{ gridRow: 7, gridColumn: '2' }}>Rotation</FormLabel>
+        <FormLabel style={{ gridRow: 7, gridColumn: '2' }}>{t('text.rotation')}</FormLabel>
         <Slider style={{ gridRow: 7, gridColumn: '3', gridColumnEnd: 8 }}
           value={rotation()}
           getAriaValueText={rotation}
