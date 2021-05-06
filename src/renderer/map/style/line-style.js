@@ -21,7 +21,7 @@ export const lineStyle = mode => (feature, resolution) => {
 
   return [
     geometries[sidc] ? geometries[sidc](options).flat() : defaultStyle(feature),
-    factory.handles(TS.multiPoint(TS.linePoints(line))),
+    ...factory.handles(TS.multiPoint(TS.linePoints(line))),
     factory.wireFrame(line),
     labels()
   ].flat()

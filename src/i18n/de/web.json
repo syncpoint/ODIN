@@ -86,5 +86,12 @@
     "references": {
       "dropObjectTarget": "Dokumente oder Links hierher ziehen und ablegen"
     }
+  },
+  "text": {
+    "font": "Schrift",
+    "background": "Hintergrund",
+    "outline": "Umrandung",
+    "border": "Rahmen",
+    "rotation": "Drehung"
   }
 }
