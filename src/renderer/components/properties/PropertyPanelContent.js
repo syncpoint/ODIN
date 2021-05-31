@@ -15,7 +15,8 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(3),
     height: 'auto',
     pointerEvents: 'auto',
-    gridArea: 'R'
+    gridArea: 'R',
+    overflow: 'auto'
   },
 
   tabContent: {
