@@ -152,9 +152,20 @@ export const labels = {
   'G*G*GLB---': [
     (feature, resolution) => {
       const echelonOffset = numberProperty(feature)('echelonOffset', 0.5)
+      const geometry = feature.getGeometry()
+
+      const segment = [
+        geometry.getCoordinateAt(Math.max(0, echelonOffset - 0.05)),
+        geometry.getCoordinateAt(Math.min(1, echelonOffset + 0.05))
+      ]
+
+      const alpha = segmentAngle(segment)
+      const left = flip(alpha) ? BOTTOM : TOP
+      const right = flip(alpha) ? TOP : BOTTOM
+
       return [
-        label({ textAlign: echelonOffset, verticalAlign: TOP })(({ t }) => [t])(feature),
-        label({ textAlign: echelonOffset, verticalAlign: BOTTOM })(({ t1 }) => [t1])(feature)
+        label({ textAlign: echelonOffset, verticalAlign: left })(({ t }) => [t])(feature),
+        label({ textAlign: echelonOffset, verticalAlign: right })(({ t1 }) => [t1])(feature)
       ]
     }
   ],
