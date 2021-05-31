@@ -11,16 +11,16 @@ const menu = i18n => {
         label: i18n.t('edit.undo'),
         accelerator: 'CmdOrCtrl+Z',
         click: onclick(browserWindow => {
+          browserWindow.webContents.send('IPC_EDIT_UNDO')
           browserWindow.webContents.undo()
-          browserWindow.send('IPC_EDIT_UNDO')
         })
       },
       {
         label: i18n.t('edit.redo'),
         accelerator: 'CmdOrCtrl+Shift+Z',
         click: onclick(browserWindow => {
+          browserWindow.webContents.send('IPC_EDIT_REDO')
           browserWindow.webContents.redo()
-          browserWindow.send('IPC_EDIT_REDO')
         })
       },
       { type: 'separator' },
@@ -40,18 +40,17 @@ const menu = i18n => {
         label: i18n.t('edit.selectAll'),
         accelerator: 'CmdOrCtrl+A',
         click: onclick(browserWindow => {
-          browserWindow.webContents.selectAll()
-          browserWindow.send('IPC_EDIT_SELECT_ALL')
+          // browserWindow.webContents.selectAll()
+          browserWindow.webContents.send('IPC_EDIT_SELECT_ALL')
         })
       }
-
-    // darwin: automatically added:
-    // 1. separator (see below)
-    // 2. start dictation
-    // 3. emojis & symbols
     ]
   }
 
+  // darwin: automatically added:
+  // 1. separator (see below)
+  // 2. start dictation
+  // 3. emojis & symbols
   if (process.platform === 'darwin') m.submenu.push({ type: 'separator' })
   return m
 }
