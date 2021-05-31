@@ -74,8 +74,13 @@ const editPaste = async () => {
 
 // Block certain ops when text input field is focused.
 
+const inputTypes = [HTMLInputElement, HTMLTextAreaElement]
 const activeElement = () => document.activeElement
-const inputFocused = () => activeElement() instanceof HTMLInputElement
+const inputFocused = () => {
+  const active = activeElement()
+  return inputTypes.some(type => (active instanceof type))
+}
+
 const block = p => fn => () => (p() ? noop : fn)()
 
 document.addEventListener('cut', () => evented.emit('EDIT_CUT'))
