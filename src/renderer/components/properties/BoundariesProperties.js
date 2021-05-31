@@ -34,7 +34,7 @@ const LineProperties = props => {
       <HostilityProperty properties={properties} onCommit={props.update}/>
       <EchelonProperty properties={properties} onCommit={props.update}/>
       <Typography component='div'>Label Placement</Typography>
-      <Slider value={echelonOffset} min={0} max={1} step={0.01} onChange={handleChange} color={'secondary'} className={ classes.twoColumns }/>
+      <Slider value={echelonOffset} min={0.01} max={0.99} step={0.01} onChange={handleChange} color={'secondary'} className={ classes.twoColumns }/>
       <StatusGroupReduced properties={properties} onCommit={props.update}/>
       <TextProperty label={'Effective (from)'} property={'w'} properties={properties} onCommit={props.update} className={ classes.twoColumns } />
       <TextProperty label={'Effective (to)'} property={'w1'} properties={properties} onCommit={props.update} className={ classes.twoColumns } />
