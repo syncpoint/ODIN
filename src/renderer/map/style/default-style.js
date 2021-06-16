@@ -7,6 +7,8 @@ import { noop } from '../../../shared/combinators'
 
 let labels = true
 
+const USER_DEFINED_LINE_SCALE = process.env.USER_DEFINED_LINE_SCALE || 1
+
 const handlers = {
   preferences: ({ preferences }) => {
     labels = preferences.labels === false
@@ -49,8 +51,8 @@ export const styleOptions = ({ feature }) => {
     primaryColor: primaryColor(scheme)(SIDC.identity(sidc)),
     accentColor: accentColor(SIDC.identity(sidc)),
     dashPattern: SIDC.status(sidc) === 'A' ? [20, 10] : null,
-    thin: 2,
-    thick: 3.5
+    thin: 2 * USER_DEFINED_LINE_SCALE,
+    thick: 3.5 * USER_DEFINED_LINE_SCALE
   }
 }
 
@@ -70,7 +72,7 @@ const factory = options => write => {
     },
 
     singleLine: (inGeometry, opts = {}) => {
-      const width = opts.width || 3
+      const width = opts.width || 3 * USER_DEFINED_LINE_SCALE
       const color = opts.color || options.primaryColor
       const fill = opts.fill
       const geometry = write(inGeometry)
@@ -171,8 +173,8 @@ const factory = options => write => {
   }
 }
 
-export const defaultFont = '14px sans-serif'
-export const biggerFont = '16px sans-serif'
+export const defaultFont = `${14 * USER_DEFINED_LINE_SCALE}px sans-serif`
+export const biggerFont = `${16 * USER_DEFINED_LINE_SCALE}px sans-serif`
 
 const defaultImage = circle({
   radius: 6,

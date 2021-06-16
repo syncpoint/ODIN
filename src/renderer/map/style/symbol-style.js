@@ -5,6 +5,8 @@ import ms from 'milsymbol'
 import { K } from '../../../shared/combinators'
 import { defaultStyle, styleFactory, styleOptions } from './default-style'
 
+const USER_DEFINED_SYMBOL_SCALE = (process.env.USER_DEFINED_SYMBOL_SCALE || 1)
+
 const MODIFIERS = {
   c: 'quantity',
   f: 'reinforcedReduced',
@@ -36,7 +38,7 @@ const icon = symbol => {
   const imgSize = size => [Math.floor(size.width), Math.floor(size.height)]
   return new Icon({
     anchor,
-    scale: 0.4,
+    scale: 0.4 * USER_DEFINED_SYMBOL_SCALE,
     anchorXUnits: 'pixels',
     anchorYUnits: 'pixels',
     imgSize: imgSize(symbol.getSize()),
