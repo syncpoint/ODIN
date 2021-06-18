@@ -22,7 +22,7 @@ const StatusGroupFull = props => {
 
   const handleChange = ({ target }) => {
     setStatus(target.value)
-    props.onCommit({ sidc: statusPart.replace(target.value)(properties.sidc) })
+    props.onCommit(featureProperties => ({ sidc: statusPart.replace(target.value)(featureProperties.sidc) }))
   }
 
   return (
