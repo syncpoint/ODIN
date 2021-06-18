@@ -82,6 +82,7 @@ const effect = props => () => {
 
   // restore viewport and active layer name from preferences.
   preferences.register(event => {
+    console.dir(event)
     const { type, preferences, key } = event
     if (type === 'preferences') {
       const { activeLayer } = preferences
@@ -90,7 +91,7 @@ const effect = props => () => {
       const { center, zoom } = preferences.viewport
       view.setCenter(fromLonLat(center))
       view.setZoom(zoom)
-    } else if (key === 'labels') {
+    } else if (key === 'labels' || key === 'lineWidth') {
       map.getLayers().forEach(layer => {
         if (layer instanceof VectorLayer) layer.changed()
       })

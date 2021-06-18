@@ -6,8 +6,7 @@ import preferences from '../../project/preferences'
 import { noop } from '../../../shared/combinators'
 
 let labels = true
-
-const USER_DEFINED_LINE_SCALE = process.env.USER_DEFINED_LINE_SCALE || 1
+let lineWidth = 3
 
 const handlers = {
   preferences: ({ preferences }) => {
@@ -29,7 +28,10 @@ const handlers = {
 }
 
 preferences.register(event => (handlers[event.type] || noop)(event))
-
+preferences.register(({ key, value }) => {
+  if (key !== 'lineWidth') return
+  lineWidth = value
+})
 
 ipcRenderer.on('IPC_TOGGLE_LABELS', () => {
   preferences.set('labels', !labels)
@@ -51,10 +53,13 @@ export const styleOptions = ({ feature }) => {
     primaryColor: primaryColor(scheme)(SIDC.identity(sidc)),
     accentColor: accentColor(SIDC.identity(sidc)),
     dashPattern: SIDC.status(sidc) === 'A' ? [20, 10] : null,
-    thin: 2 * USER_DEFINED_LINE_SCALE,
-    thick: 3.5 * USER_DEFINED_LINE_SCALE
+    thin: lineWidth,
+    thick: 1.75 * lineWidth
   }
 }
+
+export const defaultFont = `${lineWidth * 7}px sans-serif`
+export const biggerFont = `${(1 + lineWidth) * 7}px sans-serif`
 
 const factory = options => write => {
   const { mode, resolution } = options
@@ -72,7 +77,7 @@ const factory = options => write => {
     },
 
     singleLine: (inGeometry, opts = {}) => {
-      const width = opts.width || 3 * USER_DEFINED_LINE_SCALE
+      const width = opts.width || lineWidth
       const color = opts.color || options.primaryColor
       const fill = opts.fill
       const geometry = write(inGeometry)
@@ -155,7 +160,7 @@ const factory = options => write => {
       return style({
         geometry: write(inGeometry),
         text: text({
-          font: '16px sans-serif',
+          font: biggerFont,
           stroke: stroke({ color: 'white', width: 3 }),
           fill: fill({ color: fillColor }),
           ...options,
@@ -173,8 +178,6 @@ const factory = options => write => {
   }
 }
 
-export const defaultFont = `${14 * USER_DEFINED_LINE_SCALE}px sans-serif`
-export const biggerFont = `${16 * USER_DEFINED_LINE_SCALE}px sans-serif`
 
 const defaultImage = circle({
   radius: 6,

@@ -6,6 +6,8 @@ import PermDataSettingIcon from '@material-ui/icons/PermDataSettingOutlined'
 import MapIcon from '@material-ui/icons/MapOutlined'
 import PhotoCameraIcon from '@material-ui/icons/PhotoCameraOutlined'
 import Button from '@material-ui/core/Button'
+import AddIcon from '@material-ui/icons/Add'
+import RemoveIcon from '@material-ui/icons/Remove'
 import { LayersTripleOutline, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 'mdi-material-ui'
 
 import ActivityBar from './ActivityBar'
@@ -14,6 +16,7 @@ import LayerList from './layerlist/LayerList'
 import FeaturePalette from './palette/FeaturePalette'
 import undo from '../undo'
 import evented from '../evented'
+import preferences from '../project/preferences'
 
 import { useTranslation } from 'react-i18next'
 
@@ -57,6 +60,27 @@ const initialActivities = (classes, t) => [
       <Button variant='outlined' fullWidth={true} style={{ marginBottom: '0.5em' }} onClick={() => evented.emit('MAP_MEASURE_LENGTH')}>{t('measure.length')}</Button>
       <Button variant='outlined' fullWidth={true} style={{ marginBottom: '0.5em' }} onClick={() => evented.emit('MAP_MEASURE_AREA')}>{t('measure.area')}</Button>
     </Paper>
+  },
+  {
+    id: 'incLineWidth',
+    type: 'action',
+    icon: <AddIcon />,
+    tooltip: t('activities.tooltips.undo'),
+    action: () => {
+      const current = preferences.get('lineWidth') || 3
+      preferences.set('lineWidth', current + 1)
+    }
+  },
+  {
+    id: 'decLineWidth',
+    type: 'action',
+    icon: <RemoveIcon />,
+    tooltip: t('activities.tooltips.undo'),
+    action: () => {
+      const current = (preferences.get('lineWidth') || 3)
+      if (current <= 3) return
+      preferences.set('lineWidth', current - 1)
+    }
   },
   {
     type: 'divider'
