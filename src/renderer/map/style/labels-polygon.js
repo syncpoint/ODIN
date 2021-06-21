@@ -84,7 +84,7 @@ const textStyle = ({ geometry, text, options }) => new style.Style({
   geometry,
   text: new style.Text({
     text,
-    font: defaultFont,
+    font: defaultFont(),
     stroke: new style.Stroke({ color: 'white', width: 3 }),
     ...options
   })

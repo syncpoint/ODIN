@@ -82,7 +82,6 @@ const effect = props => () => {
 
   // restore viewport and active layer name from preferences.
   preferences.register(event => {
-    console.dir(event)
     const { type, preferences, key } = event
     if (type === 'preferences') {
       const { activeLayer } = preferences

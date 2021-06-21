@@ -6,14 +6,14 @@ import PermDataSettingIcon from '@material-ui/icons/PermDataSettingOutlined'
 import MapIcon from '@material-ui/icons/MapOutlined'
 import PhotoCameraIcon from '@material-ui/icons/PhotoCameraOutlined'
 import Button from '@material-ui/core/Button'
-import AddIcon from '@material-ui/icons/Add'
-import RemoveIcon from '@material-ui/icons/Remove'
+import SettingsIcon from '@material-ui/icons/Settings'
 import { LayersTripleOutline, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 'mdi-material-ui'
 
 import ActivityBar from './ActivityBar'
 import BasemapPanel from './basemapPanel/BasemapPanel'
 import LayerList from './layerlist/LayerList'
 import FeaturePalette from './palette/FeaturePalette'
+import SliderSettings from './settings/SliderSetting'
 import undo from '../undo'
 import evented from '../evented'
 import preferences from '../project/preferences'
@@ -62,25 +62,23 @@ const initialActivities = (classes, t) => [
     </Paper>
   },
   {
-    id: 'incLineWidth',
-    type: 'action',
-    icon: <AddIcon />,
-    tooltip: t('activities.tooltips.undo'),
-    action: () => {
-      const current = preferences.get('lineWidth') || 3
-      preferences.set('lineWidth', current + 1)
-    }
-  },
-  {
-    id: 'decLineWidth',
-    type: 'action',
-    icon: <RemoveIcon />,
-    tooltip: t('activities.tooltips.undo'),
-    action: () => {
-      const current = (preferences.get('lineWidth') || 3)
-      if (current <= 3) return
-      preferences.set('lineWidth', current - 1)
-    }
+    id: 'settings',
+    type: 'activity',
+    icon: <SettingsIcon />,
+    tooltip: t('activities.tooltips.tools'),
+    panel: () => <Paper className={classes.toolsPanel} elevation={6}>
+      <SliderSettings
+        caption='Überschrift'
+        defaultValue={preferences.get('lineWidth')}
+        marks={[
+          { label: 'S', value: 2 },
+          { label: 'M', value: 3 },
+          { label: 'L', value: 4 },
+          { label: 'XL', value: 5 }
+        ]}
+        onChange={value => preferences.set('lineWidth', value)}
+      />
+    </Paper>
   },
   {
     type: 'divider'

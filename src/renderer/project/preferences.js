@@ -8,7 +8,9 @@ const DEFAULT_PREFERENCES = {
       15.517894187589647,
       48.21987507926943
     ]
-  }
+  },
+  lineWidth: 3,
+  scmbolScale: 1
 }
 
 

@@ -14,11 +14,16 @@ const handlers = {
       ? false
       : preferences.labels || true
     ipcRenderer.send('IPC_LABELS_TOGGLED', labels)
+
+    lineWidth = preferences.lineWidth
   },
   set: ({ key, value }) => {
-    if (key !== 'labels') return
-    labels = value
-    ipcRenderer.send('IPC_LABELS_TOGGLED', labels)
+    if (key === 'labels') {
+      labels = value
+      ipcRenderer.send('IPC_LABELS_TOGGLED', labels)
+    } else if (key === 'lineWidth') {
+      lineWidth = value
+    }
   },
   unset: ({ key }) => {
     if (key !== 'labels') return
@@ -28,10 +33,6 @@ const handlers = {
 }
 
 preferences.register(event => (handlers[event.type] || noop)(event))
-preferences.register(({ key, value }) => {
-  if (key !== 'lineWidth') return
-  lineWidth = value
-})
 
 ipcRenderer.on('IPC_TOGGLE_LABELS', () => {
   preferences.set('labels', !labels)
@@ -58,8 +59,8 @@ export const styleOptions = ({ feature }) => {
   }
 }
 
-export const defaultFont = `${lineWidth * 7}px sans-serif`
-export const biggerFont = `${(1 + lineWidth) * 7}px sans-serif`
+export const defaultFont = () => `${lineWidth * 7}px sans-serif`
+export const biggerFont = () => `${(1 + lineWidth) * 7}px sans-serif`
 
 const factory = options => write => {
   const { mode, resolution } = options
@@ -160,7 +161,7 @@ const factory = options => write => {
       return style({
         geometry: write(inGeometry),
         text: text({
-          font: biggerFont,
+          font: biggerFont(),
           stroke: stroke({ color: 'white', width: 3 }),
           fill: fill({ color: fillColor }),
           ...options,
