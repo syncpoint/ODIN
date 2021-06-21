@@ -6,14 +6,14 @@ import PermDataSettingIcon from '@material-ui/icons/PermDataSettingOutlined'
 import MapIcon from '@material-ui/icons/MapOutlined'
 import PhotoCameraIcon from '@material-ui/icons/PhotoCameraOutlined'
 import Button from '@material-ui/core/Button'
-import SettingsIcon from '@material-ui/icons/Settings'
+import SettingsIcon from '@material-ui/icons/SettingsOutlined'
 import { LayersTripleOutline, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 'mdi-material-ui'
 
 import ActivityBar from './ActivityBar'
 import BasemapPanel from './basemapPanel/BasemapPanel'
 import LayerList from './layerlist/LayerList'
 import FeaturePalette from './palette/FeaturePalette'
-import SliderSettings from './settings/SliderSetting'
+import SliderSetting from './settings/SliderSetting'
 import undo from '../undo'
 import evented from '../evented'
 import preferences from '../project/preferences'
@@ -62,13 +62,13 @@ const initialActivities = (classes, t) => [
     </Paper>
   },
   {
-    id: 'settings',
+    id: 'preferences',
     type: 'activity',
     icon: <SettingsIcon />,
-    tooltip: t('activities.tooltips.tools'),
+    tooltip: t('preferences.name'),
     panel: () => <Paper className={classes.toolsPanel} elevation={6}>
-      <SliderSettings
-        caption='Überschrift'
+      <SliderSetting
+        caption={t('preferences.lineWidth')}
         defaultValue={preferences.get('lineWidth')}
         marks={[
           { label: 'S', value: 2 },
@@ -77,6 +77,17 @@ const initialActivities = (classes, t) => [
           { label: 'XL', value: 5 }
         ]}
         onChange={value => preferences.set('lineWidth', value)}
+      />
+      <SliderSetting
+        caption={t('preferences.symbolSize')}
+        defaultValue={preferences.get('symbolSize')}
+        marks={[
+          { label: 'S', value: 33 },
+          { label: 'M', value: 40 },
+          { label: 'L', value: 47 },
+          { label: 'XL', value: 54 }
+        ]}
+        onChange={value => preferences.set('symbolSize', value)}
       />
     </Paper>
   },

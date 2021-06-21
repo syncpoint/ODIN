@@ -93,5 +93,10 @@
     "outline": "Outline",
     "border": "Border",
     "rotation": "Rotation"
+  },
+  "preferences": {
+    "name": "Preferences",
+    "lineWidth": "line width",
+    "symbolSize": "symbol size"
   }
 }

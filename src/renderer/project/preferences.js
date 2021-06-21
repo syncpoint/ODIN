@@ -10,7 +10,7 @@ const DEFAULT_PREFERENCES = {
     ]
   },
   lineWidth: 3,
-  scmbolScale: 1
+  symbolSize: 40
 }
 
 

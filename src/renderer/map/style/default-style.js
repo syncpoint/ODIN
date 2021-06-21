@@ -7,6 +7,7 @@ import { noop } from '../../../shared/combinators'
 
 let labels = true
 let lineWidth = 3
+let symbolSize = 40
 
 const handlers = {
   preferences: ({ preferences }) => {
@@ -16,6 +17,7 @@ const handlers = {
     ipcRenderer.send('IPC_LABELS_TOGGLED', labels)
 
     lineWidth = preferences.lineWidth
+    symbolSize = preferences.symbolSize
   },
   set: ({ key, value }) => {
     if (key === 'labels') {
@@ -23,6 +25,8 @@ const handlers = {
       ipcRenderer.send('IPC_LABELS_TOGGLED', labels)
     } else if (key === 'lineWidth') {
       lineWidth = value
+    } else if (key === 'symbolSize') {
+      symbolSize = value
     }
   },
   unset: ({ key }) => {
@@ -55,12 +59,13 @@ export const styleOptions = ({ feature }) => {
     accentColor: accentColor(SIDC.identity(sidc)),
     dashPattern: SIDC.status(sidc) === 'A' ? [20, 10] : null,
     thin: lineWidth,
-    thick: 1.75 * lineWidth
+    thick: 1.75 * lineWidth,
+    symbolScale: symbolSize
   }
 }
 
-export const defaultFont = () => `${lineWidth * 7}px sans-serif`
-export const biggerFont = () => `${(1 + lineWidth) * 7}px sans-serif`
+export const defaultFont = () => `${lineWidth * 7 + 2}px sans-serif`
+export const biggerFont = () => `${lineWidth * 7 + 4}px sans-serif`
 
 const factory = options => write => {
   const { mode, resolution } = options

@@ -93,5 +93,10 @@
     "outline": "Umrandung",
     "border": "Rahmen",
     "rotation": "Drehung"
-  }
+  },
+  "preferences": {
+    "name": "Einstellungen",
+    "lineWidth": "Linienstärke",
+    "symbolSize": "Symbolgröße"
+  } 
 }

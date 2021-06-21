@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Slider, Typography } from '@material-ui/core'
 
 
-const SliderSettings = props => {
+const SliderSetting = props => {
 
   const minValue = props.marks.reduce((accu, current) =>
     (current.value < accu) ? current.value : accu, 100)
@@ -12,9 +12,9 @@ const SliderSettings = props => {
     (current.value > accu) ? current.value : accu, 0)
 
   return (
-    <>
-    <Typography id="discrete-slider-restrict" gutterBottom>
-      Line Width
+  <div style={{ margin: '1em 0 1em 0' }}>
+    <Typography id="discrete-slider-restrict">
+      {props.caption}
     </Typography>
     <Slider
       aria-labelledby="discrete-slider-restrict"
@@ -26,15 +26,15 @@ const SliderSettings = props => {
       min={minValue}
       max={maxValue}
     />
-  </>
+  </div>
   )
 }
 
-SliderSettings.propTypes = {
+SliderSetting.propTypes = {
   caption: PropTypes.string,
   defaultValue: PropTypes.number.isRequired,
   marks: PropTypes.array.isRequired,
   onChange: PropTypes.func.isRequired
 }
 
-export default SliderSettings
+export default SliderSetting
