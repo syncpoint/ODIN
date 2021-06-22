@@ -97,6 +97,12 @@
   "preferences": {
     "name": "Einstellungen",
     "lineWidth": "Linienstärke",
-    "symbolSize": "Symbolgröße"
-  } 
+    "symbolSize": "Symbolgröße",
+    "scheme": {
+      "name": "Farbschema",
+      "light": "hell",
+      "medium": "mittel",
+      "dark": "dunkel"
+    }
+  }
 }

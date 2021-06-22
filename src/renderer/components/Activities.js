@@ -18,6 +18,8 @@ import undo from '../undo'
 import evented from '../evented'
 import preferences from '../project/preferences'
 
+import { schemeToSliderValue, sliderValueToScheme } from './settings/util'
+
 import { useTranslation } from 'react-i18next'
 
 const useStyles = makeStyles((/* theme */) => ({
@@ -88,6 +90,16 @@ const initialActivities = (classes, t) => [
           { label: 'XL', value: 54 }
         ]}
         onChange={value => preferences.set('symbolSize', value)}
+      />
+      <SliderSetting
+        caption={t('preferences.scheme.name')}
+        defaultValue={ schemeToSliderValue(preferences.get('scheme')) }
+        marks={[
+          { label: t('preferences.scheme.light'), value: 0 },
+          { label: t('preferences.scheme.medium'), value: 50 },
+          { label: t('preferences.scheme.dark'), value: 100 }
+        ]}
+        onChange={value => preferences.set('scheme', sliderValueToScheme(value))}
       />
     </Paper>
   },

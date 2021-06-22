@@ -97,6 +97,12 @@
   "preferences": {
     "name": "Preferences",
     "lineWidth": "line width",
-    "symbolSize": "symbol size"
+    "symbolSize": "symbol size",
+    "scheme": {
+      "name": "color scheme",
+      "light": "light",
+      "medium": "medium",
+      "dark": "dark"
+    }
   }
 }

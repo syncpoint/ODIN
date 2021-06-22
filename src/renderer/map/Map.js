@@ -90,7 +90,7 @@ const effect = props => () => {
       const { center, zoom } = preferences.viewport
       view.setCenter(fromLonLat(center))
       view.setZoom(zoom)
-    } else if (key === 'labels' || key === 'lineWidth' || key === 'symbolSize') {
+    } else if (key === 'labels' || key === 'lineWidth' || key === 'symbolSize' || key === 'scheme') {
       map.getLayers().forEach(layer => {
         if (layer instanceof VectorLayer) layer.changed()
       })

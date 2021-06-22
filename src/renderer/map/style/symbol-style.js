@@ -59,6 +59,8 @@ export const symbolStyle = mode => (feature, resolution) => {
     infoFields
   }
 
+  const style = styleOptions({ feature })
+
   let actualSIDC = sidc
   if (sidc && sidc[0] === 'G') {
     // MilSymbols cannot handle undefined hostility
@@ -70,13 +72,14 @@ export const symbolStyle = mode => (feature, resolution) => {
       actualSIDC = chars.join('')
     } else {
       // Set mono color according to hostility state.
-      const color = styleOptions({ feature }).primaryColor
+      const color = style.primaryColor
       options.monoColor = color
-      options.outlineColor = styleOptions({ feature }).accentColor
+      options.outlineColor = style.accentColor
     }
   }
 
-  options.size = styleOptions({ feature }).symbolScale
+  options.colorMode = style.scheme
+  options.size = style.symbolScale
 
   const symbol = new ms.Symbol(actualSIDC, options)
   const geometry = feature.getGeometry()

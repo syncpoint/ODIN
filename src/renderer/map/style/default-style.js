@@ -8,6 +8,14 @@ import { noop } from '../../../shared/combinators'
 let labels = true
 let lineWidth = 3
 let symbolSize = 40
+let scheme = 'medium'
+
+const capitalize = value => {
+  if (!value) return
+  const objective = Array.from(value)
+  objective[0] = objective[0].toUpperCase()
+  return objective.join('')
+}
 
 const handlers = {
   preferences: ({ preferences }) => {
@@ -16,8 +24,7 @@ const handlers = {
       : preferences.labels || true
     ipcRenderer.send('IPC_LABELS_TOGGLED', labels)
 
-    lineWidth = preferences.lineWidth
-    symbolSize = preferences.symbolSize
+    ;({ lineWidth, symbolSize, scheme } = preferences)
   },
   set: ({ key, value }) => {
     if (key === 'labels') {
@@ -27,6 +34,8 @@ const handlers = {
       lineWidth = value
     } else if (key === 'symbolSize') {
       symbolSize = value
+    } else if (key === 'scheme') {
+      scheme = value
     }
   },
   unset: ({ key }) => {
@@ -50,7 +59,7 @@ const fill = options => new styles.Fill(options)
 const text = options => new styles.Text(options)
 const regularShape = options => new styles.RegularShape(options)
 
-const scheme = 'medium'
+
 export const styleOptions = ({ feature }) => {
   const sidc = feature.get('sidc')
 
@@ -60,7 +69,8 @@ export const styleOptions = ({ feature }) => {
     dashPattern: SIDC.status(sidc) === 'A' ? [20, 10] : null,
     thin: lineWidth,
     thick: 1.75 * lineWidth,
-    symbolScale: symbolSize
+    symbolScale: symbolSize,
+    scheme: capitalize(scheme)
   }
 }
 
