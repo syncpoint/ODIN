@@ -14,6 +14,7 @@ import BasemapPanel from './basemapPanel/BasemapPanel'
 import LayerList from './layerlist/LayerList'
 import FeaturePalette from './palette/FeaturePalette'
 import SliderSetting from './settings/SliderSetting'
+import SwitchSetting from './settings/SwitchSetting'
 import undo from '../undo'
 import evented from '../evented'
 import preferences from '../project/preferences'
@@ -70,6 +71,16 @@ const initialActivities = (classes, t) => [
     tooltip: t('preferences.name'),
     panel: () => <Paper className={classes.toolsPanel} elevation={6}>
       <SliderSetting
+        caption={t('preferences.scheme.name')}
+        defaultValue={ schemeToSliderValue(preferences.get('scheme')) }
+        marks={[
+          { label: t('preferences.scheme.light'), value: 0 },
+          { label: t('preferences.scheme.medium'), value: 50 },
+          { label: t('preferences.scheme.dark'), value: 100 }
+        ]}
+        onChange={value => preferences.set('scheme', sliderValueToScheme(value))}
+      />
+      <SliderSetting
         caption={t('preferences.lineWidth')}
         defaultValue={preferences.get('lineWidth')}
         marks={[
@@ -91,15 +102,9 @@ const initialActivities = (classes, t) => [
         ]}
         onChange={value => preferences.set('symbolSize', value)}
       />
-      <SliderSetting
-        caption={t('preferences.scheme.name')}
-        defaultValue={ schemeToSliderValue(preferences.get('scheme')) }
-        marks={[
-          { label: t('preferences.scheme.light'), value: 0 },
-          { label: t('preferences.scheme.medium'), value: 50 },
-          { label: t('preferences.scheme.dark'), value: 100 }
-        ]}
-        onChange={value => preferences.set('scheme', sliderValueToScheme(value))}
+      <SwitchSetting defaultValue={preferences.get('simpleStatusModifier')}
+        onChange={value => preferences.set('simpleStatusModifier', value)}
+        label={t('preferences.simpleStatusModifier')}
       />
     </Paper>
   },

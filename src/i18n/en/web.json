@@ -103,6 +103,7 @@
       "light": "light",
       "medium": "medium",
       "dark": "dark"
-    }
+    },
+    "simpleStatusModifier": "use simple status modifier"
   }
 }

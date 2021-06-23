@@ -83,6 +83,7 @@ const effect = props => () => {
   // restore viewport and active layer name from preferences.
   preferences.register(event => {
     const { type, preferences, key } = event
+    const triggerKeys = ['labels', 'lineWidth', 'symbolSize', 'scheme', 'simpleStatusModifier']
     if (type === 'preferences') {
       const { activeLayer } = preferences
       if (activeLayer) evented.emit('OSD_MESSAGE', { message: activeLayer, slot: 'A2' })
@@ -90,7 +91,7 @@ const effect = props => () => {
       const { center, zoom } = preferences.viewport
       view.setCenter(fromLonLat(center))
       view.setZoom(zoom)
-    } else if (key === 'labels' || key === 'lineWidth' || key === 'symbolSize' || key === 'scheme') {
+    } else if (triggerKeys.includes(key)) {
       map.getLayers().forEach(layer => {
         if (layer instanceof VectorLayer) layer.changed()
       })

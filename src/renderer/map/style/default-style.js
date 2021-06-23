@@ -9,6 +9,7 @@ let labels = true
 let lineWidth = 3
 let symbolSize = 40
 let scheme = 'medium'
+let simpleStatusModifier = false
 
 const capitalize = value => {
   if (!value) return
@@ -24,7 +25,7 @@ const handlers = {
       : preferences.labels || true
     ipcRenderer.send('IPC_LABELS_TOGGLED', labels)
 
-    ;({ lineWidth, symbolSize, scheme } = preferences)
+    ;({ lineWidth, symbolSize, scheme, simpleStatusModifier } = preferences)
   },
   set: ({ key, value }) => {
     if (key === 'labels') {
@@ -36,6 +37,8 @@ const handlers = {
       symbolSize = value
     } else if (key === 'scheme') {
       scheme = value
+    } else if (key === 'simpleStatusModifier') {
+      simpleStatusModifier = value
     }
   },
   unset: ({ key }) => {
@@ -69,8 +72,9 @@ export const styleOptions = ({ feature }) => {
     dashPattern: SIDC.status(sidc) === 'A' ? [20, 10] : null,
     thin: lineWidth,
     thick: 1.75 * lineWidth,
-    symbolScale: symbolSize,
-    scheme: capitalize(scheme)
+    symbolSize: symbolSize,
+    scheme: capitalize(scheme),
+    simpleStatusModifier: simpleStatusModifier
   }
 }
 

@@ -11,7 +11,8 @@ const DEFAULT_PREFERENCES = {
   },
   lineWidth: 3,
   symbolSize: 40,
-  scheme: 'medium'
+  scheme: 'medium',
+  simpleStatusModifier: false
 }
 
 

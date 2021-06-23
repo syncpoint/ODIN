@@ -103,6 +103,7 @@
       "light": "hell",
       "medium": "mittel",
       "dark": "dunkel"
-    }
+    },
+    "simpleStatusModifier": "Vereinfachte Statusanzeige"
   }
 }
