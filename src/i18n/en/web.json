@@ -104,6 +104,7 @@
       "medium": "medium",
       "dark": "dark"
     },
-    "simpleStatusModifier": "use simple status modifier"
+    "simpleStatusModifier": "use simple status modifier",
+    "symbolSizeByEchelon": "scale symbols with echelon"
   }
 }

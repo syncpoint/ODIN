@@ -102,6 +102,10 @@ const initialActivities = (classes, t) => [
         ]}
         onChange={value => preferences.set('symbolSize', value)}
       />
+      <SwitchSetting defaultValue={preferences.get('symbolSizeByEchelon')}
+        onChange={value => preferences.set('symbolSizeByEchelon', value)}
+        label={t('preferences.symbolSizeByEchelon')}
+      />
       <SwitchSetting defaultValue={preferences.get('simpleStatusModifier')}
         onChange={value => preferences.set('simpleStatusModifier', value)}
         label={t('preferences.simpleStatusModifier')}

@@ -104,6 +104,7 @@
       "medium": "mittel",
       "dark": "dunkel"
     },
-    "simpleStatusModifier": "Vereinfachte Statusanzeige"
+    "simpleStatusModifier": "Vereinfachte Statusanzeige",
+    "symbolSizeByEchelon": "Größenordnung beeinflusst Symbolgröße"
   }
 }

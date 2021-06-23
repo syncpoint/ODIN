@@ -10,6 +10,7 @@ let lineWidth = 3
 let symbolSize = 40
 let scheme = 'medium'
 let simpleStatusModifier = false
+let symbolSizeByEchelon = true
 
 const capitalize = value => {
   if (!value) return
@@ -39,6 +40,8 @@ const handlers = {
       scheme = value
     } else if (key === 'simpleStatusModifier') {
       simpleStatusModifier = value
+    } else if (key === 'symbolSizeByEchelon') {
+      symbolSizeByEchelon = value
     }
   },
   unset: ({ key }) => {
@@ -72,9 +75,10 @@ export const styleOptions = ({ feature }) => {
     dashPattern: SIDC.status(sidc) === 'A' ? [20, 10] : null,
     thin: lineWidth,
     thick: 1.75 * lineWidth,
-    symbolSize: symbolSize,
+    symbolSize,
     scheme: capitalize(scheme),
-    simpleStatusModifier: simpleStatusModifier
+    simpleStatusModifier,
+    symbolSizeByEchelon
   }
 }
 

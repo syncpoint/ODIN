@@ -12,7 +12,8 @@ const DEFAULT_PREFERENCES = {
   lineWidth: 3,
   symbolSize: 40,
   scheme: 'medium',
-  simpleStatusModifier: false
+  simpleStatusModifier: false,
+  symbolSizeByEchelon: true
 }
 
 

@@ -3,6 +3,8 @@ import { Style, Icon } from 'ol/style'
 import * as geom from 'ol/geom'
 import ms from 'milsymbol'
 import { K } from '../../../shared/combinators'
+import { featureClass } from '../../components/feature-descriptors'
+import { echelonPart } from '../../components/SIDC'
 import { defaultStyle, styleFactory, styleOptions } from './default-style'
 
 const MODIFIERS = {
@@ -30,6 +32,17 @@ const modifiers = properties => Object.entries(properties)
   })
   .reduce((acc, [key, value]) => K(acc)(acc => (acc[MODIFIERS[key]] = value)), {})
 
+const symbolSizeBySIDC = (sidc, defaultSize) => {
+  const clazz = featureClass(sidc)
+  if (clazz !== 'U') return defaultSize // units only :-)
+
+  const echelon = echelonPart.value(sidc)
+  if (!echelon || echelon === '-') return defaultSize
+  if (echelon >= 'H') return Math.floor(1.5 * defaultSize) // Brigade or bigger
+  if (echelon >= 'F') return Math.floor(1.25 * defaultSize) // Bataillon or Regiment
+  if (echelon === 'E') return Math.floor(1.125 * defaultSize) // Company
+  return defaultSize
+}
 
 const icon = symbol => {
   const anchor = [symbol.getAnchor().x, symbol.getAnchor().y]
@@ -79,7 +92,7 @@ export const symbolStyle = mode => (feature, resolution) => {
   }
 
   options.colorMode = style.scheme
-  options.size = style.symbolSize
+  options.size = style.symbolSizeByEchelon ? symbolSizeBySIDC(actualSIDC, style.symbolSize) : style.symbolSize
   options.simpleStatusModifier = style.simpleStatusModifier
 
   const symbol = new ms.Symbol(actualSIDC, options)
