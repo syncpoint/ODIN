@@ -11,6 +11,7 @@ let symbolSize = 40
 let scheme = 'medium'
 let simpleStatusModifier = false
 let symbolSizeByEchelon = true
+let symbolTextSize = 40
 
 const capitalize = value => {
   if (!value) return
@@ -26,7 +27,7 @@ const handlers = {
       : preferences.labels || true
     ipcRenderer.send('IPC_LABELS_TOGGLED', labels)
 
-    ;({ lineWidth, symbolSize, scheme, simpleStatusModifier } = preferences)
+    ;({ lineWidth, symbolSize, scheme, simpleStatusModifier, symbolTextSize } = preferences)
   },
   set: ({ key, value }) => {
     if (key === 'labels') {
@@ -42,6 +43,8 @@ const handlers = {
       simpleStatusModifier = value
     } else if (key === 'symbolSizeByEchelon') {
       symbolSizeByEchelon = value
+    } else if (key === 'symbolTextSize') {
+      symbolTextSize = value
     }
   },
   unset: ({ key }) => {
@@ -78,7 +81,8 @@ export const styleOptions = ({ feature }) => {
     symbolSize,
     scheme: capitalize(scheme),
     simpleStatusModifier,
-    symbolSizeByEchelon
+    symbolSizeByEchelon,
+    symbolTextSize
   }
 }
 

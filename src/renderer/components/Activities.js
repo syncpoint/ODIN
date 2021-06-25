@@ -70,46 +70,63 @@ const initialActivities = (classes, t) => [
     icon: <SettingsIcon />,
     tooltip: t('preferences.name'),
     panel: () => <Paper className={classes.toolsPanel} elevation={6}>
-      <SliderSetting
-        caption={t('preferences.scheme.name')}
-        defaultValue={ schemeToSliderValue(preferences.get('scheme')) }
-        marks={[
-          { label: t('preferences.scheme.light'), value: 0 },
-          { label: t('preferences.scheme.medium'), value: 50 },
-          { label: t('preferences.scheme.dark'), value: 100 }
-        ]}
-        onChange={value => preferences.set('scheme', sliderValueToScheme(value))}
-      />
-      <SliderSetting
-        caption={t('preferences.lineWidth')}
-        defaultValue={preferences.get('lineWidth')}
-        marks={[
-          { label: 'S', value: 2 },
-          { label: 'M', value: 3 },
-          { label: 'L', value: 4 },
-          { label: 'XL', value: 5 }
-        ]}
-        onChange={value => preferences.set('lineWidth', value)}
-      />
-      <SliderSetting
-        caption={t('preferences.symbolSize')}
-        defaultValue={preferences.get('symbolSize')}
-        marks={[
-          { label: 'S', value: 33 },
-          { label: 'M', value: 40 },
-          { label: 'L', value: 47 },
-          { label: 'XL', value: 54 }
-        ]}
-        onChange={value => preferences.set('symbolSize', value)}
-      />
-      <SwitchSetting defaultValue={preferences.get('symbolSizeByEchelon')}
-        onChange={value => preferences.set('symbolSizeByEchelon', value)}
-        label={t('preferences.symbolSizeByEchelon')}
-      />
-      <SwitchSetting defaultValue={preferences.get('simpleStatusModifier')}
-        onChange={value => preferences.set('simpleStatusModifier', value)}
-        label={t('preferences.simpleStatusModifier')}
-      />
+      <Paper variant='outlined' style={{ padding: '1em', marginBottom: '0.5em' }}>
+        <SliderSetting
+          caption={t('preferences.scheme.name')}
+          defaultValue={ schemeToSliderValue(preferences.get('scheme')) }
+          marks={[
+            { label: t('preferences.scheme.light'), value: 0 },
+            { label: t('preferences.scheme.medium'), value: 50 },
+            { label: t('preferences.scheme.dark'), value: 100 }
+          ]}
+          onChange={value => preferences.set('scheme', sliderValueToScheme(value))}
+        />
+      </Paper>
+      <Paper variant='outlined' style={{ padding: '1em', marginBottom: '0.5em' }}>
+        <SliderSetting
+          caption={t('preferences.lineWidth')}
+          defaultValue={preferences.get('lineWidth')}
+          marks={[
+            { label: 'S', value: 3 },
+            { label: 'M', value: 4 },
+            { label: 'L', value: 5 },
+            { label: 'XL', value: 6 }
+          ]}
+          onChange={value => preferences.set('lineWidth', value)}
+        />
+      </Paper>
+      <Paper variant='outlined' style={{ padding: '1em', marginBottom: '0.5em' }}>
+        <SliderSetting
+          caption={t('preferences.symbolSize')}
+          defaultValue={preferences.get('symbolSize')}
+          marks={[
+            { label: 'S', value: 30 },
+            { label: 'M', value: 40 },
+            { label: 'L', value: 50 },
+            { label: 'XL', value: 60 }
+          ]}
+          onChange={value => preferences.set('symbolSize', value)}
+        />
+        <SliderSetting
+          caption={t('preferences.symbolTextSize')}
+          defaultValue={preferences.get('symbolTextSize')}
+          marks={[
+            { label: 'S', value: 30 },
+            { label: 'M', value: 40 },
+            { label: 'L', value: 50 },
+            { label: 'XL', value: 60 }
+          ]}
+          onChange={value => preferences.set('symbolTextSize', value)}
+        />
+        <SwitchSetting defaultValue={preferences.get('symbolSizeByEchelon')}
+          onChange={value => preferences.set('symbolSizeByEchelon', value)}
+          label={t('preferences.symbolSizeByEchelon')}
+        />
+        <SwitchSetting defaultValue={preferences.get('simpleStatusModifier')}
+          onChange={value => preferences.set('simpleStatusModifier', value)}
+          label={t('preferences.simpleStatusModifier')}
+        />
+      </Paper>
     </Paper>
   },
   {

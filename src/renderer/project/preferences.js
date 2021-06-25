@@ -13,7 +13,8 @@ const DEFAULT_PREFERENCES = {
   symbolSize: 40,
   scheme: 'medium',
   simpleStatusModifier: false,
-  symbolSizeByEchelon: true
+  symbolSizeByEchelon: true,
+  symbolTextSize: 40
 }
 
 

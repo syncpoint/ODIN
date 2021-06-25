@@ -105,6 +105,7 @@
       "dark": "dunkel"
     },
     "simpleStatusModifier": "Vereinfachte Statusanzeige",
-    "symbolSizeByEchelon": "Größenordnung beeinflusst Symbolgröße"
+    "symbolSizeByEchelon": "Größenordnung beeinflusst Symbolgröße",
+    "symbolTextSize": "Textgröße bei Symbolen"
   }
 }

@@ -12,7 +12,7 @@ const SliderSetting = props => {
     (current.value > accu) ? current.value : accu, 0)
 
   return (
-  <div style={{ margin: '1em 0 1em 0' }}>
+  <div>
     <Typography id="discrete-slider-restrict">
       {props.caption}
     </Typography>

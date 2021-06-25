@@ -94,6 +94,7 @@ export const symbolStyle = mode => (feature, resolution) => {
   options.colorMode = style.scheme
   options.size = style.symbolSizeByEchelon ? symbolSizeBySIDC(actualSIDC, style.symbolSize) : style.symbolSize
   options.simpleStatusModifier = style.simpleStatusModifier
+  options.infoSize = style.symbolTextSize
 
   const symbol = new ms.Symbol(actualSIDC, options)
   const geometry = feature.getGeometry()
