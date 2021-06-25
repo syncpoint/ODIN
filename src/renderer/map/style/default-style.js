@@ -12,6 +12,8 @@ let scheme = 'medium'
 let simpleStatusModifier = false
 let symbolSizeByEchelon = true
 let symbolTextSize = 40
+let labelTextSize = 16
+let useBoldLabelText = false
 
 const capitalize = value => {
   if (!value) return
@@ -27,7 +29,7 @@ const handlers = {
       : preferences.labels || true
     ipcRenderer.send('IPC_LABELS_TOGGLED', labels)
 
-    ;({ lineWidth, symbolSize, scheme, simpleStatusModifier, symbolTextSize } = preferences)
+    ;({ lineWidth, symbolSize, scheme, simpleStatusModifier, symbolTextSize, labelTextSize, useBoldLabelText } = preferences)
   },
   set: ({ key, value }) => {
     if (key === 'labels') {
@@ -45,6 +47,10 @@ const handlers = {
       symbolSizeByEchelon = value
     } else if (key === 'symbolTextSize') {
       symbolTextSize = value
+    } else if (key === 'labelTextSize') {
+      labelTextSize = value
+    } else if (key === 'useBoldLabelText') {
+      useBoldLabelText = value
     }
   },
   unset: ({ key }) => {
@@ -86,8 +92,8 @@ export const styleOptions = ({ feature }) => {
   }
 }
 
-export const defaultFont = () => `${lineWidth * 7 + 2}px sans-serif`
-export const biggerFont = () => `${lineWidth * 7 + 4}px sans-serif`
+export const defaultFont = () => `${useBoldLabelText ? 'bold' : ''} ${labelTextSize + 2}px sans-serif`
+export const biggerFont = () => `${useBoldLabelText ? 'bold' : ''} ${labelTextSize + 4}px sans-serif`
 
 const factory = options => write => {
   const { mode, resolution } = options

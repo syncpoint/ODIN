@@ -14,7 +14,8 @@ const DEFAULT_PREFERENCES = {
   scheme: 'medium',
   simpleStatusModifier: false,
   symbolSizeByEchelon: true,
-  symbolTextSize: 40
+  symbolTextSize: 40,
+  useBoldLabelText: false
 }
 
 

@@ -83,7 +83,7 @@ const effect = props => () => {
   // restore viewport and active layer name from preferences.
   preferences.register(event => {
     const { type, preferences, key } = event
-    const triggerKeys = ['labels', 'lineWidth', 'symbolSize', 'scheme', 'simpleStatusModifier', 'symbolSizeByEchelon', 'symbolTextSize']
+    const triggerKeys = ['labels', 'lineWidth', 'symbolSize', 'scheme', 'simpleStatusModifier', 'symbolSizeByEchelon', 'symbolTextSize', 'labelTextSize', 'useBoldLabelText']
     if (type === 'preferences') {
       const { activeLayer } = preferences
       if (activeLayer) evented.emit('OSD_MESSAGE', { message: activeLayer, slot: 'A2' })

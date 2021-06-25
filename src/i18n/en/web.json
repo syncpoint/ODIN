@@ -106,6 +106,8 @@
     },
     "simpleStatusModifier": "use simple status modifier",
     "symbolSizeByEchelon": "scale symbols with echelon",
-    "symbolTextSize": "fint size for symbols"
+    "symbolTextSize": "font size for symbols",
+    "labelTextSize": "font size for labels",
+    "useBoldLabelText": "label text is bold"
   }
 }

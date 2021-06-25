@@ -106,6 +106,8 @@
     },
     "simpleStatusModifier": "Vereinfachte Statusanzeige",
     "symbolSizeByEchelon": "Größenordnung beeinflusst Symbolgröße",
-    "symbolTextSize": "Textgröße bei Symbolen"
+    "symbolTextSize": "Textgröße für Symbole",
+    "labelTextSize": "Textgröße für Beschriftung",
+    "useBoldLabelText": "Text ist 'fett'"
   }
 }

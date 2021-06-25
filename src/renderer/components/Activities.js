@@ -87,12 +87,29 @@ const initialActivities = (classes, t) => [
           caption={t('preferences.lineWidth')}
           defaultValue={preferences.get('lineWidth')}
           marks={[
-            { label: 'S', value: 3 },
-            { label: 'M', value: 4 },
-            { label: 'L', value: 5 },
-            { label: 'XL', value: 6 }
+            { label: 'S', value: 2 },
+            { label: 'M', value: 3 },
+            { label: 'L', value: 4 },
+            { label: 'XL', value: 5 }
           ]}
           onChange={value => preferences.set('lineWidth', value)}
+        />
+      </Paper>
+      <Paper variant='outlined' style={{ padding: '1em', marginBottom: '0.5em' }}>
+        <SliderSetting
+          caption={t('preferences.labelTextSize')}
+          defaultValue={preferences.get('labelTextSize')}
+          marks={[
+            { value: 16, label: 'S' },
+            { value: 24, label: 'M' },
+            { value: 32, label: 'L' },
+            { value: 40, label: 'XL' }
+          ]}
+          onChange={value => preferences.set('labelTextSize', value)}
+        />
+        <SwitchSetting defaultValue={preferences.get('useBoldLabelText')}
+          onChange={value => preferences.set('useBoldLabelText', value)}
+          label={t('preferences.useBoldLabelText')}
         />
       </Paper>
       <Paper variant='outlined' style={{ padding: '1em', marginBottom: '0.5em' }}>
