@@ -5,6 +5,7 @@ import Category from '@material-ui/icons/CategoryOutlined'
 import PermDataSettingIcon from '@material-ui/icons/PermDataSettingOutlined'
 import MapIcon from '@material-ui/icons/MapOutlined'
 import PhotoCameraIcon from '@material-ui/icons/PhotoCameraOutlined'
+import PrintIcon from '@material-ui/icons/PrintOutlined'
 import Button from '@material-ui/core/Button'
 import { LayersTripleOutline, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 'mdi-material-ui'
 
@@ -108,6 +109,13 @@ const initialActivities = (classes, t) => [
     icon: <PhotoCameraIcon/>,
     tooltip: t('activities.tooltips.exportPNG'),
     action: () => evented.emit('SHARE_PNG')
+  },
+  {
+    id: 'setScale50k',
+    type: 'action',
+    icon: <PrintIcon/>,
+    tooltip: t('activities.tooltips.exportPNG'),
+    action: () => evented.emit('SET_SCALE_TO_50k')
   }
 ]
 
