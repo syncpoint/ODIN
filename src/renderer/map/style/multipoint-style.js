@@ -10,7 +10,7 @@ const geometries = {}
 
 const arcText = styles => (anchor, angle, text) => styles.text(anchor, {
   text,
-  font: biggerFont,
+  font: biggerFont(),
   flip: true,
   textAlign: () => 'center',
   rotation: Math.PI - angle + 330 / 2 * deg2rad

@@ -93,5 +93,21 @@
     "outline": "Outline",
     "border": "Border",
     "rotation": "Rotation"
+  },
+  "preferences": {
+    "name": "Preferences",
+    "lineWidth": "line width",
+    "symbolSize": "symbol size",
+    "scheme": {
+      "name": "color scheme",
+      "light": "light",
+      "medium": "medium",
+      "dark": "dark"
+    },
+    "simpleStatusModifier": "use simple status modifier",
+    "symbolSizeByEchelon": "scale symbols with echelon",
+    "symbolTextSize": "font size for symbols",
+    "labelTextSize": "font size for labels",
+    "useBoldLabelText": "label text is bold"
   }
 }

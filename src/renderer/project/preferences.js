@@ -8,7 +8,14 @@ const DEFAULT_PREFERENCES = {
       15.517894187589647,
       48.21987507926943
     ]
-  }
+  },
+  lineWidth: 3,
+  symbolSize: 40,
+  scheme: 'medium',
+  simpleStatusModifier: false,
+  symbolSizeByEchelon: true,
+  symbolTextSize: 40,
+  useBoldLabelText: false
 }
 
 

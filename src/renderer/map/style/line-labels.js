@@ -94,7 +94,7 @@ export const label = options => lines => feature => {
     geometry: new geom.Point(point(options)),
     text: new style.Text({
       text: lines(feature.getProperties()).filter(x => x).join('\n'),
-      font: defaultFont,
+      font: defaultFont(),
       stroke: defaultStroke,
       rotation: flip(α) ? α - _PI : α,
       textAlign: textAlign(α)(options),

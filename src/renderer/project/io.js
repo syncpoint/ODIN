@@ -12,7 +12,7 @@ export const loadPreferences = defaults => {
   const location = path.join(projectPath(), 'preferences.json')
   if (!fs.existsSync(location)) return defaults
 
-  return K(JSON.parse(fs.readFileSync(location)))(preferences => {
+  const persistedDefaults = K(JSON.parse(fs.readFileSync(location)))(preferences => {
 
     // Upgrade existing preferences:
     //    activeLayer :: string [name of active aka target layer]
@@ -23,6 +23,8 @@ export const loadPreferences = defaults => {
       writeLayer(name, contents)
     }
   })
+
+  return { ...defaults, ...persistedDefaults }
 }
 
 /**
