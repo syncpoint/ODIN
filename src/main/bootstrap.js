@@ -75,7 +75,8 @@ const createWindow = async (projectOptions) => {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      enableRemoteModule: true
+      enableRemoteModule: true,
+      webSecurity: !devServer
     }
   })
 

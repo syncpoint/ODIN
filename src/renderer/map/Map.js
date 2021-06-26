@@ -48,7 +48,7 @@ const updateCoordinateDisplay = ({ coordinate }) => {
 const effect = props => () => {
   const { id } = props
   const { center, zoom } = { center: [16.363449, 48.210033], zoom: 8 }
-  const view = new ol.View({ center: fromLonLat(center), zoom })
+  const view = new ol.View({ center: fromLonLat(center), zoom, constrainRotation: false })
 
   const scaleLine = new ScaleLine({
     units: 'metric',
