@@ -22,7 +22,7 @@ const paperSizes = {
   a2: {
     landscape: {
       width: 594,
-      heigth: 420
+      height: 420
     }
   }
 }
