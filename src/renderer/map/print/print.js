@@ -116,7 +116,7 @@ const executePrint = (map, props) => {
         console.log(`got a dataUrl with length ${dataURL.length}`)
 
         // eslint-disable-next-line new-cap
-        const pdf = new jsPDF({ orientation: 'landscape' })
+        const pdf = new jsPDF({ format: props.paperFormat, orientation: 'landscape' })
         const x = padding.left
         const y = padding.top
         const w = paperSizes[props.paperFormat].landscape.width - (padding.left + padding.right)
