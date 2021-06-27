@@ -1,7 +1,7 @@
 
 import evented from '../evented'
 import { fromLonLat, getPointResolution } from 'ol/proj'
-
+import { MouseWheelZoom, PinchZoom, DragZoom, KeyboardZoom } from 'ol/interaction'
 
 import domtoimage from 'dom-to-image-more'
 import jsPDF from 'jspdf'
@@ -29,7 +29,7 @@ const padding = {
   bottom: 5
 }
 
-const scale = 25 // 1/25000
+const scale = 50 // 1/25000
 
 const inch2mm = 25.4
 
@@ -58,6 +58,8 @@ const generatePDF = map => {
     }
   }
 
+  console.dir(previousValues)
+
   const onRenderComplete = function (event) {
     console.log('rendering completed')
     console.dir(event)
@@ -84,34 +86,64 @@ const generatePDF = map => {
       } catch (error) {
         console.error(error)
       } finally {
-        map.getTargetElement().style.width = ''
+        /* map.getTargetElement().style.width = ''
         map.getTargetElement().style.height = ''
         map.updateSize()
-        map.getView().setResolution(previousValues.map.view.resolution)
+        map.getView().setResolution(previousValues.map.view.resolution) */
       }
     }
 
     doit()
   }
 
-
   // Set print size
+
 
   const mapWidth = (paperSizes.a4.landscape.width - (padding.left + padding.right)) / inch2mm * dpi[selectedDPI]
   const mapHeight = (paperSizes.a4.landscape.height - (padding.top + padding.bottom)) / inch2mm * dpi[selectedDPI]
 
-  map.getView().setCenter(fromLonLat(center))
-  // map.getView().setRotation(-0.025)
+  // map.getView().setCenter(fromLonLat(center))
 
   const scaleResolution = scale / getPointResolution(map.getView().getProjection(), dpi[selectedDPI] / inch2mm, map.getView().getCenter())
 
+  const limitingDimension = (window.innerHeight <= window.innerWidth) ? 'innerHeight' : 'innerWidth'
 
+  const limitingMargin = Math.floor(0.25 * window[limitingDimension])
+  const printArea = document.getElementById('printArea')
+
+  const height = window.innerHeight - 2 * limitingMargin
+  const width = Math.floor(297 / 210 * height)
+
+  printArea.style.height = `${height}px`
+  printArea.style.width = `${width}px`
+  printArea.style.visibility = 'visible'
+
+  const currentSizeResolution = height / mapHeight
+  console.log(currentSizeResolution)
+
+  /*
   map.getTargetElement().style.width = mapWidth + 'px'
-  map.getTargetElement().style.height = mapHeight + 'px'
-  map.updateSize()
+  
+  */
 
-  map.once('rendercomplete', onRenderComplete)
-  map.getView().setResolution(scaleResolution)
+  // map.getTargetElement().style.height = Math.floor(mapHeight * currentSizeResolution) + 'px'
+
+
+  // map.getView().setRotation(-0.0125)
+  // map.getView().changed()
+  // map.updateSize()
+
+  // map.once('rendercomplete', onRenderComplete)
+
+  // disable ol​/interaction​/MouseWheelZoom
+  map.getInteractions().forEach(interaction => {
+    if (interaction instanceof MouseWheelZoom) interaction.setActive(false)
+    else if (interaction instanceof KeyboardZoom) interaction.setActive(false)
+    else if (interaction instanceof PinchZoom) interaction.setActive(false)
+    else if (interaction instanceof DragZoom) interaction.setActive(false)
+  })
+  
+  map.getView().setResolution(scaleResolution / currentSizeResolution)
 
   console.log('should print now ...')
 }
