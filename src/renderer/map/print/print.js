@@ -1,10 +1,12 @@
 import { MouseWheelZoom, PinchZoom, DragZoom, KeyboardZoom } from 'ol/interaction'
-import { getPointResolution } from 'ol/proj'
+import { getPointResolution, toLonLat } from 'ol/proj'
 
 import domtoimage from 'dom-to-image-more'
 import jsPDF from 'jspdf'
 
 import evented from '../../evented'
+import getCurrentDateTime from '../../../shared/militaryTime'
+import coordinateFormat from '../../../shared/coord-format'
 
 const paperSizes = {
   a4: {
@@ -100,6 +102,12 @@ const executePrint = (map, props) => {
     viewCenter: map.getView().getCenter()
   }
 
+  // calculate center of print area on the screen
+  const printArea = document.getElementById('printArea')
+  const rect = printArea.getBoundingClientRect()
+  const centerOnScreen = [rect.left + Math.floor(rect.width / 2), rect.top + Math.floor(rect.height / 2)]
+  const centerCoordinates = map.getCoordinateFromPixel(centerOnScreen)
+
   // execute this after the map ist rendered
   map.once('rendercomplete', () => {
 
@@ -123,8 +131,11 @@ const executePrint = (map, props) => {
         const h = paperSizes[props.paperFormat].landscape.height - (padding.top + padding.bottom)
         pdf.addImage(dataURL, 'PNG', x, y, w, h)
 
-        const scaleText = `1:${props.scale}000`
-        pdf.text(scaleText, (paperSizes[props.paperFormat].landscape.width - padding.right), 15, { align: 'right' })
+        const scaleText = `1 : ${props.scale}000`
+        pdf.text(scaleText, (paperSizes[props.paperFormat].landscape.width - padding.right), padding.top - 2, { align: 'right' })
+        pdf.text(getCurrentDateTime(), padding.left, padding.top - Math.floor(padding.top / 2))
+        const centerAsLonLat = toLonLat(centerCoordinates, map.getView().getProjection())
+        pdf.text(coordinateFormat.format({ lng: centerAsLonLat[0], lat: centerAsLonLat[1] }), padding.left, padding.top - 2)
 
         await pdf.save('map.pdf', { returnPromise: true })
       } catch (error) {
@@ -143,13 +154,6 @@ const executePrint = (map, props) => {
     perform()
 
   })
-
-  // calculate center of print area on the screen
-  const printArea = document.getElementById('printArea')
-  const rect = printArea.getBoundingClientRect()
-  const centerOnScreen = [rect.left + Math.floor(rect.width / 2), rect.top + Math.floor(rect.height / 2)]
-  const centerCoordinates = map.getCoordinateFromPixel(centerOnScreen)
-  // console.dir(toLonLat(centerCoordinates))
 
   /* these values correspond with the physical dimensions of the paper and the pixel density */
   const desiredMapWidth = (paperSizes[props.paperFormat].landscape.width - (padding.left + padding.right)) / inch2mm * dpi[selectedDPI]
