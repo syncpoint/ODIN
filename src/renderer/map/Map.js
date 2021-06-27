@@ -20,7 +20,7 @@ import draw from './interaction/draw'
 import measure from './interaction/measure/'
 import dropImport from './interaction/drop-import'
 import share from './share'
-import scale from './scale'
+import print from './print/print'
 
 import './style/scalebar.css'
 
@@ -80,7 +80,7 @@ const effect = props => () => {
   draw(map)
   measure(map)
   share(map)
-  scale(map, scaleLine)
+  print(map)
 
   // restore viewport and active layer name from preferences.
   preferences.register(event => {

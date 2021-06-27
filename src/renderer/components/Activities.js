@@ -12,6 +12,7 @@ import { LayersTripleOutline, Undo, Redo, ContentCut, ContentCopy, ContentPaste 
 
 import ActivityBar from './ActivityBar'
 import BasemapPanel from './basemapPanel/BasemapPanel'
+import PrinterPanel from './printerPanel/PrinterPanel'
 import LayerList from './layerlist/LayerList'
 import FeaturePalette from './palette/FeaturePalette'
 import SliderSetting from './settings/SliderSetting'
@@ -199,11 +200,11 @@ const initialActivities = (classes, t) => [
     action: () => evented.emit('SHARE_PNG')
   },
   {
-    id: 'setScale50k',
-    type: 'action',
+    id: 'print',
+    type: 'activity',
     icon: <PrintIcon/>,
-    tooltip: t('activities.tooltips.exportPNG'),
-    action: () => evented.emit('SET_SCALE_TO_50k')
+    panel: () => <PrinterPanel />,
+    tooltip: 'Drugg misch'
   }
 ]
 
