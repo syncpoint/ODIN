@@ -23,7 +23,7 @@
 
 .printArea {
   visibility: hidden;
-  border-width: 1em 1em 1em 1em;
+  border-width: 3px 3px 3px 3px;
   border-color: slategrey;
   border-style: solid;
   pointer-events: none;

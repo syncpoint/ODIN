@@ -1,6 +1,6 @@
 
 import evented from '../evented'
-import { fromLonLat, getPointResolution } from 'ol/proj'
+import { fromLonLat, toLonLat, getPointResolution } from 'ol/proj'
 import { MouseWheelZoom, PinchZoom, DragZoom, KeyboardZoom } from 'ol/interaction'
 
 import domtoimage from 'dom-to-image-more'

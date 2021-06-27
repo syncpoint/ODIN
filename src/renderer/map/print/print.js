@@ -1,5 +1,8 @@
 import { MouseWheelZoom, PinchZoom, DragZoom, KeyboardZoom } from 'ol/interaction'
-import { fromLonLat, getPointResolution } from 'ol/proj'
+import { getPointResolution } from 'ol/proj'
+
+import domtoimage from 'dom-to-image-more'
+import jsPDF from 'jspdf'
 
 import evented from '../../evented'
 
@@ -59,9 +62,10 @@ const showPrintArea = (map, props) => {
   const desiredMapWidth = (paperSizes[props.paperFormat].landscape.width - (padding.left + padding.right)) / inch2mm * dpi[selectedDPI]
   const desiredMapHeight = (paperSizes[props.paperFormat].landscape.height - (padding.top + padding.bottom)) / inch2mm * dpi[selectedDPI]
 
+  console.dir({ desiredMapWidth, desiredMapHeight })
+
   /* ratio differs from the typical A* paper ratios because it honors the padding values! */
   const ratio = desiredMapWidth / desiredMapHeight
-
 
   const scaleResolution = props.scale / getPointResolution(map.getView().getProjection(), dpi[selectedDPI] / inch2mm, map.getView().getCenter())
 
@@ -88,8 +92,78 @@ const hidePrintArea = map => {
   setZoomInteractions(map, true)
 }
 
-const executePrint = map => {
+const executePrint = (map, props) => {
 
+  const previousSettings = {
+    mapSize: map.getSize(),
+    viewResolution: map.getView().getResolution(),
+    viewCenter: map.getView().getCenter()
+  }
+
+  // execute this after the map ist rendered
+  map.once('rendercomplete', () => {
+
+    const perform = async () => {
+      const exportOptions = {
+        filter: function (element) {
+          const className = element.className || ''
+          return (className.indexOf('ol-scale-bar') < 0 && className.indexOf('ol-attribution') < 0)
+        }
+      }
+
+      try {
+        const dataURL = await domtoimage.toPng(map.getViewport(), exportOptions)
+        console.log(`got a dataUrl with length ${dataURL.length}`)
+
+        // eslint-disable-next-line new-cap
+        const pdf = new jsPDF({ orientation: 'landscape' })
+        const x = padding.left
+        const y = padding.top
+        const w = paperSizes[props.paperFormat].landscape.width - (padding.left + padding.right)
+        const h = paperSizes[props.paperFormat].landscape.height - (padding.top + padding.bottom)
+        pdf.addImage(dataURL, 'PNG', x, y, w, h)
+
+        const scaleText = `1:${props.scale}000`
+        pdf.text(scaleText, (paperSizes[props.paperFormat].landscape.width - padding.right), 15, { align: 'right' })
+
+        await pdf.save('map.pdf', { returnPromise: true })
+      } catch (error) {
+        console.error(error)
+      } finally {
+        // restore styling
+        map.getTargetElement().style = 'fixed'
+        map.getTargetElement().style.width = ''
+        map.getTargetElement().style.height = ''
+        map.updateSize()
+        map.getView().setResolution(previousSettings.viewResolution)
+        map.getView().setCenter(previousSettings.viewCenter)
+      }
+    }
+
+    perform()
+
+  })
+
+  // calculate center of print area on the screen
+  const printArea = document.getElementById('printArea')
+  const rect = printArea.getBoundingClientRect()
+  const centerOnScreen = [rect.left + Math.floor(rect.width / 2), rect.top + Math.floor(rect.height / 2)]
+  const centerCoordinates = map.getCoordinateFromPixel(centerOnScreen)
+  // console.dir(toLonLat(centerCoordinates))
+
+  /* these values correspond with the physical dimensions of the paper and the pixel density */
+  const desiredMapWidth = (paperSizes[props.paperFormat].landscape.width - (padding.left + padding.right)) / inch2mm * dpi[selectedDPI]
+  const desiredMapHeight = (paperSizes[props.paperFormat].landscape.height - (padding.top + padding.bottom)) / inch2mm * dpi[selectedDPI]
+
+  const scaleResolution = props.scale / getPointResolution(map.getView().getProjection(), dpi[selectedDPI] / inch2mm, centerCoordinates)
+
+  map.getView().setCenter(centerCoordinates)
+  // required in order to allow the <map /> element to grow to the desired size
+  map.getTargetElement().style.position = 'static'
+  map.getTargetElement().style.width = `${Math.floor(desiredMapWidth)}px`
+  map.getTargetElement().style.height = `${Math.floor(desiredMapHeight)}px`
+  map.updateSize()
+  map.getView().setResolution(scaleResolution)
 }
 
 const print = map => {
