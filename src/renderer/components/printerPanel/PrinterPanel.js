@@ -3,6 +3,7 @@ import { Button, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import PaperFormat from './PaperFormat'
 import Scale from './Scale'
+import Quality from './Quality'
 
 import evented from '../../evented'
 
@@ -21,9 +22,10 @@ const PrinterPanel = props => {
 
   const [paperFormat, setPaperFormat] = React.useState('a4')
   const [scale, setScale] = React.useState('25')
+  const [quality, setQuality] = React.useState('medium')
 
   React.useEffect(() => {
-    evented.emit('PRINT_SHOW_AREA', { paperFormat, scale })
+    evented.emit('PRINT_SHOW_AREA', { paperFormat, scale, quality })
     return () => evented.emit('PRINT_HIDE_AREA')
   }, [paperFormat, scale])
 
@@ -32,7 +34,8 @@ const PrinterPanel = props => {
     <Paper elevation={6} className={classes.panel}>
       <PaperFormat paperFormat={paperFormat} onChange={setPaperFormat} />
       <Scale scale={scale} onChange={setScale} />
-      <Button variant="contained" color="primary" onClick={() => evented.emit('PRINT_EXECUTE', { paperFormat, scale })}>Print</Button>
+      <Quality quality={quality} onChange={setQuality} />
+      <Button variant="contained" color="primary" style={{ margin: '1em' }} onClick={() => evented.emit('PRINT_EXECUTE', { paperFormat, scale, quality })}>Print</Button>
     </Paper>
   )
 }

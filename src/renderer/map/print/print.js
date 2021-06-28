@@ -34,7 +34,7 @@ const dpi = {
   medium: 2 * 96,
   high: 3 * 96
 }
-const selectedDPI = 'medium'
+// const selectedDPI = 'low'
 
 const padding = {
   left: 5,
@@ -61,15 +61,15 @@ const setZoomInteractions = (map, active = true) => {
 const showPrintArea = (map, props) => {
 
   /* thse values correspond with the physical dimensions of the paper and the pixel density */
-  const desiredMapWidth = (paperSizes[props.paperFormat].landscape.width - (padding.left + padding.right)) / inch2mm * dpi[selectedDPI]
-  const desiredMapHeight = (paperSizes[props.paperFormat].landscape.height - (padding.top + padding.bottom)) / inch2mm * dpi[selectedDPI]
+  const desiredMapWidth = (paperSizes[props.paperFormat].landscape.width - (padding.left + padding.right)) / inch2mm * dpi[props.quality]
+  const desiredMapHeight = (paperSizes[props.paperFormat].landscape.height - (padding.top + padding.bottom)) / inch2mm * dpi[props.quality]
 
   console.dir({ desiredMapWidth, desiredMapHeight })
 
   /* ratio differs from the typical A* paper ratios because it honors the padding values! */
   const ratio = desiredMapWidth / desiredMapHeight
 
-  const scaleResolution = props.scale / getPointResolution(map.getView().getProjection(), dpi[selectedDPI] / inch2mm, map.getView().getCenter())
+  const scaleResolution = props.scale / getPointResolution(map.getView().getProjection(), dpi[props.quality] / inch2mm, map.getView().getCenter())
 
   const limitingDimension = (window.innerHeight <= window.innerWidth) ? 'innerHeight' : 'innerWidth'
 
@@ -156,10 +156,10 @@ const executePrint = (map, props) => {
   })
 
   /* these values correspond with the physical dimensions of the paper and the pixel density */
-  const desiredMapWidth = (paperSizes[props.paperFormat].landscape.width - (padding.left + padding.right)) / inch2mm * dpi[selectedDPI]
-  const desiredMapHeight = (paperSizes[props.paperFormat].landscape.height - (padding.top + padding.bottom)) / inch2mm * dpi[selectedDPI]
+  const desiredMapWidth = (paperSizes[props.paperFormat].landscape.width - (padding.left + padding.right)) / inch2mm * dpi[props.quality]
+  const desiredMapHeight = (paperSizes[props.paperFormat].landscape.height - (padding.top + padding.bottom)) / inch2mm * dpi[props.quality]
 
-  const scaleResolution = props.scale / getPointResolution(map.getView().getProjection(), dpi[selectedDPI] / inch2mm, centerCoordinates)
+  const scaleResolution = props.scale / getPointResolution(map.getView().getProjection(), dpi[props.quality] / inch2mm, centerCoordinates)
 
   map.getView().setCenter(centerCoordinates)
   // required in order to allow the <map /> element to grow to the desired size
