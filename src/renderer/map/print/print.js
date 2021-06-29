@@ -131,11 +131,44 @@ const executePrint = (map, props) => {
         const h = paperSizes[props.paperFormat].landscape.height - (padding.top + padding.bottom)
         pdf.addImage(dataURL, 'PNG', x, y, w, h)
 
+        // scale text
         const scaleText = `1 : ${props.scale}000`
         pdf.text(scaleText, (paperSizes[props.paperFormat].landscape.width - padding.right), padding.top - 2, { align: 'right' })
         pdf.text(getCurrentDateTime(), padding.left, padding.top - Math.floor(padding.top / 2))
+
+        // place center of map coordinates
         const centerAsLonLat = toLonLat(centerCoordinates, map.getView().getProjection())
         pdf.text(coordinateFormat.format({ lng: centerAsLonLat[0], lat: centerAsLonLat[1] }), padding.left, padding.top - 2)
+
+        // scale bar
+        const scaleBarHeight = 2
+        const scaleBarSegmentWidth = 10
+        pdf.setDrawColor(0, 0, 0)
+
+        pdf.setFillColor(255, 255, 255)
+        pdf.rect(
+          padding.left + scaleBarHeight / 2,
+          paperSizes[props.paperFormat].landscape.height - padding.bottom - 2.5 * scaleBarHeight,
+          5 * scaleBarSegmentWidth,
+          2 * scaleBarHeight,
+          'FD'
+        )
+
+        // black segments
+        pdf.setFillColor(0, 0, 0)
+        pdf.rect(padding.left + scaleBarHeight, paperSizes[props.paperFormat].landscape.height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
+        pdf.rect(padding.left + scaleBarHeight + 2 * scaleBarSegmentWidth, paperSizes[props.paperFormat].landscape.height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
+
+        // white segments
+        pdf.setFillColor(255, 255, 255)
+        pdf.rect(padding.left + scaleBarHeight + scaleBarSegmentWidth, paperSizes[props.paperFormat].landscape.height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
+        pdf.rect(padding.left + scaleBarHeight + 3 * scaleBarSegmentWidth, paperSizes[props.paperFormat].landscape.height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
+
+        pdf.setFontSize(scaleBarHeight * 4)
+        pdf.text(`${props.scale * 0.04}km`,
+          padding.left + 4 * scaleBarSegmentWidth + 2 * scaleBarHeight,
+          paperSizes[props.paperFormat].landscape.height - padding.bottom - scaleBarHeight
+        )
 
         await pdf.save('map.pdf', { returnPromise: true })
       } catch (error) {
