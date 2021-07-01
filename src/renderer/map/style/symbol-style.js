@@ -3,6 +3,8 @@ import { Style, Icon } from 'ol/style'
 import * as geom from 'ol/geom'
 import ms from 'milsymbol'
 import { K } from '../../../shared/combinators'
+import { featureClass } from '../../components/feature-descriptors'
+import { echelonPart } from '../../components/SIDC'
 import { defaultStyle, styleFactory, styleOptions } from './default-style'
 
 const MODIFIERS = {
@@ -30,13 +32,25 @@ const modifiers = properties => Object.entries(properties)
   })
   .reduce((acc, [key, value]) => K(acc)(acc => (acc[MODIFIERS[key]] = value)), {})
 
+const symbolSizeBySIDC = (sidc, defaultSize) => {
+  const clazz = featureClass(sidc)
+  if (clazz !== 'U') return defaultSize // units only :-)
+
+  const echelon = echelonPart.value(sidc)
+  if (!echelon || echelon === '-') return defaultSize
+  if (echelon >= 'H') return Math.floor(1.55 * defaultSize) // Brigade or bigger
+  if (echelon >= 'F') return Math.floor(1.34 * defaultSize) // Bataillon or Regiment
+  if (echelon === 'E') return Math.floor(1.21 * defaultSize) // Company
+  if (echelon === 'D') return Math.floor(1.13 * defaultSize) // Platoon
+  if (echelon === 'C') return Math.floor(1.08 * defaultSize) // Section
+  return defaultSize
+}
 
 const icon = symbol => {
   const anchor = [symbol.getAnchor().x, symbol.getAnchor().y]
   const imgSize = size => [Math.floor(size.width), Math.floor(size.height)]
   return new Icon({
     anchor,
-    scale: 0.4,
     anchorXUnits: 'pixels',
     anchorYUnits: 'pixels',
     imgSize: imgSize(symbol.getSize()),
@@ -60,6 +74,8 @@ export const symbolStyle = mode => (feature, resolution) => {
     infoFields
   }
 
+  const style = styleOptions({ feature })
+
   let actualSIDC = sidc
   if (sidc && sidc[0] === 'G') {
     // MilSymbols cannot handle undefined hostility
@@ -71,11 +87,16 @@ export const symbolStyle = mode => (feature, resolution) => {
       actualSIDC = chars.join('')
     } else {
       // Set mono color according to hostility state.
-      const color = styleOptions({ feature }).primaryColor
+      const color = style.primaryColor
       options.monoColor = color
-      options.outlineColor = styleOptions({ feature }).accentColor
+      options.outlineColor = style.accentColor
     }
   }
+
+  options.colorMode = style.scheme
+  options.size = style.symbolSizeByEchelon ? symbolSizeBySIDC(actualSIDC, style.symbolSize) : style.symbolSize
+  options.simpleStatusModifier = style.simpleStatusModifier
+  options.infoSize = style.symbolTextSize
 
   const symbol = new ms.Symbol(actualSIDC, options)
   const geometry = feature.getGeometry()

@@ -93,5 +93,21 @@
     "outline": "Umrandung",
     "border": "Rahmen",
     "rotation": "Drehung"
+  },
+  "preferences": {
+    "name": "Einstellungen",
+    "lineWidth": "Linienstärke",
+    "symbolSize": "Symbolgröße",
+    "scheme": {
+      "name": "Farbschema",
+      "light": "hell",
+      "medium": "mittel",
+      "dark": "dunkel"
+    },
+    "simpleStatusModifier": "Vereinfachte Statusanzeige",
+    "symbolSizeByEchelon": "Größenordnung beeinflusst Symbolgröße",
+    "symbolTextSize": "Textgröße für Symbole",
+    "labelTextSize": "Textgröße für Beschriftung",
+    "useBoldLabelText": "Text ist 'fett'"
   }
 }

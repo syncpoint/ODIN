@@ -6,6 +6,21 @@ import preferences from '../../project/preferences'
 import { noop } from '../../../shared/combinators'
 
 let labels = true
+let lineWidth = 3
+let symbolSize = 40
+let scheme = 'medium'
+let simpleStatusModifier = false
+let symbolSizeByEchelon = true
+let symbolTextSize = 40
+let labelTextSize = 16
+let useBoldLabelText = false
+
+const capitalize = value => {
+  if (!value) return
+  const objective = Array.from(value)
+  objective[0] = objective[0].toUpperCase()
+  return objective.join('')
+}
 
 const handlers = {
   preferences: ({ preferences }) => {
@@ -13,11 +28,30 @@ const handlers = {
       ? false
       : preferences.labels || true
     ipcRenderer.send('IPC_LABELS_TOGGLED', labels)
+
+    ;({ lineWidth, symbolSize, scheme, simpleStatusModifier, symbolTextSize, labelTextSize, useBoldLabelText } = preferences)
   },
   set: ({ key, value }) => {
-    if (key !== 'labels') return
-    labels = value
-    ipcRenderer.send('IPC_LABELS_TOGGLED', labels)
+    if (key === 'labels') {
+      labels = value
+      ipcRenderer.send('IPC_LABELS_TOGGLED', labels)
+    } else if (key === 'lineWidth') {
+      lineWidth = value
+    } else if (key === 'symbolSize') {
+      symbolSize = value
+    } else if (key === 'scheme') {
+      scheme = value
+    } else if (key === 'simpleStatusModifier') {
+      simpleStatusModifier = value
+    } else if (key === 'symbolSizeByEchelon') {
+      symbolSizeByEchelon = value
+    } else if (key === 'symbolTextSize') {
+      symbolTextSize = value
+    } else if (key === 'labelTextSize') {
+      labelTextSize = value
+    } else if (key === 'useBoldLabelText') {
+      useBoldLabelText = value
+    }
   },
   unset: ({ key }) => {
     if (key !== 'labels') return
@@ -27,7 +61,6 @@ const handlers = {
 }
 
 preferences.register(event => (handlers[event.type] || noop)(event))
-
 
 ipcRenderer.on('IPC_TOGGLE_LABELS', () => {
   preferences.set('labels', !labels)
@@ -41,7 +74,7 @@ const fill = options => new styles.Fill(options)
 const text = options => new styles.Text(options)
 const regularShape = options => new styles.RegularShape(options)
 
-const scheme = 'medium'
+
 export const styleOptions = ({ feature }) => {
   const sidc = feature.get('sidc')
 
@@ -49,10 +82,18 @@ export const styleOptions = ({ feature }) => {
     primaryColor: primaryColor(scheme)(SIDC.identity(sidc)),
     accentColor: accentColor(SIDC.identity(sidc)),
     dashPattern: SIDC.status(sidc) === 'A' ? [20, 10] : null,
-    thin: 2,
-    thick: 3.5
+    thin: lineWidth,
+    thick: 1.75 * lineWidth,
+    symbolSize,
+    scheme: capitalize(scheme),
+    simpleStatusModifier,
+    symbolSizeByEchelon,
+    symbolTextSize
   }
 }
+
+export const defaultFont = () => `${useBoldLabelText ? 'bold' : ''} ${labelTextSize + 2}px sans-serif`
+export const biggerFont = () => `${useBoldLabelText ? 'bold' : ''} ${labelTextSize + 4}px sans-serif`
 
 const factory = options => write => {
   const { mode, resolution } = options
@@ -70,7 +111,7 @@ const factory = options => write => {
     },
 
     singleLine: (inGeometry, opts = {}) => {
-      const width = opts.width || 3
+      const width = opts.width || lineWidth
       const color = opts.color || options.primaryColor
       const fill = opts.fill
       const geometry = write(inGeometry)
@@ -153,7 +194,7 @@ const factory = options => write => {
       return style({
         geometry: write(inGeometry),
         text: text({
-          font: '16px sans-serif',
+          font: biggerFont(),
           stroke: stroke({ color: 'white', width: 3 }),
           fill: fill({ color: fillColor }),
           ...options,
@@ -171,8 +212,6 @@ const factory = options => write => {
   }
 }
 
-export const defaultFont = '14px sans-serif'
-export const biggerFont = '16px sans-serif'
 
 const defaultImage = circle({
   radius: 6,
