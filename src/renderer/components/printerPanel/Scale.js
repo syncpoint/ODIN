@@ -14,6 +14,8 @@ const Scale = props => {
       value={props.scale}
       onChange={handleChange}
     >
+      <MenuItem value={'5'}>1:5000</MenuItem>
+      <MenuItem value={'10'}>1:10000</MenuItem>
       <MenuItem value={'25'}>1:25000</MenuItem>
       <MenuItem value={'50'}>1:50000</MenuItem>
       <MenuItem value={'100'}>1:100000</MenuItem>
