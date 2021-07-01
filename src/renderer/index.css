@@ -24,10 +24,9 @@
 .printArea {
   visibility: hidden;
   border-width: 3px 3px 3px 3px;
-  border-color: slategrey;
+  border-color: royalblue;
   border-style: solid;
   pointer-events: none;
-  filter: opacity(0.9);
   margin-left: 25%
 }
 
