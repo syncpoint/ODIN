@@ -27,6 +27,7 @@
   border-color: royalblue;
   border-style: solid;
   pointer-events: none;
+  backdrop-filter: brightness(1.25);
   margin-left: 25%
 }
 

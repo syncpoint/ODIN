@@ -101,8 +101,10 @@ const executePrint = (map, props) => {
     viewCenter: map.getView().getCenter()
   }
 
-  // calculate center of print area on the screen
   const printArea = document.getElementById('printArea')
+  printArea.parentElement.style.backdropFilter = 'blur(25px)'
+
+  // calculate center of print area on the screen
   const rect = printArea.getBoundingClientRect()
   const centerOnScreen = [rect.left + Math.floor(rect.width / 2), rect.top + Math.floor(rect.height / 2)]
   const centerCoordinates = map.getCoordinateFromPixel(centerOnScreen)
@@ -181,6 +183,7 @@ const executePrint = (map, props) => {
         console.error(error)
       } finally {
         // restore styling
+        printArea.parentElement.style.backdropFilter = 'none'
         map.getTargetElement().style = 'fixed'
         map.getTargetElement().style.width = ''
         map.getTargetElement().style.height = ''
