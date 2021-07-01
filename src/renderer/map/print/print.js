@@ -34,7 +34,6 @@ const dpi = {
   medium: 2 * 96,
   high: 3 * 96
 }
-// const selectedDPI = 'low'
 
 const padding = {
   left: 5,
@@ -73,7 +72,7 @@ const showPrintArea = (map, props) => {
 
   const limitingDimension = (window.innerHeight <= window.innerWidth) ? 'innerHeight' : 'innerWidth'
 
-  const limitingMargin = Math.floor(0.25 * window[limitingDimension])
+  const limitingMargin = Math.floor(0.15 * window[limitingDimension])
   const printArea = document.getElementById('printArea')
 
   const height = window.innerHeight - 2 * limitingMargin
@@ -112,6 +111,8 @@ const executePrint = (map, props) => {
   map.once('rendercomplete', () => {
 
     const perform = async () => {
+
+      // omit these OpenLayers elements
       const exportOptions = {
         filter: function (element) {
           const className = element.className || ''
@@ -120,6 +121,7 @@ const executePrint = (map, props) => {
       }
 
       try {
+        const dateTimeOfPrinting = getCurrentDateTime()
         const dataURL = await domtoimage.toPng(map.getViewport(), exportOptions)
         console.log(`got a dataUrl with length ${dataURL.length}`)
 
@@ -131,16 +133,18 @@ const executePrint = (map, props) => {
         const h = paperSizes[props.paperFormat].landscape.height - (padding.top + padding.bottom)
         pdf.addImage(dataURL, 'PNG', x, y, w, h)
 
-        // scale text
+        // scale text in the upper right corner of the header
         const scaleText = `1 : ${props.scale}000`
         pdf.text(scaleText, (paperSizes[props.paperFormat].landscape.width - padding.right), padding.top - 2, { align: 'right' })
-        pdf.text(getCurrentDateTime(), padding.left, padding.top - Math.floor(padding.top / 2))
 
-        // place center of map coordinates
+        // date/time of printing in the upper left corner of the header
+        pdf.text(dateTimeOfPrinting, padding.left, padding.top - Math.floor(padding.top / 2))
+
+        // place center of map coordinates in the upper left corner of the header
         const centerAsLonLat = toLonLat(centerCoordinates, map.getView().getProjection())
         pdf.text(coordinateFormat.format({ lng: centerAsLonLat[0], lat: centerAsLonLat[1] }), padding.left, padding.top - 2)
 
-        // scale bar
+        // scale bar lower left corner ON THE map
         const scaleBarHeight = 2
         const scaleBarSegmentWidth = 10
         pdf.setDrawColor(0, 0, 0)
@@ -149,7 +153,7 @@ const executePrint = (map, props) => {
         pdf.rect(
           padding.left + scaleBarHeight / 2,
           paperSizes[props.paperFormat].landscape.height - padding.bottom - 2.5 * scaleBarHeight,
-          5 * scaleBarSegmentWidth,
+          5.25 * scaleBarSegmentWidth,
           2 * scaleBarHeight,
           'FD'
         )
@@ -164,13 +168,15 @@ const executePrint = (map, props) => {
         pdf.rect(padding.left + scaleBarHeight + scaleBarSegmentWidth, paperSizes[props.paperFormat].landscape.height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
         pdf.rect(padding.left + scaleBarHeight + 3 * scaleBarSegmentWidth, paperSizes[props.paperFormat].landscape.height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
 
+        // real length of scale bar in (k)m
+        const realLifeLength = props.scale * 0.04
         pdf.setFontSize(scaleBarHeight * 4)
-        pdf.text(`${props.scale * 0.04}km`,
+        pdf.text(`${realLifeLength < 1 ? realLifeLength * 1000 : realLifeLength}${realLifeLength >= 1 ? 'k' : ''}m`,
           padding.left + 4 * scaleBarSegmentWidth + 2 * scaleBarHeight,
           paperSizes[props.paperFormat].landscape.height - padding.bottom - scaleBarHeight
         )
 
-        await pdf.save('map.pdf', { returnPromise: true })
+        await pdf.save(`map-${dateTimeOfPrinting}.pdf`, { returnPromise: true })
       } catch (error) {
         console.error(error)
       } finally {
