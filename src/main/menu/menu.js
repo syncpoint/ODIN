@@ -5,6 +5,7 @@ import viewMenu from './view-menu'
 import windowMenu from './window-menu'
 import editMenu from './edit-menu'
 import languageMenu from './language-menu'
+import helpMenu from './help-menu'
 
 let oldArgs = {}
 
@@ -15,7 +16,8 @@ const template = (i18n, args) => ([
   editMenu(i18n),
   viewMenu(i18n, args),
   windowMenu(i18n),
-  languageMenu(i18n)
+  languageMenu(i18n),
+  helpMenu(i18n)
 ])
 
 export const buildFromTemplate = (i18n, args = {}) => {

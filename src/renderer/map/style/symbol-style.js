@@ -38,9 +38,11 @@ const symbolSizeBySIDC = (sidc, defaultSize) => {
 
   const echelon = echelonPart.value(sidc)
   if (!echelon || echelon === '-') return defaultSize
-  if (echelon >= 'H') return Math.floor(1.5 * defaultSize) // Brigade or bigger
-  if (echelon >= 'F') return Math.floor(1.25 * defaultSize) // Bataillon or Regiment
-  if (echelon === 'E') return Math.floor(1.125 * defaultSize) // Company
+  if (echelon >= 'H') return Math.floor(1.55 * defaultSize) // Brigade or bigger
+  if (echelon >= 'F') return Math.floor(1.34 * defaultSize) // Bataillon or Regiment
+  if (echelon === 'E') return Math.floor(1.21 * defaultSize) // Company
+  if (echelon === 'D') return Math.floor(1.13 * defaultSize) // Platoon
+  if (echelon === 'C') return Math.floor(1.08 * defaultSize) // Section
   return defaultSize
 }
 
