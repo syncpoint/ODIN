@@ -7,12 +7,13 @@ const Scale = props => {
   const handleChange = event => props.onChange(event.target.value)
 
   return (
-  <FormControl style={{ margin: '1em' }}>
+  <FormControl style={{ margin: '1em' }} >
     <TextField
       select
       label="Scale"
       value={props.scale}
       onChange={handleChange}
+      disabled={props.disabled}
     >
       <MenuItem value={'5'}>1:5000</MenuItem>
       <MenuItem value={'10'}>1:10000</MenuItem>
@@ -26,7 +27,8 @@ const Scale = props => {
 
 Scale.propTypes = {
   scale: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  disabled: PropTypes.bool
 }
 
 export default Scale

@@ -13,6 +13,7 @@ const PaperFormat = props => {
       label="Paper size"
       value={props.paperFormat}
       onChange={handleChange}
+      disabled={props.disabled}
     >
       <MenuItem value={'a4'}>A4</MenuItem>
       <MenuItem value={'a3'}>A3</MenuItem>
@@ -24,7 +25,8 @@ const PaperFormat = props => {
 
 PaperFormat.propTypes = {
   paperFormat: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  disabled: PropTypes.bool
 }
 
 export default PaperFormat

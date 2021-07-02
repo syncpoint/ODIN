@@ -13,6 +13,7 @@ const Quality = props => {
       label="Quality"
       value={props.quality}
       onChange={handleChange}
+      disabled={props.disabled}
     >
       <MenuItem value={'low'}>low</MenuItem>
       <MenuItem value={'medium'}>medium</MenuItem>
@@ -24,7 +25,8 @@ const Quality = props => {
 
 Quality.propTypes = {
   quality: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  disabled: PropTypes.bool
 }
 
 export default Quality

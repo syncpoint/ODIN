@@ -24,18 +24,32 @@ const PrinterPanel = props => {
   const [scale, setScale] = React.useState('25')
   const [quality, setQuality] = React.useState('medium')
 
+  const [isPrinting, setIsPrinting] = React.useState(false)
+
   React.useEffect(() => {
     evented.emit('PRINT_SHOW_AREA', { paperFormat, scale, quality })
     return () => evented.emit('PRINT_HIDE_AREA')
   }, [paperFormat, scale])
 
+  React.useEffect(() => {
+    const onPrintExecutionDone = function () {
+      setIsPrinting(false)
+    }
+    evented.on('PRINT_EXECUTION_DONE', onPrintExecutionDone)
+    return () => evented.off('PRINT_EXECUTION_DONE', onPrintExecutionDone)
+  }, [])
+
+  const executePrint = () => {
+    setIsPrinting(true)
+    evented.emit('PRINT_EXECUTE', { paperFormat, scale, quality })
+  }
 
   return (
     <Paper elevation={6} className={classes.panel}>
-      <PaperFormat paperFormat={paperFormat} onChange={setPaperFormat} />
-      <Scale scale={scale} onChange={setScale} />
-      <Quality quality={quality} onChange={setQuality} />
-      <Button variant="contained" color="primary" style={{ margin: '1em' }} onClick={() => evented.emit('PRINT_EXECUTE', { paperFormat, scale, quality })}>Print</Button>
+      <PaperFormat paperFormat={paperFormat} disabled={isPrinting} onChange={setPaperFormat} />
+      <Scale scale={scale} onChange={setScale} disabled={isPrinting} />
+      <Quality quality={quality} disabled={isPrinting} onChange={setQuality} />
+      <Button variant="contained" color="primary" style={{ margin: '1em' }} disabled={isPrinting} onClick={executePrint}>Print</Button>
     </Paper>
   )
 }

@@ -63,7 +63,6 @@ const showPrintArea = (map, props) => {
   const desiredMapWidth = (paperSizes[props.paperFormat].landscape.width - (padding.left + padding.right)) / inch2mm * dpi[props.quality]
   const desiredMapHeight = (paperSizes[props.paperFormat].landscape.height - (padding.top + padding.bottom)) / inch2mm * dpi[props.quality]
 
-  console.dir({ desiredMapWidth, desiredMapHeight })
 
   /* ratio differs from the typical A* paper ratios because it honors the padding values! */
   const ratio = desiredMapWidth / desiredMapHeight
@@ -93,7 +92,8 @@ const hidePrintArea = map => {
   setZoomInteractions(map, true)
 }
 
-const executePrint = (map, props) => {
+// returns a promise
+const executePrint = async (map, props) => {
 
   const previousSettings = {
     mapSize: map.getSize(),
@@ -102,6 +102,7 @@ const executePrint = (map, props) => {
   }
 
   const printArea = document.getElementById('printArea')
+  printArea.style.visibility = 'hidden'
   printArea.parentElement.style.backdropFilter = 'blur(25px)'
 
   // calculate center of print area on the screen
@@ -109,10 +110,23 @@ const executePrint = (map, props) => {
   const centerOnScreen = [rect.left + Math.floor(rect.width / 2), rect.top + Math.floor(rect.height / 2)]
   const centerCoordinates = map.getCoordinateFromPixel(centerOnScreen)
 
-  // execute this after the map ist rendered
-  map.once('rendercomplete', () => {
+  /* these values correspond with the physical dimensions of the paper and the pixel density */
+  const desiredMapWidth = (paperSizes[props.paperFormat].landscape.width - (padding.left + padding.right)) / inch2mm * dpi[props.quality]
+  const desiredMapHeight = (paperSizes[props.paperFormat].landscape.height - (padding.top + padding.bottom)) / inch2mm * dpi[props.quality]
 
-    const perform = async () => {
+  const scaleResolution = props.scale / getPointResolution(map.getView().getProjection(), dpi[props.quality] / inch2mm, centerCoordinates)
+
+  map.getView().setCenter(centerCoordinates)
+  // required in order to allow the <map /> element to grow to the desired size
+  map.getTargetElement().style.position = 'static'
+  map.getTargetElement().style.width = `${Math.floor(desiredMapWidth)}px`
+  map.getTargetElement().style.height = `${Math.floor(desiredMapHeight)}px`
+  map.updateSize()
+  map.getView().setResolution(scaleResolution)
+
+  return new Promise((resolve, reject) => {
+    // execute this after the map ist rendered
+    map.once('rendercomplete', async () => {
 
       // omit these OpenLayers elements
       const exportOptions = {
@@ -181,8 +195,10 @@ const executePrint = (map, props) => {
         await pdf.save(`map-${dateTimeOfPrinting}.pdf`, { returnPromise: true })
       } catch (error) {
         console.error(error)
+        return reject(error)
       } finally {
         // restore styling
+        printArea.style.visibility = 'visible'
         printArea.parentElement.style.backdropFilter = 'none'
         map.getTargetElement().style = 'fixed'
         map.getTargetElement().style.width = ''
@@ -190,32 +206,21 @@ const executePrint = (map, props) => {
         map.updateSize()
         map.getView().setResolution(previousSettings.viewResolution)
         map.getView().setCenter(previousSettings.viewCenter)
+
+        // tell everyone that we're done
+        resolve(true)
       }
-    }
-
-    perform()
-
+    })
   })
-
-  /* these values correspond with the physical dimensions of the paper and the pixel density */
-  const desiredMapWidth = (paperSizes[props.paperFormat].landscape.width - (padding.left + padding.right)) / inch2mm * dpi[props.quality]
-  const desiredMapHeight = (paperSizes[props.paperFormat].landscape.height - (padding.top + padding.bottom)) / inch2mm * dpi[props.quality]
-
-  const scaleResolution = props.scale / getPointResolution(map.getView().getProjection(), dpi[props.quality] / inch2mm, centerCoordinates)
-
-  map.getView().setCenter(centerCoordinates)
-  // required in order to allow the <map /> element to grow to the desired size
-  map.getTargetElement().style.position = 'static'
-  map.getTargetElement().style.width = `${Math.floor(desiredMapWidth)}px`
-  map.getTargetElement().style.height = `${Math.floor(desiredMapHeight)}px`
-  map.updateSize()
-  map.getView().setResolution(scaleResolution)
 }
 
 const print = map => {
   evented.on('PRINT_SHOW_AREA', props => showPrintArea(map, props))
   evented.on('PRINT_HIDE_AREA', () => hidePrintArea(map))
-  evented.on('PRINT_EXECUTE', props => executePrint(map, props))
+  evented.on('PRINT_EXECUTE', props => executePrint(map, props)
+    .then(() => evented.emit('PRINT_EXECUTION_DONE'))
+    .catch(error => console.error(error))
+  )
 }
 
 export default print
