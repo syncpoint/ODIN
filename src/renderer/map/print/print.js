@@ -56,6 +56,14 @@ const setZoomInteractions = (map, active = true) => {
   })
 }
 
+const savePNG = (dataURL, fileName) => {
+  const link = document.createElement('a')
+  link.download = fileName
+  link.href = dataURL
+  link.click()
+  setTimeout(() => link.remove(), 300)
+}
+
 
 const showPrintArea = (map, props) => {
 
@@ -141,6 +149,13 @@ const executePrint = async (map, props) => {
         const dataURL = await domtoimage.toPng(map.getViewport(), exportOptions)
         console.log(`got a dataUrl with length ${dataURL.length}`)
 
+        // just save the "raw" PNG
+        if (props.targetOutputFormat === 'PNG') {
+          savePNG(dataURL, `${dateTimeOfPrinting}.png`)
+          return resolve(true)
+        }
+
+        // from here it's all about creating a beautiful PDF
         // eslint-disable-next-line new-cap
         const pdf = new jsPDF({ format: props.paperFormat, orientation: 'landscape' })
         const x = padding.left

@@ -23,6 +23,7 @@ const PrinterPanel = props => {
   const [paperFormat, setPaperFormat] = React.useState('a4')
   const [scale, setScale] = React.useState('25')
   const [quality, setQuality] = React.useState('medium')
+  const [targetOutputFormat, setTargetOutputFormat] = React.useState('PDF')
 
   const [isPrinting, setIsPrinting] = React.useState(false)
 
@@ -41,7 +42,7 @@ const PrinterPanel = props => {
 
   const executePrint = () => {
     setIsPrinting(true)
-    evented.emit('PRINT_EXECUTE', { paperFormat, scale, quality })
+    evented.emit('PRINT_EXECUTE', { paperFormat, scale, quality, targetOutputFormat })
   }
 
   return (
@@ -49,7 +50,7 @@ const PrinterPanel = props => {
       <PaperFormat paperFormat={paperFormat} disabled={isPrinting} onChange={setPaperFormat} />
       <Scale scale={scale} onChange={setScale} disabled={isPrinting} />
       <Quality quality={quality} disabled={isPrinting} onChange={setQuality} />
-      <Button variant="contained" color="primary" style={{ margin: '1em' }} disabled={isPrinting} onClick={executePrint}>Print</Button>
+      <Button variant="contained" color="primary" style={{ margin: '1em' }} disabled={isPrinting} onClick={executePrint}>Create { targetOutputFormat }</Button>
     </Paper>
   )
 }
