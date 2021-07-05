@@ -23,6 +23,7 @@ const pngExport = async map => {
   })
   const pngImageData = mapCanvas.toDataURL().replace(/^data:image\/png;base64,/, '')
   ipcRenderer.send('IPC_SHARE_PNG', pngImageData)
+  mapCanvas.remove()
 }
 
 export default map => {
