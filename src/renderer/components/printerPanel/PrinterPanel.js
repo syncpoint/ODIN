@@ -95,7 +95,7 @@ const PrinterPanel = props => {
   React.useEffect(() => {
     evented.emit('PRINT_SHOW_AREA', { paperFormat, orientation, scale, quality })
     return () => evented.emit('PRINT_HIDE_AREA')
-  }, [paperFormat, scale, quality])
+  }, [paperFormat, orientation, scale, quality])
 
   React.useEffect(() => {
     const onPrintExecutionDone = () => {
