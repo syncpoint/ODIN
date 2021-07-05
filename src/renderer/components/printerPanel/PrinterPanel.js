@@ -1,7 +1,8 @@
 import React from 'react'
-import { Button, Paper } from '@material-ui/core'
+import { Backdrop, Button, CircularProgress, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import PaperFormat from './PaperFormat'
+import Orientation from './Orientation'
 import Scale from './Scale'
 import Quality from './Quality'
 import OutputFormat from './OutputFormat'
@@ -23,7 +24,7 @@ const useStyles = makeStyles((/* theme */) => ({
     left: 0,
     bottom: 0,
     right: 0,
-    zIndex: 18,
+    zIndex: -1,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -36,13 +37,17 @@ const useStyles = makeStyles((/* theme */) => ({
     borderStyle: 'solid',
     pointerEvents: 'none',
     backdropFilter: 'brightness(1.125)',
-    marginLeft: '20%',
-    zIndex: 19
+    marginLeft: '20%'
+  },
+  backdrop: {
+    zIndex: -1,
+    backdropFilter: 'blur(25px)'
   }
 }))
 
 const DEFAULTS = {
   paperFormat: 'a4',
+  orientation: 'landscape',
   scale: 25,
   quality: 'medium',
   targetOutputFormat: 'PDF'
@@ -52,6 +57,7 @@ const PrinterPanel = props => {
   const classes = useStyles()
 
   const [paperFormat, setPaperFormat] = React.useState(DEFAULTS.paperFormat)
+  const [orientation, setOrientation] = React.useState(DEFAULTS.orientation)
   const [scale, setScale] = React.useState(DEFAULTS.scale)
   const [quality, setQuality] = React.useState(DEFAULTS.quality)
   const [targetOutputFormat, setTargetOutputFormat] = React.useState(DEFAULTS.targetOutputFormat)
@@ -64,6 +70,7 @@ const PrinterPanel = props => {
     if (!preferencesLoaded) return
     const printPreferences = {
       paperFormat,
+      orientation,
       scale,
       quality,
       targetOutputFormat
@@ -78,6 +85,7 @@ const PrinterPanel = props => {
       setScale(preferences.print.scale || DEFAULTS.scale)
       setQuality(preferences.print.quality || DEFAULTS.quality)
       setTargetOutputFormat(preferences.print.targetOutputFormat || DEFAULTS.targetOutputFormat)
+      setOrientation(preferences.print.orientation || DEFAULTS.orientation)
       setPreferencesLoaded(true)
     }
     preferences.register(handler)
@@ -85,12 +93,12 @@ const PrinterPanel = props => {
   }, [])
 
   React.useEffect(() => {
-    evented.emit('PRINT_SHOW_AREA', { paperFormat, scale, quality })
+    evented.emit('PRINT_SHOW_AREA', { paperFormat, orientation, scale, quality })
     return () => evented.emit('PRINT_HIDE_AREA')
   }, [paperFormat, scale, quality])
 
   React.useEffect(() => {
-    const onPrintExecutionDone = function () {
+    const onPrintExecutionDone = () => {
       setIsPrinting(false)
     }
     evented.on('PRINT_EXECUTION_DONE', onPrintExecutionDone)
@@ -99,13 +107,14 @@ const PrinterPanel = props => {
 
   const executePrint = () => {
     setIsPrinting(true)
-    evented.emit('PRINT_EXECUTE', { paperFormat, scale, quality, targetOutputFormat })
+    evented.emit('PRINT_EXECUTE', { paperFormat, orientation, scale, quality, targetOutputFormat })
   }
 
   return (
     <>
       <Paper elevation={6} className={classes.panel}>
         <PaperFormat paperFormat={paperFormat} disabled={isPrinting} onChange={setPaperFormat} />
+        <Orientation orientation={orientation} disabled={isPrinting} onChange={setOrientation} />
         <Scale scale={scale} onChange={setScale} disabled={isPrinting} />
         <Quality quality={quality} disabled={isPrinting} onChange={setQuality} />
         <OutputFormat targetOutputFormat={targetOutputFormat} disabled={isPrinting} onChange={setTargetOutputFormat} />
@@ -113,6 +122,9 @@ const PrinterPanel = props => {
       </Paper>
       <div className={classes.printAnchor}>
         <div className={classes.printArea} id='printArea' />
+        <Backdrop className={classes.backdrop} open={isPrinting} >
+          <CircularProgress color='secondary' size='10vh' thickness={6} />
+        </Backdrop>
       </div>
     </>
   )
