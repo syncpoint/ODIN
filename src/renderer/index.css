@@ -8,30 +8,6 @@
   touch-action: none;
 }
 
-.printAnchor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  z-index: 18;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.printArea {
-  visibility: hidden;
-  border-width: 3px 3px 3px 3px;
-  border-color: yellowgreen;
-  border-style: solid;
-  pointer-events: none;
-  backdrop-filter: brightness(1.25);
-  margin-left: 25%;
-  z-index: 19
-}
-
 .ol-dragbox {
   background-color: rgba(255,255,255,0.4);
   border-color: rgba(100,150,0,1);

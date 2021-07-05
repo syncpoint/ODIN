@@ -129,9 +129,6 @@ const App = (props) => {
   return (
     <>
       <Map { ...mapProps }/>
-      <div className='printAnchor'>
-        <div className='printArea' id='printArea' />
-      </div>
       <div className={classes.overlay}>
         <OSD />
         <div className={classes.contentPanel}>

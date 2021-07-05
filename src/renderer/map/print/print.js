@@ -95,8 +95,7 @@ const showPrintArea = (map, props) => {
 }
 
 const hidePrintArea = map => {
-  const printArea = document.getElementById('printArea')
-  printArea.style.visibility = 'hidden'
+  console.log('hiding print area, reactivation zoom interactions')
   setZoomInteractions(map, true)
 }
 
@@ -111,7 +110,7 @@ const executePrint = async (map, props) => {
 
   const printArea = document.getElementById('printArea')
   printArea.style.visibility = 'hidden'
-  printArea.parentElement.style.backdropFilter = 'blur(25px)'
+  // printArea.parentElement.style.backdropFilter = 'blur(25px)'
 
   // calculate center of print area on the screen
   const rect = printArea.getBoundingClientRect()
@@ -214,7 +213,7 @@ const executePrint = async (map, props) => {
       } finally {
         // restore styling
         printArea.style.visibility = 'visible'
-        printArea.parentElement.style.backdropFilter = 'none'
+        // printArea.parentElement.style.backdropFilter = 'none'
         map.getTargetElement().style = 'fixed'
         map.getTargetElement().style.width = ''
         map.getTargetElement().style.height = ''
@@ -231,11 +230,11 @@ const executePrint = async (map, props) => {
 
 const print = map => {
   evented.on('PRINT_SHOW_AREA', props => showPrintArea(map, props))
-  evented.on('PRINT_HIDE_AREA', () => hidePrintArea(map))
   evented.on('PRINT_EXECUTE', props => executePrint(map, props)
     .then(() => evented.emit('PRINT_EXECUTION_DONE'))
     .catch(error => console.error(error))
   )
+  evented.on('PRINT_HIDE_AREA', () => hidePrintArea(map))
 }
 
 export default print
