@@ -98,7 +98,7 @@ export const symbolStyle = mode => (feature, resolution) => {
   options.simpleStatusModifier = style.simpleStatusModifier
   options.infoSize = style.symbolTextSize
 
-  const symbol = new ms.Symbol(actualSIDC, options)
+  const symbol = new ms.Symbol(actualSIDC, { ...options, ...(properties ? properties.options : {}) })
   const geometry = feature.getGeometry()
   const pointStyle = () => [new Style({ image: icon(symbol) })]
 
