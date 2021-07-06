@@ -20,6 +20,7 @@ import G_M_OFG from './G_M_OFG'
 import G_M_ORA from './G_M_ORA'
 import G_M_ORC from './G_M_ORC'
 import G_M_ORS from './G_M_ORS'
+import G_M_ORP from './G_M_ORP'
 import G_T_B from './G_T_B'
 import G_T_C from './G_T_C'
 import G_T_H from './G_T_H'
@@ -91,6 +92,7 @@ export default {
   'G*M*ORA---': style(G_M_ORA),
   'G*M*ORC---': style(G_M_ORC),
   'G*M*ORS---': style(G_M_ORS),
+  'G*M*ORP---': style(G_M_ORP),
   'G*T*B-----': style(G_T_B),
   'G*T*C-----': style(G_T_C),
   'G*T*H-----': style(G_T_H),
