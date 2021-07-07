@@ -7,7 +7,7 @@ const menu = i18n => (
         click: async () => {
           const { shell } = require('electron')
           const languagePostfix = i18n.language === 'en' ? 'index.en' : ''
-          await shell.openExternal(`https://www.syncpoint.io/odin-manual/${languagePostfix}`)
+          await shell.openExternal(`https://syncpoint.github.io/odin-manual/${languagePostfix}`)
         }
       }
     ]
