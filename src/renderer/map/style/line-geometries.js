@@ -492,19 +492,14 @@ geometries['G*G*GLF---'] = options => {
   ]
 }
 
-/**
- * TACGRP.MOBSU.OBST.ATO.ATD.ATDUC
- * ANTITANK DITCH / UNDER CONSTRUCTION
- */
-geometries['G*M*OADU--'] = options => {
-  const { resolution, styles, line: geometry } = options
+const ditchTeeth = (geometry, resolution) => {
   const segments = TS.segments(geometry)
-  console.log(segments)
-  const toothLength = resolution * 24
-  const teeth = segments.flatMap(segment => {
+  const toothLength = resolution * 10
+
+  return segments.flatMap(segment => {
     const segmentLength = segment.getLength()
     const n = Math.floor(segmentLength / toothLength)
-    const offset = segmentLength - n * toothLength
+    const offset = (segmentLength - n * toothLength) / 2
     const line = TS.lengthIndexedLine(TS.lineString(segment))
     const angle = segment.angle()
 
@@ -512,13 +507,22 @@ geometries['G*M*OADU--'] = options => {
       const a = line.extractPoint(offset + i * toothLength)
       const b = line.extractPoint(offset + (i + 1) * toothLength)
       const c = TS.projectCoordinate(a)([angle + Math.PI / 3, toothLength])
-      return styles.solidLine(TS.polygon([a, b, c, a]))
+      return TS.polygon([a, b, c, a])
     })
   })
+}
+
+/**
+ * TACGRP.MOBSU.OBST.ATO.ATD.ATDUC
+ * ANTITANK DITCH / UNDER CONSTRUCTION
+ */
+geometries['G*M*OADU--'] = options => {
+  const { resolution, styles, line: geometry } = options
+  const teeth = ditchTeeth(geometry, resolution)
 
   return [
     styles.solidLine(geometry),
-    ...teeth
+    ...teeth.map(polygon => styles.solidLine(polygon))
   ]
 }
 
@@ -528,26 +532,10 @@ geometries['G*M*OADU--'] = options => {
  */
  geometries['G*M*OADC--'] = options => {
   const { resolution, styles, line: geometry } = options
-  const segments = TS.segments(geometry)
-  console.log(segments)
-  const toothLength = resolution * 18
-  const teeth = segments.flatMap(segment => {
-    const segmentLength = segment.getLength()
-    const n = Math.floor(segmentLength / toothLength)
-    const offset = segmentLength - n * toothLength
-    const line = TS.lengthIndexedLine(TS.lineString(segment))
-    const angle = segment.angle()
-
-    return R.range(0, n).map(i => {
-      const a = line.extractPoint(offset + i * toothLength)
-      const b = line.extractPoint(offset + (i + 1) * toothLength)
-      const c = TS.projectCoordinate(a)([angle + Math.PI / 3, toothLength])
-      return styles.filledPolygon(TS.polygon([a, b, c, a]))
-    })
-  })
+  const teeth = ditchTeeth(geometry, resolution)
 
   return [
     styles.solidLine(geometry),
-    ...teeth
+    ...teeth.map(polygon => styles.filledPolygon(polygon))
   ]
 }
