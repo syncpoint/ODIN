@@ -32,6 +32,7 @@ const addIconParts = (parent, iconFillColor) => {
   ]
   return parts
 }
+
 const generatePath = (parent, iconFillColor) => {
   const parts = []
   if (parent.paths) {
@@ -85,6 +86,7 @@ const generateCircles = (parent, iconFillColor) => {
   }
   return parts
 }
+
 const generateTexts = (parent, iconFillColor) => {
   const parts = []
   if (parent.texts) {
@@ -96,8 +98,8 @@ const generateTexts = (parent, iconFillColor) => {
           x: text.x || 100, // x position
           y: text.y || 100, // y position
           textanchor: text.textanchor || 'middle', // anchor
-          fontsize: text.fontsize || 35,
-          fontfamily: text.fontfamily,
+          fontsize: text.fontsize || 38,
+          fontfamily: text.fontfamily || 'Arial',
           fontweight: text.fontweight,
           fill: text.fill || 'none', // Fill color or set to false if none
           fillopacity: text.fillopacity, // Fill opacity {Optional}

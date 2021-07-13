@@ -35,6 +35,60 @@
         }
       ]
     },
+    "EXT_SUPPORT_AREA": {
+      "paths": [
+        {
+          "d": "m 12.808466,70.358539 v 34.437311 c 3.935911,58.3592 17.905698,69.46257 97.644694,66.4465 60.82891,50.35536 75.09034,-8.89138 70.53233,-80.312112 C 179.85419,34.428505 167.25038,31.539404 148.40419,38.667375 66.40597,62.022001 16.32798,2.7635537 12.808466,70.358539 Z"
+        }
+      ]
+    },
+    "EXT_RECTANGULAR_AREA": {
+      "paths": [
+        {
+          "d": "M 10.0,180.0 10.0,10.0 190.0,10.0 190.0,180.0 Z"
+        }
+      ]
+    },
+    "EXT_RECTANGULAR_HATCHED_AREA": {
+      "paths": [
+        {
+          "d": "M 10.0,180.0 10.0,10.0 180.0,10.0 180.0,180.0 Z"
+        },
+        {
+          "d": "M 10.0,30.0 30.0,10.0"
+        },
+        {
+          "d": "M 10.0,60.0 60.0,10.0"
+        },
+        {
+          "d": "M 10.0,90.0 90.0,10.0"
+        },
+        {
+          "d": "M 10.0,120.0 120.0,10.0"
+        },
+        {
+          "d": "M 10.0,150.0 150.0,10.0"
+        },
+        {
+          "d": "M 10.0,180.0 180.0,10.0"
+        },
+        {
+          "d": "M 40.0,180.0 180.0,40.0"
+        },
+        {
+          "d": "M 70.0,180.0 180.0,70.0"
+        },
+        {
+          "d": "M 100.0,180.0 180.0,100.0"
+        },
+        {
+          "d": "M 130.0,180.0 180.0,130.0"
+        },
+        {
+          "d": "M 160.0,180.0 180.0,160.0"
+        }
+      ]
+    },
     "EXT_FORTIFIED_AREA": {
       "paths": [
         {
@@ -90,6 +144,14 @@
         },
         {
           "d": "M 55.414082,98.898744 H 139.68967"
+        }
+      ]
+    },
+    "EXT_COUNTERATTACK": {
+      "paths": [
+        {
+          "d": "M 49.881473,187.40735 48.727012,119.91872 77.184614,88.767374 152.40561,89.98486 v 16.22546 l 27.56788,-40.698867 -26.84443,-38.188261 -0.38482,16.93111 -87.324837,2.69374 -55.7989026,55.798898 v 85.04523",
+          "strokedasharray": "20,6"
         }
       ]
     },
@@ -367,6 +429,392 @@
         }
       ]
     },
+    "EXT_AREA_TARGET_TEXT": {
+      "texts": [
+        {
+          "text": " "
+        }
+      ]
+    },
+    "EXT_SERIES_OF_GROUP_OF_TARGET_TEXT": {
+      "texts": [
+        {
+          "text": " "
+        }
+      ]
+    },
+    "EXT_SMOKE_TEXT": {
+      "texts": [
+        {
+          "text": "SMOKE"
+        }
+      ]
+    },
+    "EXT_BOMB_TEXT": {
+      "texts": [
+        {
+          "text": "BOMB"
+        }
+      ]
+    },
+    "EXT_DETAINEE_HOLDING_TEXT": {
+      "texts": [
+        {
+          "text": "DETAINEE",
+          "fontsize": 25,
+          "x": 100,
+          "y": 80
+        },
+        {
+          "text": "HOLDING",
+          "fontsize": 25,
+          "x": 100,
+          "y": 110
+        },
+        {
+          "text": "AREA",
+          "fontsize": 25,
+          "x": 100,
+          "y": 140
+        }
+      ]
+    },
+    "EXT_EPW_HOLDING_TEXT": {
+      "texts": [
+        {
+          "text": "EPW",
+          "fontsize": 25,
+          "x": 100,
+          "y": 80
+        },
+        {
+          "text": "HOLDING",
+          "fontsize": 25,
+          "x": 100,
+          "y": 110
+        },
+        {
+          "text": "AREA",
+          "fontsize": 25,
+          "x": 100,
+          "y": 140
+        }
+      ]
+    },
+    "EXT_FARP_TEXT": {
+      "texts": [
+        {
+          "text": "FARP",
+          "fontsize": 40,
+          "x": 100,
+          "y": 110
+        }
+      ]
+    },
+    "EXT_REFUGEE_HOLDING_TEXT": {
+      "texts": [
+        {
+          "text": "REFUGEE",
+          "fontsize": 25,
+          "x": 100,
+          "y": 80
+        },
+        {
+          "text": "HOLDING",
+          "fontsize": 25,
+          "x": 100,
+          "y": 110
+        },
+        {
+          "text": "AREA",
+          "fontsize": 25,
+          "x": 100,
+          "y": 140
+        }
+      ]
+    },
+    "EXT_BSA_TEXT": {
+      "texts": [
+        {
+          "text": "BSA",
+          "fontsize": 40,
+          "x": 100,
+          "y": 110
+        }
+      ]
+    },
+    "EXT_DSA_TEXT": {
+      "texts": [
+        {
+          "text": "DSA",
+          "fontsize": 40,
+          "x": 100,
+          "y": 110
+        }
+      ]
+    },
+    "EXT_RSA_TEXT": {
+      "texts": [
+        {
+          "text": "RSA",
+          "fontsize": 40,
+          "x": 100,
+          "y": 110
+        }
+      ]
+    },
+    "EXT_FSA_IRREGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "FSA"
+        }
+      ]
+    },
+    "EXT_ACA_IRREGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "ACA"
+        }
+      ]
+    },
+    "EXT_FFA_IRREGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "FFA"
+        }
+      ]
+    },
+    "EXT_RFA_IRREGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "RFA"
+        }
+      ]
+    },
+    "EXT_SENSOR_ZONE_IRREGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "SENSOR ZONE",
+          "fontsize": 20
+        }
+      ]
+    },
+    "EXT_DEAD_SPACE_IRREGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "DA"
+        }
+      ]
+    },
+    "EXT_ZOR_IRREGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "ZOR"
+        }
+      ]
+    },
+    "EXT_TBA_IRREGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "TBA"
+        }
+      ]
+    },
+    "EXT_TVAR_IRREGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "TVAR"
+        }
+      ]
+    },
+    "EXT_TGMF_TEXT": {
+      "texts": [
+        {
+          "text": "TGMF"
+        }
+      ]
+    },
+    "EXT_ATI_ZONE_IRREGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "ATI ZONE"
+        }
+      ]
+    },
+    "EXT_CFF_ZONE_IRREGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "CFF ZONE"
+        }
+      ]
+    },
+    "EXT_CENSOR_ZONE_IRREGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "CENSOR ZONE",
+          "fontsize": 20
+        }
+      ]
+    },
+    "EXT_CF_ZONE_IRREGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "CF ZONE"
+        }
+      ]
+    },
+    "EXT_FSA_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "FSA"
+        }
+      ]
+    },
+    "EXT_ACA_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "ACA"
+        }
+      ]
+    },
+    "EXT_FFA_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "FFA"
+        }
+      ]
+    },
+    "EXT_RFA_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "RFA"
+        }
+      ]
+    },
+    "EXT_SENSOR_ZONE_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "SENSOR ZONE",
+          "fontsize": 20
+        }
+      ]
+    },
+    "EXT_DEAD_SPACE_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "DA"
+        }
+      ]
+    },
+    "EXT_ZOR_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "ZOR"
+        }
+      ]
+    },
+    "EXT_TBA_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "TBA"
+        }
+      ]
+    },
+    "EXT_TVAR_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "TVAR"
+        }
+      ]
+    },
+    "EXT_ATI_ZONE_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "ATI ZONE"
+        }
+      ]
+    },
+    "EXT_CFF_ZONE_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "CFF ZONE"
+        }
+      ]
+    },
+    "EXT_CENSOR_ZONE_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "CENSOR ZONE",
+          "fontsize": 20
+        }
+      ]
+    },
+    "EXT_CF_ZONE_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "CF ZONE"
+        }
+      ]
+    },
+    "EXT_PAA_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "PAA",
+          "fontsize": 25,
+          "x": 100,
+          "y": 20
+        },
+        {
+          "text": "PAA",
+          "fontsize": 25,
+          "x": 100,
+          "y": 190
+        },
+        {
+          "text": "PAA",
+          "fontsize": 25,
+          "x": 20,
+          "y": 100
+        },
+        {
+          "text": "PAA",
+          "fontsize": 25,
+          "x": 180,
+          "y": 100
+        }
+      ]
+    },
+    "EXT_NFA_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "NFA"
+        }
+      ]
+    },
+    "EXT_KILLBOX_BLUE_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "BKB"
+        }
+      ]
+    },
+    "EXT_KILLBOX_PURPLE_RECTANGULAR_TEXT": {
+      "texts": [
+        {
+          "text": "PKB"
+        }
+      ]
+    },
+    "EXT_COUNTERATTACK_TEXT": {
+      "texts": [
+        {
+          "text": "CATK",
+          "fontsize": 30,
+          "x": 110,
+          "y": 80
+        }
+      ]
+    },
     "EXT_DIRECTION_OF_ATTACK_AVIATION": {
       "paths": [
         {
@@ -567,6 +1015,70 @@
       "paths": [
         {
           "d": "M 40.406102,180.48059 9.2356805,61.186383 62.918073,7.5039904 144.46457,32.968655 174.70314,150.20452 Z"
+        }
+      ]
+    },
+    "EXT_AVIATION_AREA": {
+      "paths": [
+        {
+          "d": "M 10.406102,180.48059 10.2356805,10.186383 140.918073,20.5039904 200.46457,90.968655 174.70314,170.20452 Z"
+        }
+      ]
+    },
+    "EXT_AVIATION_HATCHED_AREA": {
+      "paths": [
+        {
+          "d": "M 10.40,180.48 10.20,10.20 140.90,20.50 200.46,90.96 174.70,170.20 Z"
+        },
+        {
+          "d": "M 10.0,30.0 30.0,10.20"
+        },
+        {
+          "d": "M 10.0,60.0 60.0,12.0"
+        },
+        {
+          "d": "M 10.0,90.0 90.0,14.0"
+        },
+        {
+          "d": "M 10.0,120.0 120.0,16.0"
+        },
+        {
+          "d": "M 10.0,150.0 140.0,24.0"
+        },
+        {
+          "d": "M 10.0,180.0 160.0,38.0"
+        },
+        {
+          "d": "M 44.0,178.0 174.0,58.0"
+        },
+        {
+          "d": "M 78.0,176.0 187.0,78.0"
+        },
+        {
+          "d": "M 114.0,172.0 193.0,104.0"
+        },
+        {
+          "d": "M 144.0,171.0 182.0,140.0"
+        }
+      ]
+    },
+    "EXT_AVIATION_ROUTE": {
+      "paths": [
+        {
+          "d": "M 30.0,40.0 180.0,40.0"
+        },
+        {
+          "d": "M 30.0,140.0 180.0,140.0"
+        }
+      ]
+    },
+    "EXT_BEARING": {
+      "paths": [
+        {
+          "d": "M 10.0,140.0 65.0,105.0"
+        },
+        {
+          "d": "M 125.0,70.0 190.0,30.0"
         }
       ]
     },
@@ -992,6 +1504,41 @@
         }
       ]
     },
+    "EXT_BEARING_TEXT": {
+      "texts": [
+        {
+          "text": "B"
+        }
+      ]
+    },
+    "EXT_BEARING_ELECTRONIC_TEXT": {
+      "texts": [
+        {
+          "text": "E"
+        }
+      ]
+    },
+    "EXT_BEARING_ACOUSTIC_TEXT": {
+      "texts": [
+        {
+          "text": "A"
+        }
+      ]
+    },
+    "EXT_BEARING_TORPEDO_TEXT": {
+      "texts": [
+        {
+          "text": "T"
+        }
+      ]
+    },
+    "EXT_BEARING_OPTICAL_TEXT": {
+      "texts": [
+        {
+          "text": "O"
+        }
+      ]
+    },
     "EXT_MINE_TEXT": {
       "texts": [
         {
@@ -1074,8 +1621,14 @@
         {
           "text": "LD/LC",
           "fontsize": 25,
-          "x": 100,
-          "y": 80
+          "x": 30,
+          "y": 110
+        },
+        {
+          "text": "LD/LC",
+          "fontsize": 25,
+          "x": 160,
+          "y": 110
         }
       ]
     },
@@ -1085,13 +1638,113 @@
           "text": "PLD",
           "fontsize": 25,
           "x": 30,
-          "y": 80
+          "y": 110
         },
         {
           "text": "PLD",
           "fontsize": 25,
           "x": 180,
+          "y": 110
+        }
+      ]
+    },
+    "EXT_FSCL_TEXT": {
+      "texts": [
+        {
+          "text": "FSCL",
+          "fontsize": 25,
+          "x": 50,
           "y": 80
+        },
+        {
+          "text": "FSCL",
+          "fontsize": 25,
+          "x": 160,
+          "y": 80
+        }
+      ]
+    },
+    "EXT_CFL_TEXT": {
+      "texts": [
+        {
+          "text": "CFL",
+          "fontsize": 25,
+          "x": 100,
+          "y": 90
+        }
+      ]
+    },
+    "EXT_NFL_TEXT": {
+      "texts": [
+        {
+          "text": "NFL",
+          "fontsize": 25,
+          "x": 20,
+          "y": 110
+        },
+        {
+          "text": "NFL",
+          "fontsize": 25,
+          "x": 180,
+          "y": 110
+        }
+      ]
+    },
+    "EXT_RFL_TEXT": {
+      "texts": [
+        {
+          "text": "RFL",
+          "fontsize": 25,
+          "x": 30,
+          "y": 80
+        },
+        {
+          "text": "RFL",
+          "fontsize": 25,
+          "x": 180,
+          "y": 80
+        }
+      ]
+    },
+    "EXT_MFP_TEXT": {
+      "texts": [
+        {
+          "text": "MFP",
+          "fontsize": 25,
+          "x": 100,
+          "y": 105
+        }
+      ]
+    },
+    "EXT_PHASE_LINE_TEXT": {
+      "texts": [
+        {
+          "text": "PL",
+          "fontsize": 25,
+          "x": 20,
+          "y": 110
+        },
+        {
+          "text": "PL",
+          "fontsize": 25,
+          "x": 180,
+          "y": 110
+        }
+      ]
+    },
+    "EXT_LIGHT_LINE_TEXT": {
+      "texts": [
+        {
+          "text": "LL",
+          "fontsize": 25,
+          "x": 20,
+          "y": 110
+        },
+        {
+          "text": "LL",
+          "fontsize": 25,
+          "x": 180,
+          "y": 110
         }
       ]
     },
@@ -1131,12 +1784,12 @@
         {
           "text": "RL",
           "x": 25,
-          "y": 80
+          "y": 110
         },
         {
           "text": "RL",
           "x": 175,
-          "y": 80
+          "y": 110
         }
       ]
     },
@@ -1161,6 +1814,90 @@
       "texts": [
         {
           "text": "TAI"
+        }
+      ]
+    },
+    "EXT_ROZ_TEXT": {
+      "texts": [
+        {
+          "text": "ROZ"
+        }
+      ]
+    },
+    "EXT_SHORADEZ_TEXT": {
+      "texts": [
+        {
+          "text": "SHORADEZ"
+        }
+      ]
+    },
+    "EXT_HIDACZ_TEXT": {
+      "texts": [
+        {
+          "text": "HIDACZ"
+        }
+      ]
+    },
+    "EXT_MEZ_TEXT": {
+      "texts": [
+        {
+          "text": "MEZ"
+        }
+      ]
+    },
+    "EXT_LOMEZ_TEXT": {
+      "texts": [
+        {
+          "text": "LOMEZ"
+        }
+      ]
+    },
+    "EXT_HIMEZ_TEXT": {
+      "texts": [
+        {
+          "text": "HIMEZ"
+        }
+      ]
+    },
+    "EXT_WFZ_TEXT": {
+      "texts": [
+        {
+          "text": "WFZ"
+        }
+      ]
+    },
+    "EXT_AIR_CORRIDOR_TEXT": {
+      "texts": [
+        {
+          "text": "AC"
+        }
+      ]
+    },
+    "EXT_MRR_TEXT": {
+      "texts": [
+        {
+          "text": "MRR"
+        }
+      ]
+    },
+    "EXT_SAAFR_TEXT": {
+      "texts": [
+        {
+          "text": "SAAFR"
+        }
+      ]
+    },
+    "EXT_UA_TEXT": {
+      "texts": [
+        {
+          "text": "UA"
+        }
+      ]
+    },
+    "EXT_LLTR_TEXT": {
+      "texts": [
+        {
+          "text": "LLTR"
         }
       ]
     },
@@ -1195,9 +1932,173 @@
       "EXT_AREA",
       "EXT_ASSEMBLY_TEXT"
     ],
-    "G-G-GAE---": [
+    "G-F-AT----": [
       "EXT_AREA",
-      "EXT_ENGAGEMENT_AREA_TEXT"
+      "EXT_AREA_TARGET_TEXT"
+    ],
+    "G-F-ATG---": [
+      "EXT_AREA",
+      "EXT_SERIES_OF_GROUP_OF_TARGET_TEXT"
+    ],
+    "G-F-ATS---": [
+      "EXT_AREA",
+      "EXT_SMOKE_TEXT"
+    ],
+	"G-F-ATB---": [
+      "EXT_AREA",
+      "EXT_BOMB_TEXT"
+    ],
+	"G-S-AD----": [
+      "EXT_SUPPORT_AREA",
+      "EXT_DETAINEE_HOLDING_TEXT"
+    ],
+	"G-S-AE----": [
+      "EXT_SUPPORT_AREA",
+      "EXT_EPW_HOLDING_TEXT"
+    ],
+	"G-S-AR----": [
+      "EXT_SUPPORT_AREA",
+      "EXT_FARP_TEXT"
+    ],
+	"G-S-AH----": [
+      "EXT_SUPPORT_AREA",
+      "EXT_REFUGEE_HOLDING_TEXT"
+    ],
+	"G-S-ASB---": [
+      "EXT_SUPPORT_AREA",
+      "EXT_BSA_TEXT"
+    ],
+	"G-S-ASD---": [
+      "EXT_SUPPORT_AREA",
+      "EXT_DSA_TEXT"
+    ],
+	"G-S-ASR---": [
+      "EXT_SUPPORT_AREA",
+      "EXT_RSA_TEXT"
+    ],
+    "G-F-ACSI--": [
+      "EXT_AREA",
+      "EXT_FSA_IRREGULAR_TEXT"
+    ],
+    "G-F-ACAI--": [
+      "EXT_AREA",
+      "EXT_ACA_IRREGULAR_TEXT"
+    ],
+    "G-F-ACFI--": [
+      "EXT_AREA",
+      "EXT_FFA_IRREGULAR_TEXT"
+    ],
+    "G-F-ACRI--": [
+      "EXT_AREA",
+      "EXT_RFA_IRREGULAR_TEXT"
+    ],
+    "G-F-ACEI--": [
+      "EXT_AREA",
+      "EXT_SENSOR_ZONE_IRREGULAR_TEXT"
+    ],
+    "G-F-ACDI--": [
+      "EXT_AREA",
+      "EXT_DEAD_SPACE_IRREGULAR_TEXT"
+	],
+	  "G-F-ACZI--": [
+      "EXT_AREA",
+      "EXT_ZOR_IRREGULAR_TEXT"
+    ],
+    "G-F-ACBI--": [
+      "EXT_AREA",
+      "EXT_TBA_IRREGULAR_TEXT"
+    ],
+    "G-F-ACVI--": [
+      "EXT_AREA",
+      "EXT_TVAR_IRREGULAR_TEXT"
+    ],
+    "G-F-ACT---": [
+      "EXT_AREA",
+      "EXT_TGMF_TEXT"
+    ],
+    "G-F-AZII--": [
+      "EXT_AREA",
+      "EXT_ATI_ZONE_IRREGULAR_TEXT"
+    ],
+    "G-F-AZXI--": [
+      "EXT_AREA",
+      "EXT_CFF_ZONE_IRREGULAR_TEXT"
+    ],
+    "G-F-AZCI--": [
+      "EXT_AREA",
+      "EXT_CENSOR_ZONE_IRREGULAR_TEXT"
+    ],
+    "G-F-AZFI--": [
+      "EXT_AREA",
+      "EXT_CF_ZONE_IRREGULAR_TEXT"
+    ],
+    "G-F-ACSR--": [
+      "EXT_RECTANGULAR_AREA",
+      "EXT_FSA_RECTANGULAR_TEXT"
+    ],
+    "G-F-ACAR--": [
+      "EXT_RECTANGULAR_AREA",
+      "EXT_ACA_RECTANGULAR_TEXT"
+    ],
+    "G-F-ACFR--": [
+      "EXT_RECTANGULAR_AREA",
+      "EXT_FFA_RECTANGULAR_TEXT"
+    ],
+    "G-F-ACRR--": [
+      "EXT_RECTANGULAR_AREA",
+      "EXT_RFA_RECTANGULAR_TEXT"
+    ],
+    "G-F-ACER--": [
+      "EXT_RECTANGULAR_AREA",
+      "EXT_SENSOR_ZONE_RECTANGULAR_TEXT"
+    ],
+    "G-F-ACDR--": [
+      "EXT_RECTANGULAR_AREA",
+      "EXT_DEAD_SPACE_RECTANGULAR_TEXT"
+	],
+	  "G-F-ACZR--": [
+      "EXT_RECTANGULAR_AREA",
+      "EXT_ZOR_RECTANGULAR_TEXT"
+    ],
+    "G-F-ACBR--": [
+      "EXT_RECTANGULAR_AREA",
+      "EXT_TBA_RECTANGULAR_TEXT"
+    ],
+    "G-F-ACVR--": [
+      "EXT_RECTANGULAR_AREA",
+      "EXT_TVAR_RECTANGULAR_TEXT"
+    ],
+    "G-F-AZIR--": [
+      "EXT_RECTANGULAR_AREA",
+      "EXT_ATI_ZONE_RECTANGULAR_TEXT"
+    ],
+    "G-F-AZXR--": [
+      "EXT_RECTANGULAR_AREA",
+      "EXT_CFF_ZONE_RECTANGULAR_TEXT"
+    ],
+    "G-F-AZCR--": [
+      "EXT_RECTANGULAR_AREA",
+      "EXT_CENSOR_ZONE_RECTANGULAR_TEXT"
+    ],
+    "G-F-AZFR--": [
+      "EXT_RECTANGULAR_AREA",
+      "EXT_CF_ZONE_RECTANGULAR_TEXT"
+    ],
+    "G-F-ACPR--": [
+      "EXT_RECTANGULAR_AREA",
+      "EXT_PAA_RECTANGULAR_TEXT"
+    ],
+    "G-F-ACNR--": [
+      "EXT_RECTANGULAR_HATCHED_AREA",
+      "EXT_NFA_RECTANGULAR_TEXT"
+    ],
+    "G-F-AKBR--": [
+      "EXT_RECTANGULAR_HATCHED_AREA",
+      "EXT_KILLBOX_BLUE_RECTANGULAR_TEXT"
+    ],
+    "G-F-AKPR--": [
+      "EXT_RECTANGULAR_HATCHED_AREA",
+      "EXT_KILLBOX_PURPLE_RECTANGULAR_TEXT"
     ],
     "G-G-GAD---": [
       "EXT_DROPZONE",
@@ -1226,6 +2127,10 @@
     ],
     "G-G-GAZ---": [
       "EXT_AIRFIELDZONE"
+    ],
+    "G-T-K-----": [
+      "EXT_COUNTERATTACK",
+      "EXT_COUNTERATTACK_TEXT"
     ],
     "G-G-OLAV--": [
       "EXT_AXIS_OF_ADVANCE_AVIATION"
@@ -1315,6 +2220,34 @@
       "EXT_PLANNED_LINE",
       "EXT_PROBABLE_LINE_OF_DEPLOYMENT_TEXT"
     ],
+    "G-F-LCF---": [
+      "EXT_LINE",
+      "EXT_FSCL_TEXT"
+    ],
+    "G-F-LCC---": [
+      "EXT_LINE",
+      "EXT_CFL_TEXT"
+    ],
+    "G-F-LCN---": [
+      "EXT_LINE",
+      "EXT_NFL_TEXT"
+    ],
+    "G-F-LCR---": [
+      "EXT_LINE",
+      "EXT_RFL_TEXT"
+    ],
+    "G-F-LCM---": [
+      "EXT_LINE",
+      "EXT_MFP_TEXT"
+    ],
+    "G-G-GLP---": [
+      "EXT_LINE",
+      "EXT_PHASE_LINE_TEXT"
+    ],
+    "G-G-GLL---": [
+      "EXT_LINE",
+      "EXT_LIGHT_LINE_TEXT"
+    ],
     "G-G-OLI---": [
       "EXT_INFILTRATION_LINE"
     ],
@@ -1371,6 +2304,74 @@
     "G-G-SAT---": [
       "EXT_AREA_OF_INTEREST",
       "EXT_TARGETED_AREA_OF_INTEREST_TEXT"
+    ],
+    "G-G-AAR---": [
+      "EXT_AVIATION_AREA",
+      "EXT_ROZ_TEXT"
+    ],
+    "G-G-AAF---": [
+      "EXT_AVIATION_AREA",
+      "EXT_SHORADEZ_TEXT"
+    ],
+    "G-G-AAH---": [
+      "EXT_AVIATION_AREA",
+      "EXT_HIDACZ_TEXT"
+    ],
+    "G-G-AAM---": [
+      "EXT_AVIATION_AREA",
+      "EXT_MEZ_TEXT"
+    ],
+    "G-G-AAML--": [
+      "EXT_AVIATION_AREA",
+      "EXT_LOMEZ_TEXT"
+    ],
+    "G-G-AAMH--": [
+      "EXT_AVIATION_AREA",
+      "EXT_HIMEZ_TEXT"
+    ],
+    "G-G-AAW---": [
+      "EXT_AVIATION_HATCHED_AREA",
+      "EXT_WFZ_TEXT"
+    ],
+    "G-G-ALC---": [
+      "EXT_AVIATION_ROUTE",
+      "EXT_AIR_CORRIDOR_TEXT"
+    ],
+    "G-G-ALM---": [
+      "EXT_AVIATION_ROUTE",
+      "EXT_MRR_TEXT"
+    ],
+    "G-G-ALS---": [
+      "EXT_AVIATION_ROUTE",
+      "EXT_SAAFR_TEXT"
+    ],
+    "G-G-ALU---": [
+      "EXT_AVIATION_ROUTE",
+      "EXT_UA_TEXT"
+    ],
+    "G-G-ALL---": [
+      "EXT_AVIATION_ROUTE",
+      "EXT_LLTR_TEXT"
+    ],
+    "G-O-B-----": [
+      "EXT_BEARING",
+      "EXT_BEARING_TEXT"
+    ],
+    "G-O-BE----": [
+      "EXT_BEARING",
+      "EXT_BEARING_ELECTRONIC_TEXT"
+    ],
+    "G-O-BA----": [
+      "EXT_BEARING",
+      "EXT_BEARING_ACOUSTIC_TEXT"
+    ],
+    "G-O-BT----": [
+      "EXT_BEARING",
+      "EXT_BEARING_TORPEDO_TEXT"
+    ],
+    "G-O-BO----": [
+      "EXT_BEARING",
+      "EXT_BEARING_OPTICAL_TEXT"
     ],
     "G-M-OGB---": [
       "EXT_BELT"
