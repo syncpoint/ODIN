@@ -4,11 +4,8 @@ import symbols from './symbols.json'
 const extendMilsymbols = () => {
   const parts = Object.keys(symbols.iconParts)
   ms.addIconParts((iconParts, metadata, colors, std2525, monoColor, alternateMedal) => {
-    const affiliation = metadata.affiliation || 'Friend'
-    const iconFillColor = colors.iconFillColor[affiliation]
     parts.forEach(part => {
-      const parts = addIconParts(symbols.iconParts[part], iconFillColor)
-      iconParts[part] = parts
+      iconParts[part] = addIconParts(symbols.iconParts[part], '#333')
     })
   })
   ms.addSIDCicons((sidc, bbox, iconParts, std2525) => {
