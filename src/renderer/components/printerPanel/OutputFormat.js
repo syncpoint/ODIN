@@ -15,7 +15,7 @@ const OutputFormat = props => {
       disabled={props.disabled}
     >
       <MenuItem value={'PDF'}>PDF (image with annotations)</MenuItem>
-      <MenuItem value={'PNG'}>PNG (image only)</MenuItem>
+      <MenuItem value={'JPEG'}>JPEG (image only)</MenuItem>
     </TextField>
   </FormControl>
   )

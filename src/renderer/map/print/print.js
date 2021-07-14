@@ -124,12 +124,13 @@ const executePrint = async (map, props) => {
 
       try {
         const dateTimeOfPrinting = getCurrentDateTime()
-        const dataURL = await domtoimage.toPng(map.getViewport(), exportOptions)
+        // const dataURL = await domtoimage.toPng(map.getViewport(), exportOptions)
+        const dataURL = await domtoimage.toJpeg(map.getViewport(), exportOptions)
         console.log(`got a dataUrl with length ${dataURL.length}`)
 
-        // just save the "raw" PNG
-        if (targetOutputFormat === 'PNG') {
-          savePNG(dataURL, `${dateTimeOfPrinting}.png`)
+        // just save the "raw" image
+        if (targetOutputFormat === 'JPEG') {
+          savePNG(dataURL, `${dateTimeOfPrinting}.jpeg`)
           return resolve(true)
         }
 
@@ -140,7 +141,7 @@ const executePrint = async (map, props) => {
         const y = padding.top
         const w = paperSizes[paperFormat][orientation].width - (padding.left + padding.right)
         const h = paperSizes[paperFormat][orientation].height - (padding.top + padding.bottom)
-        pdf.addImage(dataURL, 'PNG', x, y, w, h)
+        pdf.addImage(dataURL, 'JPEG', x, y, w, h)
 
         // scale text in the upper right corner of the header
         const scaleText = `1 : ${scale}000`
