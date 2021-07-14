@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { FormControl, MenuItem, TextField } from '@material-ui/core'
 
+import qualities from '../../map/print/quality.json'
+
 const Quality = props => {
 
   const handleChange = event => props.onChange(event.target.value)
@@ -15,9 +17,9 @@ const Quality = props => {
       onChange={handleChange}
       disabled={props.disabled}
     >
-      <MenuItem value={'low'}>low</MenuItem>
-      <MenuItem value={'medium'}>medium</MenuItem>
-      <MenuItem value={'high'}>high</MenuItem>
+      {
+        Object.keys(qualities).map(quality => (<MenuItem key={quality} value={quality}>{quality}</MenuItem>))
+      }
     </TextField>
   </FormControl>
   )

@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { FormControl, MenuItem, TextField } from '@material-ui/core'
 
+import formats from '../../map/print/paperSizes.json'
+
 const PaperFormat = props => {
 
   const handleChange = event => props.onChange(event.target.value)
@@ -15,9 +17,9 @@ const PaperFormat = props => {
       onChange={handleChange}
       disabled={props.disabled}
     >
-      <MenuItem value={'a4'}>A4</MenuItem>
-      <MenuItem value={'a3'}>A3</MenuItem>
-      <MenuItem value={'a2'}>A2</MenuItem>
+      {
+        Object.keys(formats).map(format => (<MenuItem key={format} value={format}>{format.toUpperCase()}</MenuItem>))
+      }
     </TextField>
   </FormControl>
   )

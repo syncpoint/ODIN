@@ -50,7 +50,7 @@ const DEFAULTS = {
   paperFormat: 'a4',
   orientation: 'landscape',
   scale: 25,
-  quality: 'medium',
+  quality: 'good',
   targetOutputFormat: 'PDF'
 }
 

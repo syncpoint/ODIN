@@ -8,44 +8,8 @@ import evented from '../../evented'
 import getCurrentDateTime from '../../../shared/militaryTime'
 import coordinateFormat from '../../../shared/coord-format'
 
-const paperSizes = {
-  a4: {
-    landscape: {
-      width: 297,
-      height: 210
-    },
-    portrait: {
-      height: 297,
-      width: 210
-    }
-  },
-  a3: {
-    landscape: {
-      width: 420,
-      height: 297
-    },
-    portrait: {
-      height: 420,
-      width: 297
-    }
-  },
-  a2: {
-    landscape: {
-      width: 594,
-      height: 420
-    },
-    portrait: {
-      height: 594,
-      width: 420
-    }
-  }
-}
-
-const dpi = {
-  low: 96,
-  medium: 2 * 96,
-  high: 3 * 96
-}
+import paperSizes from './paperSizes.json'
+import dpi from './quality.json'
 
 const padding = {
   left: 5,
