@@ -40,10 +40,12 @@ const generateMgrsLayers = (options = { gzdRes: [10000, 0], detailRes: [1200, 20
  */
 const generateGzdLayer = (options) => {
   const gzdSource = new VectorSource({
-    loader: () => {
-      const features = getGzdGridLines()
+    loader: (extent, resolution, projection, success, failure) => {
       gzdSource.clear()
+      const features = getGzdGridLines()
+      if (!features) return failure()
       gzdSource.addFeatures(features)
+      success(features)
     },
     strategy: all,
     wrapX: true
@@ -80,10 +82,12 @@ const generateDetailLayers = (options) => {
   const detailLayers = []
   for (let i = 0; i < options.detailRes.length && i < 6; i++) {
     const detailSource = new VectorSource({
-      loader: async (extent, resolution, projection) => {
-        const features = getDetailGridLines(extent, projection, i)
+      loader: async (extent, resolution, projection, success, failure) => {
         detailSource.clear()
+        const features = getDetailGridLines(extent, projection, i)
+        if (!features) return failure()
         detailSource.addFeatures(features)
+        success(features)
       },
       strategy: bbox,
       wrapX: false

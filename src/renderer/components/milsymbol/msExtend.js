@@ -4,11 +4,8 @@ import symbols from './symbols.json'
 const extendMilsymbols = () => {
   const parts = Object.keys(symbols.iconParts)
   ms.addIconParts((iconParts, metadata, colors, std2525, monoColor, alternateMedal) => {
-    const affiliation = metadata.affiliation || 'Friend'
-    const iconFillColor = colors.iconFillColor[affiliation]
     parts.forEach(part => {
-      const parts = addIconParts(symbols.iconParts[part], iconFillColor)
-      iconParts[part] = parts
+      iconParts[part] = addIconParts(symbols.iconParts[part], '#333')
     })
   })
   ms.addSIDCicons((sidc, bbox, iconParts, std2525) => {
@@ -32,6 +29,7 @@ const addIconParts = (parent, iconFillColor) => {
   ]
   return parts
 }
+
 const generatePath = (parent, iconFillColor) => {
   const parts = []
   if (parent.paths) {
@@ -85,6 +83,7 @@ const generateCircles = (parent, iconFillColor) => {
   }
   return parts
 }
+
 const generateTexts = (parent, iconFillColor) => {
   const parts = []
   if (parent.texts) {
@@ -96,8 +95,8 @@ const generateTexts = (parent, iconFillColor) => {
           x: text.x || 100, // x position
           y: text.y || 100, // y position
           textanchor: text.textanchor || 'middle', // anchor
-          fontsize: text.fontsize || 35,
-          fontfamily: text.fontfamily,
+          fontsize: text.fontsize || 38,
+          fontfamily: text.fontfamily || 'Arial',
           fontweight: text.fontweight,
           fill: text.fill || 'none', // Fill color or set to false if none
           fillopacity: text.fillopacity, // Fill opacity {Optional}

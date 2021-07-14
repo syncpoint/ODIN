@@ -87,7 +87,7 @@
     "minimist": "^1.2.5",
     "mousetrap": "^1.6.5",
     "node-stream-zip": "^1.13.4",
-    "ol": "6.5.0",
+    "ol": "6.6.0",
     "proj4": "^2.7.0",
     "prop-types": "^15.7.2",
     "ramda": "^0.27.1",
