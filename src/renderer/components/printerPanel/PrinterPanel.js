@@ -32,12 +32,13 @@ const useStyles = makeStyles((/* theme */) => ({
   },
   printArea: {
     visibility: 'hidden',
-    borderWidth: '3px 3px 3px 3px',
-    borderColor: 'yellowgreen',
+    borderWidth: '2vh',
+    borderColor: 'white',
     borderStyle: 'solid',
     pointerEvents: 'none',
-    backdropFilter: 'brightness(1.125)',
-    marginLeft: '20%'
+    filter: 'opacity(0.95)',
+    boxSizing: 'contentBox',
+    marginLeft: '15em'
   },
   backdrop: {
     zIndex: -1,
@@ -123,7 +124,7 @@ const PrinterPanel = props => {
       <div className={classes.printAnchor}>
         <div className={classes.printArea} id='printArea' />
         <Backdrop className={classes.backdrop} open={isPrinting} >
-          <CircularProgress color='secondary' size='10vh' thickness={6} />
+          <CircularProgress color='secondary' size='10vh' thickness={5} />
         </Backdrop>
       </div>
     </>
