@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { FormControl, MenuItem, TextField } from '@material-ui/core'
 
+import scales from '../../map/print/scale.json'
+
 const Scale = props => {
 
   const handleChange = event => props.onChange(event.target.value)
@@ -15,11 +17,9 @@ const Scale = props => {
       onChange={handleChange}
       disabled={props.disabled}
     >
-      <MenuItem value={5}>1:5000</MenuItem>
-      <MenuItem value={10}>1:10000</MenuItem>
-      <MenuItem value={25}>1:25000</MenuItem>
-      <MenuItem value={50}>1:50000</MenuItem>
-      <MenuItem value={100}>1:100000</MenuItem>
+      {
+        scales.map(scale => (<MenuItem key={scale} value={scale}>{`1:${scale * 1000}`}</MenuItem>))
+      }
     </TextField>
   </FormControl>
   )
