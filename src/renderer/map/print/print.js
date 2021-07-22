@@ -169,13 +169,13 @@ const executePrint = async (map, props) => {
           'FD'
         )
 
-        // black segments
-        pdf.setFillColor(0, 0, 0)
+        // white segments
+        pdf.setFillColor(255, 255, 255)
         pdf.rect(padding.left + scaleBarHeight, paperSizes[paperSize][orientation].height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
         pdf.rect(padding.left + scaleBarHeight + 2 * scaleBarSegmentWidth, paperSizes[paperSize][orientation].height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
 
-        // white segments
-        pdf.setFillColor(255, 255, 255)
+        // red segments
+        pdf.setFillColor(255, 0, 0)
         pdf.rect(padding.left + scaleBarHeight + scaleBarSegmentWidth, paperSizes[paperSize][orientation].height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
         pdf.rect(padding.left + scaleBarHeight + 3 * scaleBarSegmentWidth, paperSizes[paperSize][orientation].height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
 
