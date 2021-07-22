@@ -77,11 +77,16 @@ const PrinterPanel = props => {
       targetOutputFormat
     }
     preferences.set('print', printPreferences)
-  }, [paperSize, scale, quality, targetOutputFormat])
+  }, [paperSize, scale, quality, orientation, targetOutputFormat])
 
   React.useEffect(() => {
     const handler = ({ type, preferences }) => {
       if (type !== 'preferences') return
+      // first run? Set defaults
+      if (!preferences.print) {
+        setPreferencesLoaded(true)
+        return
+      }
       setPaperSize(preferences.print.paperSize || DEFAULTS.paperSize)
       setScale(preferences.print.scale || DEFAULTS.scale)
       setQuality(preferences.print.quality || DEFAULTS.quality)
