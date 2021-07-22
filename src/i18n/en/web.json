@@ -49,7 +49,8 @@
       "cut": "Cut",
       "copy": "Copy",
       "paste": "Paste",
-      "exportPNG": "Export current view as PNG"
+      "exportPNG": "Export current view as PNG",
+      "print": "Print with scale"
     }
   },
   "layers": {
@@ -109,5 +110,29 @@
     "symbolTextSize": "font size for symbols",
     "labelTextSize": "font size for labels",
     "useBoldLabelText": "label text is bold"
+  },
+  "print": {
+    "orientation": {
+      "label": "Orientation",
+      "landscape": "Landscape",
+      "portrait": "Portrait"
+    },
+    "paperSize": {
+      "label": "Paper size"
+    },
+    "quality": {
+      "label": "Quality",
+      "fair": "Fair",
+      "good": "Good",
+      "high": "High (slow!)"
+    },
+    "scale": {
+      "label": "Scale"
+    },
+    "output": {
+      "label": "Output format",
+      "pdf": "PDF with annotations",
+      "jpeg": "JPEG image"
+    }
   }
 }

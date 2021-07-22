@@ -1,24 +1,25 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { FormControl, MenuItem, TextField } from '@material-ui/core'
+import { useTranslation } from 'react-i18next'
 
-import formats from '../../map/print/paperSizes.json'
+import sizes from '../../map/print/paperSizes.json'
 
 const PaperFormat = props => {
-
+  const { t } = useTranslation()
   const handleChange = event => props.onChange(event.target.value)
 
   return (
   <FormControl style={{ margin: '1em' }}>
     <TextField
       select
-      label="Paper size"
-      value={props.paperFormat}
+      label={t('print.paperSize.label')}
+      value={props.paperSize}
       onChange={handleChange}
       disabled={props.disabled}
     >
       {
-        Object.keys(formats).map(format => (<MenuItem key={format} value={format}>{format.toUpperCase()}</MenuItem>))
+        Object.keys(sizes).map(size => (<MenuItem key={size} value={size}>{size.toUpperCase()}</MenuItem>))
       }
     </TextField>
   </FormControl>
@@ -26,7 +27,7 @@ const PaperFormat = props => {
 }
 
 PaperFormat.propTypes = {
-  paperFormat: PropTypes.string.isRequired,
+  paperSize: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   disabled: PropTypes.bool
 }

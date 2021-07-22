@@ -204,7 +204,7 @@ const initialActivities = (classes, t) => [
     type: 'activity',
     icon: <PrintIcon/>,
     panel: () => <PrinterPanel />,
-    tooltip: 'Drugg misch'
+    tooltip: t('activities.tooltips.print')
   }
 ]
 

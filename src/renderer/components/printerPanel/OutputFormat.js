@@ -1,21 +1,23 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { FormControl, MenuItem, TextField } from '@material-ui/core'
+import { useTranslation } from 'react-i18next'
 
 const OutputFormat = props => {
+  const { t } = useTranslation()
   const handleChange = event => props.onChange(event.target.value)
 
   return (
   <FormControl style={{ margin: '1em' }} >
     <TextField
       select
-      label="Output format"
+      label={t('print.output.label')}
       value={props.targetOutputFormat}
       onChange={handleChange}
       disabled={props.disabled}
     >
-      <MenuItem value={'PDF'}>PDF (image with annotations)</MenuItem>
-      <MenuItem value={'JPEG'}>JPEG (image only)</MenuItem>
+      <MenuItem value={'PDF'}>{t('print.output.pdf')}</MenuItem>
+      <MenuItem value={'JPEG'}>{t('print.output.jpeg')}</MenuItem>
     </TextField>
   </FormControl>
   )

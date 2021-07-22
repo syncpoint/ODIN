@@ -43,16 +43,17 @@ const saveImage = (dataURL, fileName) => {
 
 const showPrintArea = (map, props) => {
 
-  const { paperFormat, orientation, quality, scale } = props
+  const { paperSize, orientation, quality, scale } = props
 
-  /* thse values correspond with the physical dimensions of the paper and the pixel density */
-  const desiredMapWidth = (paperSizes[paperFormat][orientation].width - (padding.left + padding.right)) / inch2mm * dpi[quality]
-  const desiredMapHeight = (paperSizes[paperFormat][orientation].height - (padding.top + padding.bottom)) / inch2mm * dpi[quality]
+  /* these values correspond with the physical dimensions of the paper and the pixel density */
+  const desiredMapWidth = (paperSizes[paperSize][orientation].width - (padding.left + padding.right)) / inch2mm * dpi[quality]
+  const desiredMapHeight = (paperSizes[paperSize][orientation].height - (padding.top + padding.bottom)) / inch2mm * dpi[quality]
 
 
   /* ratio differs from the typical A* paper ratios because it honors the padding values! */
   const ratio = desiredMapWidth / desiredMapHeight
 
+  /* our map uses WebMercator, thus we need to consider the latidue in order to get the resolution rigth */
   const scaleResolution = scale / getPointResolution(map.getView().getProjection(), dpi[quality] / inch2mm, map.getView().getCenter())
 
   const limitingDimension = (window.innerHeight <= window.innerWidth) ? 'innerHeight' : 'innerWidth'
@@ -79,7 +80,7 @@ const hidePrintArea = map => {
 // returns a promise
 const executePrint = async (map, props) => {
 
-  const { paperFormat, orientation, quality, scale, targetOutputFormat } = props
+  const { paperSize, orientation, quality, scale, targetOutputFormat } = props
 
   const previousSettings = {
     mapSize: map.getSize(),
@@ -97,8 +98,8 @@ const executePrint = async (map, props) => {
   const centerCoordinates = map.getCoordinateFromPixel(centerOnScreen)
 
   /* these values correspond with the physical dimensions of the paper and the pixel density */
-  const desiredMapWidth = (paperSizes[paperFormat][orientation].width - (padding.left + padding.right)) / inch2mm * dpi[quality]
-  const desiredMapHeight = (paperSizes[paperFormat][orientation].height - (padding.top + padding.bottom)) / inch2mm * dpi[quality]
+  const desiredMapWidth = (paperSizes[paperSize][orientation].width - (padding.left + padding.right)) / inch2mm * dpi[quality]
+  const desiredMapHeight = (paperSizes[paperSize][orientation].height - (padding.top + padding.bottom)) / inch2mm * dpi[quality]
 
   const scaleResolution = scale / getPointResolution(map.getView().getProjection(), dpi[quality] / inch2mm, centerCoordinates)
 
@@ -136,16 +137,16 @@ const executePrint = async (map, props) => {
 
         // from here it's all about creating a beautiful PDF
         // eslint-disable-next-line new-cap
-        const pdf = new jsPDF({ format: paperFormat, orientation })
+        const pdf = new jsPDF({ format: paperSize, orientation })
         const x = padding.left
         const y = padding.top
-        const w = paperSizes[paperFormat][orientation].width - (padding.left + padding.right)
-        const h = paperSizes[paperFormat][orientation].height - (padding.top + padding.bottom)
+        const w = paperSizes[paperSize][orientation].width - (padding.left + padding.right)
+        const h = paperSizes[paperSize][orientation].height - (padding.top + padding.bottom)
         pdf.addImage(dataURL, 'JPEG', x, y, w, h)
 
         // scale text in the upper right corner of the header
         const scaleText = `1 : ${scale}000`
-        pdf.text(scaleText, (paperSizes[paperFormat][orientation].width - padding.right), padding.top - 2, { align: 'right' })
+        pdf.text(scaleText, (paperSizes[paperSize][orientation].width - padding.right), padding.top - 2, { align: 'right' })
 
         // date/time of printing in the upper left corner of the header
         pdf.text(dateTimeOfPrinting, padding.left, padding.top - Math.floor(padding.top / 2))
@@ -162,7 +163,7 @@ const executePrint = async (map, props) => {
         pdf.setFillColor(255, 255, 255)
         pdf.rect(
           padding.left + scaleBarHeight / 2,
-          paperSizes[paperFormat][orientation].height - padding.bottom - 2.5 * scaleBarHeight,
+          paperSizes[paperSize][orientation].height - padding.bottom - 2.5 * scaleBarHeight,
           5.25 * scaleBarSegmentWidth,
           2 * scaleBarHeight,
           'FD'
@@ -170,20 +171,20 @@ const executePrint = async (map, props) => {
 
         // black segments
         pdf.setFillColor(0, 0, 0)
-        pdf.rect(padding.left + scaleBarHeight, paperSizes[paperFormat][orientation].height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
-        pdf.rect(padding.left + scaleBarHeight + 2 * scaleBarSegmentWidth, paperSizes[paperFormat][orientation].height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
+        pdf.rect(padding.left + scaleBarHeight, paperSizes[paperSize][orientation].height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
+        pdf.rect(padding.left + scaleBarHeight + 2 * scaleBarSegmentWidth, paperSizes[paperSize][orientation].height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
 
         // white segments
         pdf.setFillColor(255, 255, 255)
-        pdf.rect(padding.left + scaleBarHeight + scaleBarSegmentWidth, paperSizes[paperFormat][orientation].height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
-        pdf.rect(padding.left + scaleBarHeight + 3 * scaleBarSegmentWidth, paperSizes[paperFormat][orientation].height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
+        pdf.rect(padding.left + scaleBarHeight + scaleBarSegmentWidth, paperSizes[paperSize][orientation].height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
+        pdf.rect(padding.left + scaleBarHeight + 3 * scaleBarSegmentWidth, paperSizes[paperSize][orientation].height - padding.bottom - 2 * scaleBarHeight, scaleBarSegmentWidth, scaleBarHeight, 'FD')
 
         // real length of scale bar in (k)m
         const realLifeLength = scale * 0.04
         pdf.setFontSize(scaleBarHeight * 4)
         pdf.text(`${realLifeLength < 1 ? realLifeLength * 1000 : realLifeLength}${realLifeLength >= 1 ? 'k' : ''}m`,
           padding.left + 4 * scaleBarSegmentWidth + 2 * scaleBarHeight,
-          paperSizes[paperFormat][orientation].height - padding.bottom - scaleBarHeight
+          paperSizes[paperSize][orientation].height - padding.bottom - scaleBarHeight
         )
 
         await pdf.save(`map-${dateTimeOfPrinting}.pdf`, { returnPromise: true })
