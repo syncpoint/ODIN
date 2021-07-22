@@ -32,17 +32,24 @@ const useStyles = makeStyles((/* theme */) => ({
   },
   printArea: {
     visibility: 'hidden',
-    borderWidth: '2vh',
+    borderWidth: '6vh 2vh 2vh 2vh',
     borderColor: 'white',
     borderStyle: 'solid',
     pointerEvents: 'none',
     filter: 'opacity(0.95)',
     boxSizing: 'contentBox',
-    marginLeft: '15em'
+    transform: 'translateX(12em)'
+  },
+  printAreaBorder: {
+    width: '100%',
+    height: '100%',
+    border: '1px solid slategrey',
+    boxSizing: 'border-box'
   },
   backdrop: {
     zIndex: -1,
-    backdropFilter: 'blur(25px)'
+    backdropFilter: 'blur(25px)',
+    pointerEvents: 'all'
   }
 }))
 
@@ -127,7 +134,9 @@ const PrinterPanel = props => {
         <Button variant="contained" color="primary" style={{ margin: '1em' }} disabled={isPrinting} onClick={executePrint}>Create { targetOutputFormat }</Button>
       </Paper>
       <div className={classes.printAnchor}>
-        <div className={classes.printArea} id='printArea' />
+          <div className={classes.printArea} id='printArea'>
+            <div className={classes.printAreaBorder} />
+          </div>
         <Backdrop className={classes.backdrop} open={isPrinting} >
           <CircularProgress color='secondary' size='10vh' thickness={5} />
         </Backdrop>
