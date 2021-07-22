@@ -124,7 +124,7 @@
       "label": "Quality",
       "fair": "Fair",
       "good": "Good",
-      "high": "High (slow!)"
+      "high": "High"
     },
     "scale": {
       "label": "Scale"

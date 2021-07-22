@@ -122,10 +122,10 @@
       "label": "Papiergröße"
     },
     "quality": {
-      "label": "Qualität der Karte",
+      "label": "Qualität",
       "fair": "Ausreichend",
       "good": "Gut",
-      "high": "Hoch (langsam!)"
+      "high": "Hoch"
     },
     "scale": {
       "label": "Maßstab"
