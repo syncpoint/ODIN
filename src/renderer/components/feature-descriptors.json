@@ -4297,6 +4297,20 @@
     ]
   },
   {
+    "sidc": "G*G*GPA---*****",
+    "class": "P",
+    "scope": "CONTROL",
+    "geometry": "Point",
+    "dimension": "C2",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "COMMAND AND CONTROL AND GENERAL MANEUVER",
+      "GENERAL",
+      "POINTS",
+      "AIR CONTROL"
+    ]
+  },
+  {
     "sidc": "G*G*GPAP--*****",
     "class": "P",
     "scope": "CONTROL",
