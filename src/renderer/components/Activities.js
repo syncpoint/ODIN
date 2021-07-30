@@ -5,12 +5,14 @@ import Category from '@material-ui/icons/CategoryOutlined'
 import PermDataSettingIcon from '@material-ui/icons/PermDataSettingOutlined'
 import MapIcon from '@material-ui/icons/MapOutlined'
 import PhotoCameraIcon from '@material-ui/icons/PhotoCameraOutlined'
+import PrintIcon from '@material-ui/icons/PrintOutlined'
 import Button from '@material-ui/core/Button'
 import SettingsIcon from '@material-ui/icons/SettingsOutlined'
 import { LayersTripleOutline, Undo, Redo, ContentCut, ContentCopy, ContentPaste } from 'mdi-material-ui'
 
 import ActivityBar from './ActivityBar'
 import BasemapPanel from './basemapPanel/BasemapPanel'
+import PrinterPanel from './printerPanel/PrinterPanel'
 import LayerList from './layerlist/LayerList'
 import FeaturePalette from './palette/FeaturePalette'
 import SliderSetting from './settings/SliderSetting'
@@ -196,6 +198,13 @@ const initialActivities = (classes, t) => [
     icon: <PhotoCameraIcon/>,
     tooltip: t('activities.tooltips.exportPNG'),
     action: () => evented.emit('SHARE_PNG')
+  },
+  {
+    id: 'print',
+    type: 'activity',
+    icon: <PrintIcon/>,
+    panel: () => <PrinterPanel />,
+    tooltip: t('activities.tooltips.print')
   }
 ]
 

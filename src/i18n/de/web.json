@@ -49,7 +49,8 @@
       "cut": "Ausschneiden",
       "copy": "Kopieren",
       "paste": "Einfügen",
-      "exportPNG": "Aktuellen Kartenausschnitt als PNG exportieren"
+      "exportPNG": "Aktuellen Kartenausschnitt als PNG exportieren",
+      "print": "Maßstabgerechtes Drucken"
     }
   },
   "layers": {
@@ -109,5 +110,31 @@
     "symbolTextSize": "Textgröße für Symbole",
     "labelTextSize": "Textgröße für Beschriftung",
     "useBoldLabelText": "Text ist 'fett'"
+  },
+  "print": {
+    "name": "Drucken",
+    "orientation": {
+      "label": "Ausrichtung",
+      "landscape": "Querformat",
+      "portrait": "Hochformat"
+    },
+    "paperSize": {
+      "label": "Papiergröße"
+    },
+    "quality": {
+      "label": "Qualität",
+      "fair": "Ausreichend",
+      "good": "Gut",
+      "high": "Hoch"
+    },
+    "scale": {
+      "label": "Maßstab"
+    },
+    "output": {
+      "label": "Ausgabeformat",
+      "pdf": "PDF mit Beschriftung",
+      "jpeg": "JPEG Bild"
+    },
+    "execute": "{{targetOutputFormat}} erstellen"
   }
 }

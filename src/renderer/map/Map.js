@@ -20,6 +20,7 @@ import draw from './interaction/draw'
 import measure from './interaction/measure/'
 import dropImport from './interaction/drop-import'
 import share from './share'
+import print from './print/print'
 
 import './style/scalebar.css'
 
@@ -47,7 +48,7 @@ const updateCoordinateDisplay = ({ coordinate }) => {
 const effect = props => () => {
   const { id } = props
   const { center, zoom } = { center: [16.363449, 48.210033], zoom: 8 }
-  const view = new ol.View({ center: fromLonLat(center), zoom })
+  const view = new ol.View({ center: fromLonLat(center), zoom, constrainRotation: false })
 
   const scaleLine = new ScaleLine({
     units: 'metric',
@@ -79,6 +80,7 @@ const effect = props => () => {
   draw(map)
   measure(map)
   share(map)
+  print(map)
 
   // restore viewport and active layer name from preferences.
   preferences.register(event => {
