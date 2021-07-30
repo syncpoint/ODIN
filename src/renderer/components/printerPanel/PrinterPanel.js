@@ -117,6 +117,7 @@ const PrinterPanel = props => {
     const onPrintExecutionDone = () => {
       setIsPrinting(false)
     }
+    // emitted by map/print/print.js
     evented.on('PRINT_EXECUTION_DONE', onPrintExecutionDone)
     return () => evented.off('PRINT_EXECUTION_DONE', onPrintExecutionDone)
   }, [])
@@ -137,9 +138,9 @@ const PrinterPanel = props => {
         <Button variant="contained" color="primary" style={{ margin: '1em' }} disabled={isPrinting} onClick={executePrint}>{ t('print.execute', { targetOutputFormat })}</Button>
       </Paper>
       <div className={classes.printAnchor}>
-          <div className={classes.printArea} id='printArea'>
-            <div className={classes.printAreaBorder} />
-          </div>
+        <div className={classes.printArea} id='printArea'>
+          <div className={classes.printAreaBorder} />
+        </div>
         <Backdrop className={classes.backdrop} open={isPrinting} >
           <CircularProgress color='secondary' size='10vh' thickness={5} />
         </Backdrop>

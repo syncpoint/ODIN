@@ -40,7 +40,6 @@ const saveImage = (dataURL, fileName) => {
   setTimeout(() => link.remove(), 300)
 }
 
-
 const showPrintArea = (map, props) => {
 
   const { paperSize, orientation, quality, scale } = props
@@ -48,7 +47,6 @@ const showPrintArea = (map, props) => {
   /* these values correspond with the physical dimensions of the paper and the pixel density */
   const desiredMapWidth = (paperSizes[paperSize][orientation].width - (padding.left + padding.right)) / inch2mm * dpi[quality]
   const desiredMapHeight = (paperSizes[paperSize][orientation].height - (padding.top + padding.bottom)) / inch2mm * dpi[quality]
-
 
   /* ratio differs from the typical A* paper ratios because it honors the padding values! */
   const ratio = desiredMapWidth / desiredMapHeight
@@ -127,7 +125,6 @@ const executePrint = async (map, props) => {
         const dateTimeOfPrinting = getCurrentDateTime()
         // const dataURL = await domtoimage.toPng(map.getViewport(), exportOptions)
         const dataURL = await domtoimage.toJpeg(map.getViewport(), exportOptions)
-        console.log(`got a dataUrl with length ${dataURL.length}`)
 
         // just save the "raw" image
         if (targetOutputFormat === 'JPEG') {
@@ -188,9 +185,9 @@ const executePrint = async (map, props) => {
         )
 
         await pdf.save(`map-${dateTimeOfPrinting}.pdf`, { returnPromise: true })
+        resolve(true)
       } catch (error) {
-        console.error(error)
-        return reject(error)
+        reject(error)
       } finally {
         // restore styling
         printArea.style.visibility = 'visible'
@@ -201,14 +198,12 @@ const executePrint = async (map, props) => {
         map.updateSize()
         map.getView().setResolution(previousSettings.viewResolution)
         map.getView().setCenter(previousSettings.viewCenter)
-
-        // tell everyone that we're done
-        resolve(true)
       }
     })
   })
 }
 
+// these events are emitted by components/printerPanel/PrinterPanel.js
 const print = map => {
   evented.on('PRINT_SHOW_AREA', props => showPrintArea(map, props))
   evented.on('PRINT_EXECUTE', props => executePrint(map, props)
