@@ -46,7 +46,9 @@
   },
   "help" : {
     "name": "Help",
-    "onlineUserManual": "Online user manual"
+    "onlineUserManual": "Online user manual",
+    "onlineSupportSlack": "Join our Slack channel",
+	  "onlineSupportEMail": "Get support via e-mail"
   },
   "export": {
     "title": "Export {{name}}",
