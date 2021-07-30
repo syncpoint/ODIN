@@ -133,6 +133,7 @@
       "label": "Output format",
       "pdf": "PDF with annotations",
       "jpeg": "JPEG image"
-    }
+    },
+    "execute": "Create {{targetOutputFormat}}"
   }
 }

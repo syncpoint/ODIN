@@ -1,6 +1,8 @@
 import React from 'react'
 import { Backdrop, Button, CircularProgress, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import { useTranslation } from 'react-i18next'
+
 import PaperSize from './PaperSize'
 import Orientation from './Orientation'
 import Scale from './Scale'
@@ -62,6 +64,7 @@ const DEFAULTS = {
 }
 
 const PrinterPanel = props => {
+  const { t } = useTranslation()
   const classes = useStyles()
 
   const [paperSize, setPaperSize] = React.useState(DEFAULTS.paperSize)
@@ -131,7 +134,7 @@ const PrinterPanel = props => {
         <Scale scale={scale} onChange={setScale} disabled={isPrinting} />
         <Quality quality={quality} disabled={isPrinting} onChange={setQuality} />
         <OutputFormat targetOutputFormat={targetOutputFormat} disabled={isPrinting} onChange={setTargetOutputFormat} />
-        <Button variant="contained" color="primary" style={{ margin: '1em' }} disabled={isPrinting} onClick={executePrint}>Create { targetOutputFormat }</Button>
+        <Button variant="contained" color="primary" style={{ margin: '1em' }} disabled={isPrinting} onClick={executePrint}>{ t('print.execute', { targetOutputFormat })}</Button>
       </Paper>
       <div className={classes.printAnchor}>
           <div className={classes.printArea} id='printArea'>

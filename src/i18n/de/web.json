@@ -134,6 +134,7 @@
       "label": "Ausgabeformat",
       "pdf": "PDF mit Beschriftung",
       "jpeg": "JPEG Bild"
-    }
+    },
+    "execute": "{{targetOutputFormat}} erstellen"
   }
 }
