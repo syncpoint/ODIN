@@ -174,7 +174,14 @@ const ready = () => {
   const recentProject = state.find(setting => setting.path === mostRecentProject)
 
   if (!recentProject) return createProjectWindow(/* will create a new untiteled project */)
-  createProjectWindow(recentProject)
+
+  /*
+    fix/423: Since we also deploy ODIN as a Snapcraft package we must ensure that the project
+    path is always relative to ODIN's home directory. Snap packages change this path on every release
+    so we must re-calculate the absolute path.
+  */
+  const absoluteProjectPath = projects.pathFromId(projectId(recentProject.path))
+  createProjectWindow({ ...recentProject, ...{ path: absoluteProjectPath } })
 }
 
 const windowAllClosed = () => {
@@ -228,7 +235,8 @@ const ipcSwitchProject = async (event, projectPath) => {
     if no settings exist we create a default window
   */
   const id = projectId(projectPath)
-  const persistedSettings = settings.get(windowKey(id), { path: projectPath })
+  const absoluteProjectPath = projects.pathFromId(id)
+  const persistedSettings = settings.get(windowKey(id), { path: absoluteProjectPath })
   createProjectWindow(persistedSettings)
 }
 
