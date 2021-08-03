@@ -22,6 +22,14 @@ const ODIN_DEFAULT_METADATA = () => ({
 
 const exists = projectPath => fs.existsSync(projectPath)
 
+/**
+ * @param {String} projectId
+ * @returns {String} absolute path of the project; NOTE: this does not guaranteet that the path exists
+ */
+const pathFromId = projectId => {
+  return path.join(ODIN_PROJECTS, projectId)
+}
+
 const createProject = async (name = uuid()) => {
   const projectPath = path.join(ODIN_PROJECTS, name)
   if (exists(projectPath)) return
@@ -173,6 +181,7 @@ const writePreview = async (projectPath, jpgImageBuffer) => {
 
 export default {
   exists,
+  pathFromId,
   createProject,
   deleteProject,
   exportProject,
