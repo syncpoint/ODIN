@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Run install and run production webpack
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout the source into the VM
         uses: actions/checkout@v2
