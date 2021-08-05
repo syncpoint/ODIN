@@ -57,7 +57,7 @@ const rendererConfig = (env, argv) => ({
 
   plugins: [
     new HtmlWebpackPlugin({ title: 'ODIN - C2IS' }),
-    new webpack.IgnorePlugin(/^pg-native$/),
+    new webpack.IgnorePlugin({ resourceRegExp: /html2canvas|canvg/ }),
     new ESLintPlugin()
   ]
 })
