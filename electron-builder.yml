@@ -20,8 +20,6 @@ linux:
   target:
     - target: deb
     - target: tar.gz
-    - target: Appimage
-    - target: snap
   icon: 'build/icons'
   category: 'Office'
   files:
