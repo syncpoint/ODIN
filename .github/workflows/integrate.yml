@@ -1,31 +1,26 @@
-name: Checkout, install and test
+name: Checkout, install and run webpack
 on:
   push:
     branches:
-      - '0.6.0/**'
+      - 'master'
   pull_request:
     branches: 
-      - '0.6.0/**'
+      - 'master'
 
 jobs:
-  checkout_install_test:
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+  build:
+    name: Run install and run production webpack
+    runs-on: macos-latest
     steps:
       - name: Checkout the source into the VM
         uses: actions/checkout@v2
       - name: Setup node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           node-version: 12
+      - name: Upgrade npm to v7
+        run: npm install -g npm@latest
       - name: Install 
-        run: npm install --no-optional
-      - name: Test
-        uses: GabrielBB/xvfb-action@v1.0
-        with:
-          run: npm test
-        env:
-          ODIN_LANGUAGE: cimode
-    
+        run: npm ci --no-audit --no-optional
+      - name: Create Webpack
+        run: npm run webpack:production
