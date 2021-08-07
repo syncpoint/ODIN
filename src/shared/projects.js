@@ -9,9 +9,20 @@ import uuid from 'uuid-random'
 */
 import { app, remote } from 'electron'
 
-const HOME = remote ? remote.app.getPath('home') : app.getPath('home')
-const ODIN_HOME = path.join(HOME, 'ODIN')
-const ODIN_PROJECTS = path.join(ODIN_HOME, 'projects')
+/** @returns The current home directory of the user. */
+const HOME = () => {
+  return remote ? remote.app.getPath('home') : app.getPath('home')
+}
+/** @returns The path where ODIN stores it's data. This may be changed by setting the
+ * environment variable ODIN_HOME */
+const ODIN_HOME = () => {
+  if (process.env.ODIN_HOME !== undefined) return process.env.ODIN_HOME
+  return path.join(HOME(), 'ODIN')
+}
+
+/** @returns The path where ODIN projects are located */
+const ODIN_PROJECTS = () => path.join(ODIN_HOME(), 'projects')
+
 const ODIN_LAYERS = 'layers'
 const ODIN_METADATA = 'metadata.json'
 const ODIN_PREVIEW = 'preview.jpg'
@@ -27,11 +38,11 @@ const exists = projectPath => fs.existsSync(projectPath)
  * @returns {String} absolute path of the project; NOTE: this does not guaranteet that the path exists
  */
 const pathFromId = projectId => {
-  return path.join(ODIN_PROJECTS, projectId)
+  return path.join(ODIN_PROJECTS(), projectId)
 }
 
 const createProject = async (name = uuid()) => {
-  const projectPath = path.join(ODIN_PROJECTS, name)
+  const projectPath = path.join(ODIN_PROJECTS(), name)
   if (exists(projectPath)) return
 
   /* create subfolder structure, too */
@@ -95,7 +106,7 @@ const importProject = async (sourceFilePath) => {
     Since all the project related content is in the root of the archive
     we create a uuid for the imported one
   */
-  const targetPath = path.join(ODIN_PROJECTS, uuid())
+  const targetPath = path.join(ODIN_PROJECTS(), uuid())
   await fs.promises.mkdir(targetPath)
 
   return new Promise((resolve, reject) => {
@@ -111,9 +122,9 @@ const importProject = async (sourceFilePath) => {
 }
 
 const enumerateProjects = async () => {
-  const enumerateDirectoryEntries = fs.promises.readdir(ODIN_PROJECTS, { withFileTypes: true })
+  const enumerateDirectoryEntries = fs.promises.readdir(ODIN_PROJECTS(), { withFileTypes: true })
   const foldersOnly = dirEntries => dirEntries.filter(dirEntry => dirEntry.isDirectory())
-  const constructPath = dirEntries => dirEntries.map(entry => path.join(ODIN_PROJECTS, entry.name))
+  const constructPath = dirEntries => dirEntries.map(entry => path.join(ODIN_PROJECTS(), entry.name))
   return enumerateDirectoryEntries
     .then(foldersOnly)
     .then(constructPath)
