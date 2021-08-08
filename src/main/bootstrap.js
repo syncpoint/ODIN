@@ -237,6 +237,7 @@ const ipcSwitchProject = async (event, projectPath) => {
   const id = projectId(projectPath)
   const absoluteProjectPath = projects.pathFromId(id)
   const persistedSettings = settings.get(windowKey(id), { path: absoluteProjectPath })
+  persistedSettings.path = absoluteProjectPath
   createProjectWindow(persistedSettings)
 }
 
