@@ -171,7 +171,7 @@ const ready = () => {
   }
 
   const mostRecentProject = settings.get(RECENT_WINDOW_KEY)
-  const recentProject = state.find(setting => setting.path === mostRecentProject)
+  const recentProject = state.find(setting => projectId(setting.path) === projectId(mostRecentProject))
 
   if (!recentProject) return createProjectWindow(/* will create a new untiteled project */)
 
