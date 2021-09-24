@@ -142,7 +142,7 @@ export const polygonStyle = mode => (feature, resolution) => {
   }
 
   const fill = fills[sidc] && fills[sidc]({ styles: factory })
-  const options = { feature, geometry: simplified, resolution, styles: factory }
+  const options = { feature, geometry: simplified, resolution, styles: factory, fill }
 
   const geometryStyle = geometries[sidc]
     ? geometries[sidc](options)
