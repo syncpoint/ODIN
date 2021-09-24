@@ -539,3 +539,73 @@ geometries['G*M*OADU--'] = options => {
     ...teeth.map(polygon => styles.filledPolygon(polygon))
   ]
 }
+
+// ABATIS
+geometries['G*M*OS----'] = ({ styles, resolution, line: lineString }) => {
+  const width = resolution * 10
+  const line = TS.lengthIndexedLine(lineString)
+  const firstSegment = line.extractLine(0, width)
+  const coords = TS.coordinates(firstSegment)
+  const angle = TS.segment(TS.coordinates(firstSegment)).angle()
+  const lastSegment = line.extractLine(width, line.getEndIndex())
+  const a = R.head(coords)
+  const b = TS.projectCoordinate(a)([angle + Math.PI / 3, width])
+  const c = R.last(coords)
+  const geometry = TS.lineString([a, b, c, ...TS.coordinates(lastSegment)])
+  return styles.solidLine(geometry)
+}
+
+// MINE CLUSTER
+geometries['G*M*OMC---'] = ({ styles, resolution, line: lineString }) => {
+  const coords = TS.coordinates(lineString)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const center = segment.midPoint()
+  const radius = segment.getLength() / 2
+
+  const points = R.range(0, 17)
+    .map(i => Math.PI / 16 * i + angle)
+    .map(angle => TS.projectCoordinate(center)([angle, radius]))
+
+  const geometry = TS.collect([lineString, TS.lineString(points)])
+  return styles.dashedLine(geometry, { lineDash: [20, 14] })
+}
+
+// ANTITANK DITCH REINFORCED WITH ANTITANK MINES
+geometries['G*M*OAR---'] = ({ styles, resolution, line: lineString }) => {
+  const width = resolution * 10
+  const line = TS.lengthIndexedLine(lineString)
+  const count = Math.floor(line.getEndIndex() / (width * 2))
+  const offset = (line.getEndIndex() - 2 * count * width) / 2
+
+  const segmentPoints = R
+    .aperture(2, R.range(0, count + 1).map(i => offset + 2 * width * i))
+    .map(([a, b]) => [a, a + width / 2, b - width / 2, b])
+
+  const geometry = TS.collect(segmentPoints
+    .map(([a, b, c, d]) => [
+      line.extractPoint(a),
+      TS.coordinates(line.extractLine(b, c)),
+      line.extractPoint(d)
+    ])
+    .map(([a, coords, d]) => [a, coords, d, TS.segment([a, d]).angle()])
+    .map(([a, coords, d, angle]) => [
+      a,
+      coords,
+      d,
+      TS.projectCoordinate(R.head(coords))([angle - Math.PI / 3, width]),
+      TS.projectCoordinate(d)([angle - Math.PI / 2, width / 2])
+    ])
+    .flatMap(([a, coords, d, x, c]) => {
+      return [
+        TS.polygon([x, R.head(coords), R.last(coords), x]),
+        TS.lineString([a, R.head(coords)]),
+        TS.lineString([R.last(coords), d]),
+        TS.pointBuffer(TS.point(c))(width / 3.5)
+      ]
+    })
+  )
+
+  return styles.solidLine(geometry, { fillDefault: true })
+}
+
