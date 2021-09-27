@@ -39,7 +39,6 @@ const teeth = direction => (lineString, resolution) => {
 }
 
 const corridor = title => (params) => {
-  console.dir(params)
   const { styles, line: lineString, resolution, feature } = params
   const width = resolution * 10
   const coords = TS.coordinates(lineString)
