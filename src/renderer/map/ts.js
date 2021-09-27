@@ -213,3 +213,10 @@ export const arc = ({ x, y }, radius, α1, α2, n) => R.range(0, n)
   .map(i => α1 - α2 / n * i)
   .map(α => [x + radius * Math.cos(α), y + radius * Math.sin(α)])
   .map(coordinate)
+
+
+export const singleSidedLineBuffer = buffer({
+  joinStyle: BufferParameters.JOIN_ROUND,
+  endCapStyle: BufferParameters.CAP_FLAT,
+  singleSided: true
+})

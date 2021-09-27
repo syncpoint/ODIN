@@ -2,6 +2,7 @@ import * as R from 'ramda'
 import * as style from 'ol/style'
 import * as TS from '../ts'
 import echelons from './echelons'
+import * as fences from './fences'
 
 const linearTarget = ({ styles, line }) => {
   const coords = TS.coordinates(line)
@@ -708,3 +709,256 @@ geometries['G*G*ALM---'] = corridor('MRR') // MINIMUM RISK ROUTE (MRR)
 geometries['G*G*ALS---'] = corridor('SAAFR') // STANDARD-USE ARMY AIRCRAFT FLIGHT ROUTE (SAAFR)
 geometries['G*G*ALU---'] = corridor('UA') // UNMANNED AIRCRAFT (UA) ROUTE
 geometries['G*G*ALL---'] = corridor('LLTR') // LOW LEVEL TRANSIT ROUTE (LLTR)
+
+// SINGLE FENCE
+geometries['G*M*OWS---'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 32)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle()]
+  }
+
+  return [
+    fences.fenceLine(write(lineString)),
+    ...R.range(1, n)
+      .map(pointOptions)
+      .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+      .map(fences.fenceX)
+  ]
+}
+
+// DOUBLE FENCE
+geometries['G*M*OWD---'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 50)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle()]
+  }
+
+  return [
+    fences.fenceLine(write(lineString)),
+    ...R.range(1, n)
+      .map(pointOptions)
+      .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+      .map(fences.fenceDoubleX)
+  ]
+}
+
+// LOW WIRE FENCE
+geometries['G*M*OWL---'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 16)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle(), [0, -8]]
+  }
+
+  return [
+    fences.fenceLine(write(lineString)),
+    ...R.range(1, n)
+      .map(pointOptions)
+      .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+      .map(fences.fenceX)
+  ]
+}
+
+// HIGH WIRE FENCE
+geometries['G*M*OWH---'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 16)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const width = resolution * 15
+  const segments = TS.segments(lineString)
+  const startSegment = R.head(segments)
+  const endSegment = R.last(segments)
+
+  const startPoint = TS.projectCoordinate(
+    TS.coordinate(TS.startPoint(lineString))
+  )([startSegment.angle() + Math.PI / 2, width / 2])
+
+  const endPoint = TS.projectCoordinate(
+    TS.coordinate(TS.endPoint(lineString))
+  )([endSegment.angle() + Math.PI / 2, width / 2])
+
+  const buffer = TS.singleSidedLineBuffer(lineString)(width)
+  const geometry = TS.difference([
+    TS.boundary(buffer),
+    TS.pointBuffer(TS.point(startPoint))(width / 2),
+    TS.pointBuffer(TS.point(endPoint))(width / 2)
+  ])
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle(), [0, -8]]
+  }
+
+  return [
+    fences.fenceLine(write(geometry)),
+    ...R.range(1, n)
+      .map(pointOptions)
+      .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+      .map(fences.fenceX)
+  ]
+}
+
+// DOUBLE APRON FENCE
+geometries['G*M*OWA---'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 16)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle()]
+  }
+
+  return [
+    fences.fenceLine(write(lineString)),
+    ...R.range(1, n)
+      .map(pointOptions)
+      .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+      .map(fences.fenceX)
+  ]
+}
+
+// SINGLE CONCERTINA
+geometries['G*M*OWCS--'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 16)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle(), [0, -8]]
+  }
+
+  return [
+    fences.fenceLine(write(lineString)),
+    ...R.range(1, n)
+      .map(pointOptions)
+      .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+      .map(fences.fenceO)
+  ]
+}
+
+// DOUBLE STRAND CONCERTINA
+geometries['G*M*OWCD--'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 16)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const width = resolution * 7
+  const segments = TS.segments(lineString)
+  const startSegment = R.head(segments)
+  const endSegment = R.last(segments)
+
+  const startPoint = TS.projectCoordinate(
+    TS.coordinate(TS.startPoint(lineString))
+  )([startSegment.angle() + Math.PI / 2, width / 2])
+
+  const endPoint = TS.projectCoordinate(
+    TS.coordinate(TS.endPoint(lineString))
+  )([endSegment.angle() + Math.PI / 2, width / 2])
+
+  const buffer = TS.singleSidedLineBuffer(lineString)(width)
+  const geometry = TS.difference([
+    TS.boundary(buffer),
+    TS.pointBuffer(TS.point(startPoint))(width / 2),
+    TS.pointBuffer(TS.point(endPoint))(width / 2)
+  ])
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle(), [0, -8]]
+  }
+
+  return [
+    fences.fenceLine(write(geometry)),
+    ...R.range(1, n)
+      .map(pointOptions)
+      .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+      .map(fences.fenceO)
+  ]
+}
+
+// TRIPLE STRAND CONCERTINA
+geometries['G*M*OWCT--'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 16)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const width = resolution * 15
+  const segments = TS.segments(lineString)
+  const startSegment = R.head(segments)
+  const endSegment = R.last(segments)
+
+  const startPoint = TS.projectCoordinate(
+    TS.coordinate(TS.startPoint(lineString))
+  )([startSegment.angle() + Math.PI / 2, width / 2])
+
+  const endPoint = TS.projectCoordinate(
+    TS.coordinate(TS.endPoint(lineString))
+  )([endSegment.angle() + Math.PI / 2, width / 2])
+
+  const buffer = TS.singleSidedLineBuffer(lineString)(width)
+  const geometry = TS.difference([
+    TS.boundary(buffer),
+    TS.pointBuffer(TS.point(startPoint))(width / 2),
+    TS.pointBuffer(TS.point(endPoint))(width / 2)
+  ])
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle(), [0, -8]]
+  }
+
+  return [
+    fences.fenceLine(write(geometry)),
+    ...R.range(1, n)
+      .map(pointOptions)
+      .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+      .map(fences.fenceO)
+  ]
+}
+
