@@ -19,6 +19,69 @@ const linearTarget = ({ styles, line }) => {
   ]))
 }
 
+const teeth = direction => (lineString, resolution) => {
+  const width = resolution * 10
+  const line = TS.lengthIndexedLine(lineString)
+  const count = Math.floor(line.getEndIndex() / (width * 2))
+  const offset = (line.getEndIndex() - 2 * count * width) / 2
+
+  return R
+    .aperture(2, R.range(0, count + 1).map(i => offset + 2 * width * i))
+    .map(([a, b]) => [
+      line.extractPoint(a),
+      line.extractPoint(a + width / 2),
+      line.extractPoint(b - width / 2),
+      line.extractPoint(b)
+    ])
+    .map(([a, b, c, d]) => [a, b, c, d, TS.segment([b, c]).angle()])
+    .map(([a, b, c, d, angle]) => [a, b, c, d, TS.projectCoordinate(b)([angle + direction * Math.PI / 3, width])])
+    .map(([a, b, c, d, x]) => TS.lineString([a, b, x, c, d]))
+}
+
+const corridor = title => (params) => {
+  console.dir(params)
+  const { styles, line: lineString, resolution, feature } = params
+  const width = resolution * 10
+  const coords = TS.coordinates(lineString)
+  const options = {
+    joinStyle: TS.BufferParameters.JOIN_ROUND,
+    endCapStyle: TS.BufferParameters.CAP_ROUND
+  }
+
+  const segments = R.aperture(2, coords)
+    .map(points => TS.lineString(points))
+    .map(line => TS.buffer(options)(line)(width))
+
+  const texts = (() => {
+    if (!feature.get('t')) return []
+    else {
+      const text = `${title} ${feature.get('t')}`
+      return R.aperture(2, coords)
+        .map(TS.segment)
+        .map(segment => [segment.midPoint(), segment.angle()])
+        .map(([point, angle]) => styles.text(TS.point(point), {
+          text,
+          flip: true,
+          textAlign: () => 'center',
+          rotation: Math.PI - angle
+        }))
+    }
+  })()
+
+  // NOTE: cut start/end cap
+  // const corridor = TS.collect([
+  //   TS.difference([R.head(segments).getBoundary(), TS.pointBuffer(TS.startPoint(lineString))(width * 1.01)]),
+  //   ...R.take(segments.length - 2, R.drop(1, segments)),
+  //   TS.difference([R.last(segments).getBoundary(), TS.pointBuffer(TS.endPoint(lineString))(width * 1.01)])
+  // ])
+
+  return [
+    styles.solidLine(TS.collect(segments)),
+    ...texts
+  ]
+}
+
+
 export const geometries = {
 
   /**
@@ -609,3 +672,40 @@ geometries['G*M*OAR---'] = ({ styles, resolution, line: lineString }) => {
   return styles.solidLine(geometry, { fillDefault: true })
 }
 
+// ANTITANK WALL
+geometries['G*M*OAW---'] = ({ styles, resolution, line: lineString }) => {
+  return styles.solidLine(TS.collect(teeth(-1)(lineString, resolution)))
+}
+
+
+// FORTIFIED LINE
+geometries['G*M*SL----'] = ({ styles, resolution, line: lineString }) => {
+  const width = resolution * 10
+  const line = TS.lengthIndexedLine(lineString)
+  const count = Math.floor(line.getEndIndex() / (width * 2))
+  const offset = (line.getEndIndex() - 2 * count * width) / 2
+
+  const teeth = R
+    .aperture(2, R.range(0, count + 1).map(i => offset + 2 * width * i))
+    .map(([a, b]) => [
+      line.extractPoint(a),
+      line.extractPoint(a + width / 2),
+      line.extractPoint(b - width / 2),
+      line.extractPoint(b)
+    ])
+    .map(([a, b, c, d]) => [a, b, c, d, TS.segment([b, c]).angle()])
+    .map(([a, b, c, d, angle]) => [
+      a, b, c, d,
+      TS.projectCoordinate(b)([angle + Math.PI / 2, width]),
+      TS.projectCoordinate(c)([angle + Math.PI / 2, width])
+    ])
+    .map(([a, b, c, d, x, y]) => TS.lineString([a, b, x, y, c, d]))
+
+  return styles.solidLine(TS.collect(teeth))
+}
+
+geometries['G*G*ALC---'] = corridor('AC') // AIR CORRIDOR
+geometries['G*G*ALM---'] = corridor('MRR') // MINIMUM RISK ROUTE (MRR)
+geometries['G*G*ALS---'] = corridor('SAAFR') // STANDARD-USE ARMY AIRCRAFT FLIGHT ROUTE (SAAFR)
+geometries['G*G*ALU---'] = corridor('UA') // UNMANNED AIRCRAFT (UA) ROUTE
+geometries['G*G*ALL---'] = corridor('LLTR') // LOW LEVEL TRANSIT ROUTE (LLTR)
