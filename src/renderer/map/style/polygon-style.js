@@ -116,7 +116,6 @@ const labelFn = {
   'G*S*ASB---': templates['G*G*SAN---'](['BSA']),
   'G*S*ASD---': templates['G*G*SAN---'](['DSA']),
   'G*S*ASR---': templates['G*G*SAN---'](['RSA'])
-  // () => L.c([{ symbol: 'GFMPNZ----', position: 'center' }]) // RADIOACTIVE AREA'
 }
 
 // TODO: G*MPNB----, G*MPNC----, G*MPNL----, G*MPNR----, G*MPOFD---
