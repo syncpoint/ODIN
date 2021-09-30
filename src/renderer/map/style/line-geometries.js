@@ -728,7 +728,7 @@ geometries['G*M*OWU---'] = ({ resolution, line: lineString, write }) => {
 
   return R.range(1, n)
     .map(pointOptions)
-    .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+    .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
     .map(fences.fenceX)
 }
 
@@ -751,7 +751,7 @@ geometries['G*M*OWS---'] = ({ resolution, line: lineString, write }) => {
     fences.fenceLine(write(lineString)),
     ...R.range(1, n)
       .map(pointOptions)
-      .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+      .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
       .map(fences.fenceX)
   ]
 }
@@ -799,7 +799,7 @@ geometries['G*M*OWL---'] = ({ resolution, line: lineString, write }) => {
     fences.fenceLine(write(lineString)),
     ...R.range(1, n)
       .map(pointOptions)
-      .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+      .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
       .map(fences.fenceX)
   ]
 }
@@ -843,7 +843,7 @@ geometries['G*M*OWH---'] = ({ resolution, line: lineString, write }) => {
     fences.fenceLine(write(geometry)),
     ...R.range(1, n)
       .map(pointOptions)
-      .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+      .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
       .map(fences.fenceX)
   ]
 }
@@ -867,7 +867,7 @@ geometries['G*M*OWA---'] = ({ resolution, line: lineString, write }) => {
     fences.fenceLine(write(lineString)),
     ...R.range(1, n)
       .map(pointOptions)
-      .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+      .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
       .map(fences.fenceX)
   ]
 }
@@ -891,7 +891,7 @@ geometries['G*M*OWCS--'] = ({ resolution, line: lineString, write }) => {
     fences.fenceLine(write(lineString)),
     ...R.range(1, n)
       .map(pointOptions)
-      .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+      .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
       .map(fences.fenceO)
   ]
 }
@@ -935,7 +935,7 @@ geometries['G*M*OWCD--'] = ({ resolution, line: lineString, write }) => {
     fences.fenceLine(write(geometry)),
     ...R.range(1, n)
       .map(pointOptions)
-      .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+      .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
       .map(fences.fenceO)
   ]
 }
@@ -979,7 +979,7 @@ geometries['G*M*OWCT--'] = ({ resolution, line: lineString, write }) => {
     fences.fenceLine(write(geometry)),
     ...R.range(1, n)
       .map(pointOptions)
-      .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+      .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
       .map(fences.fenceO)
   ]
 }
