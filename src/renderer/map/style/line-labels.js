@@ -114,7 +114,7 @@ const cross = (textAlign, verticalAlign) => textAlign.map(textAlign => ({ textAl
 // Templates.
 
 const topTitle = title => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [`${title}${t ? ' ' + t : ''}`])
-const topTitleReverse = title => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [t ? `${t} ${title}` : null])
+const topTitleReverse = title => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [t ? `${t} ${title}` : title])
 const topTitleSubtitle = (title, subtitle) => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [`${title}${t ? ' ' + t : ''}`, subtitle])
 const topT = label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [t])
 const bottomTitle = title => label({ textAlign: 0.5, verticalAlign: BOTTOM })(() => [title])
@@ -127,7 +127,7 @@ const startDTG = label({ textAlign: START, verticalAlign: BOTTOM })(({ w, w1 }) 
 const doubleDTG = lift(cloneLines(({ w, w1 }) => [w, w1], cross([START, END], BOTTOM)))
 const lineEndsTitle = title => lift(cloneLines(() => [title], cross([LEFT, RIGHT], MIDDLE)))
 const lineEndsT1 = title => lift(cloneLines(({ t1 }) => [t1 ? `${title} ${t1}` : null], cross([LEFT, RIGHT], MIDDLE)))
-const lineEndsT = title => lift(cloneLines(({ t }) => [t ? `${title} ${t} ` : null], cross([LEFT, RIGHT], MIDDLE)))
+const lineEndsT = title => lift(cloneLines(({ t }) => [t ? `${title} ${t} ` : title], cross([LEFT, RIGHT], MIDDLE)))
 const phaseLine = title => lift(cloneLines(({ t }) => [title, t ? `(PL ${t})` : ''], cross([LEFT, RIGHT], MIDDLE)))
 
 const numberProperty = feature => (key, value) => {
