@@ -672,6 +672,11 @@ geometries['G*M*OAR---'] = ({ styles, resolution, line: lineString }) => {
   return styles.solidLine(geometry, { fillDefault: true })
 }
 
+// OBSTACLES / GENERAL / LINE
+geometries['G*M*OGL---'] = ({ styles, resolution, line: lineString }) => {
+  return styles.solidLine(TS.collect(teeth(1)(lineString, resolution)))
+}
+
 // ANTITANK WALL
 geometries['G*M*OAW---'] = ({ styles, resolution, line: lineString }) => {
   return styles.solidLine(TS.collect(teeth(-1)(lineString, resolution)))
