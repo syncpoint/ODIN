@@ -5,6 +5,8 @@ import * as L from './polygon-labels'
 import { fills } from './polygon-fills'
 import { styleFactory } from './default-style'
 import { geometries } from './polygon-geometries'
+import { symbolStyle } from './symbol-style'
+import Feature from 'ol/Feature'
 
 const when = s => fn => s ? fn(s) : null
 const W = (w, w1) => (w && w1) ? w + '-' + w1 : w || w1
@@ -119,6 +121,12 @@ const labelFn = {
 // TODO: G*MPNB----, G*MPNC----, G*MPNL----, G*MPNR----, G*MPOFD---
 
 
+const embeddedSymbols = {
+  'G*M*NR----': { sidc: 'G-MPNZ----' },
+  'G*M*NB----': { sidc: 'G-MPNEB---' },
+  'G*M*NC----': { sidc: 'G-MPNEC---' }
+}
+
 export const polygonStyle = mode => (feature, resolution) => {
   const sidc = parameterized(feature.getProperties().sidc)
   const geometry = feature.getGeometry()
@@ -141,8 +149,23 @@ export const polygonStyle = mode => (feature, resolution) => {
     return (labelFn[sidc] || []).flatMap(label)
   }
 
+  /* some polygons do have an embedded point symbol */
+  const embedded = () => {
+    const symbol = embeddedSymbols[sidc]
+    if (!symbol || !symbol.sidc) return []
+
+    const embeddedFeature = new Feature({
+      geometry: geometry.getInteriorPoint()
+    })
+    embeddedFeature.set('sidc', symbol.sidc)
+
+    const stylezz = symbolStyle(mode)(embeddedFeature, resolution)
+    stylezz[0].setGeometry(geometry.getInteriorPoint())
+    return stylezz
+  }
+
   const fill = fills[sidc] && fills[sidc]({ styles: factory })
-  const options = { feature, geometry: simplified, resolution, styles: factory }
+  const options = { feature, geometry: simplified, resolution, styles: factory, fill }
 
   const geometryStyle = geometries[sidc]
     ? geometries[sidc](options)
@@ -152,6 +175,7 @@ export const polygonStyle = mode => (feature, resolution) => {
   return [
     ...(mode === 'multi' ? factory.handles(firstPoint()) : []),
     labels(),
+    embedded(),
     ...geometryStyle
   ].flat()
 }

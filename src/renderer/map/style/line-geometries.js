@@ -2,6 +2,7 @@ import * as R from 'ramda'
 import * as style from 'ol/style'
 import * as TS from '../ts'
 import echelons from './echelons'
+import * as fences from './fences'
 
 const linearTarget = ({ styles, line }) => {
   const coords = TS.coordinates(line)
@@ -18,6 +19,68 @@ const linearTarget = ({ styles, line }) => {
     TS.lineString(R.props([2, 3], xs))
   ]))
 }
+
+const teeth = direction => (lineString, resolution) => {
+  const width = resolution * 10
+  const line = TS.lengthIndexedLine(lineString)
+  const count = Math.floor(line.getEndIndex() / (width * 2))
+  const offset = (line.getEndIndex() - 2 * count * width) / 2
+
+  return R
+    .aperture(2, R.range(0, count + 1).map(i => offset + 2 * width * i))
+    .map(([a, b]) => [
+      line.extractPoint(a),
+      line.extractPoint(a + width / 2),
+      line.extractPoint(b - width / 2),
+      line.extractPoint(b)
+    ])
+    .map(([a, b, c, d]) => [a, b, c, d, TS.segment([b, c]).angle()])
+    .map(([a, b, c, d, angle]) => [a, b, c, d, TS.projectCoordinate(b)([angle + direction * Math.PI / 3, width])])
+    .map(([a, b, c, d, x]) => TS.lineString([a, b, x, c, d]))
+}
+
+const corridor = title => (params) => {
+  const { styles, line: lineString, resolution, feature } = params
+  const width = resolution * 10
+  const coords = TS.coordinates(lineString)
+  const options = {
+    joinStyle: TS.BufferParameters.JOIN_ROUND,
+    endCapStyle: TS.BufferParameters.CAP_ROUND
+  }
+
+  const segments = R.aperture(2, coords)
+    .map(points => TS.lineString(points))
+    .map(line => TS.buffer(options)(line)(width))
+
+  const texts = (() => {
+    if (!feature.get('t')) return []
+    else {
+      const text = `${title} ${feature.get('t')}`
+      return R.aperture(2, coords)
+        .map(TS.segment)
+        .map(segment => [segment.midPoint(), segment.angle()])
+        .map(([point, angle]) => styles.text(TS.point(point), {
+          text,
+          flip: true,
+          textAlign: () => 'center',
+          rotation: Math.PI - angle
+        }))
+    }
+  })()
+
+  // NOTE: cut start/end cap
+  // const corridor = TS.collect([
+  //   TS.difference([R.head(segments).getBoundary(), TS.pointBuffer(TS.startPoint(lineString))(width * 1.01)]),
+  //   ...R.take(segments.length - 2, R.drop(1, segments)),
+  //   TS.difference([R.last(segments).getBoundary(), TS.pointBuffer(TS.endPoint(lineString))(width * 1.01)])
+  // ])
+
+  return [
+    styles.solidLine(TS.collect(segments)),
+    ...texts
+  ]
+}
+
 
 export const geometries = {
 
@@ -539,3 +602,390 @@ geometries['G*M*OADU--'] = options => {
     ...teeth.map(polygon => styles.filledPolygon(polygon))
   ]
 }
+
+// ABATIS
+geometries['G*M*OS----'] = ({ styles, resolution, line: lineString }) => {
+  const width = resolution * 10
+  const line = TS.lengthIndexedLine(lineString)
+  const firstSegment = line.extractLine(0, width)
+  const coords = TS.coordinates(firstSegment)
+  const angle = TS.segment(TS.coordinates(firstSegment)).angle()
+  const lastSegment = line.extractLine(width, line.getEndIndex())
+  const a = R.head(coords)
+  const b = TS.projectCoordinate(a)([angle + Math.PI / 3, width])
+  const c = R.last(coords)
+  const geometry = TS.lineString([a, b, c, ...TS.coordinates(lastSegment)])
+  return styles.solidLine(geometry)
+}
+
+// MINE CLUSTER
+geometries['G*M*OMC---'] = ({ styles, resolution, line: lineString }) => {
+  const coords = TS.coordinates(lineString)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const center = segment.midPoint()
+  const radius = segment.getLength() / 2
+
+  const points = R.range(0, 17)
+    .map(i => Math.PI / 16 * i + angle)
+    .map(angle => TS.projectCoordinate(center)([angle, radius]))
+
+  const geometry = TS.collect([lineString, TS.lineString(points)])
+  return styles.dashedLine(geometry, { lineDash: [20, 14] })
+}
+
+// ANTITANK DITCH REINFORCED WITH ANTITANK MINES
+geometries['G*M*OAR---'] = ({ styles, resolution, line: lineString }) => {
+  const width = resolution * 10
+  const line = TS.lengthIndexedLine(lineString)
+  const count = Math.floor(line.getEndIndex() / (width * 2))
+  const offset = (line.getEndIndex() - 2 * count * width) / 2
+
+  const segmentPoints = R
+    .aperture(2, R.range(0, count + 1).map(i => offset + 2 * width * i))
+    .map(([a, b]) => [a, a + width / 2, b - width / 2, b])
+
+  const geometry = TS.collect(segmentPoints
+    .map(([a, b, c, d]) => [
+      line.extractPoint(a),
+      TS.coordinates(line.extractLine(b, c)),
+      line.extractPoint(d)
+    ])
+    .map(([a, coords, d]) => [a, coords, d, TS.segment([a, d]).angle()])
+    .map(([a, coords, d, angle]) => [
+      a,
+      coords,
+      d,
+      TS.projectCoordinate(R.head(coords))([angle - Math.PI / 3, width]),
+      TS.projectCoordinate(d)([angle - Math.PI / 2, width / 2])
+    ])
+    .flatMap(([a, coords, d, x, c]) => {
+      return [
+        TS.polygon([x, R.head(coords), R.last(coords), x]),
+        TS.lineString([a, R.head(coords)]),
+        TS.lineString([R.last(coords), d]),
+        TS.pointBuffer(TS.point(c))(width / 3.5)
+      ]
+    })
+  )
+
+  return styles.solidLine(geometry, { fillDefault: true })
+}
+
+// OBSTACLES / GENERAL / LINE
+geometries['G*M*OGL---'] = ({ styles, resolution, line: lineString }) => {
+  return styles.solidLine(TS.collect(teeth(1)(lineString, resolution)))
+}
+
+// ANTITANK WALL
+geometries['G*M*OAW---'] = ({ styles, resolution, line: lineString }) => {
+  return styles.solidLine(TS.collect(teeth(-1)(lineString, resolution)))
+}
+
+
+// FORTIFIED LINE
+geometries['G*M*SL----'] = ({ styles, resolution, line: lineString }) => {
+  const width = resolution * 10
+  const line = TS.lengthIndexedLine(lineString)
+  const count = Math.floor(line.getEndIndex() / (width * 2))
+  const offset = (line.getEndIndex() - 2 * count * width) / 2
+
+  const teeth = R
+    .aperture(2, R.range(0, count + 1).map(i => offset + 2 * width * i))
+    .map(([a, b]) => [
+      line.extractPoint(a),
+      line.extractPoint(a + width / 2),
+      line.extractPoint(b - width / 2),
+      line.extractPoint(b)
+    ])
+    .map(([a, b, c, d]) => [a, b, c, d, TS.segment([b, c]).angle()])
+    .map(([a, b, c, d, angle]) => [
+      a, b, c, d,
+      TS.projectCoordinate(b)([angle + Math.PI / 2, width]),
+      TS.projectCoordinate(c)([angle + Math.PI / 2, width])
+    ])
+    .map(([a, b, c, d, x, y]) => TS.lineString([a, b, x, y, c, d]))
+
+  return styles.solidLine(TS.collect(teeth))
+}
+
+geometries['G*G*ALC---'] = corridor('AC') // AIR CORRIDOR
+geometries['G*G*ALM---'] = corridor('MRR') // MINIMUM RISK ROUTE (MRR)
+geometries['G*G*ALS---'] = corridor('SAAFR') // STANDARD-USE ARMY AIRCRAFT FLIGHT ROUTE (SAAFR)
+geometries['G*G*ALU---'] = corridor('UA') // UNMANNED AIRCRAFT (UA) ROUTE
+geometries['G*G*ALL---'] = corridor('LLTR') // LOW LEVEL TRANSIT ROUTE (LLTR)
+
+
+// UNSPECIFIED FENCE
+geometries['G*M*OWU---'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 16)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle()]
+  }
+
+  return R.range(1, n)
+    .map(pointOptions)
+    .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
+    .map(fences.fenceX)
+}
+
+// SINGLE FENCE
+geometries['G*M*OWS---'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 32)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle()]
+  }
+
+  return [
+    fences.fenceLine(write(lineString)),
+    ...R.range(1, n)
+      .map(pointOptions)
+      .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
+      .map(fences.fenceX)
+  ]
+}
+
+// DOUBLE FENCE
+geometries['G*M*OWD---'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 50)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle()]
+  }
+
+  return [
+    fences.fenceLine(write(lineString)),
+    ...R.range(1, n)
+      .map(pointOptions)
+      .map(([tsPoint, angle]) => [write(TS.point(tsPoint)), angle])
+      .map(fences.fenceDoubleX)
+  ]
+}
+
+// LOW WIRE FENCE
+geometries['G*M*OWL---'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 16)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle(), [0, -8]]
+  }
+
+  return [
+    fences.fenceLine(write(lineString)),
+    ...R.range(1, n)
+      .map(pointOptions)
+      .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
+      .map(fences.fenceX)
+  ]
+}
+
+// HIGH WIRE FENCE
+geometries['G*M*OWH---'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 16)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const width = resolution * 15
+  const segments = TS.segments(lineString)
+  const startSegment = R.head(segments)
+  const endSegment = R.last(segments)
+
+  const startPoint = TS.projectCoordinate(
+    TS.coordinate(TS.startPoint(lineString))
+  )([startSegment.angle() + Math.PI / 2, width / 2])
+
+  const endPoint = TS.projectCoordinate(
+    TS.coordinate(TS.endPoint(lineString))
+  )([endSegment.angle() + Math.PI / 2, width / 2])
+
+  const buffer = TS.singleSidedLineBuffer(lineString)(width)
+  const geometry = TS.difference([
+    TS.boundary(buffer),
+    TS.pointBuffer(TS.point(startPoint))(width / 2),
+    TS.pointBuffer(TS.point(endPoint))(width / 2)
+  ])
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle(), [0, -8]]
+  }
+
+  return [
+    fences.fenceLine(write(geometry)),
+    ...R.range(1, n)
+      .map(pointOptions)
+      .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
+      .map(fences.fenceX)
+  ]
+}
+
+// DOUBLE APRON FENCE
+geometries['G*M*OWA---'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 16)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle()]
+  }
+
+  return [
+    fences.fenceLine(write(lineString)),
+    ...R.range(1, n)
+      .map(pointOptions)
+      .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
+      .map(fences.fenceX)
+  ]
+}
+
+// SINGLE CONCERTINA
+geometries['G*M*OWCS--'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 16)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle(), [0, -8]]
+  }
+
+  return [
+    fences.fenceLine(write(lineString)),
+    ...R.range(1, n)
+      .map(pointOptions)
+      .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
+      .map(fences.fenceO)
+  ]
+}
+
+// DOUBLE STRAND CONCERTINA
+geometries['G*M*OWCD--'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 16)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const width = resolution * 7
+  const segments = TS.segments(lineString)
+  const startSegment = R.head(segments)
+  const endSegment = R.last(segments)
+
+  const startPoint = TS.projectCoordinate(
+    TS.coordinate(TS.startPoint(lineString))
+  )([startSegment.angle() + Math.PI / 2, width / 2])
+
+  const endPoint = TS.projectCoordinate(
+    TS.coordinate(TS.endPoint(lineString))
+  )([endSegment.angle() + Math.PI / 2, width / 2])
+
+  const buffer = TS.singleSidedLineBuffer(lineString)(width)
+  const geometry = TS.difference([
+    TS.boundary(buffer),
+    TS.pointBuffer(TS.point(startPoint))(width / 2),
+    TS.pointBuffer(TS.point(endPoint))(width / 2)
+  ])
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle(), [0, -8]]
+  }
+
+  return [
+    fences.fenceLine(write(geometry)),
+    ...R.range(1, n)
+      .map(pointOptions)
+      .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
+      .map(fences.fenceO)
+  ]
+}
+
+// TRIPLE STRAND CONCERTINA
+geometries['G*M*OWCT--'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 16)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const width = resolution * 15
+  const segments = TS.segments(lineString)
+  const startSegment = R.head(segments)
+  const endSegment = R.last(segments)
+
+  const startPoint = TS.projectCoordinate(
+    TS.coordinate(TS.startPoint(lineString))
+  )([startSegment.angle() + Math.PI / 2, width / 2])
+
+  const endPoint = TS.projectCoordinate(
+    TS.coordinate(TS.endPoint(lineString))
+  )([endSegment.angle() + Math.PI / 2, width / 2])
+
+  const buffer = TS.singleSidedLineBuffer(lineString)(width)
+  const geometry = TS.difference([
+    TS.boundary(buffer),
+    TS.pointBuffer(TS.point(startPoint))(width / 2),
+    TS.pointBuffer(TS.point(endPoint))(width / 2)
+  ])
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle(), [0, -8]]
+  }
+
+  return [
+    fences.fenceLine(write(geometry)),
+    ...R.range(1, n)
+      .map(pointOptions)
+      .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
+      .map(fences.fenceO)
+  ]
+}
+

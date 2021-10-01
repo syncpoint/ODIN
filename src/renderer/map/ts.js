@@ -38,7 +38,6 @@ export const GeometryFactory = jsts.geom.GeometryFactory
 export const AffineTransformation = jsts.geom.util.AffineTransformation
 export const Coordinate = jsts.geom.Coordinate
 export const LengthIndexedLine = jsts.linearref.LengthIndexedLine
-
 export const geometryFactory = new GeometryFactory()
 
 /**
@@ -68,7 +67,14 @@ parser.__proto__.convertToLinearRing = function (linearRing) {
 }
 
 export const read = olGeometry => parser.read(olGeometry)
-export const write = jstGeometry => parser.write(jstGeometry)
+export const write = jtsGeometry => parser.write(jtsGeometry)
+
+export const use = fn => olGeometry => {
+  const jstGeometry = fn(read(olGeometry))
+  return Array.isArray(jstGeometry)
+    ? jstGeometry.map(write)
+    : write(jstGeometry)
+}
 
 export const buffer = (opts = {}) => geometry => distance => {
   // NOTE: 3-ary form not supported, use either 0, 1, 2 or 4 arguments.
@@ -80,6 +86,8 @@ export const buffer = (opts = {}) => geometry => distance => {
     opts.mitreLimit || BufferParameters.DEFAULT_MITRE_LIMIT
   )
 
+  if (opts.singleSided) params.setSingleSided(true)
+
   return BufferOp.bufferOp(geometry, distance, params)
 }
 
@@ -87,6 +95,12 @@ export const pointBuffer = buffer()
 export const lineBuffer = buffer({
   joinStyle: BufferParameters.JOIN_ROUND,
   endCapStyle: BufferParameters.CAP_FLAT
+})
+
+export const singleSidedLineBuffer = buffer({
+  joinStyle: BufferParameters.JOIN_ROUND,
+  endCapStyle: BufferParameters.CAP_FLAT,
+  singleSided: true
 })
 
 export const polygon = coordinates => geometryFactory.createPolygon(coordinates)

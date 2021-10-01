@@ -102,12 +102,16 @@ const factory = options => write => {
     solidLine: (inGeometry, opts = {}) => {
       const primaryColor = opts.color || options.primaryColor
       const accentColor = opts.accent || options.accentColor
-      const fill = opts.fill
+
+      let fillOption
+      if (opts.fill) fillOption = opts.fill
+      else if (opts.fillDefault) fillOption = fill({ color: primaryColor })
+
       const geometry = write(inGeometry)
       return [
         { width: options.thick, color: accentColor, lineDash: options.dashPattern, lineCap: 'butt' },
         { width: options.thin, color: primaryColor, lineDash: options.dashPattern, lineCap: 'butt' }
-      ].map(options => style({ stroke: stroke(options), geometry, fill }))
+      ].map(options => style({ stroke: stroke(options), geometry, fill: fillOption }))
     },
 
     singleLine: (inGeometry, opts = {}) => {
