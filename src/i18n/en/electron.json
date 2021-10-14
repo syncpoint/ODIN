@@ -23,7 +23,8 @@
     "paste": "Paste",
     "pasteAndMatchStyle": "Paste and match style",
     "delete": "Delete",
-    "selectAll": "Select all"
+    "selectAll": "Select all",
+    "copycoordinate": "Copy coordinates"
   },
   "view": {
     "name": "View",

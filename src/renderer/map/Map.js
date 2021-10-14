@@ -37,6 +37,7 @@ const updateCoordinateDisplay = ({ coordinate }) => {
   const lonLatCooridinate = toLonLat(coordinate)
   const currentCoordinate = coordinateFormat.format({ lng: lonLatCooridinate[0], lat: lonLatCooridinate[1] })
   evented.emit('OSD_MESSAGE', { message: currentCoordinate, slot: 'C2' })
+  evented.emit('MOUSE_COORDINATES_UPDATE', { coordinates: lonLatCooridinate })
 }
 
 

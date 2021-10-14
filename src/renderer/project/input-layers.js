@@ -27,6 +27,10 @@ const internalProperties = ['layerId', 'geometry', 'locked', 'hidden']
  * choke our precious thread. Reducers have to live with it.
  */
 
+/*
+ * Current mouse position
+ */
+let currentMouseCoordinates = null
 
 // --
 // SECTION: In-memory state: layer file names and features.
@@ -632,7 +636,28 @@ clipboard.registerHandler(URI.SCHEME_FEATURE, {
     return content
   },
 
-  delete: () => removeFeatures(deletableSelection())
+  delete: () => removeFeatures(deletableSelection()),
+
+  copyCoordinates: () => {
+    const featureCoords = selection.selected(URI.isFeatureId)
+      .map(featureId => featureList[featureId])
+      .map(feature => geoJSON.writeFeature(feature))
+      .map(feature => {
+        const f = JSON.parse(feature)
+
+        if (['Point', 'LineString', 'Polygon'].includes(f.geometry.type)) {
+          return f.geometry.coordinates
+        }
+
+        return ''
+      })
+
+    if (featureCoords.length) {
+      return (featureCoords.length === 1) ? featureCoords[0] : featureCoords
+    }
+    return currentMouseCoordinates
+  }
+
 })
 
 
@@ -681,7 +706,12 @@ clipboard.registerHandler(URI.SCHEME_LAYER, {
     if (layerList[layerId].active) return
 
     removeLayer(layerId)
+  },
+
+  copyCoordinates: () => {
+    return ''
   }
+
 })
 
 /**
@@ -701,6 +731,15 @@ const specialSelection = () =>
  * Unconditionally deselect 'special selection' on map click.
  */
 evented.on('MAP_CLICKED', () => selection.deselect(specialSelection()))
+
+/*
+*   Mouse update message, save coordnates into variable
+*/
+evented.on('MOUSE_COORDINATES_UPDATE', event => {
+  currentMouseCoordinates = event.coordinates
+})
+
+
 
 export default {
   register,
