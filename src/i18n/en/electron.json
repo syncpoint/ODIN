@@ -24,7 +24,7 @@
     "pasteAndMatchStyle": "Paste and match style",
     "delete": "Delete",
     "selectAll": "Select all",
-    "copycoordinate": "Copy coordinates"
+    "copyCoordinate": "Copy coordinates"
   },
   "view": {
     "name": "View",

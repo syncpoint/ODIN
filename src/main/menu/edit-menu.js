@@ -46,8 +46,7 @@ const menu = i18n => {
       }
       ,
       {
-        role: 'copy coordinate',
-        label: i18n.t('edit.copycoordinate'),
+        label: i18n.t('edit.copyCoordinate'),
         accelerator: 'CmdOrCtrl+D',
         click: onclick(browserWindow => {
           browserWindow.webContents.send('IPC_EDIT_COPY_COORDINATE')

@@ -1,5 +1,5 @@
 import Mousetrap from 'mousetrap'
-import { ipcRenderer, remote } from 'electron'
+import { ipcRenderer, remote, clipboard } from 'electron'
 import evented from './evented'
 import { K, noop } from '../shared/combinators'
 import selection from './selection'
@@ -84,7 +84,7 @@ const copyCoordinate = async () => {
       if (content && content.length) acc[scheme] = content
     }), {})
 
-  ipcRenderer.send('IPC_CLIPBOARD_WRITE', { global: content[URI.SCHEME_FEATURE] })
+  clipboard.writeText(JSON.stringify(content[URI.SCHEME_FEATURE]))
 }
 
 // Block certain ops when text input field is focused.

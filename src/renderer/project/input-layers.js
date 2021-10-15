@@ -1,7 +1,7 @@
 import { GeoJSON } from 'ol/format'
 import * as ol from 'ol'
 
-import { K, I, uniq } from '../../shared/combinators'
+import { K, uniq } from '../../shared/combinators'
 import undo from '../undo'
 import Feature from './Feature'
 import URI from './URI'
@@ -42,6 +42,13 @@ const layerList = {}
  */
 const layerName = layerId =>
   layerList[layerId].name
+
+/**
+ * layerIdFromName :: string -> string
+ */
+const layerIdFromName = layerName =>
+  Object.values(layerList).find(layer => layer && layer.name === layerName)
+
 
 /**
  * activeLayer :: () => (string ~> string)
@@ -98,7 +105,7 @@ const disambiguateLayerName = basename => {
     const specialMatch = exactMatch.match(/^(.*) \(\d+\)$/)
     const match = specialMatch ? specialMatch[1] : exactMatch
 
-    const candidates = Object.values(layerList)
+    /* const candidates = Object.values(layerList)
       .map(layer => layer.name)
       .map(name => name.match(new RegExp(`${match} \\((\\d+)\\)`, 'i')))
       .filter(I)
@@ -110,6 +117,9 @@ const disambiguateLayerName = basename => {
       : 0
 
     return `${match} (${maxN + 1})`
+    */
+    return `${match}`
+
   }
 }
 
@@ -531,8 +541,15 @@ const duplicateLayer = layerId => {
  * @param {[ol/Feature]} features A collection of OL features
  */
 const importLayer = (sourceName, features) => {
-  const layerId = createLayer()
   const layerName = disambiguateLayerName(sourceName)
+
+  const oldLayerId = layerIdFromName(layerName)
+  if (oldLayerId) {
+    removeLayer(oldLayerId)
+  }
+
+  const layerId = createLayer()
+  console.log('layerName: ', layerName)
   renameLayer(layerId, layerName)
   activateLayer(layerId)
   addFeatures(features)

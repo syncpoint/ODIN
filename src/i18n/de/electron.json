@@ -24,7 +24,7 @@
     "pasteAndMatchStyle": "Einfügen und Stil anpassen",
     "delete": "Löschen",
     "selectAll": "Alles auswählen",
-    "copycoordinate": "Koordinaten kopieren"
+    "copyCoordinate": "Koordinaten kopieren"
   },
   "view": {
     "name": "Anzeige",
