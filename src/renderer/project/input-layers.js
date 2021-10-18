@@ -1,7 +1,7 @@
 import { GeoJSON } from 'ol/format'
 import * as ol from 'ol'
 
-import { K, I, uniq } from '../../shared/combinators'
+import { K, uniq } from '../../shared/combinators'
 import undo from '../undo'
 import Feature from './Feature'
 import URI from './URI'
@@ -27,6 +27,10 @@ const internalProperties = ['layerId', 'geometry', 'locked', 'hidden']
  * choke our precious thread. Reducers have to live with it.
  */
 
+/*
+ * Current mouse position
+ */
+let currentMouseCoordinates = null
 
 // --
 // SECTION: In-memory state: layer file names and features.
@@ -38,6 +42,13 @@ const layerList = {}
  */
 const layerName = layerId =>
   layerList[layerId].name
+
+/**
+ * layerIdFromName :: string -> string
+ */
+const layerIdFromName = layerName =>
+  Object.values(layerList).find(layer => layer && layer.name === layerName)
+
 
 /**
  * activeLayer :: () => (string ~> string)
@@ -94,7 +105,7 @@ const disambiguateLayerName = basename => {
     const specialMatch = exactMatch.match(/^(.*) \(\d+\)$/)
     const match = specialMatch ? specialMatch[1] : exactMatch
 
-    const candidates = Object.values(layerList)
+    /* const candidates = Object.values(layerList)
       .map(layer => layer.name)
       .map(name => name.match(new RegExp(`${match} \\((\\d+)\\)`, 'i')))
       .filter(I)
@@ -106,6 +117,9 @@ const disambiguateLayerName = basename => {
       : 0
 
     return `${match} (${maxN + 1})`
+    */
+    return `${match}`
+
   }
 }
 
@@ -527,8 +541,15 @@ const duplicateLayer = layerId => {
  * @param {[ol/Feature]} features A collection of OL features
  */
 const importLayer = (sourceName, features) => {
-  const layerId = createLayer()
   const layerName = disambiguateLayerName(sourceName)
+
+  const oldLayerId = layerIdFromName(layerName)
+  if (oldLayerId) {
+    removeLayer(oldLayerId)
+  }
+
+  const layerId = createLayer()
+  console.log('layerName: ', layerName)
   renameLayer(layerId, layerName)
   activateLayer(layerId)
   addFeatures(features)
@@ -632,7 +653,28 @@ clipboard.registerHandler(URI.SCHEME_FEATURE, {
     return content
   },
 
-  delete: () => removeFeatures(deletableSelection())
+  delete: () => removeFeatures(deletableSelection()),
+
+  copyCoordinates: () => {
+    const featureCoords = selection.selected(URI.isFeatureId)
+      .map(featureId => featureList[featureId])
+      .map(feature => geoJSON.writeFeature(feature))
+      .map(feature => {
+        const f = JSON.parse(feature)
+
+        if (['Point', 'LineString', 'Polygon'].includes(f.geometry.type)) {
+          return f.geometry.coordinates
+        }
+
+        return ''
+      })
+
+    if (featureCoords.length) {
+      return (featureCoords.length === 1) ? featureCoords[0] : featureCoords
+    }
+    return currentMouseCoordinates
+  }
+
 })
 
 
@@ -681,7 +723,12 @@ clipboard.registerHandler(URI.SCHEME_LAYER, {
     if (layerList[layerId].active) return
 
     removeLayer(layerId)
+  },
+
+  copyCoordinates: () => {
+    return ''
   }
+
 })
 
 /**
@@ -701,6 +748,15 @@ const specialSelection = () =>
  * Unconditionally deselect 'special selection' on map click.
  */
 evented.on('MAP_CLICKED', () => selection.deselect(specialSelection()))
+
+/*
+*   Mouse update message, save coordnates into variable
+*/
+evented.on('MOUSE_COORDINATES_UPDATE', event => {
+  currentMouseCoordinates = event.coordinates
+})
+
+
 
 export default {
   register,

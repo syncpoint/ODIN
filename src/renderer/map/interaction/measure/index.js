@@ -122,7 +122,8 @@ export default map => {
     delete: () => {
       selectedFeatures.getArray().forEach(feature => source.removeFeature(feature))
       selectedFeatures.clear()
-    }
+    },
+    copyCoordinates: () => {}
   })
 
   const addDrawInteraction = geometryType => {
