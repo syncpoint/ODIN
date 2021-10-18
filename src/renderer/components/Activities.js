@@ -17,6 +17,9 @@ import LayerList from './layerlist/LayerList'
 import FeaturePalette from './palette/FeaturePalette'
 import SliderSetting from './settings/SliderSetting'
 import SwitchSetting from './settings/SwitchSetting'
+
+import MGRSInput from './MGRSInput'
+
 import undo from '../undo'
 import evented from '../evented'
 import preferences from '../project/preferences'
@@ -64,6 +67,7 @@ const initialActivities = (classes, t) => [
     panel: () => <Paper className={classes.toolsPanel} elevation={6}>
       <Button variant='outlined' fullWidth={true} style={{ marginBottom: '0.5em' }} onClick={() => evented.emit('MAP_MEASURE_LENGTH')}>{t('measure.length')}</Button>
       <Button variant='outlined' fullWidth={true} style={{ marginBottom: '0.5em' }} onClick={() => evented.emit('MAP_MEASURE_AREA')}>{t('measure.area')}</Button>
+      <MGRSInput />
     </Paper>
   },
   {
