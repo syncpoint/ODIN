@@ -55,15 +55,15 @@ const labelFn = {
   'G*F*ACDI--': templates['G*F*ACBI--']('DA'),
   'G*F*ACEI--': templates['G*F*ACBI--']('SENSOR ZONE'),
   'G*F*ACFI--': templates['G*F*ACFI--']('FFA'),
-  'G*F*ACNI--': templates['G*F*ACFI--']('NFA'), // TODO: fill pattern
+  'G*F*ACNI--': templates['G*F*ACFI--']('NFA'),
   'G*F*ACPR--': [L.nsew(() => ['PAA'])],
   'G*F*ACRI--': templates['G*F*ACFI--']('RFA'),
   'G*F*ACSI--': templates['G*F*ACSI--']('FSA'),
   'G*F*ACT---': templates['G*F*ACT---']('TGMF'),
   'G*F*ACVI--': templates['G*F*ACBI--']('TVAR'),
   'G*F*ACZI--': templates['G*F*ACBI--']('ZOR'),
-  'G*F*AKBI--': templates['G*F*ACFI--']('BKB'), // TODO: fill pattern
-  'G*F*AKPI--': templates['G*F*ACFI--']('PKB'), // TODO: fill pattern
+  'G*F*AKBI--': templates['G*F*ACFI--']('BKB'),
+  'G*F*AKPI--': templates['G*F*ACFI--']('PKB'),
   'G*F*AT----': templates['G*F*AT----'],
   'G*F*ATB---': templates['G*F*ACT---']('BOMB'),
   'G*F*ATG---': templates['G*F*ATG---'],
@@ -78,7 +78,7 @@ const labelFn = {
   'G*G*AAMH--': templates['G*F*ACAI--']('HIMEZ'),
   'G*G*AAML--': templates['G*F*ACAI--']('LOMEZ'),
   'G*G*AAR---': templates['G*F*ACAI--']('ROZ'),
-  'G*G*AAW---': templates['G*F*AAW---']('WFZ'), // TODO: fill pattern
+  'G*G*AAW---': templates['G*F*AAW---']('WFZ'),
   'G*G*DAB---': templates['G*G*DAB---'](), // TODO: echelon (south)
   'G*G*DABP--': templates['G*G*DAB---']('(P)'), // TODO: echelon (south)
   'G*G*DAE---': templates['G*G*DAE---']('EA'),
@@ -90,7 +90,7 @@ const labelFn = {
   'G*G*GAL---': templates['G*G*GAA---']('LZ'),
   'G*G*GAP---': templates['G*G*GAA---']('PZ'),
   'G*G*GAX---': templates['G*G*GAA---']('EZ'),
-  'G*G*GAY---': templates['G*G*GAY---'], // TODO: fill pattern
+  'G*G*GAY---': templates['G*G*GAY---'],
   'G*G*GAZ---': [ewENY],
   'G*G*OAA---': templates['G*G*OAA---'](['ASLT', 'PSN']),
   'G*G*OAK---': templates['G*G*DAE---']('ATK'),

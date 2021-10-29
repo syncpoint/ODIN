@@ -101,6 +101,8 @@ const hatchFill = ({ styles }) => styles.fill((options) => {
 export const fills = {
   'G*G*GAY---': hatchFill,
   'G*M*OGR---': hatchFill,
+  'G*G*AAW---': hatchFill,
+  'G*F*ACNI--': hatchFill,
   'G*M*NB----': hatchFill,
   'G*M*NC----': hatchFill,
   'G*M*NR----': hatchFill,
