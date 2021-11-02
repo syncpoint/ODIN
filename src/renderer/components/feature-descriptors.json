@@ -4002,6 +4002,20 @@
     ]
   },
   {
+    "sidc": "G*G*GL----*****",
+    "class": "L",
+    "scope": "CONTROL",
+    "geometry": "LineString",
+    "dimension": "C2",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "COMMAND AND CONTROL AND GENERAL MANEUVER",
+      "GENERAL",
+      "LINES",
+      "GENERAL LINE"
+    ]
+  },
+  {
     "sidc": "G*G*GLB---*****",
     "class": "BL",
     "scope": "CONTROL",

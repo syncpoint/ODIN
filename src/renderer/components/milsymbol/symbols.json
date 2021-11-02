@@ -3465,6 +3465,9 @@
       "EXT_LINE_INTERRUPTED",
       "EXT_MFP_TEXT"
     ],
+    "G-G-GL----": [
+      "EXT_LINE"
+    ],
     "G-G-GLP---": [
       "EXT_LINE",
       "EXT_PHASE_LINE_TEXT"

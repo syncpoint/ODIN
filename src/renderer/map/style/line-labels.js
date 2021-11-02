@@ -169,6 +169,7 @@ export const labels = {
       ]
     }
   ],
+  'G*G*GL----': [lineEndsT('')],
   'G*G*GLL---': [phaseLine('LL')],
   'G*G*GLP---': [lineEndsT('PL')],
   'G*G*OLC---': [phaseLine('LD/LC')],
