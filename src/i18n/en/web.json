@@ -1,16 +1,16 @@
 {
   "projectManagement": {
-    "name": "Project name",
-    "untitled": "new project",
+    "name": "Project Name",
+    "untitled": "New Project",
     "new": "New",
     "import": "Import",
     "switch": "Switch To",
     "export": "Export",
     "save": "Save",
     "delete": "Delete",
-    "lastAccess": "last access: {{date}}",
+    "lastAccess": "Last Access: {{date}}",
     "dangerZone": "Danger Zone",
-    "deleteThisProject": "Delete this project",
+    "deleteThisProject": "Delete this Project",
     "deleteThisProjectDescription": "Once a project is deleted, there is no going back!"
   },
   "basemapManagement": {
@@ -22,15 +22,15 @@
     "previousStep": "Previous",
     "new": "New",
     "stepUrl": "Provide URL",
-    "stepOptions": "Choose options",
-    "stepPreview": "Verify using preview",
-    "stepFinalize": "Choose name and save",
-    "descriptorUrl": "URL of the map",
-    "descriptorName": "Name of the map",
+    "stepOptions": "Choose Options",
+    "stepPreview": "Verify Using Preview",
+    "stepFinalize": "Choose Name and Save",
+    "descriptorUrl": "URL of the Map",
+    "descriptorName": "Name of the Map",
     "attributions": "Attributions",
-    "xyzZoomOptions": "Minimum and maximum zoom level",
+    "xyzZoomOptions": "Minimum and Maximum Zoom Level",
     "unknownSource": "Type of the map could no be detected by inspecting the URL",
-    "usePreview": "Use the map preview to verify the basemap",
+    "usePreview": "Use the Map Preview to Verify the Basemap",
     "deleteWarning": "Use with caution! You cannot undo this action!",
     "wmts": {
       "error": "Error",
@@ -49,8 +49,8 @@
       "cut": "Cut",
       "copy": "Copy",
       "paste": "Paste",
-      "exportPNG": "Export current view as PNG",
-      "print": "Print with scale"
+      "exportPNG": "Export Current View as PNG",
+      "print": "Print with Scale"
     }
   },
   "layers": {
@@ -69,23 +69,23 @@
       "status": "Status: Present, Anticipated/Planned"
     },
     "search": {
-      "placeholder": "Search for unit, radar, missile, ..."
+      "placeholder": "Search for Unit, Radar, Missile, ..."
     },
     "featureList": {
       "noResults": "No results. Please change the search or filter criteria."
     }
   },
   "measure": {
-    "length": "measure distance/bearing",
-    "area": "measure area"
+    "length": "Measure Distance/Bearing",
+    "area": "Measure Area"
   },
   "propertyPanel": {
     "tabs": {
       "properties": "Properties",
-      "references": "References to documents or links"
+      "references": "References to Documents or Links"
     },
     "references": {
-      "dropObjectTarget": "Drag & drop documents or links here"
+      "dropObjectTarget": "Drag & Drop Documents or Links here"
     }
   },
   "text": {
@@ -97,19 +97,19 @@
   },
   "preferences": {
     "name": "Preferences",
-    "lineWidth": "line width",
-    "symbolSize": "symbol size",
+    "lineWidth": "Line Width",
+    "symbolSize": "Symbol Size",
     "scheme": {
-      "name": "color scheme",
-      "light": "light",
-      "medium": "medium",
-      "dark": "dark"
+      "name": "Color Scheme",
+      "light": "Light",
+      "medium": "Medium",
+      "dark": "Dark"
     },
-    "simpleStatusModifier": "use simple status modifier",
-    "symbolSizeByEchelon": "scale symbols with echelon",
-    "symbolTextSize": "font size for symbols",
-    "labelTextSize": "font size for labels",
-    "useBoldLabelText": "label text is bold"
+    "simpleStatusModifier": "Use Simple Status Modifier",
+    "symbolSizeByEchelon": "Scale Symbols with Echelon",
+    "symbolTextSize": "Font Size for Symbols",
+    "labelTextSize": "Font Size for Labels",
+    "useBoldLabelText": "Label Text is Bold"
   },
   "print": {
     "orientation": {
@@ -118,7 +118,7 @@
       "portrait": "Portrait"
     },
     "paperSize": {
-      "label": "Paper size"
+      "label": "Paper Size"
     },
     "quality": {
       "label": "Quality",
@@ -130,9 +130,9 @@
       "label": "Scale"
     },
     "output": {
-      "label": "Output format",
-      "pdf": "PDF with annotations",
-      "jpeg": "JPEG image"
+      "label": "Output Format",
+      "pdf": "PDF with Annotations",
+      "jpeg": "JPEG Image"
     },
     "execute": "Create {{targetOutputFormat}}"
   }
