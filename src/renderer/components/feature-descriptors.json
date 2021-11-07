@@ -3526,14 +3526,14 @@
     "sidc": "G*G*ALC---*****",
     "class": "L",
     "scope": "CONTROL",
-    "geometry": "LineString",
+    "geometry": "GeometryCollection",
     "dimension": "C2",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "COMMAND AND CONTROL AND GENERAL MANEUVER",
       "AVIATION",
       "LINES",
-      "AIR CORRIDOR"
+      "AIR CORRIDOR (AC)"
     ],
     "parameters": {
       "layout": "corridor"
@@ -3543,7 +3543,7 @@
     "sidc": "G*G*ALL---*****",
     "class": "L",
     "scope": "CONTROL",
-    "geometry": "LineString",
+    "geometry": "GeometryCollection",
     "dimension": "C2",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -3560,7 +3560,7 @@
     "sidc": "G*G*ALM---*****",
     "class": "L",
     "scope": "CONTROL",
-    "geometry": "LineString",
+    "geometry": "GeometryCollection",
     "dimension": "C2",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -3577,7 +3577,7 @@
     "sidc": "G*G*ALS---*****",
     "class": "L",
     "scope": "CONTROL",
-    "geometry": "LineString",
+    "geometry": "GeometryCollection",
     "dimension": "C2",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -3594,7 +3594,7 @@
     "sidc": "G*G*ALU---*****",
     "class": "L",
     "scope": "CONTROL",
-    "geometry": "LineString",
+    "geometry": "GeometryCollection",
     "dimension": "C2",
     "hierarchy": [
       "TACTICAL GRAPHICS",
