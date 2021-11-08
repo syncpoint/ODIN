@@ -2476,14 +2476,19 @@
     "sidc": "G*F*ACAC--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "AIRSPACE COORDINATION AREA (ACA), CIRCULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   },
   {
     "sidc": "G*F*ACAI--*****",
@@ -2515,14 +2520,19 @@
     "sidc": "G*F*ACBC--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "TARGET BUILD-UP AREA (TBA) CIRCULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   },
   {
     "sidc": "G*F*ACBI--*****",
@@ -2554,14 +2564,19 @@
     "sidc": "G*F*ACDC--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "DEAD SPACE AREA (DA) CIRCULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   },
   {
     "sidc": "G*F*ACDI--*****",
@@ -2593,14 +2608,19 @@
     "sidc": "G*F*ACEC--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "SENSOR ZONE CIRCULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   },
   {
     "sidc": "G*F*ACEI--*****",
@@ -2632,14 +2652,19 @@
     "sidc": "G*F*ACFC--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "FREE FIRE AREA (FFA), CIRCULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   },
   {
     "sidc": "G*F*ACFI--*****",
@@ -2671,7 +2696,7 @@
     "sidc": "G*F*ACNC--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -2679,7 +2704,12 @@
       "COMMAND & CONTROL AREAS",
       "NO-FIRE AREA (NFA)",
       "NO FIRE AREA (NFA), CIRCULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   },
   {
     "sidc": "G*F*ACNI--*****",
@@ -2713,14 +2743,19 @@
     "sidc": "G*F*ACPC--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "POSITION AREA FOR ARTILLERY (PAA), CIRCULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   },
   {
     "sidc": "G*F*ACPR--*****",
@@ -2739,14 +2774,19 @@
     "sidc": "G*F*ACRC--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "RESTRICTIVE FIRE AREA (RFA), CIRCULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   },
   {
     "sidc": "G*F*ACRI--*****",
@@ -2778,14 +2818,19 @@
     "sidc": "G*F*ACSC--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "FIRE SUPPORT AREA (FSA), CIRCULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   },
   {
     "sidc": "G*F*ACSI--*****",
@@ -2830,14 +2875,19 @@
     "sidc": "G*F*ACVC--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "TARGET VALUE AREA (TVAR) CIRCULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   },
   {
     "sidc": "G*F*ACVI--*****",
@@ -2869,14 +2919,19 @@
     "sidc": "G*F*ACZC--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "ZONE OF RESPONSIBILITY (ZOR) CIRCULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   },
   {
     "sidc": "G*F*ACZI--*****",
@@ -2908,14 +2963,19 @@
     "sidc": "G*F*AKBC--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "AREAS",
       "BLUE KILL BOX CIRCULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   },
   {
     "sidc": "G*F*AKBI--*****",
@@ -2947,14 +3007,19 @@
     "sidc": "G*F*AKPC--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "AREAS",
       "PURPLE KILL BOX CIRCULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   },
   {
     "sidc": "G*F*AKPI--*****",
@@ -3013,7 +3078,7 @@
     "sidc": "G*F*ATC---*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "MultiPoint",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -3021,7 +3086,12 @@
       "AREAS",
       "AREA TARGET",
       "CIRCULAR TARGET"
-    ]
+    ],
+    "parameters": {
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   },
   {
     "sidc": "G*F*ATG---*****",

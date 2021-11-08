@@ -107,8 +107,6 @@ geometries['G*M*OGR---'] = ({ styles, resolution, geometry, fill }) => {
     })
 
   points.push(points[0])
-  // const fillPattern = { pattern: 'hatch', angle: 45, size: 2, spacing: 12 }
-  // console.dir(styles)
   return styles.solidLine(TS.write(TS.polygon(points)), { fill })
 }
 
