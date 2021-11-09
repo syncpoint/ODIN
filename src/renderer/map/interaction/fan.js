@@ -1,22 +1,25 @@
 import * as R from 'ramda'
-import Feature from 'ol/Feature'
+import * as geom from 'ol/geom'
 import * as TS from '../ts'
-import { format } from '../format'
-import disposable from '../../../shared/disposable'
-import { setCoordinates } from './helper'
+import * as EPSG from '../epsg'
 
-export default feature => {
-  const disposables = disposable.of({})
-  const geometry = feature.getGeometry()
-  const reference = geometry.getFirstCoordinate()
-  const { read, write } = format(reference)
+export default (feature, descriptor) => {
+  const [center, ...points] = feature.getGeometry().getCoordinates()
 
-  const [center, ...points] = (() => {
-    return geometry.getPoints().map(point => new Feature({ geometry: point }))
-  })()
+  const geometries = {
+    CENTER: new geom.Point(center),
+    POINTS: new geom.MultiPoint(points)
+  }
 
-  const params = geometry => {
-    const [center, ...points] = TS.geometries(read(geometry))
+  const code = EPSG.codeUTM(feature)
+  const toUTM = geometry => EPSG.toUTM(code, geometry)
+  const fromUTM = geometry => EPSG.fromUTM(code, geometry)
+  const read = R.compose(TS.read, toUTM)
+  const write = R.compose(fromUTM, TS.write)
+
+  const params = () => {
+    const center = read(geometries.CENTER)
+    const points = TS.geometries(read(geometries.POINTS))
     const vectors = points
       .map(point => TS.segment(TS.coordinates([center, point])))
       .map(segment => ({ angle: segment.angle(), length: segment.getLength() }))
@@ -30,66 +33,44 @@ export default feature => {
       .map(TS.point)
 
     const copy = properties => create({ ...params, ...properties })
-    const geometry = TS.multiPoint([center, ...points])
+    geometries.CENTER.setCoordinates(write(center).getCoordinates())
+    geometries.POINTS.setCoordinates(points.map(point => write(point).getCoordinates()))
+    const geometry = new geom.MultiPoint([
+      geometries.CENTER.getCoordinates(),
+      ...geometries.POINTS.getCoordinates()
+    ])
+
     return { center, points, copy, geometry }
-  })(params(geometry))
+  })(params())
 
-  let changing = false
-  ;(() => {
-    const centerChanged = ({ target: geometry }) => {
-      if (changing) return
-      frame = frame.copy({ center: read(geometry) })
-      setCoordinates(feature, write(frame.geometry))
-    }
+  const updateCoordinates = (role, coordinates) => {
+    geometries[role].setCoordinates(coordinates)
 
-    const pointChanged = R.range(0, points.length).map(index => ({ target: geometry }) => {
-      if (changing) return
-      const points = frame.points
-      points[index] = read(geometry)
+    if (role === 'CENTER') {
+      const center = read(geometries[role])
+      frame = frame.copy({ center })
+      feature.setGeometry(frame.geometry)
+    } else if (role === 'POINTS') {
+      const points = TS.geometries(read(geometries[role]))
       const vectors = points
         .map(point => TS.segment(TS.coordinates([frame.center, point])))
         .map(segment => ({ angle: segment.angle(), length: segment.getLength() }))
 
       frame = frame.copy({ vectors })
-      setCoordinates(feature, write(frame.geometry))
-    })
+      feature.setGeometry(frame.geometry)
 
-    const centerGeometry = center.getGeometry()
-    centerGeometry.on('change', centerChanged)
-
-    points
-      .map(feature => feature.getGeometry())
-      .forEach((geometry, index) => geometry.on('change', pointChanged[index]))
-
-    disposables.addDisposable(() => {
-      centerGeometry.un('change', centerChanged)
-      points
-        .map(feature => feature.getGeometry())
-        .forEach((geometry, index) => geometry.un('change', pointChanged[index]))
-    })
-  })()
-
-  const updateFeatures = () => {
-    frame.points.forEach((point, index) => {
-      setCoordinates(points[index], write(point))
-    })
-  }
-
-  const updateGeometry = geometry => {
-    frame = frame.copy(params(geometry))
-
-    changing = true
-    const [head, ...tail] = geometry.getPoints()
-    setCoordinates(center, head)
-    tail.forEach((geometry, index) => setCoordinates(points[index], geometry))
-    changing = false
+      vectors.forEach((vector, index) => {
+        const postfix = index || ''
+        feature.set(`am${postfix}`, `${Math.floor(vector.length)}`)
+      })
+    }
   }
 
   return {
-    feature,
-    updateFeatures,
-    updateGeometry,
-    dispose: () => disposables.dispose(),
-    controlFeatures: [center, ...points]
+    capture: (_, vertex) => vertex,
+    updateCoordinates,
+    suppressVertexFeature: () => true,
+    roles: () => Object.keys(geometries),
+    geometry: role => geometries[role]
   }
 }

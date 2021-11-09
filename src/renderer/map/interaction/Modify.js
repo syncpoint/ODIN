@@ -1,385 +1,996 @@
-// We whant OL code to be as little changed as possible; disable some syntax checks.
-/* eslint-disable semi */
-/* eslint-disable space-before-function-paren */
-/* eslint-disable camelcase */
-/* eslint-disable comma-dangle */
-
-import Feature from 'ol/Feature'
-import { Point } from 'ol/geom'
-import * as olInteraction from 'ol/interaction'
-import GeometryType from 'ol/geom/GeometryType'
-import { always } from 'ol/events/condition'
-import {
-  closestOnSegment,
-  distance as coordinateDistance,
-  equals as coordinatesEqual,
-  squaredDistance as squaredCoordinateDistance,
-  squaredDistanceToSegment
-} from 'ol/coordinate'
-import { fromUserExtent, toUserExtent, fromUserCoordinate, toUserCoordinate } from 'ol/proj'
-import { createOrUpdateFromCoordinate as createExtent, buffer as bufferExtent } from 'ol/extent'
-import { getUid } from 'ol/util'
+import PointerInteraction from 'ol/interaction/Pointer'
+import MapBrowserEventType from 'ol/MapBrowserEventType'
+import Collection from 'ol/Collection'
+import CollectionEventType from 'ol/CollectionEventType'
+import VectorEventType from 'ol/source/VectorEventType'
 import Event from 'ol/events/Event'
-import { framer } from './index'
+import EventType from 'ol/events/EventType'
+import VectorLayer from 'ol/layer/Vector'
+import VectorSource from 'ol/source/Vector'
+import { createEditingStyle } from 'ol/style/Style'
+import GeometryType from 'ol/geom/GeometryType'
+import RBush from 'ol/structs/RBush'
+import { equals as arrayEquals } from 'ol/array'
+import { getUid } from 'ol/util'
+import Feature from 'ol/Feature'
+import Point from 'ol/geom/Point'
+import * as Condition from 'ol/events/condition'
+import * as Extent from 'ol/extent'
+import * as Coordinate from 'ol/coordinate'
+import * as Proj from 'ol/proj'
+import { special } from './special-sauce'
 
-// >>> OL/ORIGINAL
-// The following code is copied from ol/Modify interaction.
-// DEBT: This should be considered tech-debt; issue reference
-//
+const tempExtent = [0, 0, 0, 0]
+const tempSegment = []
 
-/**
- * The segment index assigned to a circle's circumference when
- * breaking up a circle into ModifySegmentDataType segments.
- * @type {number}
- */
-const CIRCLE_CIRCUMFERENCE_INDEX = 1;
-
-const tempExtent = [0, 0, 0, 0];
-const tempSegment = [];
-
-/**
- * Returns the distance from a point to a line segment.
- *
- * @param {import("../coordinate.js").Coordinate} pointCoordinates The coordinates of the point from
- *        which to calculate the distance.
- * @param {SegmentData} segmentData The object describing the line
- *        segment we are calculating the distance to.
- * @param {import("../proj/Projection.js").default} projection The view projection.
- * @return {number} The square of the distance between a point and a line segment.
- */
-function projectedDistanceToSegmentDataSquared(pointCoordinates, segmentData, projection) {
-  const geometry = segmentData.geometry;
-
-  if (geometry.getType() === GeometryType.CIRCLE) {
-    const circleGeometry = /** @type {import("../geom/Circle.js").default} */ (geometry);
-
-    if (segmentData.index === CIRCLE_CIRCUMFERENCE_INDEX) {
-      const distanceToCenterSquared =
-            squaredCoordinateDistance(circleGeometry.getCenter(), pointCoordinates);
-      const distanceToCircumference =
-            Math.sqrt(distanceToCenterSquared) - circleGeometry.getRadius();
-      return distanceToCircumference * distanceToCircumference;
-    }
-  }
-
-  const coordinate = fromUserCoordinate(pointCoordinates, projection);
-  tempSegment[0] = fromUserCoordinate(segmentData.segment[0], projection);
-  tempSegment[1] = fromUserCoordinate(segmentData.segment[1], projection);
-  return squaredDistanceToSegment(coordinate, tempSegment);
+const ModifyEventType = {
+  MODIFYSTART: 'modifystart',
+  MODIFYEND: 'modifyend'
 }
 
-/**
- * Returns the point closest to a given line segment.
- *
- * @param {import("../coordinate.js").Coordinate} pointCoordinates The point to which a closest point
- *        should be found.
- * @param {SegmentData} segmentData The object describing the line
- *        segment which should contain the closest point.
- * @param {import("../proj/Projection.js").default} projection The view projection.
- * @return {import("../coordinate.js").Coordinate} The point closest to the specified line segment.
- */
-function closestOnSegmentData(pointCoordinates, segmentData, projection) {
-  const geometry = segmentData.geometry;
-
-  if (geometry.getType() === GeometryType.CIRCLE && segmentData.index === CIRCLE_CIRCUMFERENCE_INDEX) {
-    return geometry.getClosestPoint(pointCoordinates);
-  }
-  const coordinate = fromUserCoordinate(pointCoordinates, projection);
-  tempSegment[0] = fromUserCoordinate(segmentData.segment[0], projection);
-  tempSegment[1] = fromUserCoordinate(segmentData.segment[1], projection);
-  return toUserCoordinate(closestOnSegment(coordinate, tempSegment), projection);
-}
-
-class ModifyEvent extends Event {
-  constructor(type, features, mapBrowserEvent) {
+export class ModifyEvent extends Event {
+  constructor (type, features, MapBrowserEvent) {
     super(type)
     this.features = features
-    this.mapBrowserEvent = mapBrowserEvent
+    this.mapBrowserEvent = MapBrowserEvent
   }
 }
 
-// <<< OL/ORIGINAL
+const defaultDeleteCondition = function (mapBrowserEvent) {
+  return Condition.altKeyOnly(mapBrowserEvent) && Condition.singleClick(mapBrowserEvent)
+}
+
+function getDefaultStyleFunction () {
+  const style = createEditingStyle()
+  return function () {
+    return style[GeometryType.POINT]
+  }
+}
+
+function projectedDistanceToSegmentDataSquared (
+  pointCoordinates,
+  segmentData,
+  projection
+) {
+  const coordinate = Proj.fromUserCoordinate(pointCoordinates, projection)
+  tempSegment[0] = Proj.fromUserCoordinate(segmentData.segment[0], projection)
+  tempSegment[1] = Proj.fromUserCoordinate(segmentData.segment[1], projection)
+  return Coordinate.squaredDistanceToSegment(coordinate, tempSegment)
+}
+
+function closestOnSegmentData (pointCoordinates, segmentData, projection) {
+  const coordinate = Proj.fromUserCoordinate(pointCoordinates, projection)
+  tempSegment[0] = Proj.fromUserCoordinate(segmentData.segment[0], projection)
+  tempSegment[1] = Proj.fromUserCoordinate(segmentData.segment[1], projection)
+  return Proj.toUserCoordinate(
+    Coordinate.closestOnSegment(coordinate, tempSegment),
+    projection
+  )
+}
+
+
+function compareIndexes (a, b) {
+  return a.index - b.index
+}
+
 
 /**
- * Custom modify interaction, capable of handling
- * 'special geometries'. We define a special geometry as
- * a geometry, where changing one part requires updating
- * another dependent part of the geometry.
+ * Custom Modify interaction. This is different from stock Modify:
+ * - Circle geometry is not supported
+ * - options.features is not supported (use options.source)
+ * - options.hitDetection is not supported
+ * - only one feature can be modified at a time
  */
-export class Modify extends olInteraction.Modify {
+export class Modify extends PointerInteraction {
 
   constructor (options) {
     super(options)
 
-    // Callback is evaluated in handlePointerAtPixel_().
-    this.showVertexCondition_ = options.showVertexCondition
-      ? options.showVertexCondition
-      : always
+    /* eslint-disable no-unused-expressions */
+    this.on
+    this.once
+    this.un
+    /* eslint-enable no-unused-expressions */
 
-    this.boundFeatureGeometryChanged_ = this.featureGeometryChanged_.bind(this)
+    this.boundHandleFeatureChange_ = this.handleFeatureChange_.bind(this)
+    this.condition_ = options.condition ? options.condition : Condition.primaryAction
+    this.deleteCondition_ = options.deleteCondition ? options.deleteCondition : defaultDeleteCondition
+    this.insertVertexCondition_ = options.insertVertexCondition ? options.insertVertexCondition : Condition.always
+    this.vertexFeature_ = null
+    this.vertexSegments_ = null
+    this.lastPixel_ = [0, 0]
+    this.ignoreNextSingleClick_ = false
+    this.featuresBeingModified_ = null
+    this.index_ = new RBush() // TODO: use geometry-instance specific rbush
+    this.pixelTolerance_ = options.pixelTolerance !== undefined ? options.pixelTolerance : 10
+    this.snappedToVertex_ = false
+    this.changingFeature_ = false
+    this.dragSegments_ = []
+    this.lastPointerEvent_ = null
+    this.delta_ = [0, 0]
+
+    this.overlay_ = new VectorLayer({
+      source: new VectorSource({
+        useSpatialIndex: false,
+        wrapX: !!options.wrapX
+      }),
+      style: options.style ? options.style : getDefaultStyleFunction(),
+      updateWhileAnimating: true,
+      updateWhileInteracting: true
+    })
+
+    this.snapToPointer_ = options.snapToPointer === undefined
+      ? false
+      : options.snapToPointer
+
+
+    const source = options.source
+    this.features_ = source.getFeatures().length === 1
+      ? new Collection(source.getFeatures())
+      : new Collection()
+
+    this.features_.forEach(this.addFeature_.bind(this))
+    this.features_.addEventListener(CollectionEventType.ADD, this.handleFeatureAdd_.bind(this))
+    this.features_.addEventListener(CollectionEventType.REMOVE, this.handleFeatureRemove_.bind(this))
+
+    // FIXME: possible source event listener leaks (move to setMap())
+    source.addEventListener(VectorEventType.REMOVEFEATURE, this.handleSourceRemove_.bind(this))
+    source.addEventListener(VectorEventType.ADDFEATURE, event => {
+      if (source.getFeatures().length === 1) this.handleSourceAdd_(event)
+      else this.features_.clear()
+    })
   }
 
-  featureGeometryChanged_ ({ target: geometry }) {
-    if (this.changingFeature_) return
-    if (!this.framer_) return
-    this.framer_.updateGeometry(geometry)
-  }
+  handleSourceAdd_ ({ feature }) { this.features_.push(feature) }
+  handleSourceRemove_ ({ feature }) { this.features_.remove(feature) }
+  handleFeatureAdd_ ({ element }) { this.addFeature_(element) }
+  handleFeatureRemove_ ({ element }) { this.removeFeature_(element) }
 
-  /**
-   * @param {Feature} feature Feature.
-   * @private
-   * @override
-   */
-  addFeature_ (feature) {
-    const addFeature = feature => super.addFeature_(feature)
-
-    // TODO: file OL issue
-    // Prevent vertex feature from adding to modify interaciton (through select):
-    if (feature.get('privileged')) return
-
-    // `factory` is defined for special geometry only.
-    // If undefined, default behavior kicks in (aka add simple feature).
-    const factory = framer(feature)
-    if (!factory) return addFeature(feature)
-
-    // Add control features instead of originating feature:
-    this.framer_ = factory(feature)
-    this.framer_.controlFeatures.forEach(addFeature)
-
-    // To support external geometry updates (e.g. translate interaction).
-    feature.getGeometry().on('change', this.boundFeatureGeometryChanged_)
-  }
-
-  /**
-   * @param {Feature} feature Feature.
-   * @private
-   * @override
-   */
-  removeFeature_ (feature) {
-    const removeFeature = feature => super.removeFeature_(feature)
-
-    if (!this.framer_) return removeFeature(feature)
-    if (this.framer_.feature !== feature) return removeFeature(feature)
-
-    // Remove control features instead originating feature:
-    feature.getGeometry().un('change', this.boundFeatureGeometryChanged_)
-    this.framer_.controlFeatures.forEach(removeFeature)
-    this.framer_.dispose()
-    delete this.framer_
-  }
-
-  /**
-   *
-   */
-  willModifyFeatures_ (evt, segments) {
-    if (this.featuresBeingModified_) return
-
-    // Restore old behavior (prior to v6.5.0):
-    // Ignore drag segments and simply use feature collection
-    // for modifystart and (implicitly) modifyend events.
-
-    this.featuresBeingModified_ = this.features_
-    const event = new ModifyEvent(
-      'modifystart',
-      this.featuresBeingModified_,
-      evt
-    )
-
-    this.dispatchEvent(event)
-  }
-
-  /**
-   * Little hack ahead:
-   * We need a hook to sync control features with
-   * feature geometry after a modification.
-   * In order to do so, we use 'modifyend' (a interaction level event)
-   * to update control features of all framers.
-   *
-   * DEBT: This should probably be considered tech-debt; issue reference
-   *
-   * @override
-   */
-  dispatchEvent (event) {
-    super.dispatchEvent(event)
-
-    if (event.type !== 'modifyend') return
-    if (!this.framer_) return
-    this.framer_.updateFeatures()
-  }
-
-  originatingFeature_ (feature) {
-    return this.framer_
-      ? this.framer_.feature
-      : feature
-  }
-
-  /**
-   * @param {import("../coordinate.js").Coordinate} coordinates Coordinates.
-   * @return {Feature} Vertex feature.
-   * @private
-   * @override
-   */
-  createOrUpdateVertexFeature_(coordinates) {
-    let vertexFeature = this.vertexFeature_;
-    if (!vertexFeature) {
-      // Tag vertex feature as privileged to prevent re-adding.
-      // See also addFeature_().
-      vertexFeature = new Feature({
-        geometry: new Point(coordinates),
-        privileged: true
-      });
-      this.vertexFeature_ = vertexFeature;
-      this.overlay_.getSource().addFeature(vertexFeature);
-    } else {
-      const geometry = vertexFeature.getGeometry();
-      geometry.setCoordinates(coordinates);
+  handleFeatureChange_ ({ target }) {
+    // Note: This is triggered also when a feature is moved between sources,
+    // because its style is updated in the process.
+    if (!this.changingFeature_) {
+      this.removeFeature_(target)
+      this.addFeature_(target)
     }
-    return vertexFeature;
   }
 
+
+  addFeature_ (feature) {
+
+    // Ignore point geometries. They are handled by translate interaction.
+    if (!feature.getGeometry()) return
+    if (feature.getGeometry().getType() === 'Point') return
+
+    this.special_ = special(feature, this.overlay_)
+    this.special_.roles().forEach(role => {
+      const geometry = this.special_.geometry(role)
+      const writer = indexWriters[geometry.getType()]
+      if (writer) writer(this.index_, feature, geometry, role)
+    })
+
+    const map = this.getMap()
+    if (map && map.isRendered() && this.getActive()) {
+      this.handlePointerAtPixel_(this.lastPixel_, map)
+    }
+
+    feature.addEventListener(EventType.CHANGE, this.boundHandleFeatureChange_)
+  }
+
+
+  removeFeature_ (feature) {
+    this.removeFeatureSegmentData_(feature)
+
+    // Remove the vertex feature if the collection of canditate features is empty.
+    if (this.vertexFeature_) {
+      this.overlay_.getSource().removeFeature(this.vertexFeature_)
+      this.vertexFeature_ = null
+
+      // Clear overlay after when feature was removed.
+      if (this.features_.getLength()) this.overlay_.getSource().clear()
+    }
+
+    feature.removeEventListener(
+      EventType.CHANGE,
+      this.boundHandleFeatureChange_
+    )
+  }
+
+
+  removeFeatureSegmentData_ (feature) {
+    const nodes = []
+
+    this.index_.forEach(function (node) {
+      if (feature === node.feature) {
+        nodes.push(node)
+      }
+    })
+
+    for (let i = nodes.length - 1; i >= 0; --i) {
+      for (let j = this.dragSegments_.length - 1; j >= 0; --j) {
+        if (this.dragSegments_[j][0] === nodes[i]) {
+          this.dragSegments_.splice(j, 1)
+        }
+      }
+
+      this.index_.remove(nodes[i])
+    }
+  }
+
+
+  setActive (active) {
+    if (this.vertexFeature_ && !active) {
+      this.overlay_.getSource().removeFeature(this.vertexFeature_)
+      this.vertexFeature_ = null
+    }
+
+    super.setActive(active)
+  }
+
+
+  setMap (map) {
+    this.overlay_.setMap(map)
+    super.setMap(map)
+  }
+
+
   /**
-   * Override original to suppress vertex if necessary.
-   * See also showVertexCondition_().
-   *
-   * @param {import("../pixel.js").Pixel} pixel Pixel
-   * @param {import("../PluggableMap.js").default} map Map.
-   * @param {import("../coordinate.js").Coordinate=} opt_coordinate The pixel Coordinate.
-   * @private
+   * Function handling "down" events.
+   * If the function returns true then a drag sequence is started.
    */
-  handlePointerAtPixel_(pixel, map, opt_coordinate) {
+  handleDownEvent (event) {
+    if (!this.condition_(event)) return false
 
-    // >>> OL/ORIGINAL
+    const pixelCoordinate = event.coordinate
+    this.handlePointerAtPixel_(event.pixel, event.map, pixelCoordinate)
+    this.dragSegments_.length = 0
+    this.featuresBeingModified_ = null
+    const vertexFeature = this.vertexFeature_
 
-    const pixelCoordinate = opt_coordinate || map.getCoordinateFromPixel(pixel);
-    const projection = map.getView().getProjection();
+    if (vertexFeature) {
+      const insertVertices = []
+      const vertex = vertexFeature.getGeometry().getCoordinates()
+      const vertexExtent = Extent.boundingExtent([vertex])
+      const segmentDataMatches = this.index_.getInExtent(vertexExtent)
+      const componentSegments = {}
+      segmentDataMatches.sort(compareIndexes)
+
+      for (let i = 0, ii = segmentDataMatches.length; i < ii; ++i) {
+        const segmentDataMatch = segmentDataMatches[i]
+        const segment = segmentDataMatch.segment
+        let uid = getUid(segmentDataMatch.geometry)
+        const depth = segmentDataMatch.depth
+
+        if (depth) {
+          // separate feature components
+          uid += '-' + depth.join('-')
+        }
+
+        if (!componentSegments[uid]) {
+          componentSegments[uid] = new Array(2)
+        }
+
+        if (
+          Coordinate.equals(segment[0], vertex) &&
+          !componentSegments[uid][0]
+        ) {
+          this.dragSegments_.push([segmentDataMatch, 0])
+          componentSegments[uid][0] = segmentDataMatch
+          continue
+        }
+
+        if (
+          Coordinate.equals(segment[1], vertex) &&
+          !componentSegments[uid][1]
+        ) {
+          // prevent dragging closed linestrings by the connecting node
+          if (
+            (segmentDataMatch.geometry.getType() === GeometryType.LINE_STRING ||
+              segmentDataMatch.geometry.getType() ===
+                GeometryType.MULTI_LINE_STRING) &&
+            componentSegments[uid][0] &&
+            componentSegments[uid][0].index === 0
+          ) {
+            continue
+          }
+
+          this.dragSegments_.push([segmentDataMatch, 1])
+          componentSegments[uid][1] = segmentDataMatch
+          continue
+        }
+
+        if (
+          getUid(segment) in this.vertexSegments_ &&
+          !componentSegments[uid][0] &&
+          !componentSegments[uid][1] &&
+          this.insertVertexCondition_(event)
+        ) {
+          insertVertices.push(segmentDataMatch)
+        }
+      }
+
+      if (insertVertices.length) {
+        this.willModifyFeatures_(event, [insertVertices])
+      }
+
+      for (let j = insertVertices.length - 1; j >= 0; --j) {
+        this.insertVertex_(insertVertices[j], vertex, event)
+      }
+    }
+
+    return !!this.vertexFeature_
+  }
+
+
+  /**
+   * Function handling "up" events.
+   * If the function returns false then the current drag sequence is stopped.
+   */
+  handleUpEvent (event) {
+    for (let i = this.dragSegments_.length - 1; i >= 0; --i) {
+      const segmentData = this.dragSegments_[i][0]
+      const boundingExtent = Extent.boundingExtent(segmentData.segment)
+      this.index_.update(boundingExtent, segmentData)
+    }
+
+    if (this.featuresBeingModified_) {
+      this.dispatchEvent(new ModifyEvent(
+        ModifyEventType.MODIFYEND,
+        this.featuresBeingModified_,
+        event
+      ))
+      this.featuresBeingModified_ = null
+    }
+
+    return false
+  }
+
+
+  /**
+   * Function handling "drag" events.
+   * This function is called on "move" events during a drag sequence.
+   */
+  handleDragEvent (event) {
+    this.ignoreNextSingleClick_ = false
+    this.willModifyFeatures_(event, this.dragSegments_)
+
+    const role = this.dragSegments_[0][0].role
+    const coord = [
+      event.coordinate[0] + this.delta_[0],
+      event.coordinate[1] + this.delta_[1]
+    ]
+
+    const segments = this.dragSegments_.map(segment => segment[0])
+    const vertex = this.special_.capture(role, coord, segments, event)
+
+    for (let i = 0, ii = this.dragSegments_.length; i < ii; ++i) {
+      const dragSegment = this.dragSegments_[i]
+      const segmentData = dragSegment[0]
+      const role = segmentData.role
+      const feature = segmentData.feature
+      const geometry = segmentData.geometry
+      const segment = segmentData.segment
+      const index = dragSegment[1]
+
+      while (vertex.length < geometry.getStride()) {
+        vertex.push(segment[index][vertex.length])
+      }
+
+      if (segmentUpdaters[geometry.getType()]) {
+        const coordinates = segmentUpdaters[geometry.getType()](vertex, dragSegment)
+        this.setGeometryCoordinates_(role, feature, coordinates, event)
+      }
+    }
+
+    this.createOrUpdateVertexFeature_(vertex)
+  }
+
+
+  /**
+   * Method called by the map to notify the interaction that a
+   * browser event was dispatched to the map.
+   * The function may return false to prevent the propagation
+   * of the event to other interactions in the map's interactions
+   * chain.
+   */
+  handleEvent (event) {
+    if (!event.originalEvent) return true
+    this.lastPointerEvent_ = event
+
+    const isInteracting = event.map.getView().getInteracting()
+    const isPointerMove = event.type === MapBrowserEventType.POINTERMOVE
+    const isSingleClick = event.type === MapBrowserEventType.SINGLECLICK
+    const isDeleteCondition = this.deleteCondition_(event)
+    const ignoreNextSingleClick = this.ignoreNextSingleClick_
+    const isHandlingUpDownSequence = this.handlingDownUpSequence // super
+    const handlePointerMove = !isInteracting && isPointerMove && !isHandlingUpDownSequence
+
+    if (handlePointerMove) this.handlePointerMove_(event)
+
+    let handled
+    if (this.vertexFeature_ && isDeleteCondition) {
+      if (!isSingleClick || !ignoreNextSingleClick) handled = this.removePoint()
+      else handled = true
+    }
+
+    if (isSingleClick) this.ignoreNextSingleClick_ = false
+
+    return super.handleEvent(event) && !handled
+  }
+
+
+  willModifyFeatures_ (event, segments) {
+    if (!this.featuresBeingModified_) {
+      this.featuresBeingModified_ = new Collection()
+      const features = this.featuresBeingModified_.getArray()
+
+      for (let i = 0, ii = segments.length; i < ii; ++i) {
+        const segment = segments[i]
+        for (let s = 0, ss = segment.length; s < ss; ++s) {
+          const feature = segment[s].feature
+          if (feature && features.indexOf(feature) === -1) {
+            this.featuresBeingModified_.push(feature)
+          }
+        }
+      }
+
+      if (this.featuresBeingModified_.getLength() === 0) {
+        this.featuresBeingModified_ = null
+      } else {
+        this.dispatchEvent(new ModifyEvent(
+          ModifyEventType.MODIFYSTART,
+          this.featuresBeingModified_,
+          event
+        ))
+      }
+    }
+  }
+
+
+  insertVertex_ (segmentData, vertex, event) {
+    const role = segmentData.role
+    const segment = segmentData.segment
+    const feature = segmentData.feature
+    const geometry = segmentData.geometry
+    const depth = segmentData.depth
+    const index = segmentData.index
+    let coordinates
+
+    while (vertex.length < geometry.getStride()) {
+      vertex.push(0)
+    }
+
+    switch (geometry.getType()) {
+      case GeometryType.MULTI_LINE_STRING:
+        coordinates = geometry.getCoordinates()
+        coordinates[depth[0]].splice(index + 1, 0, vertex)
+        break
+      case GeometryType.POLYGON:
+        coordinates = geometry.getCoordinates()
+        coordinates[depth[0]].splice(index + 1, 0, vertex)
+        break
+      case GeometryType.MULTI_POLYGON:
+        coordinates = geometry.getCoordinates()
+        coordinates[depth[1]][depth[0]].splice(index + 1, 0, vertex)
+        break
+      case GeometryType.LINE_STRING:
+        coordinates = geometry.getCoordinates()
+        coordinates.splice(index + 1, 0, vertex)
+        break
+      default:
+        return
+    }
+
+    this.setGeometryCoordinates_(role, feature, coordinates, event)
+    this.index_.remove(segmentData)
+    this.updateSegmentIndices_(geometry, index, depth, 1)
+
+    const segmentDataA = {
+      role,
+      segment: [segment[0], vertex],
+      feature: feature,
+      geometry: geometry,
+      depth: depth,
+      index: index
+    }
+
+    this.index_.insert(Extent.boundingExtent(segmentDataA.segment), segmentDataA)
+    this.dragSegments_.push([segmentDataA, 1])
+
+    const segmentDataB = {
+      role,
+      segment: [vertex, segment[1]],
+      feature: feature,
+      geometry: geometry,
+      depth: depth,
+      index: index + 1
+    }
+
+    this.index_.insert(Extent.boundingExtent(segmentDataB.segment), segmentDataB)
+    this.dragSegments_.push([segmentDataB, 0])
+    this.ignoreNextSingleClick_ = true
+  }
+
+
+  removeVertex_ (event) {
+
+    // TODO: ugly - clean up!
+
+    const dragSegments = this.dragSegments_
+    const segmentsByFeature = {}
+    let deleted = false
+    let component, coordinates, dragSegment, geometry, i, index, left
+    let newIndex, right, segmentData, uid
+    for (i = dragSegments.length - 1; i >= 0; --i) {
+      dragSegment = dragSegments[i]
+      segmentData = dragSegment[0]
+      uid = getUid(segmentData.feature)
+      if (segmentData.depth) {
+        // separate feature components
+        uid += '-' + segmentData.depth.join('-')
+      }
+
+      if (!(uid in segmentsByFeature)) {
+        segmentsByFeature[uid] = {}
+      }
+
+      if (dragSegment[1] === 0) {
+        segmentsByFeature[uid].right = segmentData
+        segmentsByFeature[uid].index = segmentData.index
+      } else if (dragSegment[1] === 1) {
+        segmentsByFeature[uid].left = segmentData
+        segmentsByFeature[uid].index = segmentData.index + 1
+      }
+    }
+
+    for (uid in segmentsByFeature) {
+      right = segmentsByFeature[uid].right
+      left = segmentsByFeature[uid].left
+      index = segmentsByFeature[uid].index
+      newIndex = index - 1
+
+      if (left !== undefined) {
+        segmentData = left
+      } else {
+        segmentData = right
+      }
+
+      if (newIndex < 0) {
+        newIndex = 0
+      }
+
+      geometry = segmentData.geometry
+      coordinates = geometry.getCoordinates()
+      component = coordinates
+      deleted = false
+
+      switch (geometry.getType()) {
+        case GeometryType.MULTI_LINE_STRING:
+          if (coordinates[segmentData.depth[0]].length > 2) {
+            coordinates[segmentData.depth[0]].splice(index, 1)
+            deleted = true
+          }
+          break
+        case GeometryType.LINE_STRING:
+          if (coordinates.length > 2) {
+            coordinates.splice(index, 1)
+            deleted = true
+          }
+          break
+        case GeometryType.MULTI_POLYGON:
+          component = component[segmentData.depth[1]]
+        /* falls through */
+        case GeometryType.POLYGON:
+          component = component[segmentData.depth[0]]
+          if (component.length > 4) {
+            if (index === component.length - 1) {
+              index = 0
+            }
+            component.splice(index, 1)
+            deleted = true
+            if (index === 0) {
+              // close the ring again
+              component.pop()
+              component.push(component[0])
+              newIndex = component.length - 1
+            }
+          }
+          break
+        default:
+        // pass
+      }
+
+      if (deleted) {
+
+        this.setGeometryCoordinates_(segmentData.role, segmentData.feature, coordinates, event)
+        const segments = []
+
+        if (left !== undefined) {
+          this.index_.remove(left)
+          segments.push(left.segment[0])
+        }
+
+        if (right !== undefined) {
+          this.index_.remove(right)
+          segments.push(right.segment[1])
+        }
+
+        if (left !== undefined && right !== undefined) {
+          const segmentDataA = {
+            role: segmentData.role,
+            depth: segmentData.depth,
+            feature: segmentData.feature,
+            geometry: segmentData.geometry,
+            index: newIndex,
+            segment: segments
+          }
+
+          this.index_.insert(
+            Extent.boundingExtent(segmentDataA.segment),
+            segmentDataA
+          )
+        }
+
+        this.updateSegmentIndices_(geometry, index, segmentData.depth, -1)
+        if (this.vertexFeature_) {
+          this.overlay_.getSource().removeFeature(this.vertexFeature_)
+          this.vertexFeature_ = null
+        }
+
+        dragSegments.length = 0
+      }
+    }
+
+    return deleted
+  }
+
+
+  setGeometryCoordinates_ (role, feature, coordinates, event) {
+    this.changingFeature_ = true
+
+    const segments = this.dragSegments_.map(segment => segment[0])
+    const roles = this.special_.updateCoordinates(role, coordinates, segments, event) || []
+
+    // Re-index geometries for given roles:
+    roles.forEach(role => {
+      const nodes = []
+      this.index_.forEach(function (node) {
+        if (role === node.role) {
+          nodes.push(node)
+        }
+      })
+
+      nodes.forEach(node => this.index_.remove(node))
+      const geometry = this.special_.geometry(role)
+      const writer = indexWriters[geometry.getType()]
+      if (writer) writer(this.index_, feature, geometry, role)
+    })
+
+    this.changingFeature_ = false
+  }
+
+
+  updateSegmentIndices_ (geometry, index, depth, delta) {
+    this.index_.forEachInExtent(
+      geometry.getExtent(),
+      function (segmentDataMatch) {
+        if (
+          segmentDataMatch.geometry === geometry &&
+          (depth === undefined ||
+            segmentDataMatch.depth === undefined ||
+            arrayEquals(segmentDataMatch.depth, depth)) &&
+          segmentDataMatch.index > index
+        ) {
+          segmentDataMatch.index += delta
+        }
+      }
+    )
+  }
+
+
+  removePoint () {
+    if (
+      this.lastPointerEvent_ &&
+      this.lastPointerEvent_.type !== MapBrowserEventType.POINTERDRAG
+    ) {
+      const event = this.lastPointerEvent_
+      this.willModifyFeatures_(event, this.dragSegments_)
+      const removed = this.removeVertex_(event)
+      this.dispatchEvent(
+        new ModifyEvent(
+          ModifyEventType.MODIFYEND,
+          this.featuresBeingModified_,
+          event
+        )
+      )
+
+      this.featuresBeingModified_ = null
+      return removed
+    }
+
+    return false
+  }
+
+
+  handlePointerMove_ (event) {
+    this.lastPixel_ = event.pixel
+    this.handlePointerAtPixel_(event.pixel, event.map, event.coordinate)
+  }
+
+
+  handlePointerAtPixel_ (pixel, map, coordinate) {
+    const pixelCoordinate = coordinate || map.getCoordinateFromPixel(pixel)
+    const projection = map.getView().getProjection()
     const sortByDistance = function (a, b) {
       return (
         projectedDistanceToSegmentDataSquared(pixelCoordinate, a, projection) -
         projectedDistanceToSegmentDataSquared(pixelCoordinate, b, projection)
-      );
-    };
+      )
+    }
 
-    const viewExtent = fromUserExtent(
-      createExtent(pixelCoordinate, tempExtent),
-      projection
-    );
-    const buffer = map.getView().getResolution() * this.pixelTolerance_;
-    const box = toUserExtent(
-      bufferExtent(viewExtent, buffer, tempExtent),
-      projection
-    );
+    const userExtent = Extent.createOrUpdateFromCoordinate(pixelCoordinate, tempExtent)
+    const viewExtent = Proj.fromUserExtent(userExtent, projection)
+    const bufferValue = map.getView().getResolution() * this.pixelTolerance_
+    const buffer = Extent.buffer(viewExtent, bufferValue, tempExtent)
+    const box = Proj.toUserExtent(buffer, projection)
+    const nodes = this.index_.getInExtent(box)
 
-    const rBush = this.rBush_;
-    const nodes = rBush.getInExtent(box);
-    if (nodes.length > 0) {
-      nodes.sort(sortByDistance);
-      const node = nodes[0];
-      const closestSegment = node.segment;
-      let vertex = closestOnSegmentData(pixelCoordinate, node, projection);
-      const vertexPixel = map.getPixelFromCoordinate(vertex);
-      let dist = coordinateDistance(pixel, vertexPixel);
-      if (dist <= this.pixelTolerance_) {
-        /** @type {Object<string, boolean>} */
-        const vertexSegments = {};
-        vertexSegments[getUid(closestSegment)] = true;
+    if (!nodes.length) {
+      if (!this.vertexFeature_) return
+      this.overlay_.getSource().removeFeature(this.vertexFeature_)
+      this.vertexFeature_ = null
+      return
+    }
 
-        if (
-          node.geometry.getType() === GeometryType.CIRCLE &&
-          node.index === CIRCLE_CIRCUMFERENCE_INDEX
-        ) {
-          this.snappedToVertex_ = true;
-          this.createOrUpdateVertexFeature_(vertex);
-        } else {
-          const pixel1 = map.getPixelFromCoordinate(closestSegment[0]);
-          const pixel2 = map.getPixelFromCoordinate(closestSegment[1]);
-          const squaredDist1 = squaredCoordinateDistance(vertexPixel, pixel1);
-          const squaredDist2 = squaredCoordinateDistance(vertexPixel, pixel2);
-          dist = Math.sqrt(Math.min(squaredDist1, squaredDist2));
-          this.snappedToVertex_ = dist <= this.pixelTolerance_;
+    const node = nodes.sort(sortByDistance)[0]
+    const closestSegment = node.segment
+    let vertex = closestOnSegmentData(pixelCoordinate, node, projection)
+    const vertexPixel = map.getPixelFromCoordinate(vertex)
+    let dist = Coordinate.distance(pixel, vertexPixel)
 
-          if (this.snappedToVertex_) {
-            vertex =
-              squaredDist1 > squaredDist2
-                ? closestSegment[1]
-                : closestSegment[0];
-          }
+    if (dist > this.pixelTolerance_) return /* nothing to do */
 
-          // <<< OL/ORIGINAL
+    const vertexSegments = {}
+    vertexSegments[getUid(closestSegment)] = true
 
-          // Hide or show/update vertext feature:
+    if (!this.snapToPointer_) {
+      this.delta_[0] = vertex[0] - pixelCoordinate[0]
+      this.delta_[1] = vertex[1] - pixelCoordinate[1]
+    }
 
-          const showVertexFeature = this.showVertexCondition_({
-            vertex,
-            controlFeature: node.feature,
-            feature: this.originatingFeature_(node.feature),
-            snappedToVertex: this.snappedToVertex_,
-          })
+    const pixel1 = map.getPixelFromCoordinate(closestSegment[0])
+    const pixel2 = map.getPixelFromCoordinate(closestSegment[1])
+    const squaredDist1 = Coordinate.squaredDistance(vertexPixel, pixel1)
+    const squaredDist2 = Coordinate.squaredDistance(vertexPixel, pixel2)
+    dist = Math.sqrt(Math.min(squaredDist1, squaredDist2))
+    this.snappedToVertex_ = dist <= this.pixelTolerance_
 
-          if (showVertexFeature) {
-            this.createOrUpdateVertexFeature_(vertex);
-          } else if (this.vertexFeature_) {
-            this.overlay_.getSource().removeFeature(this.vertexFeature_);
-            this.vertexFeature_ = null;
-          }
+    if (this.snappedToVertex_) {
+      vertex = squaredDist1 > squaredDist2 ? closestSegment[1] : closestSegment[0]
 
-          // >>> OL/ORIGINAL
+      // Always show when snapped.
+      this.createOrUpdateVertexFeature_(vertex)
+    } else {
+      // Show only when not suppressed explicitly.
+      if ((
+        this.special_.suppressVertexFeature &&
+        this.special_.suppressVertexFeature(node.role)
+      )) {
+        if (this.vertexFeature_) this.overlay_.getSource().hasFeature(this.vertexFeature_)
+      } else this.createOrUpdateVertexFeature_(vertex)
+    }
 
-          const geometries = {};
-          geometries[getUid(node.geometry)] = true;
-          for (let i = 1, ii = nodes.length; i < ii; ++i) {
-            const segment = nodes[i].segment;
-            if (
-              ((coordinatesEqual(closestSegment[0], segment[0]) &&
-                coordinatesEqual(closestSegment[1], segment[1])) ||
-                (coordinatesEqual(closestSegment[0], segment[1]) &&
-                  coordinatesEqual(closestSegment[1], segment[0]))) &&
-              !(getUid(nodes[i].geometry) in geometries)
-            ) {
-              geometries[getUid(nodes[i].geometry)] = true;
-              vertexSegments[getUid(segment)] = true;
-            } else {
-              break;
-            }
-          }
+    const geometries = {}
+    geometries[getUid(node.geometry)] = true
+    for (let i = 1, ii = nodes.length; i < ii; ++i) {
+      const segment = nodes[i].segment
+      if (
+        (Coordinate.equals(closestSegment[0], segment[0]) &&
+          Coordinate.equals(closestSegment[1], segment[1])) ||
+        (Coordinate.equals(closestSegment[0], segment[1]) &&
+          Coordinate.equals(closestSegment[1], segment[0]))
+      ) {
+        const geometryUid = getUid(nodes[i].geometry)
+        if (!(geometryUid in geometries)) {
+          geometries[geometryUid] = true
+          vertexSegments[getUid(segment)] = true
         }
-
-        this.vertexSegments_ = vertexSegments;
-        return;
+      } else {
+        break
       }
     }
 
-    if (this.vertexFeature_) {
-      this.overlay_.getSource().removeFeature(this.vertexFeature_);
-      this.vertexFeature_ = null;
-    }
-
-    // <<< OL/ORIGINAL
+    this.vertexSegments_ = vertexSegments
   }
 
-  /**
-   * Handle pointer drag events.
-   * @param {import("../MapBrowserEvent.js").default} evt Event.
-   * @override
-   */
-  handleDragEvent(evt) {
-
-    // NOTE: Drag segment array has an unusual format.
-    // this.dragSegments_ :: [[segment, index]]
-
-    const segments = [...this.dragSegments_]
-      .map(([segment, _]) => segment)
-      .sort((a, b) => a.index - b.index)
-
-    // No framer, no contraints to enforce.
-    if (!this.framer_) return super.handleDragEvent(evt)
-
-    const coordinate =
-      this.framer_.enforceConstraints &&
-      this.framer_.enforceConstraints(segments, evt.coordinate)
-    if (!coordinate) return super.handleDragEvent(evt)
-    else {
-      evt.coordinate = coordinate
-      return super.handleDragEvent(evt)
+  createOrUpdateVertexFeature_ (coordinates) {
+    let vertexFeature = this.vertexFeature_
+    if (!vertexFeature) {
+      vertexFeature = new Feature(new Point(coordinates))
+      this.vertexFeature_ = vertexFeature
+      this.overlay_.getSource().addFeature(vertexFeature)
+    } else {
+      const geometry = vertexFeature.getGeometry()
+      geometry.setCoordinates(coordinates)
     }
+  }
+}
+
+const indexWriters = {}
+
+indexWriters.Point = (index, feature, geometry, role) => {
+  const coordinates = geometry.getCoordinates()
+
+  const segmentData = {
+    role,
+    feature: feature,
+    geometry: geometry,
+    segment: [coordinates, coordinates]
+  }
+
+  index.insert(geometry.getExtent(), segmentData)
+}
+
+indexWriters.MultiPoint = (index, feature, geometry, role) => {
+  const points = geometry.getCoordinates()
+  for (let i = 0, ii = points.length; i < ii; ++i) {
+    const coordinates = points[i]
+
+    const segmentData = {
+      role,
+      feature: feature,
+      geometry: geometry,
+      depth: [i],
+      index: i,
+      segment: [coordinates, coordinates]
+    }
+
+    index.insert(geometry.getExtent(), segmentData)
+  }
+}
+
+indexWriters.LineString = (index, feature, geometry, role) => {
+  const coordinates = geometry.getCoordinates()
+  for (let i = 0, ii = coordinates.length - 1; i < ii; ++i) {
+    const segment = coordinates.slice(i, i + 2)
+
+    const segmentData = {
+      role,
+      feature: feature,
+      geometry: geometry,
+      index: i,
+      segment: segment
+    }
+
+    index.insert(Extent.boundingExtent(segment), segmentData)
+  }
+}
+
+indexWriters.MultiLineString = (index, feature, geometry, role) => {
+  const lines = geometry.getCoordinates()
+  for (let j = 0, jj = lines.length; j < jj; ++j) {
+    const coordinates = lines[j]
+    for (let i = 0, ii = coordinates.length - 1; i < ii; ++i) {
+      const segment = coordinates.slice(i, i + 2)
+
+      const segmentData = {
+        role,
+        feature: feature,
+        geometry: geometry,
+        depth: [j],
+        index: i,
+        segment: segment
+      }
+
+      index.insert(Extent.boundingExtent(segment), segmentData)
+    }
+  }
+}
+
+indexWriters.Polygon = (index, feature, geometry, role) => {
+  const rings = geometry.getCoordinates()
+  for (let j = 0, jj = rings.length; j < jj; ++j) {
+    const coordinates = rings[j]
+    for (let i = 0, ii = coordinates.length - 1; i < ii; ++i) {
+      const segment = coordinates.slice(i, i + 2)
+
+      const segmentData = {
+        role,
+        feature: feature,
+        geometry: geometry,
+        depth: [j],
+        index: i,
+        segment: segment
+      }
+
+      index.insert(Extent.boundingExtent(segment), segmentData)
+    }
+  }
+}
+
+indexWriters.MultiPolygon = (index, feature, geometry, role) => {
+  const polygons = geometry.getCoordinates()
+  for (let k = 0, kk = polygons.length; k < kk; ++k) {
+    const rings = polygons[k]
+    for (let j = 0, jj = rings.length; j < jj; ++j) {
+      const coordinates = rings[j]
+      for (let i = 0, ii = coordinates.length - 1; i < ii; ++i) {
+        const segment = coordinates.slice(i, i + 2)
+
+        const segmentData = {
+          role,
+          feature: feature,
+          geometry: geometry,
+          depth: [j, k],
+          index: i,
+          segment: segment
+        }
+
+        index.insert(Extent.boundingExtent(segment), segmentData)
+      }
+    }
+  }
+}
+
+indexWriters.GeometryCollection = (index, feature, geometry, role) => {
+  const geometries = geometry.getGeometriesArray()
+  for (let i = 0; i < geometries.length; ++i) {
+    const geometry = geometries[i]
+    const writer = indexWriters[geometry.getType()]
+    writer(index, feature, geometry, role)
+  }
+}
+
+const segmentUpdaters = {
+  Point: (vertex, [segmentData]) => {
+    const segment = segmentData.segment
+    const coordinates = vertex
+    segment[0] = vertex
+    segment[1] = vertex
+    return coordinates
+  },
+  MultiPoint: (vertex, [segmentData]) => {
+    const segment = segmentData.segment
+    const geometry = segmentData.geometry
+    const coordinates = geometry.getCoordinates()
+    coordinates[segmentData.index] = vertex
+    segment[0] = vertex
+    segment[1] = vertex
+    return coordinates
+  },
+  LineString: (vertex, [segmentData, index]) => {
+    const segment = segmentData.segment
+    const geometry = segmentData.geometry
+    const coordinates = geometry.getCoordinates()
+    coordinates[segmentData.index + index] = vertex
+    segment[index] = vertex
+    return coordinates
+  },
+  MultiLineString: (vertex, [segmentData, index]) => {
+    const segment = segmentData.segment
+    const geometry = segmentData.geometry
+    const depth = segmentData.depth
+    const coordinates = geometry.getCoordinates()
+    coordinates[depth[0]][segmentData.index + index] = vertex
+    segment[index] = vertex
+    return coordinates
+  },
+  Polygon: (vertex, [segmentData, index]) => {
+    const segment = segmentData.segment
+    const depth = segmentData.depth
+    const geometry = segmentData.geometry
+    const coordinates = geometry.getCoordinates()
+    coordinates[depth[0]][segmentData.index + index] = vertex
+    segment[index] = vertex
+    return coordinates
+  },
+  MultiPolygon: (vertex, [segmentData, index]) => {
+    const segment = segmentData.segment
+    const depth = segmentData.depth
+    const geometry = segmentData.geometry
+    const coordinates = geometry.getCoordinates()
+    coordinates[depth[1]][depth[0]][segmentData.index + index] = vertex
+    segment[index] = vertex
+    return coordinates
   }
 }

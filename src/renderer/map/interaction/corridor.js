@@ -1,111 +1,90 @@
 import * as R from 'ramda'
-import Feature from 'ol/Feature'
-import { Point } from 'ol/geom'
+import * as geom from 'ol/geom'
 import * as TS from '../ts'
-import { format } from '../format'
-import disposable from '../../../shared/disposable'
-import { setGeometry, setCoordinates } from './helper'
+import * as EPSG from '../epsg'
 
-export default feature => {
-  const disposables = disposable.of({})
-  const geometry = feature.getGeometry()
-  const geometries = geometry.getGeometries()
-  const reference = geometries[0].getFirstCoordinate()
-  const { read, write } = format(reference)
+const PI_OVER_2 = Math.PI / 2
 
-  // Split feature geometry into separate/independent feature:
-  const [center, point] = (() => {
-    return geometries.map(geometry => new Feature({ geometry }))
-  })()
+export default (feature, descriptor) => {
+  const [lineString, point] = feature.getGeometry().getGeometries()
 
-  const params = geometry => {
-    const [line, point] = TS.geometries(read(geometry))
-    const coords = [TS.startPoint(line), point].map(TS.coordinate)
-    const [A, B] = R.take(2, TS.coordinates([line]))
+  const geometries = {
+    CENTER: lineString,
+    POINT: point
+  }
+
+  const code = EPSG.codeUTM(feature)
+  const toUTM = geometry => EPSG.toUTM(code, geometry)
+  const fromUTM = geometry => EPSG.fromUTM(code, geometry)
+  const read = R.compose(TS.read, toUTM)
+  const write = R.compose(fromUTM, TS.write)
+
+  const capture = (role, vertex) => {
+    if (role !== 'POINT') return vertex
+
+    // Project point onto normal vector of first segment:
+    const coordinate = TS.coordinate(read(new geom.Point(vertex)))
+    const [A, B] = R.take(2, TS.coordinates([frame.center]))
+    const P = new TS.Coordinate(A.x - (B.y - A.y), A.y + (B.x - A.x))
+    const segmentAP = TS.segment([A, P])
+    const projected = segmentAP.project(coordinate)
+    return write(TS.point(projected)).getFirstCoordinate()
+  }
+
+  const params = () => {
+    const center = read(geometries.CENTER)
+    const point = read(geometries.POINT)
+    const coords = [TS.startPoint(center), point].map(TS.coordinate)
+    const [A, B] = R.take(2, TS.coordinates([center]))
     const segment = TS.segment(A, B)
     const orientation = segment.orientationIndex(TS.coordinate(point))
     const width = TS.segment(coords).getLength()
-    return { line, orientation, width }
+    return { center, orientation, width }
   }
 
   let frame = (function create (params) {
-    const { line, orientation, width } = params
-    const [A, B] = R.take(2, TS.coordinates([line]))
+    const { center, orientation, width } = params
+    const [A, B] = R.take(2, TS.coordinates([center]))
     const bearing = TS.segment([A, B]).angle()
-    const point = TS.point(TS.projectCoordinate(A)([bearing + orientation * Math.PI / 2, width]))
+    const point = TS.point(TS.projectCoordinate(A)([bearing + orientation * PI_OVER_2, width]))
     const copy = properties => create({ ...params, ...properties })
-    const geometry = TS.geometryCollection([line, point])
-    return { line, point, copy, geometry }
-  })(params((geometry)))
 
+    geometries.CENTER.setCoordinates(write(center).getCoordinates())
+    geometries.POINT.setCoordinates(write(point).getCoordinates())
+    const geometry = new geom.GeometryCollection([geometries.CENTER, geometries.POINT])
 
-  // Register control feature geometry change listeners:
-  let changing = false
-  ;(() => {
-    const centerChanged = ({ target: geometry }) => {
-      if (changing) return
-      frame = frame.copy({ line: read(geometry) })
-      setGeometry(feature, write(frame.geometry))
-    }
+    return { copy, center, point, geometry }
+  })(params())
 
-    const pointChanged = ({ target: geometry }) => {
-      if (changing) return
-      const point = read(geometry)
-      const segment = TS.segment(R.take(2, TS.coordinates([frame.line])))
+  const updateCoordinates = (role, coordinates) => {
+    geometries[role].setCoordinates(coordinates)
+
+    if (role === 'CENTER') {
+      const center = read(geometries[role])
+      frame = frame.copy({ center })
+      feature.setGeometry(frame.geometry)
+    } else if (role === 'POINT') {
+      const point = read(geometries[role])
+      const segment = TS.segment(R.take(2, TS.coordinates([frame.center])))
+      const coords = [TS.startPoint(frame.center), point].map(TS.coordinate)
       const orientation = segment.orientationIndex(TS.coordinate(point))
-      const coords = [TS.startPoint(frame.line), point].map(TS.coordinate)
       const width = TS.segment(coords).getLength()
       frame = frame.copy({ orientation, width })
-      setGeometry(feature, write(frame.geometry))
+      feature.setGeometry(frame.geometry)
     }
-
-    const centerGeometry = center.getGeometry()
-    const pointGeometry = point.getGeometry()
-
-    centerGeometry.on('change', centerChanged)
-    pointGeometry.on('change', pointChanged)
-
-    disposables.addDisposable(() => {
-      centerGeometry.un('change', centerChanged)
-      pointGeometry.un('change', pointChanged)
-    })
-  })()
-
-  const updateFeatures = () => {
-    setCoordinates(point, write(frame.point))
   }
 
-  const updateGeometry = geometry => {
-    frame = frame.copy(params(geometry))
-
-    changing = true
-    const geometries = geometry.getGeometries()
-    setCoordinates(center, geometries[0])
-    setCoordinates(point, geometries[1])
-    changing = false
-  }
-
-  const enforceConstraints = (segments, coordinate) => {
-    const feature = R.head(segments).feature
-    if (feature === point) {
-
-      // Project point onto normal vector of first segment:
-      const [A, B] = R.take(2, TS.coordinates([frame.line]))
-      const P = new TS.Coordinate(A.x - (B.y - A.y), A.y + (B.x - A.x))
-      const segmentAP = TS.segment([A, P])
-      const projected = segmentAP.project(TS.coordinate(read(new Point(coordinate))))
-      return write(TS.point(projected)).getFirstCoordinate()
-    } else if (feature === center) {
-      return coordinate
-    } return coordinate
+  const suppressVertexFeature = role => {
+    if (descriptor.layout === 'orbit') return true
+    else if (role === 'CENTER' && descriptor.maxPoints === 2) return true
+    else return false
   }
 
   return {
-    feature,
-    updateFeatures,
-    updateGeometry,
-    enforceConstraints,
-    controlFeatures: [center, point],
-    dispose: () => disposables.dispose()
+    capture,
+    updateCoordinates,
+    suppressVertexFeature,
+    roles: () => Object.keys(geometries),
+    geometry: role => geometries[role]
   }
 }
