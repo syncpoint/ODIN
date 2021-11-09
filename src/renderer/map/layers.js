@@ -281,7 +281,6 @@ const createModify = source => {
     source,
     // Allow translate while editing (with shift key pressed):
     condition: conjunction(primaryAction, noShiftKey),
-    snapToPointer: false,
     showVertexCondition: event => {
       // Always show when snapped to exising geometry vertex:
       if (event.snappedToVertex) return true
