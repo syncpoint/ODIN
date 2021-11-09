@@ -76,8 +76,6 @@ const labelGeometry = geometry => {
     return geometry.intersection(axis).getCoordinates()
   })
 
-  /* eslint-disable */
-
   const fraction = anchor => {
     const lengthIndexedLine = TS.lengthIndexedLine(ring)
     const length = lengthIndexedLine.getEndIndex()
