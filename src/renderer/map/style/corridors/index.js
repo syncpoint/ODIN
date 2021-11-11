@@ -1,6 +1,7 @@
 import * as R from 'ramda'
 import * as TS from '../../ts'
 import { format } from '../../format'
+import { airCorridor } from './air-corridor'
 import G_G_OAF from './G_G_OAF'
 import G_G_OLAA from './G_G_OLAA'
 import G_G_OLAGM from './G_G_OLAGM'
@@ -73,6 +74,11 @@ export const style = fn => options => {
 }
 
 export default {
+  'G*G*ALC---': style(airCorridor('AC')),
+  'G*G*ALM---': style(airCorridor('MRR')),
+  'G*G*ALS---': style(airCorridor('SAAFR')),
+  'G*G*ALU---': style(airCorridor('UA')),
+  'G*G*ALL---': style(airCorridor('LLTR')),
   'G*G*OAF---': style(G_G_OAF),
   'G*G*OLAA--': style(G_G_OLAA),
   'G*G*OLAGM-': style(G_G_OLAGM),

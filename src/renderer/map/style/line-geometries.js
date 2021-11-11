@@ -505,7 +505,6 @@ geometries['G*G*GLC---'] = options => {
   const n = Math.floor(length / width)
   const offset = (length - n * width) / 2
 
-  /* eslint-disable */
   const point = index => line.extractPoint(index)
   const segmentsA = R.range(0, n)
     .map(i => [point(offset + i * width), point(offset + (i + 1) * width)])
@@ -593,7 +592,7 @@ geometries['G*M*OADU--'] = options => {
  * TACGRP.MOBSU.OBST.ATO.ATD.ATDUC
  * ANTITANK DITCH / COMPLETE
  */
- geometries['G*M*OADC--'] = options => {
+geometries['G*M*OADC--'] = options => {
   const { resolution, styles, line: geometry } = options
   const teeth = ditchTeeth(geometry, resolution)
 

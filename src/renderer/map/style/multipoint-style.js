@@ -1,12 +1,41 @@
+import { Jexl } from 'jexl'
 import * as R from 'ramda'
 import { parameterized } from '../../components/SIDC'
 import { format } from '../format'
 import { styleFactory, defaultStyle, biggerFont } from './default-style'
 import * as TS from '../ts'
+import { hatchFill } from './fill'
 
+const jexl = new Jexl()
 const quads = 64
 const deg2rad = Math.PI / 180
 const geometries = {}
+
+const HALO = { 'text-clipping': 'none', 'text-halo-color': 'white', 'text-halo-width': 5 }
+const C = (text, options) => [{ id: 'style:default-text', 'text-field': text, 'text-clipping': 'none', ...options }]
+const B = text => [{ id: 'style:default-text', 'text-field': text, 'text-anchor': 'bottom', 'text-padding': 5, 'text-clipping': 'line' }]
+const DTG_LINE = '(w || w1) ? (w ? w : "") + "—" + (w1 ? w1 : "") : null'
+const ALT_LINE = '(x || x1) ? (x ? x : "") + "—" + (x1 ? x1 : "") : null'
+const ALL_LINES = title => title
+  ? [`"${title}"`, 't', 'h', ALT_LINE, DTG_LINE]
+  : ['t', 'h', ALT_LINE, DTG_LINE]
+
+const circleLabels = {}
+circleLabels['G*F*ATC---'] = C(ALL_LINES())
+circleLabels['G*F*ACSC--'] = C(ALL_LINES('FSA'))
+circleLabels['G*F*ACAC--'] = C(ALL_LINES('ACA'))
+circleLabels['G*F*ACFC--'] = C(ALL_LINES('FFA'))
+circleLabels['G*F*ACNC--'] = C(ALL_LINES('NFA'), HALO)
+circleLabels['G*F*ACRC--'] = C(ALL_LINES('RFA'))
+circleLabels['G*F*ACPC--'] = B('"PAA"')
+circleLabels['G*F*ACEC--'] = C(ALL_LINES('SENSOR ZONE'))
+circleLabels['G*F*ACDC--'] = C(ALL_LINES('DA'))
+circleLabels['G*F*ACZC--'] = C(ALL_LINES('ZOR'))
+circleLabels['G*F*ACBC--'] = C(ALL_LINES('TBA'))
+circleLabels['G*F*ACVC--'] = C(ALL_LINES('TVAR'))
+circleLabels['G*F*AKBC--'] = C(ALL_LINES('BKB'), HALO)
+circleLabels['G*F*AKPC--'] = C(ALL_LINES('PKB'), HALO)
+
 
 const arcText = styles => (anchor, angle, text) => styles.text(anchor, {
   text,
@@ -15,6 +44,103 @@ const arcText = styles => (anchor, angle, text) => styles.text(anchor, {
   textAlign: () => 'center',
   rotation: Math.PI - angle + 330 / 2 * deg2rad
 })
+
+const lazy = function (fn) {
+  let evaluated = false
+  let value
+
+  return function () {
+    if (evaluated) return value
+    value = fn.apply(this, arguments)
+    evaluated = true
+    return value
+  }
+}
+
+const labelGeometry = geometry => {
+  const ring = geometry.getExteriorRing()
+  const envelope = ring.getEnvelopeInternal()
+  const centroid = TS.centroid(ring)
+  const [minX, maxX] = [envelope.getMinX(), envelope.getMaxX()]
+  const [minY, maxY] = [envelope.getMinY(), envelope.getMaxY()]
+
+  const xIntersection = lazy(() => {
+    const coord = x => TS.coordinate(x, centroid.y)
+    const axis = TS.lineString([minX, maxX].map(coord))
+    return geometry.intersection(axis).getCoordinates()
+  })
+
+  const yIntersection = lazy(() => {
+    const coord = y => TS.coordinate(centroid.x, y)
+    const axis = TS.lineString([minY, maxY].map(coord))
+    return geometry.intersection(axis).getCoordinates()
+  })
+
+  const fraction = anchor => {
+    const lengthIndexedLine = TS.lengthIndexedLine(ring)
+    const length = lengthIndexedLine.getEndIndex()
+    const coord = lengthIndexedLine.extractPoint(anchor * length)
+    return TS.point(coord)
+  }
+
+  const positions = {
+    center: lazy(() => TS.point(centroid)),
+    bottom: lazy(() => TS.point(yIntersection()[0])),
+    top: lazy(() => TS.point(yIntersection()[1])),
+    left: lazy(() => TS.point(xIntersection()[0])),
+    right: lazy(() => TS.point(xIntersection()[1]))
+  }
+
+  return label => {
+    const anchor = label['text-anchor']
+    return Number.isFinite(anchor)
+      ? fraction(anchor)
+      : positions[anchor || 'center']()
+  }
+}
+
+const circle = fill => ({ styles, points, resolution, feature, sidc }) => {
+  const [C, A] = TS.coordinates(points)
+  const segment = TS.segment([C, A])
+  const geometry = TS.pointBuffer(TS.point(C))(segment.getLength())
+  const options = fill ? { fill: fill({ styles }) } : {}
+
+  const properties = feature.getProperties()
+  const evalSync = textField => Array.isArray(textField)
+    ? textField.map(evalSync).filter(Boolean).join('\n')
+    : jexl.evalSync(textField, properties)
+
+  const texts = (() => {
+    if (!styles.showLabels()) return []
+    return (circleLabels[sidc] || []).map(label => {
+      const inGeometry = labelGeometry(geometry)(label)
+      return styles.text(inGeometry, {
+        text: evalSync(label['text-field'])
+      })
+    })
+  })()
+
+  return [
+    styles.solidLine(geometry, options),
+    ...texts
+  ]
+}
+
+geometries['G*F*ATC---'] = circle() // CIRCULAR TARGET
+geometries['G*F*ACSC--'] = circle() // FIRE SUPPORT AREA (FSA)
+geometries['G*F*ACAC--'] = circle() // AIRSPACE COORDINATION AREA (ACA)
+geometries['G*F*ACFC--'] = circle() // FREE FIRE AREA (FFA)
+geometries['G*F*ACNC--'] = circle(hatchFill) // NO-FIRE AREA (NFA)
+geometries['G*F*ACRC--'] = circle() // RESTRICTIVE FIRE AREA (RFA)
+geometries['G*F*ACPC--'] = circle() // POSITION AREA FOR ARTILLERY (PAA)
+geometries['G*F*ACEC--'] = circle() // SENSOR ZONE
+geometries['G*F*ACDC--'] = circle() // DEAD SPACE AREA (DA)
+geometries['G*F*ACZC--'] = circle() // ZONE OF RESPONSIBILITY (ZOR)
+geometries['G*F*ACBC--'] = circle() // TARGET BUILD-UP AREA (TBA)
+geometries['G*F*ACVC--'] = circle() // TARGET VALUE AREA (TVAR)
+geometries['G*F*AKBC--'] = circle(hatchFill) // KILL BOX/BLUE
+geometries['G*F*AKPC--'] = circle(hatchFill) // KILL BOX/PURPLE
+
 
 /**
  * TACGRP.TSK.ISL
@@ -331,7 +457,7 @@ export const multipointStyle = mode => (feature, resolution) => {
   const { read, write } = format(reference)
   const points = read(geometry)
   const factory = styleFactory({ mode, feature, resolution })(write)
-  const options = { feature, resolution, points, styles: factory }
+  const options = { feature, resolution, points, styles: factory, sidc }
 
   return [
     geometries[sidc] ? geometries[sidc](options).flat() : defaultStyle(feature),
