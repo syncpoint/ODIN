@@ -1,6 +1,6 @@
 {
   "name": "odin-c2is",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "ODIN Command and Control Information System",
   "main": "dist/main.js",
   "scripts": {
