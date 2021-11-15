@@ -22195,5 +22195,22 @@
       "SUPPLEMENTAL",
       "POLYGON"
     ]
+  },
+  {
+    "sidc": "P*-*DS----*****",
+    "class": "PL",
+    "geometry": "MultiPoint",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "HUB",
+      "BLACK"
+    ],
+    "parameters": {
+	  "arc": "338",
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   }
 ]
