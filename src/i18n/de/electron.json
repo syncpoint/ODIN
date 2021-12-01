@@ -23,7 +23,8 @@
     "paste": "Einfügen",
     "pasteAndMatchStyle": "Einfügen und Stil anpassen",
     "delete": "Löschen",
-    "selectAll": "Alles auswählen"
+    "selectAll": "Alles auswählen",
+    "copyCoordinate": "Koordinaten kopieren"
   },
   "view": {
     "name": "Anzeige",

@@ -4,6 +4,7 @@ let buffer
 
 ipcMain.on('IPC_CLIPBOARD_WRITE', (_, content) => {
   buffer = content
+ 
 })
 
 // NOTE: result might be undefined.

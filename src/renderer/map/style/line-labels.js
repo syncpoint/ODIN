@@ -114,7 +114,6 @@ const cross = (textAlign, verticalAlign) => textAlign.map(textAlign => ({ textAl
 // Templates.
 
 const topTitle = title => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [`${title}${t ? ' ' + t : ''}`])
-const topTitleReverse = title => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [t ? `${t} ${title}` : title])
 const topTitleSubtitle = (title, subtitle) => label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [`${title}${t ? ' ' + t : ''}`, subtitle])
 const topT = label({ textAlign: 0.5, verticalAlign: TOP })(({ t }) => [t])
 const bottomTitle = title => label({ textAlign: 0.5, verticalAlign: BOTTOM })(() => [title])
@@ -122,6 +121,7 @@ const bottomT1 = title => label({ textAlign: 0.5, verticalAlign: BOTTOM })(({ t1
 const middleTitle = (title, textAlign = 0.5) => label({ textAlign, verticalAlign: MIDDLE })(() => [title])
 const middleT = textAlign => label({ textAlign, verticalAlign: MIDDLE })(({ t }) => [t])
 const doubleTitle = title => lift(cloneLines(({ t }) => [t ? `${t} ${title}` : `${title}`], cross([START, END], TOP)))
+const doubleTitleReserve = title => lift(cloneLines(({ t }) => [`${title}${t ? ' ' + t : ''}`], cross([START, END], TOP)))
 const centerDTG = label({ textAlign: 0.5, verticalAlign: BOTTOM })(({ w, w1 }) => [w, w1])
 const startDTG = label({ textAlign: START, verticalAlign: BOTTOM })(({ w, w1 }) => [w, w1])
 const doubleDTG = lift(cloneLines(({ w, w1 }) => [w, w1], cross([START, END], BOTTOM)))
@@ -140,11 +140,11 @@ const numberProperty = feature => (key, value) => {
 // Specific labels.
 
 export const labels = {
-  'G*F*LCC---': [topTitleReverse('CFL'), centerDTG],
+  'G*F*LCC---': [topTitle('CFL'), centerDTG],
   'G*F*LCF---': [doubleDTG, doubleTitle('FSCL'), lineEndsT1('PL')],
   'G*F*LCM---': [middleTitle('MFP'), startDTG],
   'G*F*LCN---': [phaseLine('NFL')],
-  'G*F*LCR---': [doubleDTG, doubleTitle('RFL'), lineEndsT1('PL')],
+  'G*F*LCR---': [doubleDTG, doubleTitleReserve('RFL'), lineEndsT1('PL')],
   'G*F*LT----': [topT],
   'G*F*LTS---': [topT, bottomTitle('SMOKE')],
   'G*F*LTF---': [topT, bottomT1('FPF')],
@@ -169,6 +169,7 @@ export const labels = {
       ]
     }
   ],
+  'G*G*GL----': [lineEndsT('')],
   'G*G*GLL---': [phaseLine('LL')],
   'G*G*GLP---': [lineEndsT('PL')],
   'G*G*OLC---': [phaseLine('LD/LC')],

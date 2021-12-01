@@ -1,6 +1,6 @@
 {
   "name": "odin-c2is",
-  "version": "0.13.0",
+  "version": "0.14.1",
   "description": "ODIN Command and Control Information System",
   "main": "dist/main.js",
   "scripts": {
@@ -52,20 +52,20 @@
     "eslint-plugin-react": "^7.26.0",
     "eslint-webpack-plugin": "^2.5.4",
     "file-loader": "^6.2.0",
-    "html-webpack-plugin": "^5.3.2",
+    "html-webpack-plugin": "^5.5.0",
     "ignore-styles": "^5.0.1",
     "mocha": "^8.4.0",
     "style-loader": "^2.0.0",
-    "webpack": "^5.53.0",
-    "webpack-cli": "^4.8.0",
-    "webpack-dev-server": "^3.11.2"
+    "webpack": "^5.64.0",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^3.11.3"
   },
   "dependencies": {
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "archiver": "^5.3.0",
-    "dom-to-image-more": "^2.9.1",
+    "dom-to-image-more": "^2.8.0",
     "dompurify": "^2.3.3",
     "dotenv": "^8.6.0",
     "electron-settings": "^3.2.0",
@@ -74,6 +74,7 @@
     "geographiclib": "^1.52.0",
     "i18next": "^19.9.2",
     "immutable": "^4.0.0-rc.15",
+    "jexl": "^2.3.0",
     "jspdf": "^2.4.0",
     "jsts": "^2.7.1",
     "lodash.debounce": "^4.0.8",

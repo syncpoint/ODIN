@@ -1,9 +1,10 @@
 import Mousetrap from 'mousetrap'
-import { ipcRenderer, remote } from 'electron'
+import { ipcRenderer, remote, clipboard } from 'electron'
 import evented from './evented'
 import { K, noop } from '../shared/combinators'
 import selection from './selection'
 import undo from './undo'
+import URI from './project/URI'
 
 const clipboardHandlers = {}
 
@@ -71,6 +72,20 @@ const editPaste = async () => {
     .forEach(([scheme, content]) => clipboardHandlers[scheme].paste(content))
 }
 
+/**
+ * copyCoordinate :: () -> unit
+ * Write current mouse coordiates to clipboard.
+ */
+const copyCoordinate = async () => {
+  const content = Object
+    .entries(clipboardHandlers)
+    .reduce((acc, [scheme, handler]) => K(acc)(acc => {
+      const content = handler.copyCoordinates()
+      if (content && content.length) acc[scheme] = content
+    }), {})
+
+  clipboard.writeText(JSON.stringify(content[URI.SCHEME_FEATURE]))
+}
 
 // Block certain ops when text input field is focused.
 
@@ -93,6 +108,7 @@ evented.on('EDIT_PASTE', block(inputFocused)(editPaste))
 evented.on('EDIT_SELECT_ALL', block(inputFocused)(editSelectAll))
 evented.on('EDIT_UNDO', block(inputFocused)(undo.undo))
 evented.on('EDIT_REDO', block(inputFocused)(undo.redo))
+evented.on('EDIT_COPY_COORDINATE', block(inputFocused)(copyCoordinate))
 
 Mousetrap.bind('del', editDelete) // macOS: fn+backspace
 Mousetrap.bind('command+backspace', editDelete)

@@ -227,3 +227,5 @@ export const arc = ({ x, y }, radius, α1, α2, n) => R.range(0, n)
   .map(i => α1 - α2 / n * i)
   .map(α => [x + radius * Math.cos(α), y + radius * Math.sin(α)])
   .map(coordinate)
+
+export const centroid = geometry => jsts.algorithm.Centroid.getCentroid(geometry)

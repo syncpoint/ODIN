@@ -44,6 +44,14 @@ const menu = i18n => {
           browserWindow.webContents.send('IPC_EDIT_SELECT_ALL')
         })
       }
+      ,
+      {
+        label: i18n.t('edit.copyCoordinate'),
+        accelerator: 'CmdOrCtrl+D',
+        click: onclick(browserWindow => {
+          browserWindow.webContents.send('IPC_EDIT_COPY_COORDINATE')
+        })
+      }
     ]
   }
 

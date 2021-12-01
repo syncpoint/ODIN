@@ -21,18 +21,19 @@
     "cut": "Cut",
     "copy": "Copy",
     "paste": "Paste",
-    "pasteAndMatchStyle": "Paste and match style",
+    "pasteAndMatchStyle": "Paste and Match Style",
     "delete": "Delete",
-    "selectAll": "Select all"
+    "selectAll": "Select All",
+    "copyCoordinate": "Copy Coordinates"
   },
   "view": {
     "name": "View",
     "reload": "Reload",
-    "forceReload": "Force reload",
+    "forceReload": "Force Reload",
     "toggleDevTools": "Toggle Developer Tools",
-    "resetZoom": "Reset zoom",
-    "zoomIn": "Zoom in",
-    "zoomOut": "Zoom out",
+    "resetZoom": "Reset Zoom",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
     "grid": {
       "mgrs": "MGRS Graticule"
     },
@@ -46,9 +47,9 @@
   },
   "help" : {
     "name": "Help",
-    "onlineUserManual": "Online user manual",
-    "onlineSupportSlack": "Join our Slack channel",
-	  "onlineSupportEMail": "Get support via e-mail"
+    "onlineUserManual": "Online User Manual",
+    "onlineSupportSlack": "Join our Slack Channel",
+	  "onlineSupportEMail": "Get Support via E-Mail"
   },
   "export": {
     "title": "Export {{name}}",
@@ -57,26 +58,26 @@
     "clickToOpen": "Open: {{path}}"
   },
   "importProject": {
-    "title": "Choose an ODIN project to import",
+    "title": "Choose an ODIN Project to Import",
     "succeeded": "Import succeeded",
     "failed": "Import from {{path}} failed",
-    "fileFilterName": "ODIN project archives"
+    "fileFilterName": "ODIN Project Archives"
   },
   "autoUpdate": {
-    "option": "Check for newer versions of ODIN",
+    "option": "Check for newer Versions of ODIN",
     "buttons": {
-      "updateNow": "Download and update now!",
-      "skipUpdate": "Skip updating this time!"
+      "updateNow": "Download and Update now!",
+      "skipUpdate": "Skip Updating this Time!"
     },
-    "updateTitle": "A new version of ODIN is available",
+    "updateTitle": "A new Version of ODIN is available",
     "versionMessage": "Update available from {{currentVersion}} to {{newVersion}}.",
     "updateMessage": "If you select 'Download and update now!' this will download and install the new version and restart ODIN immediately.",
-    "error": "Update error"
+    "error": "Update Error"
   },
   "navigationEvent": {
     "harmful": {
       "title": "Prevented opening URL",
-      "subtitle": "Opening the target could harm your system"
+      "subtitle": "Opening the Target could Harm your System"
     },
     "ask": {
       "permit": "Permit",
