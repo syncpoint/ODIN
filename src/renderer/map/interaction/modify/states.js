@@ -151,7 +151,6 @@ const removeState = (node, index) => ({
  *
  */
 const engagedState = (rbush, node) => {
-
   return {
     pointerdrag: message => {
       const coordinate = message.pointOnSegment(node.segment)
@@ -171,8 +170,8 @@ const engagedState = (rbush, node) => {
       }
     },
 
-    pointerup: message => {
-      const state = loadedState(rbush)
+    pointerup: () => {
+      const state = loadedState(rbush, true)
       return { state, propagate: false }
     }
   }
@@ -204,7 +203,7 @@ const lockedState = (feature, update) => {
     },
 
     pointerup: () => {
-      const state = loadedState(spatialIndex(feature))
+      const state = loadedState(spatialIndex(feature), true)
       return { state, feature, type: 'modifyend', propagate: false }
     }
   }
