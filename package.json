@@ -79,7 +79,7 @@
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
     "lunr": "^2.3.9",
-    "luxon": "^1.28.0",
+    "luxon": "^2.1.1",
     "mathjs": "^9.5.0",
     "mdi-material-ui": "^6.22.1",
     "mgrs": "^1.0.0",
