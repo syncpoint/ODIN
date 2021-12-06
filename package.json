@@ -73,7 +73,6 @@
     "geodesy": "^2.2.1",
     "geographiclib": "^1.52.0",
     "i18next": "^19.9.2",
-    "immutable": "^4.0.0-rc.15",
     "jexl": "^2.3.0",
     "jspdf": "^2.4.0",
     "jsts": "^2.7.1",
