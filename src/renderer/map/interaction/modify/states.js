@@ -19,8 +19,12 @@ export const idleState = () => ({
 export const loadedState = (rbush, handleClick = false) => {
   const conditions = (message, node, index) => {
     const layout = node && node.descriptor && node.descriptor.layout
+    const type = node && node.descriptor && node.descriptor.type
     const maxPoints = node && node.descriptor && node.descriptor.maxPoints
-    const canRemove = () => index !== null && message.removeCondition() && layout !== 'rectangle'
+    const canRemove = () => index !== null &&
+      type !== 'Point' &&
+      message.removeCondition() &&
+      layout !== 'rectangle'
 
     const mustIgnore = () => message.originalEvent.shiftKey
     const canDrag = () => index !== null
