@@ -128,7 +128,7 @@ const buildTarget = (value, format) => {
       try {
         const mgrs = MGRS.parse(value)
         const coordinates = mgrs.toUtm().toLatLon()
-        return { lat: coordinates.lat, lon: coordinates.lon }
+        return { lat: coordinates.lat, lon: coordinates.lon, source: 'MGRS' }
       } catch (error) {
         return undefined
       }
@@ -137,7 +137,7 @@ const buildTarget = (value, format) => {
       try {
         const utm = UTM.parse(value)
         const coordinates = utm.toLatLon()
-        return { lat: coordinates.lat, lon: coordinates.lon }
+        return { lat: coordinates.lat, lon: coordinates.lon, source: 'UTM' }
       } catch (error) {
         return undefined
       }
@@ -145,14 +145,14 @@ const buildTarget = (value, format) => {
     case 'DMS': {
       try {
         const dms = DMS.parse(value)
-        return { lat: dms.lat, lon: dms.lon }
+        return { lat: dms.lat, lon: dms.lon, source: 'DMS' }
       } catch (error) {
         return undefined
       }
     }
     case 'DMSODIN': {
       const coordinates = value.split(',').map(part => Number.parseFloat(part))
-      return { lat: coordinates[1], lon: coordinates[0] }
+      return { lat: coordinates[1], lon: coordinates[0], source: 'DMS-ODIN' }
     }
     default: {
       console.warn(`Unable to convert ${value} from format ${format}`)
@@ -179,7 +179,6 @@ const CoordinatesInput = props => {
 
   return (
     <FormControl variant="standard" fullWidth={true}>
-        <InputLabel htmlFor="formatted-text-mask-input">Coordinates</InputLabel>
         <Input
           name="Coordinates"
           id="formatted-text-mask-input"

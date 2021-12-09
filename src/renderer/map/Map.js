@@ -21,6 +21,7 @@ import measure from './interaction/measure/'
 import dropImport from './interaction/drop-import'
 import share from './share'
 import print from './print/print'
+import travel from '../components/traveller/travellingAgent'
 
 import './style/scalebar.css'
 
@@ -82,6 +83,7 @@ const effect = props => () => {
   measure(map)
   share(map)
   print(map)
+  travel(map)
 
   // restore viewport and active layer name from preferences.
   preferences.register(event => {
