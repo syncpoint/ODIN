@@ -1,9 +1,10 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { FormControl, Input, InputLabel } from '@material-ui/core'
-
 import { useIMask, IMask } from 'react-imask'
+// eslint-disable-next-line import/no-named-default
+import { default as MGRS, Utm as UTM, Dms as DMS } from 'geodesy/mgrs'
 
-// const mgrsExpression = /[0-9]{2}[CDEFGHJKLMNPQRSTUVW]{1}\s?[A-Z]{2}\s?[0-9]{1,5}\s?[0-9]{1,5}/g
 
 const mgrsMask = new IMask.MaskedPattern({
   name: 'MGRS',
@@ -39,7 +40,7 @@ const mgrsMask = new IMask.MaskedPattern({
 
 const utmMask = new IMask.MaskedPattern({
   name: 'UTM',
-  mask: 'ZONEGRID{ }NL{ }NL',
+  mask: 'ZONE{ }GRID{ }NL{ }NL',
   blocks: {
     ZONE: {
       mask: IMask.MaskedRange,
@@ -54,16 +55,18 @@ const utmMask = new IMask.MaskedPattern({
     NL: {
       mask: IMask.MaskedNumber,
       min: 0,
-      max: 999999,
+      max: 999999.999,
       signed: false,
-      scale: 0
+      scale: 3,
+      radix: '.',
+      mapToRadix: [',']
     }
   },
   prepare: value => value.toUpperCase()
 })
 
 const degMask = IMask.createMask({
-  name: 'DEG',
+  name: 'DMS',
   mask: 'DNS°N DEW°W',
   blocks: {
     DNS: {
@@ -89,7 +92,7 @@ const degMask = IMask.createMask({
 
 // [15.617595371652579,48.321868556411715]
 const degODINMask = IMask.createMask({
-  name: 'DEGODIN',
+  name: 'DMSODIN',
   mask: '[DEW{, }DNS]',
   blocks: {
     DNS: {
@@ -114,10 +117,57 @@ const degODINMask = IMask.createMask({
 })
 
 
+const buildTarget = (value, format) => {
+  if (!value || !format) {
+    console.error('value or format not defined')
+    return undefined
+  }
+
+  switch (format) {
+    case 'MGRS': {
+      try {
+        const mgrs = MGRS.parse(value)
+        const coordinates = mgrs.toUtm().toLatLon()
+        return { lat: coordinates.lat, lon: coordinates.lon }
+      } catch (error) {
+        return undefined
+      }
+    }
+    case 'UTM': {
+      try {
+        const utm = UTM.parse(value)
+        const coordinates = utm.toLatLon()
+        return { lat: coordinates.lat, lon: coordinates.lon }
+      } catch (error) {
+        return undefined
+      }
+    }
+    case 'DMS': {
+      try {
+        const dms = DMS.parse(value)
+        return { lat: dms.lat, lon: dms.lon }
+      } catch (error) {
+        return undefined
+      }
+    }
+    case 'DMSODIN': {
+      const coordinates = value.split(',').map(part => Number.parseFloat(part))
+      return { lat: coordinates[1], lon: coordinates[0] }
+    }
+    default: {
+      console.warn(`Unable to convert ${value} from format ${format}`)
+      return undefined
+    }
+  }
+}
+
+
 const CoordinatesInput = props => {
 
   const handleComplete = (value, { masked }) => {
     console.log(`completed ${value} from mask ${masked.currentMask?.name}`)
+    const target = buildTarget(value, masked.currentMask?.name)
+    if (props.onCompleted) props.onCompleted(target)
   }
   const { ref } = useIMask(
     {
@@ -126,7 +176,7 @@ const CoordinatesInput = props => {
     },
     { onComplete: handleComplete }
   )
-  console.dir(ref)
+
   return (
     <FormControl variant="standard" fullWidth={true}>
         <InputLabel htmlFor="formatted-text-mask-input">Coordinates</InputLabel>
@@ -134,12 +184,14 @@ const CoordinatesInput = props => {
           name="Coordinates"
           id="formatted-text-mask-input"
           inputRef={ref}
-          placeholder='MGRS, UTM, LON/LAT'
+          placeholder='MGRS, UTM, LON/LAT (DMS)'
         />
       </FormControl>
   )
 }
 
-
+CoordinatesInput.propTypes = {
+  onCompleted: PropTypes.func
+}
 
 export default CoordinatesInput
