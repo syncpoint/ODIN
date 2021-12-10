@@ -28,11 +28,7 @@ const mgrsMask = new IMask.MaskedPattern({
       enum: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V']
     },
     N: {
-      mask: IMask.MaskedNumber,
-      min: 0,
-      max: 99999,
-      signed: false,
-      scale: 0
+      mask: /^[0-9]{1,5}$/
     }
   },
   prepare: value => value.toUpperCase()
@@ -60,6 +56,9 @@ const utmMask = new IMask.MaskedPattern({
       scale: 3,
       radix: '.',
       mapToRadix: [',']
+    },
+    BROKEN: {
+      mask: /^[0-9]{1,6}\.?[0-9]{1,3}$/
     }
   },
   prepare: value => value.toUpperCase()
