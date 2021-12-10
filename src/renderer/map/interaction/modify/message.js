@@ -65,34 +65,14 @@ export const message = (options, event) => {
   })()
 
   const closestSegment = rbush => {
-
-    const nodes = rbush.getInExtent(extent)
+    const nodes = rbush.getInExtent(extent).reverse()
     const segment = R.prop('segment')
-    const uid = R.prop('ol_uid')
-
-    const negate = n => n * -1
     const measure = squaredDistanceToSegment
     const compare = fn => (a, b) => fn(a) - fn(b)
     const compareDistance = compare(R.compose(measure, segment))
-    const compareUID = compare(R.compose(negate, parseInt, uid))
 
     const sortedNodes = (nodes || []).sort(compareDistance)
-    if (sortedNodes.length < 2) return sortedNodes[0] // might be undefined
-
-    // If two best matches share the same
-    // point, choose the node with higher ol_uid.
-    // This is necessary to disambiguate overlapping points,
-    // especially when width point of corrdidor is snapped
-    // to first point of corridor line.
-
-    const shareSamePoint = ([a, b]) =>
-      a.segment.reduce((acc, x) => {
-        return acc || b.segment.some(y => R.equals(x, y))
-      }, false)
-
-    return shareSamePoint(sortedNodes)
-      ? sortedNodes.slice(0, 2).sort(compareUID)[0]
-      : sortedNodes[0]
+    return sortedNodes[0] // might be undefined
   }
 
   const closestPoint = (node, point) => {
