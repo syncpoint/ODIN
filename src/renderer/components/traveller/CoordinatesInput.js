@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { FormControl, Input, InputLabel } from '@material-ui/core'
+import { FormControl, Input } from '@material-ui/core'
 import { useIMask, IMask } from 'react-imask'
 // eslint-disable-next-line import/no-named-default
-import { default as MGRS, Utm as UTM, Dms as DMS } from 'geodesy/mgrs'
+import { default as MGRS, Utm as UTM, LatLon } from 'geodesy/mgrs'
 
 
 const mgrsMask = new IMask.MaskedPattern({
@@ -66,8 +66,8 @@ const utmMask = new IMask.MaskedPattern({
 })
 
 const degMask = IMask.createMask({
-  name: 'DMS',
-  mask: 'DNS°N DEW°W',
+  name: 'LL-DEG',
+  mask: 'DNS°lon{ }DEW°l\\at',
   blocks: {
     DNS: {
       mask: IMask.MaskedNumber,
@@ -92,7 +92,7 @@ const degMask = IMask.createMask({
 
 // [15.617595371652579,48.321868556411715]
 const degODINMask = IMask.createMask({
-  name: 'DMSODIN',
+  name: 'LL-ODIN',
   mask: '[DEW{, }DNS]',
   blocks: {
     DNS: {
@@ -142,17 +142,18 @@ const buildTarget = (value, format) => {
         return undefined
       }
     }
-    case 'DMS': {
+    case 'LL-DEG': { // LON-LAT
       try {
-        const dms = DMS.parse(value)
-        return { lat: dms.lat, lon: dms.lon, source: 'DMS' }
+        const parts = value.split(' ')
+        const coordinate = new LatLon(parts[1], parts[0])
+        return { lat: coordinate.lat, lon: coordinate.lon, source: 'LL-DEG' }
       } catch (error) {
         return undefined
       }
     }
-    case 'DMSODIN': {
+    case 'LL-ODIN': {
       const coordinates = value.split(',').map(part => Number.parseFloat(part))
-      return { lat: coordinates[1], lon: coordinates[0], source: 'DMS-ODIN' }
+      return { lat: coordinates[1], lon: coordinates[0], source: 'LL-ODIN' }
     }
     default: {
       console.warn(`Unable to convert ${value} from format ${format}`)
@@ -164,33 +165,37 @@ const buildTarget = (value, format) => {
 
 const CoordinatesInput = props => {
 
-  const handleComplete = (value, { masked }) => {
-    console.log(`completed ${value} from mask ${masked.currentMask?.name}`)
-    const target = buildTarget(value, masked.currentMask?.name)
-    if (props.onCompleted) props.onCompleted(target)
+  const handleAccept = (value, { masked }) => {
+    if (!props.onChange) return // no handler attached?
+    const target = (masked.currentMask?.isComplete ? buildTarget(masked.currentMask.unmaskedValue, masked.currentMask?.name) : undefined)
+    console.dir(target)
+    props.onChange(target)
   }
+
   const { ref } = useIMask(
     {
       mask: [mgrsMask, utmMask, degMask, degODINMask],
       unmask: true
     },
-    { onComplete: handleComplete }
+    {
+      onAccept: handleAccept
+    }
   )
 
   return (
-    <FormControl variant="standard" fullWidth={true}>
+    <FormControl variant='outlined' fullWidth={true}>
         <Input
           name="Coordinates"
           id="formatted-text-mask-input"
           inputRef={ref}
-          placeholder='MGRS, UTM, LON/LAT (DMS)'
+          placeholder='MGRS, UTM, LON LAT (Deg)'
         />
       </FormControl>
   )
 }
 
 CoordinatesInput.propTypes = {
-  onCompleted: PropTypes.func
+  onChange: PropTypes.func
 }
 
 export default CoordinatesInput

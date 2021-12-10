@@ -18,7 +18,7 @@ const Traveller = () => {
     return () => evented.off('LEAVING', handleLeaving)
   }, [])
 
-  const handleCompleted = candidateLocation => {
+  const handleChange = candidateLocation => {
     setLocation(candidateLocation)
   }
 
@@ -32,13 +32,13 @@ const Traveller = () => {
 
   return (
     <>
-      <CoordinatesInput onCompleted={handleCompleted}/>
+      <CoordinatesInput onChange={handleChange}/>
       <ButtonGroup
         variant='outlined' fullWidth={true}
         style={{ marginTop: '0.5em' }}
       >
         <Button
-          endIcon={<SkipPreviousIcon />}
+          startIcon={<SkipPreviousIcon />}
           onClick={handleGoBack}
           disabled={!previousLocation}
         >Go Back</Button>
