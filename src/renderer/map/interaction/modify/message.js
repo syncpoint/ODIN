@@ -104,9 +104,10 @@ export const message = (options, event) => {
     const minDistance = Math.sqrt(Math.min(...squaredDistances))
 
     // Either 0 for start vertex, 1 for end vertex or null
-    // for point between start and end vertex:
+    // for point between start and end vertex.
+    // Note: On same distance we prefer first vertex (at index 0).
     const index = withinTolerance(minDistance)
-      ? squaredDistances[0] < squaredDistances[1]
+      ? squaredDistances[0] <= squaredDistances[1]
         ? 0
         : 1
       : null
