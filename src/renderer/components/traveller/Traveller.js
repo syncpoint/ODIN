@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, ButtonGroup } from '@material-ui/core'
+import { Button, ButtonGroup, Paper } from '@material-ui/core'
 import FastForwardIcon from '@material-ui/icons/FastForward'
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious'
 import CoordinatesInput from './CoordinatesInput'
@@ -31,7 +31,7 @@ const Traveller = () => {
   }
 
   return (
-    <>
+    <Paper variant='outlined' style={{ padding: '1em', marginBottom: '0.5em' }}>
       <CoordinatesInput onChange={handleChange}/>
       <ButtonGroup
         variant='outlined' fullWidth={true}
@@ -48,7 +48,7 @@ const Traveller = () => {
           disabled={!location}
         >Travel</Button>
       </ButtonGroup>
-    </>
+    </Paper>
   )
 }
 
