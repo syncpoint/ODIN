@@ -74,6 +74,8 @@ export const featureGeometry = sidc => {
   return feature ? feature.geometry : undefined
 }
 
+export const geometry = featureGeometry // alias
+
 export const descriptor = feature => {
   if (!feature) return
   if (!feature.get('sidc')) return

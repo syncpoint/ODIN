@@ -10,7 +10,8 @@ import ExportIcon from '@material-ui/icons/SaveAlt'
 import ImportProjectIcon from '@material-ui/icons/LibraryAdd'
 import BackToMapIcon from '@material-ui/icons/ExitToApp'
 
-import { ipcRenderer, remote } from 'electron'
+import { ipcRenderer } from 'electron'
+import { getCurrentWindow } from '@electron/remote'
 import projects from '../../shared/projects'
 import { fromISO } from '../../shared/militaryTime'
 
@@ -185,8 +186,8 @@ const Management = props => {
 
   const handleSaveProject = (metadata) => {
     /* optimistic update the window title if we are saving the currently active project */
-    if (remote.getCurrentWindow().path === selectedProject.path) {
-      remote.getCurrentWindow().setTitle(metadata.name)
+    if (getCurrentWindow().path === selectedProject.path) {
+      getCurrentWindow().setTitle(metadata.name)
     }
 
     /* tell react to re-render */

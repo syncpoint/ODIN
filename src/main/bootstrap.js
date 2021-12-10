@@ -2,6 +2,7 @@ import path from 'path'
 import { URL } from 'url'
 
 import { app, BrowserWindow, dialog, ipcMain } from 'electron'
+import * as erm from '@electron/remote/main'
 import settings from 'electron-settings'
 import projects from '../shared/projects'
 import { exportProject, importProject } from './ipc/share-project'
@@ -80,6 +81,9 @@ const createWindow = async (projectOptions) => {
     }
   })
 
+  // enable @electron/remote module
+  erm.enable(mainWindow.webContents)
+
   /** the path property is required to identify the project */
   mainWindow.path = projectOptions.path
 
@@ -151,6 +155,8 @@ const createProjectWindow = async (options) => {
  */
 const ready = () => {
 
+  erm.initialize() // @electron/remote/main
+  process.env.ODIN_USER_HOME = app.getPath('home')
   /*
     Setting the appId is required to allow desktop notifications on the Windows platform.
     Please make sure this value is THE SAME as in 'electron-builder.yml'.

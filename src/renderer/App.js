@@ -12,7 +12,8 @@ import BasemapManagement from './components/BasemapManagement'
 import Activities from './components/Activities'
 import PropertyPanel from './components/properties/PropertyPanel'
 
-import { ipcRenderer, remote } from 'electron'
+import { ipcRenderer } from 'electron'
+import { getCurrentWindow } from '@electron/remote'
 
 
 import extendMilsymbols from './components/milsymbol/msExtend'
@@ -71,7 +72,7 @@ const App = (props) => {
   const [currentProjectPath, setCurrentProjectPath] = React.useState(undefined)
 
   React.useEffect(() => {
-    setCurrentProjectPath(remote.getCurrentWindow().path)
+    setCurrentProjectPath(getCurrentWindow().path)
 
     /*  Tell the main process that React has finished rendering of the App */
     setTimeout(() => ipcRenderer.send('IPC_APP_RENDERING_COMPLETED'), 0)
@@ -95,7 +96,7 @@ const App = (props) => {
       Since we use the current window for reading the project path
       we can also do so for the project name.
     */
-    const projectName = remote.getCurrentWindow().getTitle()
+    const projectName = getCurrentWindow().getTitle()
     evented.emit('OSD_MESSAGE', { message: projectName, slot: 'A1' })
 
     /*

@@ -26,4 +26,4 @@ linux:
     - 'dist'
 publish:
   - github
-electronVersion: 11.5.0
+electronVersion: 16.0.4
