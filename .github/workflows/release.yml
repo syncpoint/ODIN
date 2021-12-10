@@ -17,7 +17,7 @@ jobs:
       - name: Upgrade npm to v7
         run: npm install -g npm@latest
       - name: Install 
-        run: npm ci --no-audit --no-optional
+        run: npm ci --no-audit
       - name: Create Webpack
         run: npm run webpack:production
       - name: Import OS-X certificates
