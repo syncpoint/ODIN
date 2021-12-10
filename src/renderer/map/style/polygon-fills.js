@@ -9,5 +9,8 @@ export const fills = {
   'G*M*NC----': hatchFill,
   'G*M*NR----': hatchFill,
   'G*F*AKBI--': hatchFill,
-  'G*F*AKPI--': hatchFill
+  'G*F*AKPI--': hatchFill,
+  'G*F*ACNR--': hatchFill,
+  'G*F*AKBR--': hatchFill,
+  'G*F*AKPR--': hatchFill
 }
