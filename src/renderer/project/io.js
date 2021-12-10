@@ -1,9 +1,9 @@
-import { remote } from 'electron'
+import { getCurrentWindow } from '@electron/remote'
 import path from 'path'
 import fs from 'fs'
 import { noop, K } from '../../shared/combinators'
 
-const projectPath = () => remote.getCurrentWindow().path
+const projectPath = () => getCurrentWindow().path
 
 /**
  * Load preferences for open project.

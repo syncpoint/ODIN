@@ -1,6 +1,6 @@
 {
   "name": "odin-c2is",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "description": "ODIN Command and Control Information System",
   "main": "dist/main.js",
   "scripts": {
@@ -40,7 +40,7 @@
     "@babel/register": "^7.16.0",
     "babel-loader": "^8.2.2",
     "css-loader": "^5.2.7",
-    "electron": "^11.5.0",
+    "electron": "^16.0.4",
     "electron-builder": "^22.14.5",
     "electron-notarize": "^1.1.1",
     "electron-publish": "^22.14.7",
@@ -61,6 +61,7 @@
     "webpack-dev-server": "^3.11.3"
   },
   "dependencies": {
+    "@electron/remote": "^2.0.1",
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",

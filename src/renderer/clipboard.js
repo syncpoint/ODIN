@@ -1,5 +1,5 @@
 import Mousetrap from 'mousetrap'
-import { ipcRenderer, remote, clipboard } from 'electron'
+import { ipcRenderer, clipboard } from 'electron'
 import evented from './evented'
 import { K, noop } from '../shared/combinators'
 import selection from './selection'
@@ -119,6 +119,6 @@ Mousetrap.bind('esc', () => selection.deselect())
   does not work the same way as it does on OS X.
   See https://github.com/electron/electron/issues/7165
 */
-if (remote.process.platform !== 'darwin') {
+if (process.platform !== 'darwin') {
   Mousetrap.bind('ctrl+a', () => evented.emit('EDIT_SELECT_ALL'))
 }
