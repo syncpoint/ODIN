@@ -1,6 +1,7 @@
 import React from 'react'
-import { Button, ButtonGroup, Paper } from '@material-ui/core'
+import { IconButton, Paper } from '@material-ui/core'
 import FastForwardIcon from '@material-ui/icons/FastForward'
+import SkipNextIcon from '@material-ui/icons/SkipNext'
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious'
 import CoordinatesInput from './CoordinatesInput'
 
@@ -8,46 +9,51 @@ import evented from '../../evented'
 
 const Traveller = () => {
   const [location, setLocation] = React.useState(undefined)
-  const [previousLocation, setPreviousLocation] = React.useState(undefined)
 
   React.useEffect(() => {
-    const handleLeaving = previousCenter => {
-      setPreviousLocation(previousCenter)
+    const historyHandler = ({ state: previousLocation }) => {
+      if (!previousLocation) return
+      evented.emit('TRAVEL', previousLocation)
     }
-    evented.on('LEAVING', handleLeaving)
-    return () => evented.off('LEAVING', handleLeaving)
+
+    window.addEventListener('popstate', historyHandler)
+    return () => window.removeEventListener('popstate', historyHandler)
   }, [])
 
-  const handleChange = candidateLocation => {
+  const setTravellingLocation = candidateLocation => {
     setLocation(candidateLocation)
   }
 
   const handleTravel = () => {
+    window.history.pushState(location, '')
     evented.emit('TRAVEL', location)
   }
 
   const handleGoBack = () => {
-    evented.emit('TRAVEL', previousLocation)
+    window.history.back()
+  }
+
+  const handleGoForward = () => {
+    window.history.forward()
   }
 
   return (
-    <Paper variant='outlined' style={{ padding: '1em', marginBottom: '0.5em' }}>
-      <CoordinatesInput onChange={handleChange}/>
-      <ButtonGroup
-        variant='outlined' fullWidth={true}
-        style={{ marginTop: '0.5em' }}
-      >
-        <Button
-          startIcon={<SkipPreviousIcon />}
+    <Paper variant='outlined' style={{ padding: '0.5em', marginBottom: '0.5em' }}>
+      <CoordinatesInput onChange={setTravellingLocation}/>
+      <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+        <IconButton
           onClick={handleGoBack}
-          disabled={!previousLocation}
-        >Go Back</Button>
-        <Button
-          endIcon={<FastForwardIcon />}
+          disabled={(window.history.length === 1)}
+        ><SkipPreviousIcon /></IconButton>
+        <IconButton
+          onClick={handleGoForward}
+          disabled={(window.history.length === 1)}
+        ><SkipNextIcon /></IconButton>
+        <IconButton
           onClick={handleTravel}
           disabled={!location}
-        >Travel</Button>
-      </ButtonGroup>
+        ><FastForwardIcon /></IconButton>
+      </div>
     </Paper>
   )
 }
