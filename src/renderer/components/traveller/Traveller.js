@@ -14,7 +14,9 @@ const Traveller = () => {
     setLocation(candidateLocation)
   }
 
-  const handleTravel = () => {
+  const handleTravel = e => {
+    // this may be triggered by ENTER/Submit
+    e.preventDefault()
     evented.emit('TRAVEL', location)
   }
 
@@ -28,7 +30,8 @@ const Traveller = () => {
 
   return (
     <Paper variant='outlined' style={{ padding: '0.5em', marginBottom: '0.5em' }}>
-      <CoordinatesInput onChange={setTravellingLocation}/>
+      <form>
+      <CoordinatesInput onChange={setTravellingLocation} />
       <div style={{ display: 'flex', justifyContent: 'space-around' }}>
         <IconButton
           onClick={handleGoBack}
@@ -39,8 +42,10 @@ const Traveller = () => {
         <IconButton
           onClick={handleTravel}
           disabled={!location}
+          type='submit'
         ><FastForwardIcon /></IconButton>
       </div>
+      </form>
     </Paper>
   )
 }

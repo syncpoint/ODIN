@@ -167,7 +167,6 @@ const CoordinatesInput = props => {
   const handleAccept = (value, { masked }) => {
     if (!props.onChange) return // no handler attached?
     const target = (masked.currentMask?.isComplete ? buildTarget(masked.currentMask.unmaskedValue, masked.currentMask?.name) : undefined)
-    console.dir(target)
     props.onChange(target)
   }
 
@@ -183,13 +182,13 @@ const CoordinatesInput = props => {
 
   return (
     <FormControl variant='outlined' fullWidth={true}>
-        <Input
-          name="Coordinates"
-          id="formatted-text-mask-input"
-          inputRef={ref}
-          placeholder='MGRS, UTM, LON LAT (Deg)'
-        />
-      </FormControl>
+      <Input
+        name="Coordinates"
+        id="formatted-text-mask-input"
+        inputRef={ref}
+        placeholder='MGRS, UTM, LON LAT (Deg)'
+      />
+    </FormControl>
   )
 }
 
