@@ -10,31 +10,20 @@ import evented from '../../evented'
 const Traveller = () => {
   const [location, setLocation] = React.useState(undefined)
 
-  React.useEffect(() => {
-    const historyHandler = ({ state: previousLocation }) => {
-      if (!previousLocation) return
-      evented.emit('TRAVEL', previousLocation)
-    }
-
-    window.addEventListener('popstate', historyHandler)
-    return () => window.removeEventListener('popstate', historyHandler)
-  }, [])
-
   const setTravellingLocation = candidateLocation => {
     setLocation(candidateLocation)
   }
 
   const handleTravel = () => {
-    window.history.pushState(location, '')
     evented.emit('TRAVEL', location)
   }
 
   const handleGoBack = () => {
-    window.history.back()
+    evented.emit('TRAVEL_BACK')
   }
 
   const handleGoForward = () => {
-    window.history.forward()
+    evented.emit('TRAVEL_FORWARD')
   }
 
   return (
@@ -43,11 +32,9 @@ const Traveller = () => {
       <div style={{ display: 'flex', justifyContent: 'space-around' }}>
         <IconButton
           onClick={handleGoBack}
-          disabled={(window.history.length === 1)}
         ><SkipPreviousIcon /></IconButton>
         <IconButton
           onClick={handleGoForward}
-          disabled={(window.history.length === 1)}
         ><SkipNextIcon /></IconButton>
         <IconButton
           onClick={handleTravel}
