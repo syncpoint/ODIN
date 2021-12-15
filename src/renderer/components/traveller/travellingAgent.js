@@ -3,13 +3,14 @@ import uuid from 'uuid-random'
 import { fromLonLat, toLonLat } from 'ol/proj'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
-import Collection from 'ol/Collection'
 import Feature from 'ol/Feature'
 import Point from 'ol/geom/Point'
 import { Select } from 'ol/interaction'
 import { registerHandler } from '../../clipboard'
 import selection from '../../selection'
 import crosshairStyle from './crosshairStyle'
+
+const TRAVEL_PREFIX = 'travel:'
 
 const travellingAgent = map => {
 
@@ -23,49 +24,52 @@ const travellingAgent = map => {
     window.history.replaceState(currentLocation, '')
   }
 
-  // we place a marker on the exact position
-  const markers = new Collection()
-  const selectedMarkers = new Collection()
   const selectInteraction = new Select(
     {
-      features: selectedMarkers,
       style: crosshairStyle(true), // selected style
-      hitTolerance: 3,
-      filter: feature => feature.getId().startsWith('travel:')
+      hitTolerance: 4,
+      filter: feature => feature.getId().startsWith(TRAVEL_PREFIX)
     }
   )
   // when a coordinate-marker is selected we deselect all other features
-  selectInteraction.on('select', ({ selected }) => {
+  selectInteraction.on('select', ({ selected, deselected }) => {
     if (selected.length > 0) {
       selection.deselect()
+      selection.select(selected.map(marker => marker.getId()))
+    } else if (deselected.length > 0) {
+      selection.deselect(deselected.map(marker => marker.getId()))
     }
   })
 
-  const source = new VectorSource({ features: markers })
   const vector = new VectorLayer({
-    source: source,
+    source: new VectorSource(),
     style: crosshairStyle()
   })
 
   map.addLayer(vector)
   map.addInteraction(selectInteraction)
 
-  // the only (inter)action after being selected is "delete"
-  registerHandler('travel:', {
-    copy: () => {},
-    paste: () => {},
-    cut: () => {},
+  // the only (inter)actions after being selected are "delete" and "copyCoordinates"
+  registerHandler(TRAVEL_PREFIX, {
     delete: () => {
-      selectedMarkers.getArray().forEach(feature => source.removeFeature(feature))
-      selectedMarkers.clear()
+      const source = vector.getSource()
+      selection.selected()
+        .filter(featureId => featureId.startsWith(TRAVEL_PREFIX))
+        .map(featureId => source.getFeatureById(featureId))
+        .forEach(feature => {
+          source.removeFeature(feature)
+        })
     },
     copyCoordinates: () => {
-      console.log('running copyCoordinates ...')
-      console.dir(selectedMarkers)
-      if (selectedMarkers.getLength() !== 1) return ''
-      const marker = selectedMarkers.getArray()[0]
+      const selected = selection.selected()
+      if (selected.length !== 1) return ''
+
+      const source = vector.getSource()
+      const marker = selected
+        .filter(featureId => featureId.startsWith(TRAVEL_PREFIX))
+        .map(featureId => source.getFeatureById(featureId))
       console.dir(marker)
-      return toLonLat(marker.getGeometry().getCoordinates())
+      return marker[0] ? toLonLat(marker[0].getGeometry().getCoordinates()) : ''
     }
   })
 
@@ -92,8 +96,8 @@ const travellingAgent = map => {
     window.history.pushState(target, '')
 
     const marker = new Feature(new Point(fromLonLat([target.lon, target.lat])))
-    marker.setId(`travel:${uuid()}`)
-    markers.push(marker)
+    marker.setId(`${TRAVEL_PREFIX}${uuid()}`)
+    vector.getSource().addFeature(marker)
 
     setViewPort(target)
   })
@@ -105,6 +109,17 @@ const travellingAgent = map => {
   evented.on('TRAVEL_FORWARD', () => {
     window.history.forward()
   })
+
+  selection.on('selected', ids => {
+    // if any feature that is not a TRAVEL marker is selected
+    // we remove our own selection
+    if (ids.filter(id => !(id.startsWith(TRAVEL_PREFIX))).length > 0) {
+      const deselectables = selection.selected().filter(id => id.startsWith(TRAVEL_PREFIX))
+      selection.deselect(deselectables)
+      selectInteraction.getFeatures().clear()
+    }
+  })
+
 }
 
 export default travellingAgent
