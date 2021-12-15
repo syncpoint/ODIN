@@ -1,13 +1,15 @@
 import evented from '../../evented'
+import uuid from 'uuid-random'
 import { fromLonLat, toLonLat } from 'ol/proj'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
 import Collection from 'ol/Collection'
 import Feature from 'ol/Feature'
 import Point from 'ol/geom/Point'
-import { RegularShape, Stroke, Style } from 'ol/style'
 import { Select } from 'ol/interaction'
 import { registerHandler } from '../../clipboard'
+import selection from '../../selection'
+import crosshairStyle from './crosshairStyle'
 
 const travellingAgent = map => {
 
@@ -27,31 +29,22 @@ const travellingAgent = map => {
   const selectInteraction = new Select(
     {
       features: selectedMarkers,
-      style: new Style({
-        image: new RegularShape({
-          stroke: new Stroke({ color: 'red', width: 4 }),
-          points: 4,
-          radius: 13,
-          radius2: 0,
-          angle: 0
-        })
-      }),
-      hitTolerance: 3
+      style: crosshairStyle(true), // selected style
+      hitTolerance: 3,
+      filter: feature => feature.getId().startsWith('travel:')
     }
   )
+  // when a coordinate-marker is selected we deselect all other features
+  selectInteraction.on('select', ({ selected }) => {
+    if (selected.length > 0) {
+      selection.deselect()
+    }
+  })
 
   const source = new VectorSource({ features: markers })
   const vector = new VectorLayer({
     source: source,
-    style: new Style({
-      image: new RegularShape({
-        stroke: new Stroke({ color: 'black', width: 4 }),
-        points: 4,
-        radius: 13,
-        radius2: 0,
-        angle: 0
-      })
-    })
+    style: crosshairStyle()
   })
 
   map.addLayer(vector)
@@ -66,7 +59,14 @@ const travellingAgent = map => {
       selectedMarkers.getArray().forEach(feature => source.removeFeature(feature))
       selectedMarkers.clear()
     },
-    copyCoordinates: () => {}
+    copyCoordinates: () => {
+      console.log('running copyCoordinates ...')
+      console.dir(selectedMarkers)
+      if (selectedMarkers.getLength() !== 1) return ''
+      const marker = selectedMarkers.getArray()[0]
+      console.dir(marker)
+      return toLonLat(marker.getGeometry().getCoordinates())
+    }
   })
 
   const setViewPort = target => {
@@ -92,6 +92,7 @@ const travellingAgent = map => {
     window.history.pushState(target, '')
 
     const marker = new Feature(new Point(fromLonLat([target.lon, target.lat])))
+    marker.setId(`travel:${uuid()}`)
     markers.push(marker)
 
     setViewPort(target)
