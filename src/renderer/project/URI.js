@@ -18,5 +18,5 @@ export default {
       : `feature:${layerId.match(/layer:(.*)/)[1]}/${uuid()}`,
   isFeatureId: s => s.startsWith('feature:'),
   isLayerId: s => s.startsWith('layer:'),
-  isTravelMarkerId: s => s.startsWith(SCHEME_TRAVEL_MARKER)
+  isTravelMarkerId: s => (s && s.startsWith(SCHEME_TRAVEL_MARKER))
 }
