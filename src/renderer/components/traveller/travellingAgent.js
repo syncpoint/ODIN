@@ -35,21 +35,21 @@ const travellingAgent = map => {
   const selectInteraction = new Select(
     {
       style: crosshairStyle(true), // selected style
-      hitTolerance: 4,
+      hitTolerance: 5,
       filter: feature => URI.isTravelMarkerId(feature.getId())
     }
   )
   /*
     We need to play nicely with features other parts of the application.
-    When a coordinate-marker is __selected__ we deselect all other features first.
-    Then we __deselect__ markers we just remove them from the app-wide selection list
+    When a coordinate-marker is _selected_ we deselect all other features first.
+    Then we _deselect_ markers we just remove them from the app-wide selection list
   */
-  selectInteraction.on('select', ({ selected, deselected }) => {
-    if (selected.length > 0) {
+  selectInteraction.on('select', ({ selected: selectedMarkers, deselected: deselectedMarkers }) => {
+    if (selectedMarkers.length > 0) {
       selection.deselect()
-      selection.select(selected.map(marker => marker.getId()))
-    } else if (deselected.length > 0) {
-      selection.deselect(deselected.map(marker => marker.getId()))
+      selection.select(selectedMarkers.map(marker => marker.getId()))
+    } else if (deselectedMarkers.length > 0) {
+      selection.deselect(deselectedMarkers.map(marker => marker.getId()))
     }
   })
 
@@ -59,9 +59,10 @@ const travellingAgent = map => {
       we remove our markes from the list of selected features
       and clear the internal collection of the select interaction
     */
-    if (ids.filter(id => !(URI.isTravelMarkerId(id))).length > 0) {
-      const deselectables = selection.selected().filter(URI.isTravelMarkerId)
-      selection.deselect(deselectables)
+    const nonTravelMarkers = ids.filter(id => !(URI.isTravelMarkerId(id)))
+
+    if (nonTravelMarkers.length > 0) {
+      selection.deselect(ids.filter(URI.isTravelMarkerId))
       selectInteraction.getFeatures().clear()
     }
   })
@@ -88,15 +89,9 @@ const travellingAgent = map => {
       const marker = selected
         .filter(URI.isTravelMarkerId)
         .map(featureId => source.getFeatureById(featureId))
-      console.log('## copyCoordinates MAP', marker[0]?.getGeometry().getCoordinates())
-      const ll = marker[0] ? toLonLat(marker[0].getGeometry().getCoordinates()) : ''
-      console.log('## copyCoordinates', ll)
-      return ll
+      return marker[0] ? toLonLat(marker[0].getGeometry().getCoordinates()) : ''
     }
   })
-
-
-
 
   /*****************************************************************************/
 
@@ -110,26 +105,33 @@ const travellingAgent = map => {
     )
   }
 
-  // when history state changes
+  /*
+    Navigating between locations works by making use of the browser's history
+    collection. Every time we travel to a _new_ location we push the state = location
+    to the history stack and create a new "travel marker" on the map. When the user
+    navigates between _known_ location the browser emits a "popstate" event with
+    the state = location as a parameter.
+  */
   const historyHandler = ({ state: location }) => {
     if (!location) return
     setViewPort(location)
   }
   window.addEventListener('popstate', historyHandler)
 
-  // listening for events emitted by the UI
+  /*
+    The Traveller UI emits events to go to
+      + a new location
+      + forward on the history stack
+      + backwards on the history stack
+  */
   evented.on('TRAVEL', target => {
     console.dir(target)
     if (!target) return
     window.history.pushState(target, '')
 
-    const coordinates = fromLonLat([target.lon, target.lat])
-    console.log('## new marker at', target)
-    console.log('## new marker at', coordinates)
-    const marker = new Feature(new Point(coordinates))
+    const marker = new Feature(new Point(fromLonLat([target.lon, target.lat])))
     marker.setId(`${URI.SCHEME_TRAVEL_MARKER}${uuid()}`)
-    const source = vector.getSource()
-    source.addFeature(marker)
+    vector.getSource().addFeature(marker)
 
     setViewPort(target)
   })
@@ -141,7 +143,6 @@ const travellingAgent = map => {
   evented.on('TRAVEL_FORWARD', () => {
     window.history.forward()
   })
-
 }
 
 export default travellingAgent
