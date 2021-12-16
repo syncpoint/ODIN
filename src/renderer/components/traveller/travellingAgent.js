@@ -125,7 +125,6 @@ const travellingAgent = map => {
       + backwards on the history stack
   */
   evented.on('TRAVEL', target => {
-    console.dir(target)
     if (!target) return
     window.history.pushState(target, '')
 

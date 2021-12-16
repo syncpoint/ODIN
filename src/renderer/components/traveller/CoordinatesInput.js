@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { FormControl, Input } from '@material-ui/core'
+import { IconButton, InputBase, Paper } from '@material-ui/core'
+import ClearIcon from '@material-ui/icons/Clear'
 import { useIMask, IMask } from 'react-imask'
 // eslint-disable-next-line import/no-named-default
 import { default as MGRS, Utm as UTM, LatLon } from 'geodesy/mgrs'
@@ -170,7 +171,7 @@ const CoordinatesInput = props => {
     props.onChange(target)
   }
 
-  const { ref } = useIMask(
+  const { ref, maskRef } = useIMask(
     {
       mask: [mgrsMask, utmMask, degMask, degODINMask],
       unmask: true
@@ -181,14 +182,19 @@ const CoordinatesInput = props => {
   )
 
   return (
-    <FormControl variant='outlined' fullWidth={true}>
-      <Input
+    <Paper style={{ display: 'flex', justifyContent: 'space-between' }} variant='outlined'>
+      <InputBase style={{ flex: 1 }}
         name="Coordinates"
         id="formatted-text-mask-input"
         inputRef={ref}
         placeholder='MGRS, UTM, LON LAT (Deg)'
       />
-    </FormControl>
+      <IconButton size='small' onClick={() => {
+        ref.current.value = ''
+        maskRef.current.masked.reset()
+        props.onChange(undefined)
+      }}><ClearIcon /></IconButton>
+    </Paper>
   )
 }
 
