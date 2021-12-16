@@ -1,16 +1,17 @@
 import evented from '../../evented'
 import uuid from 'uuid-random'
 import { fromLonLat, toLonLat } from 'ol/proj'
-import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
+import { Vector as VectorSource } from 'ol/source'
+import Collection from 'ol/Collection'
 import Feature from 'ol/Feature'
 import Point from 'ol/geom/Point'
 import { Select } from 'ol/interaction'
 import { registerHandler } from '../../clipboard'
 import selection from '../../selection'
 import crosshairStyle from './crosshairStyle'
+import URI from '../../project/URI'
 
-const TRAVEL_PREFIX = 'travel:'
 
 const travellingAgent = map => {
 
@@ -24,14 +25,25 @@ const travellingAgent = map => {
     window.history.replaceState(currentLocation, '')
   }
 
+  /* we need a vector layer for our markers */
+  const vector = new VectorLayer({
+    source: new VectorSource({ features: new Collection() }),
+    style: crosshairStyle()
+  })
+
+  /* the only way to interact with the markers is to select (and delete) them */
   const selectInteraction = new Select(
     {
       style: crosshairStyle(true), // selected style
       hitTolerance: 4,
-      filter: feature => feature.getId().startsWith(TRAVEL_PREFIX)
+      filter: feature => URI.isTravelMarkerId(feature.getId())
     }
   )
-  // when a coordinate-marker is selected we deselect all other features
+  /*
+    We need to play nicely with features other parts of the application.
+    When a coordinate-marker is __selected__ we deselect all other features first.
+    Then we __deselect__ markers we just remove them from the app-wide selection list
+  */
   selectInteraction.on('select', ({ selected, deselected }) => {
     if (selected.length > 0) {
       selection.deselect()
@@ -41,20 +53,28 @@ const travellingAgent = map => {
     }
   })
 
-  const vector = new VectorLayer({
-    source: new VectorSource(),
-    style: crosshairStyle()
+  selection.on('selected', ids => {
+    /*
+      If any feature that is not a TRAVEL marker is selected
+      we remove our markes from the list of selected features
+      and clear the internal collection of the select interaction
+    */
+    if (ids.filter(id => !(URI.isTravelMarkerId(id))).length > 0) {
+      const deselectables = selection.selected().filter(URI.isTravelMarkerId)
+      selection.deselect(deselectables)
+      selectInteraction.getFeatures().clear()
+    }
   })
 
   map.addLayer(vector)
   map.addInteraction(selectInteraction)
 
   // the only (inter)actions after being selected are "delete" and "copyCoordinates"
-  registerHandler(TRAVEL_PREFIX, {
+  registerHandler(URI.SCHEME_TRAVEL_MARKER, {
     delete: () => {
       const source = vector.getSource()
       selection.selected()
-        .filter(featureId => featureId.startsWith(TRAVEL_PREFIX))
+        .filter(URI.isTravelMarkerId)
         .map(featureId => source.getFeatureById(featureId))
         .forEach(feature => {
           source.removeFeature(feature)
@@ -66,12 +86,19 @@ const travellingAgent = map => {
 
       const source = vector.getSource()
       const marker = selected
-        .filter(featureId => featureId.startsWith(TRAVEL_PREFIX))
+        .filter(URI.isTravelMarkerId)
         .map(featureId => source.getFeatureById(featureId))
-      console.dir(marker)
-      return marker[0] ? toLonLat(marker[0].getGeometry().getCoordinates()) : ''
+      console.log('## copyCoordinates MAP', marker[0]?.getGeometry().getCoordinates())
+      const ll = marker[0] ? toLonLat(marker[0].getGeometry().getCoordinates()) : ''
+      console.log('## copyCoordinates', ll)
+      return ll
     }
   })
+
+
+
+
+  /*****************************************************************************/
 
   const setViewPort = target => {
     const view = map.getView()
@@ -92,12 +119,17 @@ const travellingAgent = map => {
 
   // listening for events emitted by the UI
   evented.on('TRAVEL', target => {
+    console.dir(target)
     if (!target) return
     window.history.pushState(target, '')
 
-    const marker = new Feature(new Point(fromLonLat([target.lon, target.lat])))
-    marker.setId(`${TRAVEL_PREFIX}${uuid()}`)
-    vector.getSource().addFeature(marker)
+    const coordinates = fromLonLat([target.lon, target.lat])
+    console.log('## new marker at', target)
+    console.log('## new marker at', coordinates)
+    const marker = new Feature(new Point(coordinates))
+    marker.setId(`${URI.SCHEME_TRAVEL_MARKER}${uuid()}`)
+    const source = vector.getSource()
+    source.addFeature(marker)
 
     setViewPort(target)
   })
@@ -108,16 +140,6 @@ const travellingAgent = map => {
 
   evented.on('TRAVEL_FORWARD', () => {
     window.history.forward()
-  })
-
-  selection.on('selected', ids => {
-    // if any feature that is not a TRAVEL marker is selected
-    // we remove our own selection
-    if (ids.filter(id => !(id.startsWith(TRAVEL_PREFIX))).length > 0) {
-      const deselectables = selection.selected().filter(id => id.startsWith(TRAVEL_PREFIX))
-      selection.deselect(deselectables)
-      selectInteraction.getFeatures().clear()
-    }
   })
 
 }

@@ -83,8 +83,8 @@ const copyCoordinate = async () => {
       const content = handler.copyCoordinates()
       if (content && content.length) acc[scheme] = content
     }), {})
-
-  clipboard.writeText(JSON.stringify(content[URI.SCHEME_FEATURE]))
+  const selectedContent = content[URI.SCHEME_TRAVEL_MARKER] ? content[URI.SCHEME_TRAVEL_MARKER] : content[URI.SCHEME_FEATURE]
+  clipboard.writeText(JSON.stringify(selectedContent))
 }
 
 // Block certain ops when text input field is focused.
