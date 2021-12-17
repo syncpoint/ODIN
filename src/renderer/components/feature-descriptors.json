@@ -2540,14 +2540,17 @@
     "sidc": "G*F*ACAR--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "AIRSPACE COORDINATION AREA (ACA), RECTANGULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*ACBC--*****",
@@ -2584,14 +2587,17 @@
     "sidc": "G*F*ACBR--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "TARGET BUILD-UP AREA (TBA) RECTANGULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*ACDC--*****",
@@ -2628,14 +2634,17 @@
     "sidc": "G*F*ACDR--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "DEAD SPACE AREA (DA) RECTANGULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*ACEC--*****",
@@ -2672,14 +2681,17 @@
     "sidc": "G*F*ACER--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "SENSOR ZONE RECTANGULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*ACFC--*****",
@@ -2716,14 +2728,17 @@
     "sidc": "G*F*ACFR--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "FREE FIRE AREA (FFA), RECTANGULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*ACNC--*****",
@@ -2762,7 +2777,7 @@
     "sidc": "G*F*ACNR--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -2770,7 +2785,10 @@
       "COMMAND & CONTROL AREAS",
       "NO-FIRE AREA (NFA)",
       "NO FIRE AREA (NFA), RECTANGULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*ACPC--*****",
@@ -2801,7 +2819,10 @@
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "POSITION AREA FOR ARTILLERY (PAA), RECTANGULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*ACRC--*****",
@@ -2838,14 +2859,17 @@
     "sidc": "G*F*ACRR--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "RESTRICTIVE FIRE AREA (RFA), RECTANGULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*ACSC--*****",
@@ -2882,14 +2906,17 @@
     "sidc": "G*F*ACSR--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "FIRE SUPPORT AREA (FSA), RECTANGULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*ACT---*****",
@@ -2939,14 +2966,17 @@
     "sidc": "G*F*ACVR--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "TARGET VALUE AREA (TVAR) RECTANGULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*ACZC--*****",
@@ -2983,14 +3013,17 @@
     "sidc": "G*F*ACZR--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "COMMAND & CONTROL AREAS",
       "ZONE OF RESPONSIBILITY (ZOR) RECTANGULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*AKBC--*****",
@@ -3027,14 +3060,17 @@
     "sidc": "G*F*AKBR--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "AREAS",
       "BLUE KILL BOX RECTANGLE"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*AKPC--*****",
@@ -3071,14 +3107,17 @@
     "sidc": "G*F*AKPR--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "AREAS",
       "PURPLE KILL BOX RECTANGLE"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*AT----*****",
@@ -3144,7 +3183,7 @@
     "sidc": "G*F*ATR---*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -3152,7 +3191,10 @@
       "AREAS",
       "AREA TARGET",
       "RECTANGULAR TARGET"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*ATS---*****",
@@ -3212,7 +3254,7 @@
     "sidc": "G*F*AZCR--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -3220,7 +3262,10 @@
       "AREAS",
       "TARGET ACQUISTION ZONES",
       "CENSOR ZONE, RECTANGULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*AZFI--*****",
@@ -3240,7 +3285,7 @@
     "sidc": "G*F*AZFR--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -3248,7 +3293,10 @@
       "AREAS",
       "TARGET ACQUISTION ZONES",
       "CRITICAL FRIENDLY ZONE (CFZ), RECTANGULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*AZII--*****",
@@ -3268,7 +3316,7 @@
     "sidc": "G*F*AZIR--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -3276,7 +3324,10 @@
       "AREAS",
       "TARGET ACQUISTION ZONES",
       "ARTILLERY TARGET INTELLIGENCE (ATI) ZONE, RECTANGULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*AZXI--*****",
@@ -3296,7 +3347,7 @@
     "sidc": "G*F*AZXR--*****",
     "class": "A",
     "scope": "CONTROL",
-    "geometry": "Undefined",
+    "geometry": "Polygon",
     "dimension": "FIRE",
     "hierarchy": [
       "TACTICAL GRAPHICS",
@@ -3304,7 +3355,10 @@
       "AREAS",
       "TARGET ACQUISTION ZONES",
       "CALL FOR FIRE ZONE (CFFZ), RECTANGULAR"
-    ]
+    ],
+    "parameters": {
+      "layout": "rectangle"
+    }
   },
   {
     "sidc": "G*F*LCC---*****",

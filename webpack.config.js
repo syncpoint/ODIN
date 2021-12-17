@@ -76,8 +76,8 @@ const devServer = env => {
   if (env.production) return ({}) // no development server for production
   return ({
     devServer: {
-      contentBase: path.resolve(__dirname, 'dist'),
-      before () {
+      onListening: function (devServer) {
+        if (!devServer) throw new Error('Whoa, devServer does not seem to be running.')
         spawn(
           'electron',
           ['.'],

@@ -22,7 +22,7 @@ export const drawOptions = [
 
   /* Polygon. */
   {
-    match: descriptor => descriptor.geometry === GeometryType.POLYGON,
+    match: descriptor => descriptor.geometry === GeometryType.POLYGON && !descriptor.layout,
     options: () => ({ type: GeometryType.POLYGON }),
     complete: (_, feature) => {
       const geometry = feature.getGeometry()
@@ -102,6 +102,26 @@ export const drawOptions = [
       const C = G.toLatLon(G.coordinates(point))
       const A = C.destinationPoint(resolution * 50, 0)
       feature.setGeometry(new geom.MultiPoint([G.fromLatLon(C), G.fromLatLon(A)]))
+    }
+  },
+
+  /* Polygon/rectangle */
+  {
+    match: descriptor => descriptor.layout === 'rectangle',
+    options: () => ({ type: GeometryType.POINT }),
+    complete: (map, feature) => {
+      const resolution = map.getView().getResolution()
+      const distance = resolution * 50
+      const geometry = feature.getGeometry()
+      const { read, write } = format(geometry.getFirstCoordinate())
+      const point = read(geometry)
+
+      const A = TS.coordinate(point)
+      const C = TS.projectCoordinate(A)([-Math.PI / 4, distance * Math.sqrt(2)])
+      const B = TS.coordinate([C.getX(), A.getY()])
+      const D = TS.coordinate([A.getX(), C.getY()])
+      const polygon = TS.polygon([A, B, C, D, A])
+      feature.setGeometry(write(polygon))
     }
   },
 

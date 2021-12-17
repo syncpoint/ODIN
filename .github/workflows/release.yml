@@ -13,11 +13,11 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: 16
       - name: Upgrade npm to v7
         run: npm install -g npm@latest
       - name: Install 
-        run: npm ci --no-audit --no-optional
+        run: npm ci --no-audit
       - name: Create Webpack
         run: npm run webpack:production
       - name: Import OS-X certificates

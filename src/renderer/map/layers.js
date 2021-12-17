@@ -4,7 +4,7 @@ import Collection from 'ol/Collection'
 import { Vector as VectorSource } from 'ol/source'
 import { Vector as VectorLayer } from 'ol/layer'
 import { Select, Translate, DragBox, Snap } from 'ol/interaction'
-import { click, primaryAction, platformModifierKeyOnly } from 'ol/events/condition'
+import { click, platformModifierKeyOnly } from 'ol/events/condition'
 import Style from 'ol/style/Style'
 
 import { noop, K } from '../../shared/combinators'
@@ -13,9 +13,8 @@ import inputLayers from '../project/input-layers'
 import Feature from '../project/Feature'
 import URI from '../project/URI'
 import selection from '../selection'
-import { Modify } from './interaction/Modify'
+import { Modify } from './interaction/modify'
 import { OffsetLocation } from './interaction/offset-location'
-import * as descriptors from '../components/feature-descriptors'
 
 // --
 // SECTION: Module-global (utility) functions.
@@ -236,7 +235,6 @@ selection.on('deselected', ids => featuresById(ids)
 
 const hitTolerance = 3
 const noAltKey = ({ originalEvent }) => originalEvent.altKey !== true // macOS: option key
-const noShiftKey = ({ originalEvent }) => originalEvent.shiftKey !== true
 const conjunction = (...ps) => v => ps.reduce((acc, p) => acc && p(v), true)
 
 /**
@@ -277,26 +275,16 @@ const createModify = source => {
   let initial = {} // Cloned geometries BEFORE modify.
 
   const interaction = new Modify({
-    hitDetection: true,
     source,
-    // Allow translate while editing (with shift key pressed):
-    condition: conjunction(primaryAction, noShiftKey),
-    showVertexCondition: event => {
-      // Always show when snapped to exising geometry vertex:
-      if (event.snappedToVertex) return true
-
-      // Don't show when feature's max point is limited to two:
-      const sidc = event.feature.get('sidc')
-      return descriptors.maxPoints(sidc) !== 2
-    }
+    pixelTolerance: 15
   })
 
   interaction.on('modifystart', ({ features }) => {
-    initial = cloneGeometries(features.getArray())
+    initial = cloneGeometries(features)
   })
 
   interaction.on('modifyend', ({ features }) => {
-    inputLayers.updateGeometries(initial, features.getArray())
+    inputLayers.updateGeometries(initial, features)
   })
 
   return interaction

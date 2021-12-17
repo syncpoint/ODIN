@@ -4,14 +4,10 @@ import archiver from 'archiver'
 import StreamZip from 'node-stream-zip'
 import uuid from 'uuid-random'
 
-/*  since this module is shared and may be uses both in the main and in the
-    renderer process we must import both in order to resolve the HOME path
-*/
-import { app, remote } from 'electron'
-
 /** @returns The current home directory of the user. */
 const HOME = () => {
-  return remote ? remote.app.getPath('home') : app.getPath('home')
+  // see bootstrap.js/ready
+  return process.env.ODIN_USER_HOME
 }
 /** @returns The path where ODIN stores it's data. This may be changed by setting the
  * environment variable ODIN_HOME */
