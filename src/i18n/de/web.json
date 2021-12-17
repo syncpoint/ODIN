@@ -136,5 +136,10 @@
       "jpeg": "JPEG Bild"
     },
     "execute": "{{targetOutputFormat}} erstellen"
+  },
+  "travel": {
+    "back": "Zurück",
+    "forward": "Vorwärts",
+    "goto": "Zur Koordinate springen"
   }
 }

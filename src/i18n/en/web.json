@@ -135,5 +135,10 @@
       "jpeg": "JPEG Image"
     },
     "execute": "Create {{targetOutputFormat}}"
+  },
+  "travel": {
+    "back": "Back",
+    "forward": "Forward",
+    "goto": "Jump to coordinate"
   }
 }

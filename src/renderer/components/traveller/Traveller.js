@@ -1,14 +1,14 @@
 import React from 'react'
-import { IconButton, Paper } from '@material-ui/core'
+import { IconButton, Paper, Tooltip } from '@material-ui/core'
 import FastForwardIcon from '@material-ui/icons/FastForward'
 import SkipNextIcon from '@material-ui/icons/SkipNext'
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious'
-
+import { useTranslation } from 'react-i18next'
 import CoordinatesInput from './CoordinatesInput'
-
 import evented from '../../evented'
 
 const Traveller = () => {
+  const { t } = useTranslation()
   const [location, setLocation] = React.useState(undefined)
 
   const setTravellingLocation = candidateLocation => {
@@ -34,17 +34,24 @@ const Traveller = () => {
       <form>
         <CoordinatesInput onChange={setTravellingLocation} />
         <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-          <IconButton
-            onClick={handleGoBack}
-          ><SkipPreviousIcon /></IconButton>
-          <IconButton
-            onClick={handleGoForward}
-          ><SkipNextIcon /></IconButton>
-          <IconButton
-            onClick={handleTravel}
-            disabled={!location}
-            type='submit'
-          ><FastForwardIcon /></IconButton>
+          <Tooltip title={t('travel.back')}>
+            <IconButton onClick={handleGoBack}>
+              <SkipPreviousIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t('travel.forward')}>
+            <IconButton onClick={handleGoForward}>
+              <SkipNextIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t('travel.goto')}>
+            <IconButton
+              onClick={handleTravel}
+              disabled={!location}
+              type='submit'>
+              <FastForwardIcon />
+            </IconButton>
+          </Tooltip>
         </div>
       </form>
     </Paper>
