@@ -3066,7 +3066,7 @@
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "AREAS",
-      "BLUE KILL BOX RECTANGLE"
+      "BLUE KILL BOX RECTANGULAR"
     ],
     "parameters": {
       "layout": "rectangle"
@@ -3113,7 +3113,7 @@
       "TACTICAL GRAPHICS",
       "FIRE SUPPORT",
       "AREAS",
-      "PURPLE KILL BOX RECTANGLE"
+      "PURPLE KILL BOX RECTANGULAR"
     ],
     "parameters": {
       "layout": "rectangle"
@@ -22257,8 +22257,23 @@
     "dimension": "TASK",
     "hierarchy": [
       "TACTICAL PLANNING TOOL",
-      "HUB",
-      "BLACK"
+      "HUB, BLACK"
+    ],
+    "parameters": {
+	  "arc": "338",
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
+  },
+  {
+    "sidc": "P*-*DV----*****",
+    "class": "PL",
+    "geometry": "MultiPoint",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "HUB, PURPLE"
     ],
     "parameters": {
 	  "arc": "338",
