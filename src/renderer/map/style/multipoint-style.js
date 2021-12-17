@@ -486,6 +486,6 @@ geometries['P*-*DS----'] = ({ points, resolution, styles }) => {
   ])
 
   return [
-    styles.solidLine(TS.union([geometry, TS.lineString(xs)]))
+    styles.solidLine(TS.union([geometry, TS.lineString(xs)]), { color: 'black', accent: 'white' })
   ]
 }
