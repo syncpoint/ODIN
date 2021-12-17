@@ -256,7 +256,7 @@ const createSelect = () => {
     condition: conjunction(click, noAltKey),
     toggleCondition: platformModifierKeyOnly, // macOS: command
     multi: false, // don't select all features under cursor at once.
-    filter: Feature.unlocked
+    filter: feature => (Feature.unlocked(feature) && feature.getId().startsWith('feature:'))
   })
 
   interaction.on('select', ({ selected, deselected }) => {
