@@ -45,12 +45,14 @@ const Traveller = () => {
             </IconButton>
           </Tooltip>
           <Tooltip title={t('travel.goto')}>
-            <IconButton
-              onClick={handleTravel}
-              disabled={!location}
-              type='submit'>
-              <FastForwardIcon />
-            </IconButton>
+            <span>
+              <IconButton
+                onClick={handleTravel}
+                disabled={!location}
+                type='submit'>
+                <FastForwardIcon />
+              </IconButton>
+            </span>
           </Tooltip>
         </div>
       </form>
