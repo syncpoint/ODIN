@@ -30,7 +30,7 @@ const editSelectAll = () => {
  */
 const editDelete = () => Object
   .values(clipboardHandlers)
-  .forEach(handler => handler.delete && handler.delete())
+  .forEach(handler => (handler.delete && handler.delete()))
 
 /**
  * editCut :: () -> unit
@@ -40,7 +40,7 @@ const editCut = () => {
   const content = Object
     .entries(clipboardHandlers)
     .reduce((acc, [scheme, handler]) => K(acc)(acc => {
-      const content = handler.cut()
+      const content = (handler.cut && handler.cut())
       if (content && content.length) acc[scheme] = content
     }), {})
 
@@ -55,7 +55,7 @@ const editCopy = () => {
   const content = Object
     .entries(clipboardHandlers)
     .reduce((acc, [scheme, handler]) => K(acc)(acc => {
-      const content = handler.copy()
+      const content = (handler.copy && handler.copy())
       if (content && content.length) acc[scheme] = content
     }), {})
 
@@ -69,7 +69,7 @@ const editCopy = () => {
 const editPaste = async () => {
   const content = await ipcRenderer.invoke('IPC_CLIPBOARD_READ')
   Object.entries(content)
-    .forEach(([scheme, content]) => clipboardHandlers[scheme].paste(content))
+    .forEach(([scheme, content]) => (clipboardHandlers[scheme].paste && clipboardHandlers[scheme].paste(content)))
 }
 
 /**
@@ -80,7 +80,7 @@ const copyCoordinate = async () => {
   const content = Object
     .entries(clipboardHandlers)
     .reduce((acc, [scheme, handler]) => K(acc)(acc => {
-      const content = handler.copyCoordinates()
+      const content = (handler.copyCoordinates && handler.copyCoordinates())
       if (content && content.length) acc[scheme] = content
     }), {})
   const selectedContent = content[URI.SCHEME_TRAVEL_MARKER] ? content[URI.SCHEME_TRAVEL_MARKER] : content[URI.SCHEME_FEATURE]
