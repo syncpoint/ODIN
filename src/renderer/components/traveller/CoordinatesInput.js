@@ -124,6 +124,7 @@ const buildTarget = (value, format) => {
   if (!value || !format) {
     return undefined
   }
+  // console.log(value, format)
   switch (format) {
     case 'MGRS': {
       try {
@@ -146,6 +147,7 @@ const buildTarget = (value, format) => {
     }
     case 'LL-ODIN': {
       const coordinates = value.split(',').map(part => Number.parseFloat(part))
+      if (!coordinates[0] || !coordinates[1]) return undefined
       return { lat: coordinates[1], lon: coordinates[0], source: 'LL-ODIN' }
     }
     default: {
