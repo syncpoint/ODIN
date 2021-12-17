@@ -124,7 +124,6 @@ const buildTarget = (value, format) => {
   if (!value || !format) {
     return undefined
   }
-  console.log(value, format)
   switch (format) {
     case 'MGRS': {
       try {
@@ -138,7 +137,6 @@ const buildTarget = (value, format) => {
     case 'LL-DEG-LONG':
     case 'LL-DEG-SHORT': {
       try {
-        console.log('##LL-DEG:', value)
         const parts = value.replace(',', '').split(' ')
         const coordinate = new LatLon(parts[0], parts[1])
         return { lat: coordinate.lat, lon: coordinate.lon, source: 'LL-DEG' }
