@@ -4,7 +4,7 @@ import { IconButton, InputBase, Paper } from '@material-ui/core'
 import ClearIcon from '@material-ui/icons/Clear'
 import { useIMask, IMask } from 'react-imask'
 // eslint-disable-next-line import/no-named-default
-import { default as MGRS, Utm as UTM, LatLon } from 'geodesy/mgrs'
+import { default as MGRS, LatLon } from 'geodesy/mgrs'
 
 
 const mgrsMask = new IMask.MaskedPattern({
@@ -35,57 +35,62 @@ const mgrsMask = new IMask.MaskedPattern({
   prepare: value => value.toUpperCase()
 })
 
-const utmMask = new IMask.MaskedPattern({
-  name: 'UTM',
-  mask: 'ZONE{ }GRID{ }NL{ }NL',
-  blocks: {
-    ZONE: {
-      mask: IMask.MaskedRange,
-      from: 1,
-      to: 60
-    },
-    GRID: {
-      mask: IMask.MaskedEnum,
-      enum:
-      ['C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y']
-    },
-    NL: {
-      mask: IMask.MaskedNumber,
-      min: 0,
-      max: 999999.999,
-      signed: false,
-      scale: 3,
-      radix: '.',
-      mapToRadix: [',']
-    },
-    BROKEN: {
-      mask: /^[0-9]{1,6}\.?[0-9]{1,3}$/
-    }
-  },
-  prepare: value => value.toUpperCase()
-})
-
-const degMask = IMask.createMask({
-  name: 'LL-DEG',
-  mask: 'DNS°lon{ }DEW°l\\at',
+/* paste from openstreetmap */
+const latLonDegShortMask = IMask.createMask({
+  name: 'LL-DEG-SHORT',
+  mask: 'DNS[,][ ]{ }DEW',
   blocks: {
     DNS: {
       mask: IMask.MaskedNumber,
-      min: -90,
+      min: 0,
       max: 90,
       signed: true,
-      scale: 5,
+      scale: 6,
       radix: '.',
-      mapToRadix: [',']
+      padFractionalZeros: false,
+      normalizeZeros: false,
+      overwrite: true
     },
     DEW: {
       mask: IMask.MaskedNumber,
-      min: -180,
+      min: 0,
       max: 180,
       signed: true,
-      scale: 5,
+      scale: 6,
       radix: '.',
-      mapToRadix: [',']
+      padFractionalZeros: false,
+      normalizeZeros: false,
+      overwrite: true
+    }
+  }
+})
+
+/* paste from google maps */
+const latLonDegLongMask = IMask.createMask({
+  name: 'LL-DEG-LONG',
+  mask: 'DNS[,][ ]{ }DEW',
+  blocks: {
+    DNS: {
+      mask: IMask.MaskedNumber,
+      min: 0,
+      max: 90,
+      signed: true,
+      scale: 15, //!
+      radix: '.',
+      padFractionalZeros: false,
+      normalizeZeros: false,
+      overwrite: true
+    },
+    DEW: {
+      mask: IMask.MaskedNumber,
+      min: 0,
+      max: 180,
+      signed: true,
+      scale: 15, //!
+      radix: '.',
+      padFractionalZeros: false,
+      normalizeZeros: false,
+      overwrite: true
     }
   }
 })
@@ -93,25 +98,23 @@ const degMask = IMask.createMask({
 // [15.617595371652579,48.321868556411715]
 const degODINMask = IMask.createMask({
   name: 'LL-ODIN',
-  mask: '[DEW{, }DNS]',
+  mask: '\\[DEW{, }DNS\\]',
   blocks: {
     DNS: {
       mask: IMask.MaskedNumber,
-      min: -90,
+      min: 0,
       max: 90,
       signed: true,
       scale: 15,
-      radix: '.',
-      mapToRadix: [',']
+      radix: '.'
     },
     DEW: {
       mask: IMask.MaskedNumber,
-      min: -180,
+      min: 0,
       max: 180,
       signed: true,
       scale: 15,
-      radix: '.',
-      mapToRadix: [',']
+      radix: '.'
     }
   }
 })
@@ -119,10 +122,9 @@ const degODINMask = IMask.createMask({
 
 const buildTarget = (value, format) => {
   if (!value || !format) {
-    console.error('value or format not defined')
     return undefined
   }
-
+  console.log(value, format)
   switch (format) {
     case 'MGRS': {
       try {
@@ -133,19 +135,12 @@ const buildTarget = (value, format) => {
         return undefined
       }
     }
-    case 'UTM': {
+    case 'LL-DEG-LONG':
+    case 'LL-DEG-SHORT': {
       try {
-        const utm = UTM.parse(value)
-        const coordinates = utm.toLatLon()
-        return { lat: coordinates.lat, lon: coordinates.lon, source: 'UTM' }
-      } catch (error) {
-        return undefined
-      }
-    }
-    case 'LL-DEG': { // LON-LAT
-      try {
-        const parts = value.split(' ')
-        const coordinate = new LatLon(parts[1], parts[0])
+        console.log('##LL-DEG:', value)
+        const parts = value.replace(',', '').split(' ')
+        const coordinate = new LatLon(parts[0], parts[1])
         return { lat: coordinate.lat, lon: coordinate.lon, source: 'LL-DEG' }
       } catch (error) {
         return undefined
@@ -173,8 +168,34 @@ const CoordinatesInput = props => {
 
   const { ref, maskRef } = useIMask(
     {
-      mask: [mgrsMask, utmMask, degMask, degODINMask],
-      unmask: true
+      mask: [mgrsMask, latLonDegShortMask, latLonDegLongMask, degODINMask],
+      unmask: true,
+      dispatch: (appended, dynamicMasked) => {
+        const value = `${dynamicMasked.typedValue}${appended}`
+        // console.log('#dispatch', value)
+        if (value && value.startsWith('[')) {
+          // ODIN coordinates
+          return dynamicMasked.compiledMasks.find(m => m.name === 'LL-ODIN')
+        } else if (value && value.match(/^\d{2}\w{1}/)) {
+          return dynamicMasked.compiledMasks.find(m => m.name === 'MGRS')
+        } else {
+          /*
+            This one was VERY TRICKY! In order to support copy and paste operations from
+            * Apple Maps: scale 6
+            * OSM: scale 5
+            * Google Maps: scale 15
+            we had to use two different masks that have a different scale. Padding with
+            zeros and many other options made the result even worse.
+            Manually using the appropriate mask was the only thing that worked.
+          */
+          const shortMask = dynamicMasked.compiledMasks.find(m => m.name === 'LL-DEG-SHORT')
+          const longMask = dynamicMasked.compiledMasks.find(m => m.name === 'LL-DEG-LONG')
+
+          // 33.172736252425845
+          if (dynamicMasked.rawInputValue.length > 7) return longMask
+          return shortMask
+        }
+      }
     },
     {
       onAccept: handleAccept
@@ -187,7 +208,7 @@ const CoordinatesInput = props => {
         name="Coordinates"
         id="formatted-text-mask-input"
         inputRef={ref}
-        placeholder='MGRS, UTM, LON LAT (Deg)'
+        placeholder='MGRS (UTMREF), LAT/LON (Deg)'
       />
       <IconButton size='small' onClick={() => {
         ref.current.value = ''
