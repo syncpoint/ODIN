@@ -464,3 +464,53 @@ export const multipointStyle = mode => (feature, resolution) => {
     ...factory.handles(points)
   ].flat()
 }
+
+/**
+ * TACTICAL PLANNING TOOLS
+ * HUB / BLACK
+ */
+geometries['P*-*DS----'] = ({ points, resolution, styles }) => {
+  const delta = 330 * deg2rad
+  const coords = TS.coordinates(points)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const radius = segment.getLength()
+
+  const arc = TS.arc(coords[0], radius, angle, delta, quads)
+  const xs = TS.projectCoordinates(radius, angle - delta + Math.PI / 2, R.last(arc))([
+    [0.2, -0.2], [0, 0], [0.2, 0.2]
+  ])
+
+  const geometry = TS.difference([
+    TS.lineString(arc)
+  ])
+
+  return [
+    styles.solidLine(TS.union([geometry, TS.lineString(xs)]), { color: 'black', accent: 'white' })
+  ]
+}
+
+/**
+ * TACTICAL PLANNING TOOLS
+ * HUB / PURPLE
+ */
+geometries['P*-*DV----'] = ({ points, resolution, styles }) => {
+  const delta = 330 * deg2rad
+  const coords = TS.coordinates(points)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const radius = segment.getLength()
+
+  const arc = TS.arc(coords[0], radius, angle, delta, quads)
+  const xs = TS.projectCoordinates(radius, angle - delta + Math.PI / 2, R.last(arc))([
+    [0.2, -0.2], [0, 0], [0.2, 0.2]
+  ])
+
+  const geometry = TS.difference([
+    TS.lineString(arc)
+  ])
+
+  return [
+    styles.solidLine(TS.union([geometry, TS.lineString(xs)]), { color: 'purple', accent: 'white' })
+  ]
+}

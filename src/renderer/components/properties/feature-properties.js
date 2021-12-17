@@ -18,7 +18,7 @@ import BoundariesProperties from './BoundariesProperties'
 import SupplementalTextProperties from './SupplementalTextProperties'
 import SupplementalLineProperties from './SupplementalLineProperties'
 import SupplementalPolygonProperties from './SupplementalPolygonProperties'
-
+import PlanningToolProperties from './PlanningToolProperties'
 import PropertyPanelContent from './PropertyPanelContent'
 
 const panelTypes = {
@@ -36,7 +36,8 @@ const panelTypes = {
   BL: (key, props) => <BoundariesProperties key={key} { ...props }/>,
   ST: (key, props) => <SupplementalTextProperties key={key} { ...props }/>,
   SL: (key, props) => <SupplementalLineProperties key={key} { ...props }/>,
-  SP: (key, props) => <SupplementalPolygonProperties key={key} { ...props }/>
+  SP: (key, props) => <SupplementalPolygonProperties key={key} { ...props }/>,
+  PL: (key, props) => <PlanningToolProperties key={key} { ...props }/>
 }
 
 /* create an empty store for properties */
