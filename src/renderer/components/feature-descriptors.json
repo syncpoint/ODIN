@@ -22281,5 +22281,31 @@
       "maxPoints": 2,
       "minPoints": 2
     }
+  },
+  {
+    "sidc": "P*-*AS----*****",
+    "class": "PL",
+    "geometry": "LineString",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "RECONNAISSANCE, BLACK"
+    ],
+    "parameters": {
+      "maxPoints": 2
+    }
+  },
+  {
+    "sidc": "P*-*AB----*****",
+    "class": "PL",
+    "geometry": "LineString",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "RECONNAISSANCE, BLUE"
+    ],
+    "parameters": {
+      "maxPoints": 2
+    }
   }
 ]
