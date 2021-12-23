@@ -988,3 +988,26 @@ geometries['G*M*OWCT--'] = ({ resolution, line: lineString, write }) => {
   ]
 }
 
+/**
+ * TACTICAL PLANNING TOOL
+ * GENERAL OBSTACLE, BLUE
+ */
+geometries['P*-*SB----'] = ({ resolution, line: lineString, write }) => {
+  const lil = TS.lengthIndexedLine(lineString)
+  const length = lil.getEndIndex()
+  const n = length / (resolution * 16)
+  const delta = Math.floor(length / n)
+  const offset = (length - delta * n) / 2
+
+  const pointOptions = i => {
+    const A = lil.extractPoint(offset + i * delta - offset)
+    const B = lil.extractPoint(offset + i * delta + offset)
+    const segment = TS.segment([A, B])
+    return [lil.extractPoint(offset + i * delta), segment.angle()]
+  }
+
+  return R.range(1, n)
+    .map(pointOptions)
+    .map(([tsPoint, angle, displacement]) => [write(TS.point(tsPoint)), angle, displacement])
+    .map(fences.fencePL)
+}

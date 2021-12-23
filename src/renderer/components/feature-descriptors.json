@@ -22281,5 +22281,18 @@
       "maxPoints": 2,
       "minPoints": 2
     }
+  },
+  {
+    "sidc": "P*-*SB----*****",
+    "class": "PL",
+    "geometry": "LineString",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "GENERAL OBSTACLE, BLUE"
+    ],
+    "parameters": {
+      "maxPoints": 2
+    }
   }
 ]
