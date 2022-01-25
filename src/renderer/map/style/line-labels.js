@@ -195,5 +195,7 @@ export const labels = {
   'G*S*LRW---': [topTitleSubtitle('MSR', '(TWO-WAY TRAFFIC)')],
   'G*T*A-----': [middleT(0.2)],
   'G*T*AS----': [middleT(0.2)],
-  'G*T*F-----': [middleTitle('F', 0.1)]
+  'G*T*F-----': [middleTitle('F', 0.1)],
+  'P*-*EXF---': [middleTitle('EX')],
+  'P*-*INF---': [middleTitle('IN')]
 }

@@ -22281,5 +22281,38 @@
       "maxPoints": 2,
       "minPoints": 2
     }
+  },
+  {
+    "sidc": "P*-*EXF---*****",
+    "class": "L",
+    "scope": "CONTROL",
+    "geometry": "LineString",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "EXFILTRATE"
+    ]
+  },
+  {
+    "sidc": "P*-*INF---*****",
+    "class": "L",
+    "scope": "CONTROL",
+    "geometry": "LineString",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "INFILTRATE"
+    ]
+  },
+  {
+    "sidc": "P*-*APP---*****",
+    "class": "L",
+    "scope": "CONTROL",
+    "geometry": "LineString",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "APPROACH (AUT ONLY)"
+    ]
   }
 ]
