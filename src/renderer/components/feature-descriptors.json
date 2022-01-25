@@ -22281,5 +22281,44 @@
       "maxPoints": 2,
       "minPoints": 2
     }
+  },
+  {
+    "sidc": "P*-*DIS---*****",
+    "scope": "CONTROL",
+    "geometry": "GeometryCollection",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "DISENGAGE"
+    ],
+    "parameters": {
+      "layout": "orbit"
+    }
+  },
+  {
+    "sidc": "P*-*RET---*****",
+    "scope": "CONTROL",
+    "geometry": "GeometryCollection",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "RETIRE"
+    ],
+    "parameters": {
+      "layout": "orbit"
+    }
+  },
+  {
+    "sidc": "P*-*RPL---*****",
+    "scope": "CONTROL",
+    "geometry": "GeometryCollection",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "REARWARD PASSAGE OF LINES (AUT ONLY)"
+    ],
+    "parameters": {
+      "layout": "orbit"
+    }
   }
 ]
