@@ -514,3 +514,63 @@ geometries['P*-*DV----'] = ({ points, resolution, styles }) => {
     styles.solidLine(TS.union([geometry, TS.lineString(xs)]), { color: 'purple', accent: 'white' })
   ]
 }
+
+/**
+ * TACTICAL PLANNING TOOL
+ * LOCATE
+ */
+geometries['P*-*LOC---'] = ({ points, resolution, styles }) => {
+  const delta = 330 * deg2rad
+  const coords = TS.coordinates(points)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const radius = segment.getLength()
+
+  const arc = TS.arc(coords[0], radius, angle, delta, quads)
+  const xs = TS.projectCoordinates(radius, angle - delta + Math.PI / 2, R.last(arc))([
+    [0.2, -0.2], [0, 0], [0.2, 0.2]
+  ])
+  const xt = TS.projectCoordinates(radius, angle - delta - Math.PI / 2, R.last(arc))([
+    [0.9, 0.13], [0.59, 0.13], [0.64, 0.43]
+  ])
+  const textAnchor = TS.point(arc[Math.floor(arc.length / 2)])
+  const geometry = TS.difference([
+    TS.lineString(arc),
+    TS.pointBuffer(textAnchor)(resolution * 10)
+  ])
+
+  return [
+    styles.solidLine(TS.union([geometry, TS.lineString(xs), TS.lineString(xt)])),
+    arcText(styles)(textAnchor, angle, 'LOC')
+  ]
+}
+
+/**
+ * TACTICAL PLANNING TOOL
+ * CONTROL
+ */
+geometries['P*-*CLN---'] = ({ points, resolution, styles }) => {
+  const delta = 330 * deg2rad
+  const coords = TS.coordinates(points)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const radius = segment.getLength()
+
+  const arc = TS.arc(coords[0], radius, angle, delta, quads)
+  const xs = TS.projectCoordinates(radius, angle - delta + Math.PI / 2, R.last(arc))([
+    [0.2, -0.2], [0, 0], [0.2, 0.2]
+  ])
+  const xt = TS.projectCoordinates(radius, angle - delta - Math.PI / 2, R.last(arc))([
+    [0.9, 0.13], [0.59, 0.13], [0.64, 0.43]
+  ])
+  const textAnchor = TS.point(arc[Math.floor(arc.length / 2)])
+  const geometry = TS.difference([
+    TS.lineString(arc),
+    TS.pointBuffer(textAnchor)(resolution * 10)
+  ])
+
+  return [
+    styles.solidLine(TS.union([geometry, TS.lineString(xs), TS.lineString(xt)])),
+    arcText(styles)(textAnchor, angle, 'C')
+  ]
+}

@@ -22281,5 +22281,37 @@
       "maxPoints": 2,
       "minPoints": 2
     }
+  },
+  {
+    "sidc": "P*-*LOC---*****",
+    "scope": "CONTROL",
+    "geometry": "MultiPoint",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "LOCATE"
+    ],
+    "parameters": {
+      "arc": "338",
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
+  },
+  {
+    "sidc": "P*-*CLN---*****",
+    "scope": "CONTROL",
+    "geometry": "MultiPoint",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "CONTROL"
+    ],
+    "parameters": {
+      "arc": "338",
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   }
 ]
