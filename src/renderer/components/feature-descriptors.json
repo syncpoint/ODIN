@@ -22281,5 +22281,18 @@
       "maxPoints": 2,
       "minPoints": 2
     }
+  },
+  {
+    "sidc": "P*-*TRN---*****",
+    "scope": "CONTROL",
+    "geometry": "MultiPoint",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "TURN"
+    ],
+    "parameters": {
+      "arc": "90",
+      "layout": "turn"
+    }
   }
 ]
