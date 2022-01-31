@@ -22281,5 +22281,20 @@
       "maxPoints": 2,
       "minPoints": 2
     }
+  },
+  {
+    "sidc": "P*-*DNY---*****",
+    "scope": "CONTROL",
+    "geometry": "MultiPoint",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "DENY"    ],
+    "parameters": {
+      "arc": "330",
+      "layout": "fan",
+      "maxPoints": 2,
+      "minPoints": 2
+    }
   }
 ]
