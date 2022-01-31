@@ -385,11 +385,8 @@ geometries['G*M*NM----'] = ({ feature, styles, points }) => {
   ]
 }
 
-/**
- * TACGRP.TSK.SZE
- * TASKS / SEIZE
- */
-geometries['G*T*Z-----'] = ({ styles, points, resolution }) => {
+const seizelike = label => options => {
+  const { styles, points, resolution } = options
   const [C, O, S] = TS.coordinates(points)
   const segmentO = TS.segment([C, O])
   const segmentS = TS.segment([C, S])
@@ -408,6 +405,11 @@ geometries['G*T*Z-----'] = ({ styles, points, resolution }) => {
     [0.1, -0.1], [0, 0], [0.1, 0.1]
   ])
 
+  const text = segment => styles.text(TS.point(arcCoords[Math.floor(arcCoords.length / 2)]), {
+    text: label,
+    flip: true
+  })
+
   return [
     styles.solidLine(TS.collect([
       arc,
@@ -418,12 +420,33 @@ geometries['G*T*Z-----'] = ({ styles, points, resolution }) => {
       TS.lineString(segmentO),
       TS.lineString(segmentS)
     ])),
-    styles.text(textAnchor, {
-      text: 'S',
-      flip: false
-    })
+    ...(label ? [TS.point(arcCoords[Math.floor(arcCoords.length / 2)])].map(text) : [])
   ]
 }
+
+/**
+ * TACGRP.TSK.SZE
+ * TASKS / SEIZE
+ */
+geometries['G*T*Z-----'] = seizelike('S')
+
+/**
+ * TACTICAL PLANNING TOOL
+ * CAPTURE
+ */
+geometries['P*-*CAP---'] = seizelike('C')
+
+/**
+ * TACTICAL PLANNING TOOL
+ * CAPTURE
+ */
+geometries['P*-*RCV---'] = seizelike('R')
+
+/**
+ * TACTICAL PLANNING TOOL
+ * CAPTURE
+ */
+geometries['P*-*EVA---'] = seizelike('E')
 
 /**
  * TACGRP.MOBSU.OBST.OBSEFT.TUR

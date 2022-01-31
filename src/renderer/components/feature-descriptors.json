@@ -22281,5 +22281,47 @@
       "maxPoints": 2,
       "minPoints": 2
     }
+  },
+  {
+    "sidc": "P*-*CAP---*****",
+    "scope": "CONTROL",
+    "geometry": "MultiPoint",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "CAPTURE"
+    ],
+    "parameters": {
+      "arc": "90",
+      "layout": "seize"
+    }
+  },
+  {
+    "sidc": "P*-*RCV---*****",
+    "scope": "CONTROL",
+    "geometry": "MultiPoint",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "RECOVER"
+    ],
+    "parameters": {
+      "arc": "90",
+      "layout": "seize"
+    }
+  },
+  {
+    "sidc": "P*-*EVA---*****",
+    "scope": "CONTROL",
+    "geometry": "MultiPoint",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "EVACUATE"
+    ],
+    "parameters": {
+      "arc": "90",
+      "layout": "seize"
+    }
   }
 ]
