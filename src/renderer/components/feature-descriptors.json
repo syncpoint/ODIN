@@ -22281,5 +22281,19 @@
       "maxPoints": 2,
       "minPoints": 2
     }
+  },
+  {
+    "sidc": "P*-*BIN---*****",
+    "scope": "CONTROL",
+    "geometry": "GeometryCollection",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "BREAK IN (AUT ONLY)"
+    ],
+    "parameters": {
+      "layout": "corridor",
+      "maxPoints": 2
+    }
   }
 ]
