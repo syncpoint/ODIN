@@ -22281,5 +22281,18 @@
       "maxPoints": 2,
       "minPoints": 2
     }
+  },
+  {
+    "sidc": "P*-*AOC---*****",
+    "scope": "CONTROL",
+    "geometry": "GeometryCollection",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL PLANNING TOOL",
+      "ADVANCE TO CONTACT"
+    ],
+    "parameters": {
+      "layout": "corridor"
+    }
   }
 ]
