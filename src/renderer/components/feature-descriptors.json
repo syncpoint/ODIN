@@ -22281,5 +22281,20 @@
       "maxPoints": 2,
       "minPoints": 2
     }
+  },
+  {
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*RD----*****",
+    "scope": "CONTROL",
+    "geometry": "GeometryCollection",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "DEMONSTRATE"
+    ],
+    "parameters": {
+      "layout": "orbit"
+    }
   }
 ]
