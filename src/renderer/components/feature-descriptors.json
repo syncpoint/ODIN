@@ -22283,12 +22283,14 @@
     }
   },
   {
-    "sidc": "P*-*LOC---*****",
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*SL----*****",
     "scope": "CONTROL",
     "geometry": "MultiPoint",
     "dimension": "TASK",
     "hierarchy": [
-      "TACTICAL PLANNING TOOL",
+      "TACTICAL GRAPHICS",
+      "TASKS",
       "LOCATE"
     ],
     "parameters": {
@@ -22299,12 +22301,14 @@
     }
   },
   {
-    "sidc": "P*-*CLN---*****",
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*SC----*****",
     "scope": "CONTROL",
     "geometry": "MultiPoint",
     "dimension": "TASK",
     "hierarchy": [
-      "TACTICAL PLANNING TOOL",
+      "TACTICAL GRAPHICS",
+      "TASKS",
       "CONTROL"
     ],
     "parameters": {

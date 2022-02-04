@@ -516,10 +516,10 @@ geometries['P*-*DV----'] = ({ points, resolution, styles }) => {
 }
 
 /**
- * TACTICAL PLANNING TOOL
+ * TACGRP.TSK.LOC
  * LOCATE
  */
-geometries['P*-*LOC---'] = ({ points, resolution, styles }) => {
+geometries['G*T*SL----'] = ({ points, resolution, styles }) => {
   const delta = 330 * deg2rad
   const coords = TS.coordinates(points)
   const segment = TS.segment(coords)
@@ -546,10 +546,10 @@ geometries['P*-*LOC---'] = ({ points, resolution, styles }) => {
 }
 
 /**
- * TACTICAL PLANNING TOOL
+ * TACGRP.TSK.CTR
  * CONTROL
  */
-geometries['P*-*CLN---'] = ({ points, resolution, styles }) => {
+geometries['G*T*SC----'] = ({ points, resolution, styles }) => {
   const delta = 330 * deg2rad
   const coords = TS.coordinates(points)
   const segment = TS.segment(coords)
