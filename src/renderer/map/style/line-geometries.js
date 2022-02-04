@@ -989,17 +989,17 @@ geometries['G*M*OWCT--'] = ({ resolution, line: lineString, write }) => {
 }
 
 /**
- * TACTICAL PLANNING TOOL
- * EXPLOIT
+ * TACGRP.TSK.EXP
+ * TASKS / EXPLOIT
  */
-geometries['P*-*EXP---'] = ({ styles, line }) => {
+geometries['G*T*VAE---'] = ({ styles, line }) => {
   const coords = TS.coordinates(line)
   const segment = TS.segment(coords)
   const angle = segment.angle()
   const length = segment.getLength()
   const xs = TS.projectCoordinates(length, angle, coords[0])([
     [0, -0.14], [0.2, 0], [0, 0.14],
-    [0.8, -0.08], [0.96, 0], [0.8, 0.08]
+    [0.8, -0.08], [1, 0], [0.8, 0.08]
   ])
 
   return [

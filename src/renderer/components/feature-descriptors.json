@@ -22283,13 +22283,14 @@
     }
   },
   {
-    "sidc": "P*-*EXP---*****",
-    "class": "L",
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*VAE---*****",
     "scope": "CONTROL",
     "geometry": "LineString",
     "dimension": "TASK",
     "hierarchy": [
-      "TACTICAL PLANNING TOOL",
+      "TACTICAL GRAPHICS",
+      "TASKS",
       "EXPLOIT"
     ],
     "parameters": {
