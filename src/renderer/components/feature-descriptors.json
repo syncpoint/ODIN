@@ -22283,13 +22283,16 @@
     }
   },
   {
-    "sidc": "P*-*DNY---*****",
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*SY----*****",
     "scope": "CONTROL",
     "geometry": "MultiPoint",
     "dimension": "TASK",
     "hierarchy": [
-      "TACTICAL PLANNING TOOL",
-      "DENY"    ],
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "DENY"
+    ],
     "parameters": {
       "arc": "330",
       "layout": "fan",

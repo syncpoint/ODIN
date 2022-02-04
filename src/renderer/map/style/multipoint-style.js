@@ -451,10 +451,10 @@ geometries['G*M*OET---'] = ({ styles, points }) => {
 }
 
 /**
- * TACTICAL PLANNING TOOL
- * DENY
+ * TACGRP.TSK.DNY
+ * TASKS / DENY
  */
-geometries['P*-*DNY---'] = ({ styles, points, resolution }) => {
+geometries['G*T*SY----'] = ({ styles, points, resolution }) => {
   const delta = 330 * deg2rad
   const coords = TS.coordinates(points)
   const segment = TS.segment(coords)
