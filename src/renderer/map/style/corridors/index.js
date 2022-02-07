@@ -35,11 +35,11 @@ import G_T_R from './G_T_R'
 import G_T_T from './G_T_T'
 import G_T_W from './G_T_W'
 import G_T_WP from './G_T_WP'
+import G_T_WD from './G_T_WD'
+import G_T_WL from './G_T_WL'
 import G_T_X from './G_T_X'
 import G_T_Y from './G_T_Y'
-import P_DIS from './P_DIS'
-import P_RET from './P_RET'
-import P_RPL from './P_RPL'
+
 
 export const style = fn => options => {
   const geometry = options.feature.getGeometry()
@@ -115,9 +115,9 @@ export default {
   'G*T*T-----': style(G_T_T),
   'G*T*W-----': style(G_T_W),
   'G*T*WP----': style(G_T_WP),
+  'G*T*WD----': style(G_T_WD),
+  'G*T*WL----': style(G_T_WL),
   'G*T*X-----': style(G_T_X),
-  'G*T*Y-----': style(G_T_Y),
-  'P*-*DIS---': style(P_DIS),
-  'P*-*RET---': style(P_RET),
-  'P*-*RPL---': style(P_RPL)
+  'G*T*Y-----': style(G_T_Y)
+
 }

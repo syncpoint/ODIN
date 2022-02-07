@@ -1,7 +1,7 @@
 import withdraw from './withdraw'
 
 /**
- * TACTICAl PLANNIG TOOL
- * DISENGAGE
+ * TACGRP.TSK.DIS
+ * TASKS / DISENGAGE
  */
 export default withdraw('DIS')

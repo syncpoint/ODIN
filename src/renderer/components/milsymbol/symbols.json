@@ -2991,6 +2991,24 @@
         }
       ]
     },
+    "EXT_TASKS_DISENGAGE_TEXT": {
+      "texts": [
+        {
+          "text": "DIS",
+          "x": 85,
+          "y": 130
+        }
+      ]
+    },
+    "EXT_TASKS_RPL_TEXT": {
+      "texts": [
+        {
+          "text": "P(R)",
+          "x": 85,
+          "y": 130
+        }
+      ]
+    },
     "EXT_BOUNDARIES_TEXT": {
       "texts": [
         {
@@ -3860,6 +3878,14 @@
     "G-T-WP----": [
       "EXT_TASKS_CURVED_ARROW",
 	  "EXT_TASKS_WITHDRAW_UNDER_PRESSURE_TEXT"
+    ],
+    "G-T-WD----": [
+      "EXT_TASKS_CURVED_ARROW",
+	  "EXT_TASKS_DISENGAGE_TEXT"
+    ],
+    "G-T-WL----": [
+      "EXT_TASKS_CURVED_ARROW",
+	  "EXT_TASKS_RPL_TEXT"
     ],
     "G-G-GLB---": [
       "EXT_BOUNDARIES",
