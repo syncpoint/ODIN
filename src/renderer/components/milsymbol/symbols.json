@@ -2955,6 +2955,33 @@
         }
       ]
     },
+    "EXT_TASKS_CAPTURE_TEXT": {
+      "texts": [
+        {
+          "text": "C",
+          "x": 120,
+          "y": 90
+        }
+      ]
+    },
+    "EXT_TASKS_RECOVER_TEXT": {
+      "texts": [
+        {
+          "text": "R",
+          "x": 120,
+          "y": 90
+        }
+      ]
+    },
+    "EXT_TASKS_EVACUATE_TEXT": {
+      "texts": [
+        {
+          "text": "E",
+          "x": 120,
+          "y": 90
+        }
+      ]
+    },
     "EXT_TASKS_DELAY_TEXT": {
       "texts": [
         {
@@ -3844,6 +3871,18 @@
     "G-T-Z-----": [
       "EXT_TASKS_SEIZE",
 	  "EXT_TASKS_SEIZE_TEXT"
+    ],
+    "G-T-ZC----": [
+      "EXT_TASKS_SEIZE",
+	  "EXT_TASKS_CAPTURE_TEXT"
+    ],
+    "G-T-ZR----": [
+      "EXT_TASKS_SEIZE",
+	  "EXT_TASKS_RECOVER_TEXT"
+    ],
+    "G-T-ZE----": [
+      "EXT_TASKS_SEIZE",
+	  "EXT_TASKS_EVACUATE_TEXT"
     ],
     "G-T-L-----": [
       "EXT_TASKS_CURVED_ARROW",

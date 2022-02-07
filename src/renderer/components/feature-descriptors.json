@@ -22281,5 +22281,53 @@
       "maxPoints": 2,
       "minPoints": 2
     }
+  },
+  {
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*ZC----*****",
+    "scope": "CONTROL",
+    "geometry": "MultiPoint",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "CAPTURE"
+    ],
+    "parameters": {
+      "arc": "90",
+      "layout": "seize"
+    }
+  },
+  {
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*ZR----*****",
+    "scope": "CONTROL",
+    "geometry": "MultiPoint",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "RECOVER"
+    ],
+    "parameters": {
+      "arc": "90",
+      "layout": "seize"
+    }
+  },
+  {
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*ZE----*****",
+    "scope": "CONTROL",
+    "geometry": "MultiPoint",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "EVACUATE"
+    ],
+    "parameters": {
+      "arc": "90",
+      "layout": "seize"
+    }
   }
 ]
