@@ -123,22 +123,16 @@ export const geometries = {
   'G*G*OLKGS-': attackArrow,
 
   /**
-   * TACTICAL PLANNING TOOL
+   * TACGRP.TSK.EXF
    * EXFILTRATE
    */
-  'P*-*EXF---': attackArrow,
+  'G*T*VLE---': attackArrow,
 
   /**
-   * TACTICAL PLANNING TOOL
+   * TACGRP.TSK.INF
    * INFILTRATE
    */
-  'P*-*INF---': attackArrow,
-
-  /**
-   * TACTICAL PLANNING TOOL
-   * APPROACH (AUT ONLY)
-   */
-  'P*-*APP---': attackArrow
+  'G*T*VLI---': attackArrow
 }
 
 /**

@@ -22283,36 +22283,27 @@
     }
   },
   {
-    "sidc": "P*-*EXF---*****",
-    "class": "L",
+   "standard": "NATO ATP-112",
+    "sidc": "G*T*VLE---*****",
     "scope": "CONTROL",
     "geometry": "LineString",
     "dimension": "TASK",
     "hierarchy": [
-      "TACTICAL PLANNING TOOL",
+      "TACTICAL GRAPHICS",
+      "TASKS",
       "EXFILTRATE"
     ]
   },
   {
-    "sidc": "P*-*INF---*****",
-    "class": "L",
+   "standard": "NATO ATP-112",
+    "sidc": "G*T*VLI---*****",
     "scope": "CONTROL",
     "geometry": "LineString",
     "dimension": "TASK",
     "hierarchy": [
-      "TACTICAL PLANNING TOOL",
+      "TACTICAL GRAPHICS",
+      "TASKS",
       "INFILTRATE"
-    ]
-  },
-  {
-    "sidc": "P*-*APP---*****",
-    "class": "L",
-    "scope": "CONTROL",
-    "geometry": "LineString",
-    "dimension": "TASK",
-    "hierarchy": [
-      "TACTICAL PLANNING TOOL",
-      "APPROACH (AUT ONLY)"
     ]
   }
 ]

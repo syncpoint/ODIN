@@ -196,6 +196,6 @@ export const labels = {
   'G*T*A-----': [middleT(0.2)],
   'G*T*AS----': [middleT(0.2)],
   'G*T*F-----': [middleTitle('F', 0.1)],
-  'P*-*EXF---': [middleTitle('EX')],
-  'P*-*INF---': [middleTitle('IN')]
+  'G*T*VLE---': [middleTitle('EX')],
+  'G*T*VLI---': [middleTitle('IN')]
 }
