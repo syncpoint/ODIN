@@ -3,8 +3,8 @@ import * as TS from '../../ts'
 import { openArrow } from './arrow'
 
 /**
- * TACTICAL PLANNING TOOL
- * BREAK IN (AUT ONLY)
+ * TACGRP.TSK.BIN
+ * TASKS / BREAK IN (AUT ONLY)
  */
 export default options => {
   const { styles, width, line, resolution } = options
