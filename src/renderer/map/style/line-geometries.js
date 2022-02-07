@@ -989,10 +989,10 @@ geometries['G*M*OWCT--'] = ({ resolution, line: lineString, write }) => {
 }
 
 /**
- * TACTICAL PLANNING TOOL
- * RECONNAISSANCE (AUT ONLY)
+ * TACGRP.TSK.REC
+ * TASKS / RECONNAISSANCE (AUT ONLY)
  */
-geometries['P*-*REC---'] = ({ line, styles, resolution }) => {
+geometries['G*T*VLR---'] = ({ line, styles, resolution }) => {
   const coords = TS.coordinates(line)
   const segment = TS.segment(coords)
   const angle = segment.angle()

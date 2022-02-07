@@ -2069,6 +2069,16 @@
         }
       ]
     },
+    "EXT_TASKS_RECONAISSANCE": {
+      "paths": [
+        {
+          "d": "M 40,80 120,80 65,110 180,110"
+        },
+        {
+          "d": "M 160,90 180,110 160,130"
+        }
+      ]
+    },
     "EXT_TASKS_SEIZE": {
       "circles": [
         {
@@ -3840,6 +3850,9 @@
     "G-T-UC----": [
       "EXT_TASKS_SECURITY",
 	  "EXT_TASKS_COVER_TEXT"
+    ],
+    "G-T-VLR---": [
+      "EXT_TASKS_RECONAISSANCE"
     ],
     "G-T-Z-----": [
       "EXT_TASKS_SEIZE",

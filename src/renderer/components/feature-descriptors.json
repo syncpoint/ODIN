@@ -22283,12 +22283,13 @@
     }
   },
   {
-    "sidc": "P*-*REC---*****",
-    "class": "L",
+    "standard": "AUT",
+    "sidc": "G*T*VLR---*****",
     "geometry": "LineString",
     "dimension": "TASK",
     "hierarchy": [
-      "TACTICAL PLANNING TOOL",
+      "TACTICAL GRAPHICS",
+      "TASKS",
       "RECONNAISSANCE (AUT ONLY)"
     ],
     "parameters": {
