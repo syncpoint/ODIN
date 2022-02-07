@@ -22284,7 +22284,7 @@
   },
   {
     "standard": "NATO ATP-112",
-    "sidc": "G*T*WD----****X",
+    "sidc": "G*T*WD----*****",
     "scope": "CONTROL",
     "geometry": "GeometryCollection",
     "dimension": "TASK",
@@ -22298,8 +22298,8 @@
     }
   },
   {
-    "standard": "NATO ATP-112",
-    "sidc": "G*T*WL----****X",
+    "standard": "AUT",
+    "sidc": "G*T*WL----*****",
     "scope": "CONTROL",
     "geometry": "GeometryCollection",
     "dimension": "TASK",
