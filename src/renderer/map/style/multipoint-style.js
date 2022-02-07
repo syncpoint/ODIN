@@ -431,22 +431,22 @@ const seizelike = label => options => {
 geometries['G*T*Z-----'] = seizelike('S')
 
 /**
- * TACTICAL PLANNING TOOL
- * CAPTURE
+ * TACGRP.TSK.CAP
+ * TASKS / CAPTURE
  */
-geometries['P*-*CAP---'] = seizelike('C')
+geometries['G*T*ZC----'] = seizelike('C')
 
 /**
- * TACTICAL PLANNING TOOL
- * CAPTURE
+ * TACGRP.TSK.RCV
+ * TASKS / RECOVER
  */
-geometries['P*-*RCV---'] = seizelike('R')
+geometries['G*T*ZR----'] = seizelike('R')
 
 /**
- * TACTICAL PLANNING TOOL
- * CAPTURE
+ * TACGRP.TSK.EVA
+ * TASKS / EVACUATE
  */
-geometries['P*-*EVA---'] = seizelike('E')
+geometries['G*T*ZE----'] = seizelike('E')
 
 /**
  * TACGRP.MOBSU.OBST.OBSEFT.TUR

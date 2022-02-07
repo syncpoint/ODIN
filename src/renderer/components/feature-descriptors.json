@@ -22283,12 +22283,14 @@
     }
   },
   {
-    "sidc": "P*-*CAP---*****",
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*ZC----*****",
     "scope": "CONTROL",
     "geometry": "MultiPoint",
     "dimension": "TASK",
     "hierarchy": [
-      "TACTICAL PLANNING TOOL",
+      "TACTICAL GRAPHICS",
+      "TASKS",
       "CAPTURE"
     ],
     "parameters": {
@@ -22297,12 +22299,14 @@
     }
   },
   {
-    "sidc": "P*-*RCV---*****",
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*ZR----*****",
     "scope": "CONTROL",
     "geometry": "MultiPoint",
     "dimension": "TASK",
     "hierarchy": [
-      "TACTICAL PLANNING TOOL",
+      "TACTICAL GRAPHICS",
+      "TASKS",
       "RECOVER"
     ],
     "parameters": {
@@ -22311,12 +22315,14 @@
     }
   },
   {
-    "sidc": "P*-*EVA---*****",
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*ZE----*****",
     "scope": "CONTROL",
     "geometry": "MultiPoint",
     "dimension": "TASK",
     "hierarchy": [
-      "TACTICAL PLANNING TOOL",
+      "TACTICAL GRAPHICS",
+      "TASKS",
       "EVACUATE"
     ],
     "parameters": {
