@@ -3,8 +3,8 @@ import * as TS from '../../ts'
 import { arrowCoordinates } from './arrow'
 
 /**
- * TACTICAL PLANNING TOOL
- * ADVANCE TO CONTACT
+ * TACGRP.TSK.AOC
+ * TASKS / ADVANCE TO CONTACT
  */
 export default options => {
   const { width, line, styles } = options

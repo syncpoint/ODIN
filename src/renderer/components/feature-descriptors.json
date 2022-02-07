@@ -22283,12 +22283,14 @@
     }
   },
   {
-    "sidc": "P*-*AOC---*****",
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*KA----*****",
     "scope": "CONTROL",
     "geometry": "GeometryCollection",
     "dimension": "TASK",
     "hierarchy": [
-      "TACTICAL PLANNING TOOL",
+      "TACTICAL GRAPHICS",
+      "TASKS",
       "ADVANCE TO CONTACT"
     ],
     "parameters": {
