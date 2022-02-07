@@ -451,10 +451,10 @@ geometries['G*M*OET---'] = ({ styles, points }) => {
 }
 
 /**
- * TACTICAL PLANNING TOOL
- * TURN
+ * TACGRP.TSK.TRN
+ * TASKS / TURN
  */
-geometries['P*-*TRN---'] = ({ styles, points, resolution }) => {
+geometries['G*T*VAT---'] = ({ styles, points, resolution }) => {
   const [C, O] = TS.coordinates(points)
   const segmentO = TS.segment([C, O])
 

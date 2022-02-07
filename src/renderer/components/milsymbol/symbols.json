@@ -2991,6 +2991,15 @@
         }
       ]
     },
+    "EXT_TASKS_TURN_TEXT": {
+      "texts": [
+        {
+          "text": "T",
+          "x": 70,
+          "y": 100
+        }
+      ]
+    },
     "EXT_BOUNDARIES_TEXT": {
       "texts": [
         {
@@ -3860,6 +3869,10 @@
     "G-T-WP----": [
       "EXT_TASKS_CURVED_ARROW",
 	  "EXT_TASKS_WITHDRAW_UNDER_PRESSURE_TEXT"
+    ],
+    "G-T-VAT---": [
+      "EXT_OBSTACLE_EFFECT_TURN",
+      "EXT_TASKS_TURN_TEXT"
     ],
     "G-G-GLB---": [
       "EXT_BOUNDARIES",

@@ -22283,11 +22283,13 @@
     }
   },
   {
-    "sidc": "P*-*TRN---*****",
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*VAT---*****",
     "scope": "CONTROL",
     "geometry": "MultiPoint",
     "hierarchy": [
-      "TACTICAL PLANNING TOOL",
+      "TACTICAL GRAPHICS",
+      "TASKS",
       "TURN"
     ],
     "parameters": {
