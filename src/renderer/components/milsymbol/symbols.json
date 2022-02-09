@@ -217,6 +217,27 @@
         }
       ]
     },
+    "EXT_ADVANCE_TO_CONTACT": {
+      "paths": [
+        {
+          "d": "M 0,95 40,55 110,55 110,25 150,80 110,130 110,105 70,105 40,135"
+        },
+        {
+          "d": "M 145,64 165,44 145,44 180,10"
+        },
+        {
+          "d": "M 175,10 150,20, 170,30 Z",
+          "fill": "#123"
+        },
+        {
+          "d": "M 145,94 165,114 145,114 170,140"
+        },
+        {
+          "d": "M 150,140 175,150, 170,125 Z",
+          "fill": "#123"
+        }
+      ]
+    },
     "EXT_AXIS_OF_ADVANCE_AVIATION": {
       "paths": [
         {
@@ -1987,10 +2008,34 @@
         }
       ]
     },
+    "EXT_TASKS_EXPLOIT": {
+      "paths": [
+        {
+          "d": "M 60,70 80,100 60,130",
+          "strokedasharray": "20,6"
+        },
+        {
+          "d": "M 80,100 180,100"
+        },
+        {
+          "d": "M 150,120 180,100 150,80"
+        }
+      ]
+    },
     "EXT_TASKS_ISOLATE": {
       "paths": [
         {
           "d": "M 51.192802,31.047255 74.967768,43.920509 68.260076,16.659504 M 88.093436,9.3394191 99.704607,38.619757 114.84962,10.349086 M 130.75503,14.760152 125.202, 48.332 153.725,35.206 M 161.799,51.745 137.82,65.881 163.314,80.521 M 158.275,94.084 126.966,88.598 141.101,115.354 M 123.17936,126.46078 107.78194,98.442523 98.442522,128.98494 M 79.258851,126.71319 81.278186,95.161104 53.512346,109.04403"
+        },
+        {
+          "d": "M 30.542,107.025 39.792,90.881 59.066,92.637"
+        }
+      ]
+    },
+    "EXT_TASKS_DENY": {
+      "paths": [
+        {
+          "d": "M 51.192802,31.047255 45,5 68.260076,16.659504 M 88.093436,9.3394191 99,-20 114.84962,10.349086 M 130.75503,14.760152 155,8 153.725,35.206 M 161.799,51.745 192,70 162.314,84.521 M 158.275,94.084 168,126 141.101,115.354 M 123.17936,126.46078 109,158 98.442522,128.98494 M 79.258851,126.71319 51,140 53.512346,109.04403"
         },
         {
           "d": "M 30.542,107.025 39.792,90.881 59.066,92.637"
@@ -2053,6 +2098,16 @@
         }
       ]
     },
+    "EXT_TASKS_LOCATE": {
+      "paths": [
+        {
+          "d": "M 30.542,107.025 39.792,90.881 59.066,92.637"
+        },
+        {
+          "d": "M 28,40 39,53 57,40"
+        }
+      ]
+    },
     "EXT_TASKS_SECURITY": {
       "paths": [
         {
@@ -2066,6 +2121,16 @@
         },
         {
           "d": "M 180,40 155,60 180,40 190,60"
+        }
+      ]
+    },
+    "EXT_TASKS_RECONAISSANCE": {
+      "paths": [
+        {
+          "d": "M 40,80 120,80 65,110 180,110"
+        },
+        {
+          "d": "M 160,90 180,110 160,130"
         }
       ]
     },
@@ -2863,6 +2928,15 @@
       "texts": [
         {
           "text": "I",
+          "x": 163,
+          "y": 80
+        }
+      ]
+    },
+    "EXT_TASKS_DENY_TEXT": {
+      "texts": [
+        {
+          "text": "D",
           "fontsize": 25,
           "x": 163,
           "y": 80
@@ -2873,7 +2947,6 @@
       "texts": [
         {
           "text": "O",
-          "fontsize": 25,
           "x": 163,
           "y": 80
         }
@@ -2892,7 +2965,6 @@
       "texts": [
         {
           "text": "R",
-          "fontsize": 25,
           "x": 163,
           "y": 80
         }
@@ -2910,7 +2982,24 @@
       "texts": [
         {
           "text": "S",
-          "fontsize": 25,
+          "x": 163,
+          "y": 80
+        }
+      ]
+    },
+    "EXT_TASKS_LOCATE_TEXT": {
+      "texts": [
+        {
+          "text": "LOC",
+          "x": 163,
+          "y": 80
+        }
+      ]
+    },
+    "EXT_TASKS_CONTROL_TEXT": {
+      "texts": [
+        {
+          "text": "C",
           "x": 163,
           "y": 80
         }
@@ -3004,6 +3093,24 @@
       "texts": [
         {
           "text": "WP",
+          "x": 85,
+          "y": 130
+        }
+      ]
+    },
+    "EXT_TASKS_DISENGAGE_TEXT": {
+      "texts": [
+        {
+          "text": "DIS",
+          "x": 85,
+          "y": 130
+        }
+      ]
+    },
+    "EXT_TASKS_RPL_TEXT": {
+      "texts": [
+        {
+          "text": "P(R)",
           "x": 85,
           "y": 130
         }
@@ -3373,6 +3480,9 @@
       "EXT_COUNTERATTACK",
 	  "EXT_COUNTERATTACK_BY_FIRE",
       "EXT_COUNTERATTACK_TEXT"
+    ],
+    "G-T-KA----": [
+	  "EXT_ADVANCE_TO_CONTACT"
     ],
     "G-G-OLAV--": [
       "EXT_AXIS_OF_ADVANCE_AVIATION"
@@ -3819,6 +3929,9 @@
     "G-T-AS----": [
       "EXT_TASKS_FOLLOW_SUPPORT"
     ],
+    "G-T-VAE---": [
+      "EXT_TASKS_EXPLOIT"
+    ],
     "G-T-P-----": [
       "EXT_TASKS_PENETRATE",
 	  "EXT_TASKS_PENETRATE_TEXT"
@@ -3831,6 +3944,11 @@
       "EXT_TASKS_OPEN_CIRCLE",
       "EXT_TASKS_ISOLATE",
 	  "EXT_TASKS_ISOLATE_TEXT"
+    ],
+    "G-T-SY----": [
+      "EXT_TASKS_OPEN_CIRCLE",
+      "EXT_TASKS_DENY",
+	  "EXT_TASKS_DENY_TEXT"
     ],
     "G-T-O-----": [
       "EXT_TASKS_OPEN_CIRCLE",
@@ -3847,6 +3965,16 @@
       "EXT_TASKS_SECURE",
 	  "EXT_TASKS_SECURE_TEXT"
     ],
+    "G-T-SL----": [
+      "EXT_TASKS_OPEN_CIRCLE",
+      "EXT_TASKS_LOCATE",
+	  "EXT_TASKS_LOCATE_TEXT"
+    ],
+    "G-T-SC----": [
+      "EXT_TASKS_OPEN_CIRCLE",
+      "EXT_TASKS_LOCATE",
+	  "EXT_TASKS_CONTROL_TEXT"
+    ],
     "G-T-US----": [
       "EXT_TASKS_SECURITY",
 	  "EXT_TASKS_SCREEN_TEXT"
@@ -3858,6 +3986,9 @@
     "G-T-UC----": [
       "EXT_TASKS_SECURITY",
 	  "EXT_TASKS_COVER_TEXT"
+    ],
+    "G-T-VLR---": [
+      "EXT_TASKS_RECONAISSANCE"
     ],
     "G-T-Z-----": [
       "EXT_TASKS_SEIZE",
@@ -3889,9 +4020,17 @@
       "EXT_DIRECTION_OF_ATTACK_GROUND_SUPPORTING_ATTACK",
       "EXT_INFILTRATE_TEXT"
     ],
+    "G-T-WD----": [
+      "EXT_TASKS_CURVED_ARROW",
+	    "EXT_TASKS_DISENGAGE_TEXT"
+    ],
+    "G-T-WL----": [
+      "EXT_TASKS_CURVED_ARROW",
+	    "EXT_TASKS_RPL_TEXT"
+    ],
     "G-G-GLB---": [
       "EXT_BOUNDARIES",
-	  "EXT_BOUNDARIES_TEXT"
+	    "EXT_BOUNDARIES_TEXT"
     ],
     "G-G-GLF---": [
       "EXT_FLOT"
