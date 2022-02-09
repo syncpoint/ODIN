@@ -1468,6 +1468,19 @@
     ]
   },
   {
+    "sidc": "WAS-WSVE--P----",
+    "class": "EEI",
+    "scope": "ACTIVITY",
+    "geometry": "Point",
+    "dimension": "EMS",
+    "hierarchy": [
+      "EMERGENCY MANAGEMENT SYMBOLS",
+      "NATURAL EVENTS",
+      "GEOLOGIC",
+      "VOLCANIC ERUPTION"
+    ]
+  },
+  {
     "standard": "MIL-STD-2525C",
     "sidc": "E*N*AG----*****",
     "class": "EEI",
@@ -1496,6 +1509,19 @@
     ]
   },
   {
+    "sidc": "WAS-WSD-LIP----",
+    "class": "EEI",
+    "scope": "ACTIVITY",
+    "geometry": "Point",
+    "dimension": "EMS",
+    "hierarchy": [
+      "EMERGENCY MANAGEMENT SYMBOLS",
+      "NATURAL EVENTS",
+      "HYDRO-METEOROLOGICAL",
+      "DRIZZLE"
+    ]
+  },
+  {
     "standard": "MIL-STD-2525C",
     "sidc": "E*N*BC----*****",
     "class": "EEI",
@@ -1507,6 +1533,110 @@
       "NATURAL EVENTS",
       "HYDRO-METEOROLOGICAL",
       "FLOOD"
+    ]
+  },
+  {
+    "sidc": "WAS-WSFGSOP----",
+    "class": "EEI",
+    "scope": "ACTIVITY",
+    "geometry": "Point",
+    "dimension": "EMS",
+    "hierarchy": [
+      "EMERGENCY MANAGEMENT SYMBOLS",
+      "NATURAL EVENTS",
+      "HYDRO-METEOROLOGICAL",
+      "FOG"
+    ]
+  },
+  {
+    "sidc": "WAS-WSGRL-P----",
+    "class": "EEI",
+    "scope": "ACTIVITY",
+    "geometry": "Point",
+    "dimension": "EMS",
+    "hierarchy": [
+      "EMERGENCY MANAGEMENT SYMBOLS",
+      "NATURAL EVENTS",
+      "HYDRO-METEOROLOGICAL",
+      "HAIL"
+    ]
+  },
+  {
+    "sidc": "WAS-WSR-LIP----",
+    "class": "EEI",
+    "scope": "ACTIVITY",
+    "geometry": "Point",
+    "dimension": "EMS",
+    "hierarchy": [
+      "EMERGENCY MANAGEMENT SYMBOLS",
+      "NATURAL EVENTS",
+      "HYDRO-METEOROLOGICAL",
+      "RAIN"
+    ]
+  },
+  {
+    "sidc": "WAS-WSDSLMP---- ",
+    "class": "EEI",
+    "scope": "ACTIVITY",
+    "geometry": "Point",
+    "dimension": "EMS",
+    "hierarchy": [
+      "EMERGENCY MANAGEMENT SYMBOLS",
+      "NATURAL EVENTS",
+      "HYDRO-METEOROLOGICAL",
+      "SAND DUST STORM"
+    ]
+  },
+  {
+    "sidc": "WAS-WSS-LIP----",
+    "class": "EEI",
+    "scope": "ACTIVITY",
+    "geometry": "Point",
+    "dimension": "EMS",
+    "hierarchy": [
+      "EMERGENCY MANAGEMENT SYMBOLS",
+      "NATURAL EVENTS",
+      "HYDRO-METEOROLOGICAL",
+      "SNOW"
+    ]
+  },
+  {
+    "sidc": "WAS-WSTMH-P----",
+    "class": "EEI",
+    "scope": "ACTIVITY",
+    "geometry": "Point",
+    "dimension": "EMS",
+    "hierarchy": [
+      "EMERGENCY MANAGEMENT SYMBOLS",
+      "NATURAL EVENTS",
+      "HYDRO-METEOROLOGICAL",
+      "THUNDER STORM"
+    ]
+  },
+  {
+    "sidc": "WAS-WST-FCP----",
+    "class": "EEI",
+    "scope": "ACTIVITY",
+    "geometry": "Point",
+    "dimension": "EMS",
+    "hierarchy": [
+      "EMERGENCY MANAGEMENT SYMBOLS",
+      "NATURAL EVENTS",
+      "HYDRO-METEOROLOGICAL",
+      "TORNADO"
+    ]
+  },
+  {
+    "sidc": "WAS-WSTSS-P----",
+    "class": "EEI",
+    "scope": "ACTIVITY",
+    "geometry": "Point",
+    "dimension": "EMS",
+    "hierarchy": [
+      "EMERGENCY MANAGEMENT SYMBOLS",
+      "NATURAL EVENTS",
+      "HYDRO-METEOROLOGICAL",
+      "TROPICAL CYCLONE"
     ]
   },
   {
