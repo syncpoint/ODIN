@@ -2649,6 +2649,24 @@
         }
       ]
     },
+    "EXT_EXFILTRATE_TEXT": {
+      "texts": [
+        {
+          "text": "EX",
+          "x": 80,
+          "y": 115
+        }
+      ]
+    },
+    "EXT_INFILTRATE_TEXT": {
+      "texts": [
+        {
+          "text": "IN",
+          "x": 80,
+          "y": 115
+        }
+      ]
+    },
     "EXT_ASSAULT_POSITION_TEXT": {
       "texts": [
         {
@@ -3992,17 +4010,27 @@
       "EXT_TASKS_CURVED_ARROW",
 	  "EXT_TASKS_WITHDRAW_UNDER_PRESSURE_TEXT"
     ],
+    "G-T-VLE---": [
+      "EXT_DIRECTION_OF_ATTACK_GROUND_LINE",
+      "EXT_DIRECTION_OF_ATTACK_GROUND_SUPPORTING_ATTACK",
+      "EXT_EXFILTRATE_TEXT"
+    ],
+    "G-T-VLI---": [
+      "EXT_DIRECTION_OF_ATTACK_GROUND_LINE",
+      "EXT_DIRECTION_OF_ATTACK_GROUND_SUPPORTING_ATTACK",
+      "EXT_INFILTRATE_TEXT"
+    ],
     "G-T-WD----": [
       "EXT_TASKS_CURVED_ARROW",
-	  "EXT_TASKS_DISENGAGE_TEXT"
+	    "EXT_TASKS_DISENGAGE_TEXT"
     ],
     "G-T-WL----": [
       "EXT_TASKS_CURVED_ARROW",
-	  "EXT_TASKS_RPL_TEXT"
+	    "EXT_TASKS_RPL_TEXT"
     ],
     "G-G-GLB---": [
       "EXT_BOUNDARIES",
-	  "EXT_BOUNDARIES_TEXT"
+	    "EXT_BOUNDARIES_TEXT"
     ],
     "G-G-GLF---": [
       "EXT_FLOT"

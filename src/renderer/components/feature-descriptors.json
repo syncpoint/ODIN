@@ -23922,7 +23922,31 @@
       "minPoints": 2
     }
   },
+  {   
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*VLE---*****",
+    "scope": "CONTROL",
+    "geometry": "LineString",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "EXFILTRATE"
+    ]
+  },
   {
+    "standard": "NATO ATP-112",
+     "sidc": "G*T*VLI---*****",
+     "scope": "CONTROL",
+     "geometry": "LineString",
+     "dimension": "TASK",
+     "hierarchy": [
+       "TACTICAL GRAPHICS",
+       "TASKS",
+       "INFILTRATE"
+     ]
+   },
+   {
     "standard": "NATO ATP-112",
     "sidc": "G*T*KA----*****",
     "scope": "CONTROL",
