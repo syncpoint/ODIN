@@ -26,8 +26,10 @@ import G_T_B from './G_T_B'
 import G_T_C from './G_T_C'
 import G_T_H from './G_T_H'
 import G_T_J from './G_T_J'
+import G_T_JB from './G_T_JB'
 import G_T_K from './G_T_K'
 import G_T_KF from './G_T_KF'
+import G_T_KA from './G_T_KA'
 import G_T_L from './G_T_L'
 import G_T_M from './G_T_M'
 import G_T_P from './G_T_P'
@@ -35,8 +37,11 @@ import G_T_R from './G_T_R'
 import G_T_T from './G_T_T'
 import G_T_W from './G_T_W'
 import G_T_WP from './G_T_WP'
+import G_T_WD from './G_T_WD'
+import G_T_WL from './G_T_WL'
 import G_T_X from './G_T_X'
 import G_T_Y from './G_T_Y'
+
 
 export const style = fn => options => {
   const geometry = options.feature.getGeometry()
@@ -103,8 +108,10 @@ export default {
   'G*T*C-----': style(G_T_C),
   'G*T*H-----': style(G_T_H),
   'G*T*J-----': style(G_T_J),
+  'G*T*JB----': style(G_T_JB),
   'G*T*K-----': style(G_T_K),
   'G*T*KF----': style(G_T_KF),
+  'G*T*KA----': style(G_T_KA),
   'G*T*L-----': style(G_T_L),
   'G*T*M-----': style(G_T_M),
   'G*T*P-----': style(G_T_P),
@@ -112,6 +119,9 @@ export default {
   'G*T*T-----': style(G_T_T),
   'G*T*W-----': style(G_T_W),
   'G*T*WP----': style(G_T_WP),
+  'G*T*WD----': style(G_T_WD),
+  'G*T*WL----': style(G_T_WL),
   'G*T*X-----': style(G_T_X),
   'G*T*Y-----': style(G_T_Y)
+
 }
