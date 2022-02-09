@@ -217,6 +217,27 @@
         }
       ]
     },
+    "EXT_ADVANCE_TO_CONTACT": {
+      "paths": [
+        {
+          "d": "M 0,95 40,55 110,55 110,25 150,80 110,130 110,105 70,105 40,135"
+        },
+        {
+          "d": "M 145,64 165,44 145,44 180,10"
+        },
+        {
+          "d": "M 175,10 150,20, 170,30 Z",
+          "fill": "#123"
+        },
+        {
+          "d": "M 145,94 165,114 145,114 170,140"
+        },
+        {
+          "d": "M 150,140 175,150, 170,125 Z",
+          "fill": "#123"
+        }
+      ]
+    },
     "EXT_AXIS_OF_ADVANCE_AVIATION": {
       "paths": [
         {
@@ -3441,6 +3462,9 @@
       "EXT_COUNTERATTACK",
 	  "EXT_COUNTERATTACK_BY_FIRE",
       "EXT_COUNTERATTACK_TEXT"
+    ],
+    "G-T-KA----": [
+	  "EXT_ADVANCE_TO_CONTACT"
     ],
     "G-G-OLAV--": [
       "EXT_AXIS_OF_ADVANCE_AVIATION"

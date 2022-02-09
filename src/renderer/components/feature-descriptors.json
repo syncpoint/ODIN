@@ -23923,6 +23923,21 @@
     }
   },
   {
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*KA----*****",
+    "scope": "CONTROL",
+    "geometry": "GeometryCollection",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "ADVANCE TO CONTACT"
+    ],
+    "parameters": {
+      "layout": "corridor"
+    }
+  },
+  {
     "standard": "AUT",
     "sidc": "G*T*VLR---*****",
     "geometry": "LineString",
