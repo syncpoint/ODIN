@@ -23923,6 +23923,21 @@
     }
   },
   {
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*VAT---*****",
+    "scope": "CONTROL",
+    "geometry": "MultiPoint",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "TURN"
+    ],
+    "parameters": {
+      "arc": "90",
+      "layout": "turn"
+    }
+  }, 
+  {
     "standard": "AUT",
     "sidc": "G*T*JB----*****",
     "scope": "CONTROL",

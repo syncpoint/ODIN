@@ -451,7 +451,36 @@ geometries['G*M*OET---'] = ({ styles, points }) => {
 }
 
 /**
- * TACGRP.TSK.DNY
+ * TACGRP.TSK.TRN
+ * TASKS / TURN
+ */
+geometries['G*T*VAT---'] = ({ styles, points, resolution }) => {
+  const [C, O] = TS.coordinates(points)
+  const segmentO = TS.segment([C, O])
+
+  const arcCoords = TS.arc(C, segmentO.getLength(), segmentO.angle(), Math.PI / 2, 32)
+  const textAnchor = TS.point(arcCoords[Math.floor(arcCoords.length / 2)])
+
+  const arrow = TS.polygon(TS.projectCoordinates(segmentO.getLength(), segmentO.angle(), R.last(arcCoords))([
+    [0.2, -0.1], [0, 0], [0.2, 0.1], [0.2, -0.1]
+  ]))
+
+  const arc = TS.difference([TS.lineString(arcCoords), arrow])
+
+  return [
+    styles.solidLine(
+      TS.union([arc, arrow]),
+      { fill: styles.fill(options => options.primaryColor) }
+    ),
+    styles.wireFrame(TS.lineString(segmentO)),
+    styles.text(textAnchor, {
+      text: 'T',
+      flip: false
+    })
+  ]
+}
+
+/* TACGRP.TSK.DNY
  * TASKS / DENY
  */
 geometries['G*T*SY----'] = ({ styles, points, resolution }) => {
