@@ -993,6 +993,7 @@ geometries['G*M*OWCT--'] = ({ resolution, line: lineString, write }) => {
  * TASKS / RECONNAISSANCE (AUT ONLY)
  */
 geometries['G*T*VLR---'] = ({ line, styles, resolution }) => {
+
   const coords = TS.coordinates(line)
   const segment = TS.segment(coords)
   const angle = segment.angle()
@@ -1014,4 +1015,27 @@ geometries['G*T*VLR---'] = ({ line, styles, resolution }) => {
     TS.lineString([p1, coords[1]]),
     TS.lineString(xs)
   ])))
+}
+
+/* TACGRP.TSK.EXP
+ * TASKS / EXPLOIT
+*/
+geometries['G*T*VAE---'] = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const length = segment.getLength()
+
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [0, -0.14], [0.2, 0], [0, 0.14],
+    [0.8, -0.08], [1, 0], [0.8, 0.08]
+  ])
+
+  return [
+    styles.solidLine(TS.collect([
+      TS.lineString(R.props([1, 4], xs)),
+      TS.lineString(R.props([3, 4, 5], xs))
+    ])),
+    styles.dashedLine(TS.lineString(R.props([0, 1, 2], xs)))
+  ]
 }
