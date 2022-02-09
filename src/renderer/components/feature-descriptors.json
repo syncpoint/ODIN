@@ -23954,5 +23954,42 @@
      "parameters": {
        "maxPoints": 2
      }
+   },
+   {
+     "standard": "NATO ATP-112",
+     "sidc": "G*T*SL----*****",
+     "scope": "CONTROL",
+     "geometry": "MultiPoint",
+     "dimension": "TASK",
+     "hierarchy": [
+       "TACTICAL GRAPHICS",
+       "TASKS",
+       "LOCATE"
+     ],
+     "parameters": {
+       "arc": "338",
+       "layout": "fan",
+       "maxPoints": 2,
+       "minPoints": 2
+     }
+   },
+   {
+     "standard": "NATO ATP-112",
+     "sidc": "G*T*SC----*****",
+     "scope": "CONTROL",
+     "geometry": "MultiPoint",
+     "dimension": "TASK",
+     "hierarchy": [
+       "TACTICAL GRAPHICS",
+       "TASKS",
+       "CONTROL"
+     ],
+     "parameters": {
+       "arc": "338",
+       "layout": "fan",
+       "maxPoints": 2,
+       "minPoints": 2
+     }
    }
 ]
+
