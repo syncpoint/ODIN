@@ -23990,6 +23990,35 @@
        "maxPoints": 2,
        "minPoints": 2
      }
+   },
+  {
+     "standard": "NATO ATP-112",
+     "sidc": "G*T*WD----*****",
+     "scope": "CONTROL",
+     "geometry": "GeometryCollection",
+     "dimension": "TASK",
+     "hierarchy": [
+       "TACTICAL GRAPHICS",
+       "TASKS",
+       "DISENGAGE"
+     ],
+     "parameters": {
+       "layout": "orbit"
+     }
+   },
+   {
+     "standard": "AUT",
+     "sidc": "G*T*WL----*****",
+     "scope": "CONTROL",
+     "geometry": "GeometryCollection",
+     "dimension": "TASK",
+     "hierarchy": [
+       "TACTICAL GRAPHICS",
+       "TASKS",
+       "REARWARD PASSAGE OF LINES (AUT ONLY)"
+     ],
+     "parameters": {
+       "layout": "orbit"
+     }
    }
 ]
-
