@@ -26,6 +26,7 @@ import G_T_B from './G_T_B'
 import G_T_C from './G_T_C'
 import G_T_H from './G_T_H'
 import G_T_J from './G_T_J'
+import G_T_JB from './G_T_JB'
 import G_T_K from './G_T_K'
 import G_T_KF from './G_T_KF'
 import G_T_KA from './G_T_KA'
@@ -107,6 +108,7 @@ export default {
   'G*T*C-----': style(G_T_C),
   'G*T*H-----': style(G_T_H),
   'G*T*J-----': style(G_T_J),
+  'G*T*JB----': style(G_T_JB),
   'G*T*K-----': style(G_T_K),
   'G*T*KF----': style(G_T_KF),
   'G*T*KA----': style(G_T_KA),

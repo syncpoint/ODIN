@@ -23922,6 +23922,22 @@
       "minPoints": 2
     }
   },
+  {
+    "standard": "AUT",
+    "sidc": "G*T*JB----*****",
+    "scope": "CONTROL",
+    "geometry": "GeometryCollection",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "BREAK IN (AUT ONLY)"
+    ],
+    "parameters": {
+      "layout": "corridor",
+      "maxPoints": 2
+    }
+  },
   {   
     "standard": "NATO ATP-112",
     "sidc": "G*T*VLE---*****",
