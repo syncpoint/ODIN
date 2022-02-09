@@ -1273,6 +1273,18 @@
     ]
   },
   {
+    "sidc": "E*I*DO----*****",
+    "class": "EEI",
+    "scope": "ACTIVITY",
+    "geometry": "Point",
+    "dimension": "EMS",
+    "hierarchy": [
+      "EMERGENCY MANAGEMENT SYMBOLS",
+      "HAZARDOUS MATERIAL INCIDENT",
+      "UNEXPLODED ORDNANCE"
+    ]
+  },
+  {
     "standard": "MIL-STD-2525C",
     "sidc": "E*I*E-----*****",
     "class": "EEI",
