@@ -989,14 +989,43 @@ geometries['G*M*OWCT--'] = ({ resolution, line: lineString, write }) => {
 }
 
 /**
- * TACGRP.TSK.EXP
- * TASKS / EXPLOIT
+ * TACGRP.TSK.REC
+ * TASKS / RECONNAISSANCE (AUT ONLY)
  */
+geometries['G*T*VLR---'] = ({ line, styles, resolution }) => {
+
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const length = segment.getLength()
+
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [0.95, -0.04], [1, 0], [0.95, 0.04]
+  ])
+
+  const distance = resolution * 4
+  const [p0, p1] = [
+    TS.projectCoordinates(distance, angle, segment.pointAlong(0.55))([[0, -2]]),
+    TS.projectCoordinates(distance, angle, segment.pointAlong(0.45))([[0, +2]])
+  ].flat()
+
+  return styles.solidLine((TS.collect([
+    TS.lineString([coords[0], p0]),
+    TS.lineString([p0, p1]),
+    TS.lineString([p1, coords[1]]),
+    TS.lineString(xs)
+  ])))
+}
+
+/* TACGRP.TSK.EXP
+ * TASKS / EXPLOIT
+*/
 geometries['G*T*VAE---'] = ({ styles, line }) => {
   const coords = TS.coordinates(line)
   const segment = TS.segment(coords)
   const angle = segment.angle()
   const length = segment.getLength()
+
   const xs = TS.projectCoordinates(length, angle, coords[0])([
     [0, -0.14], [0.2, 0], [0, 0.14],
     [0.8, -0.08], [1, 0], [0.8, 0.08]

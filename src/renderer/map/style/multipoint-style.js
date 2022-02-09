@@ -287,10 +287,10 @@ const fanLike = label => options => {
 
   const distance = resolution * 4
   const [A1, A2, B1, B2] = [
-    TS.projectCoordinates(distance, angleA, segmentA.pointAlong(0.55))([[0, -1]]),
-    TS.projectCoordinates(distance, angleA, segmentA.pointAlong(0.45))([[0, +1]]),
-    TS.projectCoordinates(distance, angleB, segmentB.pointAlong(0.55))([[0, +1]]),
-    TS.projectCoordinates(distance, angleB, segmentB.pointAlong(0.45))([[0, -1]])
+    TS.projectCoordinates(distance, angleA, segmentA.pointAlong(0.55))([[0, -2]]),
+    TS.projectCoordinates(distance, angleA, segmentA.pointAlong(0.45))([[0, +2]]),
+    TS.projectCoordinates(distance, angleB, segmentB.pointAlong(0.55))([[0, +2]]),
+    TS.projectCoordinates(distance, angleB, segmentB.pointAlong(0.45))([[0, -2]])
   ].flat()
 
   const arrowOffsets = [[-0.08, -0.08], [0, 0], [-0.08, 0.08]]
@@ -346,10 +346,10 @@ geometries['G*G*GAS---'] = ({ resolution, styles, points }) => {
 
   const distance = resolution * 4
   const [A1, A2, B1, B2] = [
-    TS.projectCoordinates(distance, angleA, segmentA.pointAlong(0.55))([[0, -1]]),
-    TS.projectCoordinates(distance, angleA, segmentA.pointAlong(0.45))([[0, +1]]),
-    TS.projectCoordinates(distance, angleB, segmentB.pointAlong(0.55))([[0, +1]]),
-    TS.projectCoordinates(distance, angleB, segmentB.pointAlong(0.45))([[0, -1]])
+    TS.projectCoordinates(distance, angleA, segmentA.pointAlong(0.55))([[0, -2]]),
+    TS.projectCoordinates(distance, angleA, segmentA.pointAlong(0.45))([[0, +2]]),
+    TS.projectCoordinates(distance, angleB, segmentB.pointAlong(0.55))([[0, +2]]),
+    TS.projectCoordinates(distance, angleB, segmentB.pointAlong(0.45))([[0, -2]])
   ].flat()
 
   const arrowOffsets = [[-0.06, -0.03], [0, 0], [-0.06, 0.03], [-0.06, 0], [-0.06, -0.03]]
