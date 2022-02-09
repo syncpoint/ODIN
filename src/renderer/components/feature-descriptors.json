@@ -23939,5 +23939,20 @@
       "maxPoints": 2,
       "minPoints": 2
     }
-  }
+  },
+  {
+     "standard": "NATO ATP-112",
+     "sidc": "G*T*VAE---*****",
+     "scope": "CONTROL",
+     "geometry": "LineString",
+     "dimension": "TASK",
+     "hierarchy": [
+       "TACTICAL GRAPHICS",
+       "TASKS",
+       "EXPLOIT"
+     ],
+     "parameters": {
+       "maxPoints": 2
+     }
+   }
 ]
