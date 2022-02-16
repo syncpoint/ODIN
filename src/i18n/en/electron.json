@@ -7,6 +7,8 @@
   "Language": "Language",
   "en": "English",
   "de": "German",
+  "fr": "French",
+  "sp": "Spanish",
   "app": {
     "about": "About {{name}}",
     "hide": "Hide {{name}}",
@@ -30,14 +32,15 @@
     "name": "View",
     "reload": "Reload",
     "forceReload": "Force Reload",
-    "toggleDevTools": "Toggle Developer Tools",
+    "toggleDevTools": "Toggle Developer Tools on/off",
     "resetZoom": "Reset Zoom",
     "zoomIn": "Zoom In",
     "zoomOut": "Zoom Out",
     "grid": {
-      "mgrs": "MGRS Graticule"
+      "mgrs": "MGRS Graticule on/off"
     },
-    "toggleFullscreen": "Toggle Fullscreen"
+	"labels": "Labels on/off",
+    "toggleFullscreen": "Toggle Fullscreen on/off"
   },
   "window": {
     "name": "Window",
