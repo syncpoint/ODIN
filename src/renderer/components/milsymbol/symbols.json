@@ -2164,6 +2164,19 @@
         }
       ]
     },
+    "EXT_TASKS_ESCORT": {
+      "paths": [
+        {
+          "d": "M 10,100 50,100 M 140,100 190,100"
+        },
+        {
+          "d": "M 10,100 10,140"
+        },
+        {
+          "d": "M 190,100 190,140"
+        }
+      ]
+    },
     "EXT_TASKS_CURVED_ARROW": {
       "paths": [
         {
@@ -3138,6 +3151,20 @@
         }
       ]
     },
+    "EXT_TASKS_ESCORT_TEXT": {
+      "texts": [
+        {
+          "text": "E",
+          "x": 60,
+          "y": 115
+        },
+        {
+          "text": "E",
+          "x": 140,
+          "y": 115
+        }
+      ]
+    },
     "EXT_BOUNDARIES_TEXT": {
       "texts": [
         {
@@ -4048,6 +4075,10 @@
       "EXT_DIRECTION_OF_ATTACK_GROUND_LINE",
       "EXT_DIRECTION_OF_ATTACK_GROUND_SUPPORTING_ATTACK",
       "EXT_INFILTRATE_TEXT"
+    ],
+    "G-T-VRE---": [
+      "EXT_TASKS_ESCORT",
+      "EXT_TASKS_ESCORT_TEXT"
     ],
     "G-T-WD----": [
       "EXT_TASKS_CURVED_ARROW",
