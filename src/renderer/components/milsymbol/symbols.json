@@ -2147,6 +2147,16 @@
         }
       ]
     },
+    "EXT_TASKS_HOLD_OPEN": {
+      "paths": [
+        {
+          "d": "M 30,60 30,30 180,30 180,60"
+        },
+        {
+          "d": "M 30,100 30,130 180,130 180,100"
+        }
+      ]
+    },
     "EXT_TASKS_SEIZE": {
       "circles": [
         {
@@ -4056,6 +4066,9 @@
     "G-T-WL----": [
       "EXT_TASKS_CURVED_ARROW",
 	    "EXT_TASKS_RPL_TEXT"
+    ],
+    "G-T-VRH---": [
+      "EXT_TASKS_HOLD_OPEN"
     ],
     "G-G-GLB---": [
       "EXT_BOUNDARIES",
