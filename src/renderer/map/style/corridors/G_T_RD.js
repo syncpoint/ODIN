@@ -15,6 +15,7 @@ export default options => {
   const [px] = TS.projectCoordinates(width / 4, angle, coords[1])([[0, -orientation]])
   const [p0] = TS.projectCoordinates(width / 2, angle, coords[0])([[0, -orientation]])
   const [p1] = TS.projectCoordinates(width / 2, angle, coords[1])([[0, -orientation]])
+  const [p2] = TS.projectCoordinates(width / 2, angle, coords[1])([[-0.5, -orientation]])
 
   const arc = TS.difference([
     TS.boundary(TS.pointBuffer(TS.point(px))(width / 4)),
@@ -28,7 +29,7 @@ export default options => {
       openArrow(resolution, angle + Math.PI, p0),
       arc
     ])),
-    styles.text(TS.point(segment.midPoint()), {
+    styles.text(TS.point(p2), {
       text: 'DEM',
       flip: true,
       rotation: Math.PI - angle
