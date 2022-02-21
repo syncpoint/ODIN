@@ -39,6 +39,7 @@ import G_T_W from './G_T_W'
 import G_T_WP from './G_T_WP'
 import G_T_WD from './G_T_WD'
 import G_T_WL from './G_T_WL'
+import G_T_WU from './G_T_WU'
 import G_T_X from './G_T_X'
 import G_T_Y from './G_T_Y'
 
@@ -121,6 +122,7 @@ export default {
   'G*T*WP----': style(G_T_WP),
   'G*T*WD----': style(G_T_WD),
   'G*T*WL----': style(G_T_WL),
+  'G*T*WU----': style(G_T_WU),
   'G*T*X-----': style(G_T_X),
   'G*T*Y-----': style(G_T_Y)
 

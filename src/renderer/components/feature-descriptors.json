@@ -24246,5 +24246,20 @@
      "parameters": {
        "layout": "orbit"
      }
+   },
+  {
+     "standard": "NATO ATP-112",
+     "sidc": "G*T*WU----*****",
+     "scope": "CONTROL",
+     "geometry": "GeometryCollection",
+     "dimension": "TASK",
+     "hierarchy": [
+       "TACTICAL GRAPHICS",
+       "TASKS",
+       "PURSUE"
+     ],
+     "parameters": {
+       "layout": "orbit"
+     }
    }
 ]
