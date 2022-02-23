@@ -24246,5 +24246,21 @@
      "parameters": {
        "layout": "orbit"
      }
-   }
+   },
+  {
+    "standard": "AUT",
+    "sidc": "G*T*VAS---*****",
+    "scope": "CONTROL",
+    "geometry": "GeometryCollection",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "SEPARATE (AUT ONLY)"
+    ],
+    "parameters": {
+      "layout": "corridor",
+      "maxPoints": 2
+    }
+  }
 ]
