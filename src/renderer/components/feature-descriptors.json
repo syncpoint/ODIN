@@ -117,7 +117,7 @@
   {
     "standard": "MIL-STD-2525C",
     "sidc": "E*F*BA----*****",
-    "class": "EI",
+    "class": "E",
     "scope": "INSTALLATION",
     "geometry": "Point",
     "dimension": "EMS",
@@ -759,7 +759,7 @@
   {
     "standard": "MIL-STD-2525C",
     "sidc": "E*F*MA----*****",
-    "class": "EI",
+    "class": "E",
     "scope": "INSTALLATION",
     "geometry": "Point",
     "dimension": "EMS",
@@ -785,7 +785,7 @@
   {
     "standard": "MIL-STD-2525C",
     "sidc": "E*F*MC----*****",
-    "class": "EI",
+    "class": "E",
     "scope": "INSTALLATION",
     "geometry": "Point",
     "dimension": "EMS",
