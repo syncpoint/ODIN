@@ -640,34 +640,3 @@ geometries['G*T*SC----'] = ({ points, resolution, styles }) => {
     arcText(styles)(textAnchor, angle, 'C')
   ]
 }
-
-/**
- * TACGRP.TSK.CSU
- * TASKS / CONDUCT SURVEILLANCE (AUT ONLY)
- */
-geometries['G*T*VAC---'] = ({ points, resolution, styles }) => {
-  const delta = 180 * deg2rad
-  const coords = TS.coordinates(points)
-  const segment = TS.segment(coords)
-  const angle = segment.angle()
-  const radius = segment.getLength()
-
-  const arc = TS.arc(coords[0], radius, angle, delta, quads)
-  const xs = TS.projectCoordinates(radius, angle - delta + Math.PI / 2, R.last(arc))([
-    [0.24, -0.22], [0, 0], [0.25, 0.17]
-  ])
-  const xt = TS.projectCoordinates(radius, angle - delta - Math.PI / 2, R.last(arc))([
-    [-0.2, 1.78], [0.05, 2], [-0.2, 2.18]
-  ])
-  const xv = TS.projectCoordinates(radius, angle - delta - Math.PI / 2, R.last(arc))([
-    [-0.80, 1.18], [-1.13, 1], [-0.80, 0.80]
-  ])
-  const geometry = TS.difference([
-    TS.lineString(arc)
-  ])
-
-  return [
-    styles.solidLine(TS.union([geometry, TS.lineString(xs), TS.lineString(xt)])),
-    styles.filledPolygon(TS.polygon(R.props([0, 1, 2, 0], xv)))
-  ]
-}

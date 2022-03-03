@@ -24251,7 +24251,7 @@
      "standard": "AUT",
      "sidc": "G*T*VAC---*****",
      "scope": "CONTROL",
-     "geometry": "MultiPoint",
+     "geometry": "LineString",
      "dimension": "TASK",
      "hierarchy": [
        "TACTICAL GRAPHICS",
@@ -24259,10 +24259,7 @@
        "CONDUCT SURVEILLANCE (AUT ONLY)"
      ],
      "parameters": {
-       "arc": "338",
-       "layout": "fan",
-       "maxPoints": 2,
-       "minPoints": 2
+       "maxPoints": 2
      }
    }
 ]
