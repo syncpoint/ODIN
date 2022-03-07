@@ -1,6 +1,6 @@
 import * as R from 'ramda'
 import * as TS from '../../ts'
-import { openArrow } from './arrow'
+import { openArrow, openArrow1, openArrow2, openArrow3 } from './arrow'
 
 const K = v => fn => { fn(v); return v }
 
@@ -30,9 +30,9 @@ export default options => {
       TS.lineString([segments[0].p0, segments[2].p0]),
       TS.lineString([segments[1].pointAlong(-1), segments[1].p0]),
       openArrow(resolution, angle, coords[1]),
-      openArrow(resolution, angle, segments[0].p0),
-      openArrow(resolution, angle, segments[2].p0),
-      openArrow(resolution, angle, segments[1].pointAlong(-1))
+      openArrow1(resolution, angle, segments[0].p0),
+      openArrow2(resolution, angle, segments[2].p0),
+      openArrow3(resolution, angle, segments[1].pointAlong(-1))
     ]))
   ]
 }
