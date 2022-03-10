@@ -24246,5 +24246,17 @@
      "parameters": {
        "layout": "orbit"
      }
-   }
+   },
+   {
+     "standard": "AUT",
+     "sidc": "G*T*VLP---*****",
+     "scope": "CONTROL",
+     "geometry": "LineString",
+     "dimension": "TASK",
+     "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "PATROL (AUT ONLY)"
+    ]
+  }
 ]

@@ -1030,7 +1030,8 @@ geometries['G*T*VLR---'] = ({ line, styles, resolution }) => {
   ])))
 }
 
-/* TACGRP.TSK.EXP
+/**
+ * TACGRP.TSK.EXP
  * TASKS / EXPLOIT
 */
 geometries['G*T*VAE---'] = ({ styles, line }) => {
@@ -1051,4 +1052,35 @@ geometries['G*T*VAE---'] = ({ styles, line }) => {
     ])),
     styles.dashedLine(TS.lineString(R.props([0, 1, 2], xs)))
   ]
+}
+
+/**
+ * TACGRP.TSK.PAT
+ * TASKS / PATROL (AUT ONLY)
+ */
+geometries['G*T*VLP---'] = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = R.last(TS.segments(line))
+  const angle = segment.angle()
+  const length = segment.getLength()
+  const xs = TS.projectCoordinates(length, angle, coords[coords.length - 2])([
+    [0.86, -0.1], [1, 0], [0.86, 0.1]
+  ])
+  const xt = TS.projectCoordinates(length, angle, coords[coords.length - 2])([
+    [0.12, -0.10], [0, 0], [0.12, 0.10]
+  ])
+
+  if (coords.length > 2) {
+    return styles.solidLine(TS.collect([
+      line,
+      TS.lineString(R.props([0, 1, 2], xs)),
+      TS.lineString(R.props([0, 1, 2], xt))
+    ]))
+  } else {
+    return styles.solidLine(TS.collect([
+      line,
+      TS.lineString(R.props([0, 1, 2], xs)),
+      TS.lineString(R.props([0, 1, 2], xt))
+    ]))
+  }
 }
