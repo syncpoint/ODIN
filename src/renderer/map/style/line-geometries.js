@@ -3,6 +3,7 @@ import * as style from 'ol/style'
 import * as TS from '../ts'
 import echelons from './echelons'
 import * as fences from './fences'
+import { openArrow } from './corridors/arrow'
 
 const linearTarget = ({ styles, line }) => {
   const coords = TS.coordinates(line)
@@ -1058,29 +1059,16 @@ geometries['G*T*VAE---'] = ({ styles, line }) => {
  * TACGRP.TSK.PAT
  * TASKS / PATROL (AUT ONLY)
  */
-geometries['G*T*VLP---'] = ({ styles, line }) => {
+geometries['G*T*VLP---'] = ({ styles, line, resolution }) => {
   const coords = TS.coordinates(line)
-  const segment = R.last(TS.segments(line))
-  const angle = segment.angle()
-  const length = segment.getLength()
-  const xs = TS.projectCoordinates(length, angle, coords[coords.length - 2])([
-    [0.86, -0.1], [1, 0], [0.86, 0.1]
-  ])
-  const xt = TS.projectCoordinates(length, angle, coords[coords.length - 2])([
-    [0.12, -0.10], [0, 0], [0.12, 0.10]
-  ])
+  const segments = TS.segments(line)
+  const firstSegment = R.head(segments)
+  const lastSegment = R.last(segments)
+  const width = resolution * 2
 
-  if (coords.length > 2) {
-    return styles.solidLine(TS.collect([
-      line,
-      TS.lineString(R.props([0, 1, 2], xs)),
-      TS.lineString(R.props([0, 1, 2], xt))
-    ]))
-  } else {
-    return styles.solidLine(TS.collect([
-      line,
-      TS.lineString(R.props([0, 1, 2], xs)),
-      TS.lineString(R.props([0, 1, 2], xt))
-    ]))
-  }
+  return styles.solidLine(TS.collect([
+    line,
+    openArrow(width, firstSegment.angle() + Math.PI, R.head(coords)),
+    openArrow(width, lastSegment.angle(), R.last(coords))
+  ]))
 }
