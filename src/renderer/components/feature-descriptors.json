@@ -1,5 +1,115 @@
 [
   {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-UEFS-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT",
+      "FIRE LIGHT"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-UEFM-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT",
+      "FIRE MEDIUM"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-UEFH-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT",
+      "FIRE HEAVY"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-UEDU-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT",
+      "DANGER UNSPECIFIED"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-UEB-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT",
+      "BROKEN BLOCKED CLOSED"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-UEOD-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT",
+      "DISRUPTED"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-UEOP-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT",
+      "PARTIALLY DESTROYED"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-UEOX-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT",
+      "COMPLETELY DESTROYED"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-UEPD-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT",
+      "PERSON DISTRESSED"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-UEPI-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT",
+      "PERSON INJURED"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-UEPK-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT",
+      "PERSON KILLED"
+    ]
+  },
+  {
     "standard": "MIL-STD-2525C",
     "sidc": "E*F*A-----H****",
     "class": "EI",
@@ -1575,7 +1685,7 @@
     ]
   },
   {
-    "sidc": "WAS-WSDSLMP---- ",
+    "sidc": "WAS-WSDSLMP----",
     "class": "EEI",
     "scope": "ACTIVITY",
     "geometry": "Point",

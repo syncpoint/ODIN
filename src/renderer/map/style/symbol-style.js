@@ -1,7 +1,7 @@
 import * as R from 'ramda'
 import { Style, Icon } from 'ol/style'
 import * as geom from 'ol/geom'
-import ms from 'milsymbol'
+import ms from '../../components/milsymbol/msExtend'
 import { K } from '../../../shared/combinators'
 import { featureClass } from '../../components/feature-descriptors'
 import { echelonPart } from '../../components/SIDC'
@@ -113,7 +113,7 @@ export const symbolStyle = mode => (feature, resolution) => {
     ]
   }
 
-  if (symbol.isValid()) {
+  if (symbol.validIcon) {
     const marker = geometry.getType() === 'Point'
       ? pointStyle()
       : lineStringStyle()

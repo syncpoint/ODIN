@@ -16,9 +16,6 @@ import { ipcRenderer } from 'electron'
 import { getCurrentWindow } from '@electron/remote'
 
 
-import extendMilsymbols from './components/milsymbol/msExtend'
-extendMilsymbols()
-
 const useStyles = makeStyles((/* theme */) => ({
   overlay: {
     pointerEvents: 'none',

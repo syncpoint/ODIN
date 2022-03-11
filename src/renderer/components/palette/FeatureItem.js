@@ -6,7 +6,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import Avatar from '@material-ui/core/Avatar'
 import ListItemText from '@material-ui/core/ListItemText'
 import Typography from '@material-ui/core/Typography'
-import ms from 'milsymbol'
+import ms from '../milsymbol/msExtend'
 
 const useStyles = makeStyles((/* theme */) => ({
   root: {
@@ -20,8 +20,8 @@ const placeholderSymbol = new ms.Symbol('')
 const FeatureItem = props => {
   const classes = useStyles()
   const symbol = new ms.Symbol(props.sidc)
-  const extended = false
-  const url = symbol.isValid(extended)
+
+  const url = symbol.validIcon
     ? symbol.asCanvas().toDataURL()
     : placeholderSymbol.asCanvas().toDataURL()
 

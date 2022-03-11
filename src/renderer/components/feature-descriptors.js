@@ -93,7 +93,13 @@ export const featureDescriptors = (filter, preset = {}) => {
     statusPart.replace(status)
   )
 
-  const updateSIDC = descriptor => ({ ...descriptor, sidc: sidc(descriptor.sidc) })
+  const updateSIDC = descriptor => {
+    if (descriptor.class === 'K') {
+      return descriptor
+    } else {
+      return { ...descriptor, sidc: sidc(descriptor.sidc) }
+    }
+  }
 
   try {
     return index.search(filter)
