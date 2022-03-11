@@ -47,6 +47,24 @@ export const skkmIconParts = (iconParts) => {
     stroke: '#FF0000',
     d: 'M 73,74 h 51'
   }
+  iconParts.AT_SKKM_TEXT_G = {
+    type: 'text',
+    text: 'G',
+    stroke: '#FF0000',
+    x: 80,
+    y: 130,
+    fontsize: 50,
+    fontfamily: 'Arial'
+  }
+  iconParts.AT_SKKM_TEXT_C = {
+    type: 'text',
+    text: 'C',
+    stroke: '#FF0000',
+    x: 80,
+    y: 130,
+    fontsize: 50,
+    fontfamily: 'Arial'
+  }
 }
 
 export const skkmSIDCIcons = (sidc, bbox, iconParts) => {
@@ -68,6 +86,14 @@ export const skkmSIDCIcons = (sidc, bbox, iconParts) => {
   sidc['K-G-UEDU--'] = [
     iconParts.AT_SKKM_TRIANGLE,
     iconParts.AT_SKKM_EXCLAMATION_MARK
+  ]
+  sidc['K-G-UEDG--'] = [
+    iconParts.AT_SKKM_TEXT_G,
+    iconParts.AT_SKKM_TRIANGLE
+  ]
+  sidc['K-G-UEDC--'] = [
+    iconParts.AT_SKKM_TEXT_C,
+    iconParts.AT_SKKM_TRIANGLE
   ]
   sidc['K-G-UEOD--'] = [
     iconParts.AT_SKKM_CROSS,

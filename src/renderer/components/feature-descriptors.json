@@ -41,6 +41,26 @@
   },
   {
     "standard": "AUT-SKKM",
+    "sidc": "K-G-UEDG-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT",
+      "DANGER GAS"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-UEDC-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT",
+      "DANGER CHEMICALS"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
     "sidc": "K-G-UEB-------",
     "class": "K",
     "geometry": "Point",
