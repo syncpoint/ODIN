@@ -1,135 +1,5 @@
 [
   {
-    "standard": "AUT-SKKM",
-    "sidc": "K-G-UEFS-------",
-    "class": "K",
-    "geometry": "Point",
-    "hierarchy": [
-      "SKKM EVENT",
-      "FIRE LIGHT"
-    ]
-  },
-  {
-    "standard": "AUT-SKKM",
-    "sidc": "K-G-UEFM-------",
-    "class": "K",
-    "geometry": "Point",
-    "hierarchy": [
-      "SKKM EVENT",
-      "FIRE MEDIUM"
-    ]
-  },
-  {
-    "standard": "AUT-SKKM",
-    "sidc": "K-G-UEFH-------",
-    "class": "K",
-    "geometry": "Point",
-    "hierarchy": [
-      "SKKM EVENT",
-      "FIRE HEAVY"
-    ]
-  },
-  {
-    "standard": "AUT-SKKM",
-    "sidc": "K-G-UEDU-------",
-    "class": "K",
-    "geometry": "Point",
-    "hierarchy": [
-      "SKKM EVENT",
-      "DANGER UNSPECIFIED"
-    ]
-  },
-  {
-    "standard": "AUT-SKKM",
-    "sidc": "K-G-UEDG-------",
-    "class": "K",
-    "geometry": "Point",
-    "hierarchy": [
-      "SKKM EVENT",
-      "DANGER GAS"
-    ]
-  },
-  {
-    "standard": "AUT-SKKM",
-    "sidc": "K-G-UEDC-------",
-    "class": "K",
-    "geometry": "Point",
-    "hierarchy": [
-      "SKKM EVENT",
-      "DANGER CHEMICALS"
-    ]
-  },
-  {
-    "standard": "AUT-SKKM",
-    "sidc": "K-G-UEB-------",
-    "class": "K",
-    "geometry": "Point",
-    "hierarchy": [
-      "SKKM EVENT",
-      "BROKEN BLOCKED CLOSED"
-    ]
-  },
-  {
-    "standard": "AUT-SKKM",
-    "sidc": "K-G-UEOD-------",
-    "class": "K",
-    "geometry": "Point",
-    "hierarchy": [
-      "SKKM EVENT",
-      "DISRUPTED"
-    ]
-  },
-  {
-    "standard": "AUT-SKKM",
-    "sidc": "K-G-UEOP-------",
-    "class": "K",
-    "geometry": "Point",
-    "hierarchy": [
-      "SKKM EVENT",
-      "PARTIALLY DESTROYED"
-    ]
-  },
-  {
-    "standard": "AUT-SKKM",
-    "sidc": "K-G-UEOX-------",
-    "class": "K",
-    "geometry": "Point",
-    "hierarchy": [
-      "SKKM EVENT",
-      "COMPLETELY DESTROYED"
-    ]
-  },
-  {
-    "standard": "AUT-SKKM",
-    "sidc": "K-G-UEPD-------",
-    "class": "K",
-    "geometry": "Point",
-    "hierarchy": [
-      "SKKM EVENT",
-      "PERSON DISTRESSED"
-    ]
-  },
-  {
-    "standard": "AUT-SKKM",
-    "sidc": "K-G-UEPI-------",
-    "class": "K",
-    "geometry": "Point",
-    "hierarchy": [
-      "SKKM EVENT",
-      "PERSON INJURED"
-    ]
-  },
-  {
-    "standard": "AUT-SKKM",
-    "sidc": "K-G-UEPK-------",
-    "class": "K",
-    "geometry": "Point",
-    "hierarchy": [
-      "SKKM EVENT",
-      "PERSON KILLED"
-    ]
-  },
-  {
     "standard": "MIL-STD-2525C",
     "sidc": "E*F*A-----H****",
     "class": "EI",
@@ -24376,5 +24246,385 @@
      "parameters": {
        "layout": "orbit"
      }
-   }
+   },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-D----------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DANGER)",
+      "DANGER UNSPECIFIED"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-DI---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DANGER)",
+      "RISK OF INFECTION"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-DF---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DANGER)",
+      "FIRE HAZARD"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-DC---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DANGER)",
+      "CHEMICAL HAZARD"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-DG---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DANGER)",
+      "GAS HAZARD"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-DA---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DANGER)",
+      "AVALANCHE, LANDSLIDE OR ROCKFALL HAZARD"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-DR---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DANGER)",
+      "RADIATION HAZARD"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-DW---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DANGER)",
+      "RISK OF FLOODING"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-DE---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DANGER)",
+      "EXPLOSION HAZARD"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-H----------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DAMAGE)",
+      "DAMAGE UNSPECIFIED"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-HI---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DAMAGE)",
+      "CONTAMINATION"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-HFL--------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DAMAGE)",
+      "FIRE LIGHT"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-HFM--------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DAMAGE)",
+      "FIRE MEDIUM"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-HFH--------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DAMAGE)",
+      "FIRE HEAVY"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-HC---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DAMAGE)",
+      "CHEMICAL LEAK"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-HG---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DAMAGE)",
+      "GAS LEAK"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-HA---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DAMAGE)",
+      "AVALANCHE, LANDSLIDE OR ROCKFALL"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-HR---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DAMAGE)",
+      "RADIATION"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-HW---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DAMAGE)",
+      "FLOOD"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-HBD--------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DAMAGE)",
+      "DISRUPTED"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-HBP--------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DAMAGE)",
+      "PARTIALLY DESTROYED"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-HBC-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DAMAGE)",
+      "BROKEN BLOCKED CLOSED"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-HBY-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DAMAGE)",
+      "COMPLETELY DESTROYED"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-P----------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM INDIVIDUAL",
+      "PERSON"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-PI---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM INDIVIDUAL",
+      "PERSON INJURED"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-PK---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM INDIVIDUAL",
+      "PERSON KILLED"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-PF---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM INDIVIDUAL",
+      "PERSON IN FORCED POSITION"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-PM---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM INDIVIDUAL",
+      "PERSON MISSING"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-FU---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM FORCES",
+      "FORMATION OF FORCES"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-FH---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM FORCES",
+      "COMMAND POST"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-FI---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM FORCES",
+      "PERMANENT FIXED FACILITY"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-FS---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM FORCES",
+      "TEMPORARY OCCASION-RELATED FACILITY"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-VM---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM VEHICLE",
+      "MOTOR VEHICLE"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-VT---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM VEHICLE",
+      "TRAILER"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-VL---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM VEHICLE",
+      "RAIL VEHICLE"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-VS---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM VEHICLE",
+      "WATERCRAFT"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-VF---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM VEHICLE",
+      "AIRCRAFT (FIXED WING)"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-VR---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM VEHICLE",
+      "AIRCRAFT (ROTARY WING)"
+    ]
+  }
 ]
