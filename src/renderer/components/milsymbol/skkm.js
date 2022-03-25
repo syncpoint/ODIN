@@ -137,6 +137,18 @@ export const skkmIconParts = (iconParts) => {
     stroke: '#FF0000',
     d: 'M 70,140 L 90,90 L 110,90 L 130,140 M 73,130 L 127,130 M 76,120 L 123,120'
   }
+  iconParts.AT_SKKM_SMOKE = {
+    type: 'path',
+    fill: false,
+    stroke: '#FF0000',
+    d: 'M 70,135 L 130,135 M 80,120 L 120,120 M 90,105 L 110,105'
+  }
+  iconParts.AT_SKKM_LIGHTING = {
+    type: 'path',
+    fill: false,
+    stroke: '#FF0000',
+    d: 'M 95,130 L 100,140 L 115,130 M 100,140 L 110,110 L 90,110 L 100,80'
+  }
   iconParts.AT_SKKM_VEHICLE_MOTOR = {
     type: 'path',
     fill: false,
@@ -257,14 +269,22 @@ export const skkmSIDCIcons = (sidc, bbox, iconParts) => {
     iconParts.AT_SKKM_TRIANGLE,
     iconParts.AT_SKKM_RADIATION_TRIANGLE
   ]
-  sidc['K-G-DE----'] = [
-    iconParts.AT_SKKM_TRIANGLE,
-    iconParts.AT_SKKM_TEXT_EX_TRIANGLE
-  ]
   sidc['K-G-DW----'] = [
     iconParts.AT_SKKM_TRIANGLE,
     { type: 'translate', x: -6, y: 12, draw: [iconParts.AT_SKKM_CURVED_LINE] },
     { type: 'translate', x: -6, y: 2, draw: [iconParts.AT_SKKM_CURVED_LINE] }
+  ]
+  sidc['K-G-DE----'] = [
+    iconParts.AT_SKKM_TRIANGLE,
+    iconParts.AT_SKKM_TEXT_EX_TRIANGLE
+  ]
+  sidc['K-G-DS----'] = [
+    iconParts.AT_SKKM_TRIANGLE,
+    iconParts.AT_SKKM_SMOKE
+  ]
+  sidc['K-G-DX----'] = [
+    iconParts.AT_SKKM_TRIANGLE,
+    iconParts.AT_SKKM_LIGHTING
   ]
   sidc['K-G-H-----'] = [
     iconParts.AT_SKKM_SQUARE,
