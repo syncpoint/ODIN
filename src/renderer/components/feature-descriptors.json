@@ -24339,6 +24339,26 @@
   },
   {
     "standard": "AUT-SKKM",
+    "sidc": "K-G-DS---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DANGER)",
+      "SMOKE HAZARD"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-DX---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EVENT (DANGER)",
+      "ELECTRICITY HAZARD"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
     "sidc": "K-G-H----------",
     "class": "K",
     "geometry": "Point",
