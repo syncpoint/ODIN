@@ -53,6 +53,12 @@ export const skkmIconParts = (iconParts) => {
     stroke: '#FF0000',
     d: 'M 100,150 h 50 l -50,-100 l -50,100 Z'
   }
+  iconParts.AT_SKKM_TRIANGLE_SMALL_FILLED = {
+    type: 'path',
+    fill: '#000000',
+    stroke: '#000000',
+    d: 'M 80,70 100,50 120,70 Z'
+  }
   iconParts.AT_SKKM_HQ = {
     type: 'path',
     fill: false,
@@ -153,7 +159,7 @@ export const skkmIconParts = (iconParts) => {
     type: 'path',
     fill: false,
     stroke: '#000000',
-    d: 'M 60,130 L 60,70 L 140,70 L 140,130 L 60,130 M 90,130 L 90,70'
+    d: 'M 60,130 L 60,70 L 140,70 L 140,130 L 60,130 M 80,130 L 80,70'
   }
   iconParts.AT_SKKM_VEHICLE_TRAILER = {
     type: 'path',
@@ -190,6 +196,12 @@ export const skkmIconParts = (iconParts) => {
     fill: false,
     stroke: '#000000',
     d: 'M 100,100 L 100,125 M 80,125 L 120,125'
+  }
+  iconParts.AT_SKKM_EQUIPMENT_LARGE_SCALE = {
+    type: 'path',
+    fill: false,
+    stroke: '#000000',
+    d: 'M 75,130 L 75,70 M 60,70 140,70 M 125,70 125,130 M 140,130, 60,130'
   }
   iconParts.AT_SKKM_TEXT_G_TRIANGLE = {
     type: 'text',
@@ -355,6 +367,10 @@ export const skkmSIDCIcons = (sidc, bbox, iconParts) => {
   sidc['K-G-P-----'] = [
     iconParts.AT_SKKM_RHOMBUS_BLACK
   ]
+  sidc['K-G-PC----'] = [
+    iconParts.AT_SKKM_RHOMBUS_BLACK,
+    iconParts.AT_SKKM_TRIANGLE_SMALL_FILLED
+  ]
   sidc['K-G-PI----'] = [
     iconParts.AT_SKKM_RHOMBUS_RED,
     iconParts.AT_SKKM_VERTICAL_LINE
@@ -403,5 +419,8 @@ export const skkmSIDCIcons = (sidc, bbox, iconParts) => {
   sidc['K-G-VR----'] = [
     iconParts.AT_SKKM_VEHICLE_AIRCRAFT,
     iconParts.AT_SKKM_VEHICLE_AIRCRAFT_ROTARY
+  ]
+  sidc['K-G-E-----'] = [
+    iconParts.AT_SKKM_EQUIPMENT_LARGE_SCALE
   ]
 }
