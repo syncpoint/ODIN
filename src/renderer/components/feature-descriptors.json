@@ -24254,7 +24254,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DANGER)",
-      "DANGER UNSPECIFIED"
+      "DANGER UNSPECIFIED (AUT ONLY)"
     ]
   },
   {
@@ -24264,7 +24264,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DANGER)",
-      "RISK OF INFECTION"
+      "RISK OF INFECTION (AUT ONLY)"
     ]
   },
   {
@@ -24274,7 +24274,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DANGER)",
-      "FIRE HAZARD"
+      "FIRE HAZARD (AUT ONLY)"
     ]
   },
   {
@@ -24284,7 +24284,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DANGER)",
-      "CHEMICAL HAZARD"
+      "CHEMICAL HAZARD (AUT ONLY)"
     ]
   },
   {
@@ -24294,7 +24294,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DANGER)",
-      "GAS HAZARD"
+      "GAS HAZARD (AUT ONLY)"
     ]
   },
   {
@@ -24304,7 +24304,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DANGER)",
-      "AVALANCHE, LANDSLIDE OR ROCKFALL HAZARD"
+      "AVALANCHE, LANDSLIDE OR ROCKFALL HAZARD (AUT ONLY)"
     ]
   },
   {
@@ -24314,7 +24314,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DANGER)",
-      "RADIATION HAZARD"
+      "RADIATION HAZARD (AUT ONLY)"
     ]
   },
   {
@@ -24324,7 +24324,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DANGER)",
-      "RISK OF FLOODING"
+      "RISK OF FLOODING (AUT ONLY)"
     ]
   },
   {
@@ -24334,7 +24334,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DANGER)",
-      "EXPLOSION HAZARD"
+      "EXPLOSION HAZARD (AUT ONLY)"
     ]
   },
   {
@@ -24344,7 +24344,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DANGER)",
-      "SMOKE HAZARD"
+      "SMOKE HAZARD (AUT ONLY)"
     ]
   },
   {
@@ -24354,7 +24354,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DANGER)",
-      "ELECTRICITY HAZARD"
+      "ELECTRICITY HAZARD (AUT ONLY)"
     ]
   },
   {
@@ -24364,7 +24364,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DAMAGE)",
-      "DAMAGE UNSPECIFIED"
+      "DAMAGE UNSPECIFIED (AUT ONLY)"
     ]
   },
   {
@@ -24374,7 +24374,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DAMAGE)",
-      "CONTAMINATION"
+      "CONTAMINATION (AUT ONLY)"
     ]
   },
   {
@@ -24384,7 +24384,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DAMAGE)",
-      "FIRE LIGHT"
+      "FIRE LIGHT (AUT ONLY)"
     ]
   },
   {
@@ -24394,7 +24394,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DAMAGE)",
-      "FIRE MEDIUM"
+      "FIRE MEDIUM (AUT ONLY)"
     ]
   },
   {
@@ -24404,7 +24404,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DAMAGE)",
-      "FIRE HEAVY"
+      "FIRE HEAVY (AUT ONLY)"
     ]
   },
   {
@@ -24414,7 +24414,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DAMAGE)",
-      "CHEMICAL LEAK"
+      "CHEMICAL LEAK (AUT ONLY)"
     ]
   },
   {
@@ -24424,7 +24424,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DAMAGE)",
-      "GAS LEAK"
+      "GAS LEAK (AUT ONLY)"
     ]
   },
   {
@@ -24434,7 +24434,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DAMAGE)",
-      "AVALANCHE, LANDSLIDE OR ROCKFALL"
+      "AVALANCHE, LANDSLIDE OR ROCKFALL (AUT ONLY)"
     ]
   },
   {
@@ -24444,7 +24444,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DAMAGE)",
-      "RADIATION"
+      "RADIATION (AUT ONLY)"
     ]
   },
   {
@@ -24454,7 +24454,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DAMAGE)",
-      "FLOOD"
+      "FLOOD (AUT ONLY)"
     ]
   },
   {
@@ -24464,7 +24464,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DAMAGE)",
-      "DISRUPTED"
+      "DAMAGED, FUNCTIONALLY IMPAIRED (AUT ONLY)"
     ]
   },
   {
@@ -24474,7 +24474,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DAMAGE)",
-      "PARTIALLY DESTROYED"
+      "PARTIALLY DESTROYED, PARTLY OUT OF FUNCTION (AUT ONLY)"
     ]
   },
   {
@@ -24484,7 +24484,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DAMAGE)",
-      "BROKEN BLOCKED CLOSED"
+      "BROKEN, BLOCKED, LOCKED (AUT ONLY)"
     ]
   },
   {
@@ -24494,7 +24494,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM EVENT (DAMAGE)",
-      "COMPLETELY DESTROYED"
+      "COMPLETELY DESTROYED, OUT OF FUNCTION (AUT ONLY)"
     ]
   },
   {
@@ -24504,7 +24504,17 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM INDIVIDUAL",
-      "PERSON"
+      "PERSON (AUT ONLY)"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-PC---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM INDIVIDUAL",
+      "PERSON IN COMMANDER FUNCTION (AUT ONLY)"
     ]
   },
   {
@@ -24514,7 +24524,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM INDIVIDUAL",
-      "PERSON INJURED"
+      "PERSON INJURED (AUT ONLY)"
     ]
   },
   {
@@ -24524,7 +24534,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM INDIVIDUAL",
-      "PERSON KILLED"
+      "PERSON KILLED (AUT ONLY)"
     ]
   },
   {
@@ -24534,7 +24544,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM INDIVIDUAL",
-      "PERSON IN FORCED POSITION"
+      "PERSON IN FORCED POSITION (AUT ONLY)"
     ]
   },
   {
@@ -24544,7 +24554,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM INDIVIDUAL",
-      "PERSON MISSING"
+      "PERSON MISSING (AUT ONLY)"
     ]
   },
   {
@@ -24554,7 +24564,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM FORCES",
-      "FORMATION OF FORCES"
+      "FORMATION OF FORCES (AUT ONLY)"
     ]
   },
   {
@@ -24564,7 +24574,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM FORCES",
-      "COMMAND POST"
+      "COMMAND POST (AUT ONLY)"
     ]
   },
   {
@@ -24574,7 +24584,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM FORCES",
-      "PERMANENT FIXED FACILITY"
+      "PERMANENT FIXED FACILITY (AUT ONLY)"
     ]
   },
   {
@@ -24584,7 +24594,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM FORCES",
-      "TEMPORARY OCCASION-RELATED FACILITY"
+      "TEMPORARY OCCASION-RELATED FACILITY (AUT ONLY)"
     ]
   },
   {
@@ -24594,7 +24604,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM VEHICLE",
-      "MOTOR VEHICLE"
+      "MOTOR VEHICLE (AUT ONLY)"
     ]
   },
   {
@@ -24604,7 +24614,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM VEHICLE",
-      "TRAILER"
+      "TRAILER (AUT ONLY)"
     ]
   },
   {
@@ -24614,7 +24624,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM VEHICLE",
-      "RAIL VEHICLE"
+      "RAIL VEHICLE (AUT ONLY)"
     ]
   },
   {
@@ -24624,7 +24634,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM VEHICLE",
-      "WATERCRAFT"
+      "WATERCRAFT (AUT ONLY)"
     ]
   },
   {
@@ -24634,7 +24644,7 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM VEHICLE",
-      "AIRCRAFT (FIXED WING)"
+      "AIRCRAFT/FIXED WING (AUT ONLY)"
     ]
   },
   {
@@ -24644,7 +24654,17 @@
     "geometry": "Point",
     "hierarchy": [
       "SKKM VEHICLE",
-      "AIRCRAFT (ROTARY WING)"
+      "AIRCRAFT/ROTARY WING (AUT ONLY)"
+    ]
+  },
+  {
+    "standard": "AUT-SKKM",
+    "sidc": "K-G-E----------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "SKKM EQUIPMENT",
+      "LARGE-SCALE EQUIPMENT (AUT ONLY)"
     ]
   }
 ]
