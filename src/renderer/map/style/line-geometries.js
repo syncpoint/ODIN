@@ -1030,7 +1030,7 @@ geometries['G*T*VLR---'] = ({ line, styles, resolution }) => {
   ])))
 }
 
-/* TACGRP.TSK.EXP
+/** TACGRP.TSK.EXP
  * TASKS / EXPLOIT
 */
 geometries['G*T*VAE---'] = ({ styles, line }) => {
@@ -1084,5 +1084,42 @@ geometries['G*T*VRE---'] = ({ styles, line }) => {
       flip: true,
       rotation: Math.PI - angle
     })
+  ]
+}
+
+/**
+  * TACGRP.TSK.CSU
+  * TASKS / CONDUCT SURVEILLANCE (AUT ONLY)
+  */
+geometries['G*T*VAC---'] = ({ styles, resolution, line: lineString }) => {
+  const coords = TS.coordinates(lineString)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const center = segment.midPoint()
+  const radius = segment.getLength() / 2
+  const length = segment.getLength()
+
+  const xs = R.range(0, 8)
+    .map(i => Math.PI / 16 * i + angle)
+    .map(angle => TS.projectCoordinate(center)([angle, radius]))
+
+  const xt = R.range(9, 17)
+    .map(i => Math.PI / 16 * i + angle)
+    .map(angle => TS.projectCoordinate(center)([angle, radius]))
+
+  const xv = TS.projectCoordinates(length, angle, coords[0])([
+    [0.1, -0.1], [0, 0], [-0.1, -0.1],
+    [0.9, -0.1], [1, 0], [1.1, -0.1],
+    [0.30, -0.36], [0.5, -0.61], [0.70, -0.36]
+  ])
+
+  return [
+    styles.solidLine(TS.collect([
+      TS.lineString(xs),
+      TS.lineString(xt),
+      TS.lineString(R.props([0, 1, 2], xv)),
+      TS.lineString(R.props([3, 4, 5], xv))
+    ])),
+    styles.filledPolygon(TS.polygon(R.props([6, 7, 8, 6], xv)))
   ]
 }
