@@ -7,6 +7,8 @@
   "Language": "Sprache",
   "en": "Englisch",
   "de": "Deutsch",
+  "fr": "Französisch",
+  "sp": "Spanisch",
   "app": {
     "about": "Über {{name}}",
     "hide": "{{name}} verbergen",
@@ -35,8 +37,9 @@
     "zoomIn": "Heranzoomen",
     "zoomOut": "Herauszoomen",
     "grid": {
-      "mgrs": "MGRS Gitter"
+      "mgrs": "MGRS Gitter ein/aus"
     },
+	"labels": "Text Modifier ein/aus",
     "toggleFullscreen": "Vollbildmodus ein/aus"
   },
   "window": {
