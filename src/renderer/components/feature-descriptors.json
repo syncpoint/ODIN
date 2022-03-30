@@ -24307,5 +24307,20 @@
     "parameters": {
       "layout": "orbit"
     }
+  },
+  {
+    "standard": "AUT",
+    "sidc": "G*T*VAC---*****",
+    "scope": "CONTROL",
+    "geometry": "LineString",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "CONDUCT SURVEILLANCE (AUT ONLY)"
+    ],
+    "parameters": {
+      "maxPoints": 2
+    }
   }
 ]
