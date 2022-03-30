@@ -1052,3 +1052,37 @@ geometries['G*T*VAE---'] = ({ styles, line }) => {
     styles.dashedLine(TS.lineString(R.props([0, 1, 2], xs)))
   ]
 }
+
+/**
+ * TACGRP.TSK.ESC
+ * TASKS / ESCORT
+ */
+geometries['G*T*VRE---'] = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const length = segment.getLength()
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [0, 0.12], [0, 0], [0.2, 0], [0.8, 0], [1, 0], [1, 0.12]
+  ])
+
+  const [p1] = TS.projectCoordinates(length, angle, coords[0])([[0.25, 0]])
+  const [p2] = TS.projectCoordinates(length, angle, coords[0])([[0.75, 0]])
+
+  return [
+    styles.solidLine(TS.collect([
+      TS.lineString(R.props([0, 1, 2], xs)),
+      TS.lineString(R.props([3, 4, 5], xs))
+    ])),
+    styles.text(TS.point(p1), {
+      text: 'E',
+      flip: true,
+      rotation: Math.PI - angle
+    }),
+    styles.text(TS.point(p2), {
+      text: 'E',
+      flip: true,
+      rotation: Math.PI - angle
+    })
+  ]
+}

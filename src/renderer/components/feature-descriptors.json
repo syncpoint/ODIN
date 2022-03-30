@@ -24248,6 +24248,21 @@
      }
    },
    {
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*VRE---*****",
+    "scope": "CONTROL",
+    "geometry": "LineString",
+     "dimension": "TASK",
+    "hierarchy": [
+       "TACTICAL GRAPHICS",
+       "TASKS",
+       "ESCORT"
+    ],
+    "parameters": {
+      "maxPoints": 2
+    }
+   },
+   {
      "standard": "AUT",
      "sidc": "G*T*VRH---*****",
      "scope": "CONTROL",
