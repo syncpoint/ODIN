@@ -4,6 +4,7 @@ import * as TS from '../ts'
 import echelons from './echelons'
 import * as fences from './fences'
 import { biggerFont } from './default-style'
+import { openArrow } from './corridors/arrow'
 
 const linearTarget = ({ styles, line }) => {
   const coords = TS.coordinates(line)
@@ -1170,4 +1171,22 @@ geometries['G*T*VAP---'] = ({ styles, resolution, line: lineString }) => {
       text: 'PSEC'
     })
   ]
+}
+
+/**
+  * TACGRP.TSK.PAT
+  * TASKS / PATROL (AUT ONLY)
+*/
+geometries['G*T*VLP---'] = ({ styles, line, resolution }) => {
+  const coords = TS.coordinates(line)
+  const segments = TS.segments(line)
+  const firstSegment = R.head(segments)
+  const lastSegment = R.last(segments)
+  const width = resolution * 2
+
+  return styles.solidLine(TS.collect([
+    line,
+    openArrow(width, firstSegment.angle() + Math.PI, R.head(coords)),
+    openArrow(width, lastSegment.angle(), R.last(coords))
+  ]))
 }

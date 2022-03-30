@@ -2184,6 +2184,19 @@
         }
       ]
     },
+    "EXT_TASKS_PATROL": {
+      "paths": [
+        {
+          "d": "M 40,80 130,80 85,110 180,110"
+        },
+        {
+          "d": "M 60,60 40,80 60,100"
+        },
+        {
+          "d": "M 160,90 180,110 160,130"
+        }
+      ]
+    },
     "EXT_TASKS_SEIZE": {
       "circles": [
         {
@@ -4161,9 +4174,12 @@
     "G-T-VLR---": [
       "EXT_TASKS_RECONAISSANCE"
     ],
+    "G-T-VLP---": [
+      "EXT_TASKS_PATROL"
+    ],
     "G-T-Z-----": [
       "EXT_TASKS_SEIZE",
-	  "EXT_TASKS_SEIZE_TEXT"
+	    "EXT_TASKS_SEIZE_TEXT"
     ],
     "G-T-VAS---": [
       "EXT_TASKS_SEPARATE"
