@@ -14,10 +14,24 @@ export const arrowCoordinates = (width, line, offset = 1) => {
 }
 
 const arrowPoints = (resolution, angle, point) =>
-  TS.projectCoordinates(resolution * 8, angle, point)([[-1, 0.6], [0, 0], [-1, -0.6]])
+  TS.projectCoordinates(resolution * 8, angle, point)([
+    [-1, 0.6], [0, 0], [-1, -0.6],
+    [-0.6, 1], [0, 0], [0.6, 1],
+    [0.6, -1], [0, 0], [-0.6, -1],
+    [1, 0.6], [0, 0], [1, -0.6]
+  ])
 
 export const openArrow = (resolution, angle, point) =>
   TS.lineString(R.props([0, 1, 2], arrowPoints(resolution, angle, point)))
+
+export const openArrow1 = (resolution, angle, point) =>
+  TS.lineString(R.props([3, 4, 5], arrowPoints(resolution, angle, point)))
+
+export const openArrow2 = (resolution, angle, point) =>
+  TS.lineString(R.props([6, 7, 8], arrowPoints(resolution, angle, point)))
+
+export const openArrow3 = (resolution, angle, point) =>
+  TS.lineString(R.props([9, 10, 11], arrowPoints(resolution, angle, point)))
 
 export const closedArrow = (resolution, angle, point) =>
   TS.polygon(R.props([0, 1, 2, 0], arrowPoints(resolution, angle, point)))
