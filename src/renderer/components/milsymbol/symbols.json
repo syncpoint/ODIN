@@ -2230,6 +2230,28 @@
         }
       ]
     },
+    "EXT_TASKS_SEPARATE": {
+      "paths": [
+        {
+          "d": "M 40,100 160,100"
+        },
+        {
+          "d": "M 100,40, 100,160"
+        },
+        {
+          "d": "M 90,60 100,40 110,60"
+        },
+        {
+          "d": "M 90,140 100,160 110,140"
+        },
+        {
+          "d": "M 60,90 40,100 60,110"
+        },
+        {
+          "d": "M 140,90 160,100 140,110"
+        }
+      ]
+    },
     "EXT_TASKS_CURVED_ARROW": {
       "paths": [
         {
@@ -4142,6 +4164,9 @@
     "G-T-Z-----": [
       "EXT_TASKS_SEIZE",
 	  "EXT_TASKS_SEIZE_TEXT"
+    ],
+    "G-T-VAS---": [
+      "EXT_TASKS_SEPARATE"
     ],
     "G-T-L-----": [
       "EXT_TASKS_CURVED_ARROW",
