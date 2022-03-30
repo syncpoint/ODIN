@@ -24322,5 +24322,20 @@
     "parameters": {
       "maxPoints": 2
     }
+  },
+  {
+    "standard": "AUT",
+    "sidc": "G*T*VAP---*****",
+    "scope": "CONTROL",
+    "geometry": "LineString",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "PROVIDE PHYSICAL SECURITY (AUT ONLY)"
+    ],
+    "parameters": {
+      "maxPoints": 2
+    }
   }
 ]
