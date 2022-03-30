@@ -24247,7 +24247,7 @@
        "layout": "orbit"
      }
    },
-  {
+   {
     "standard": "NATO ATP-112",
     "sidc": "G*T*VRE---*****",
     "scope": "CONTROL",
@@ -24261,5 +24261,21 @@
     "parameters": {
       "maxPoints": 2
     }
-  }
+   },
+   {
+     "standard": "AUT",
+     "sidc": "G*T*VRH---*****",
+     "scope": "CONTROL",
+     "geometry": "GeometryCollection",
+     "dimension": "TASK",
+     "hierarchy": [
+       "TACTICAL GRAPHICS",
+       "TASKS",
+       "HOLD OPEN (AUT ONLY)"
+     ],
+     "parameters": {
+      "layout": "corridor",
+      "maxPoints": 2
+     }
+   }
 ]

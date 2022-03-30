@@ -1,0 +1,145 @@
+{
+  "projectManagement": {
+    "name": "Nom du Projet",
+    "untitled": "Nouveau Projet",
+    "new": "Nouveau",
+    "import": "Importer",
+    "switch": "Changer",
+    "export": "Exportation",
+    "save": "Sauvegarder",
+    "delete": "Supprimer",
+    "lastAccess": "Dernier accès: {{date}}",
+    "dangerZone": "Attention",
+    "deleteThisProject": "Supprimer ce Projet",
+    "deleteThisProjectDescription": "Un Projet supprimé ne peut pas être restauré!"
+  },
+  "basemapManagement": {
+    "name": "Plan de base",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "nextStep": "Suivant",
+    "previousStep": "Précédent",
+    "new": "Nouveau",
+    "stepUrl": "Fournir l'URL",
+    "stepOptions": "Choisir les options",
+    "stepPreview": "Vérifier en utilisant l'aperçu",
+    "stepFinalize": "Choisir le nom et sauvegarder",
+    "descriptorUrl": "URL de la carte",
+    "descriptorName": "Nom de la carte",
+    "attributions": "Attributions",
+    "xyzZoomOptions": "Niveau de zoom minimum et maximum",
+    "unknownSource": "Le type de carte n'a pas pu être détecté en inspectant l'URL",
+    "usePreview": "Utiliser l'aperçu de la carte pour vérifier le fond de carte",
+    "deleteWarning": "A utiliser avec précaution! Vous ne pouvez pas annuler cette action!",
+    "wmts": {
+      "error": "Erreur",
+      "missingProjections": "Définitions de projection manquantes pour"
+    },
+    "invalidResponse": "Le serveur a envoyé des données invalides. Veuillez vérifier l'URL!"
+  },
+  "activities": {
+    "tooltips": {
+      "map": "Cartes de base",
+      "layers": "Couches",
+      "symbols": "Palette de symboles",
+      "tools": "Outils de mesure",
+      "undo": "Annuler",
+      "redo": "Rétablir",
+      "cut": "Couper",
+      "copy": "Copier",
+      "paste": "Coller",
+      "exportPNG": "Exporter la vue actuelle en PNG",
+      "print": "Imprimer à I'échelle"
+    }
+  },
+  "layers": {
+    "create": "Créer Couche",
+    "delete": "Supprimer Couche",
+    "duplicate": "Dupliquer Couche",
+    "share": "Partager Couche"
+  },
+  "basemaps": {
+    "opacity": "Opacité"
+  },
+  "palette": {
+    "presets": {
+      "installation": "Installation",
+      "hostility": "Hostilité : Amical, Hostile, Neutre, Inconnu",
+      "status": "Statut : Présent, Anticipé/Planifié"
+    },
+    "search": {
+      "placeholder": "Recherche de unit, radar, missile, ..."
+    },
+    "featureList": {
+      "noResults": "Aucun résultat. Veuillez modifier la recherche pour les critères de filtrage."
+    }
+  },
+  "measure": {
+    "length": "Mesurer la distance/ le direction",
+    "area": "Mesurer la surface"
+  },
+  "propertyPanel": {
+    "tabs": {
+      "properties": "Propriétés",
+      "references": "Références aux documents ou aux liens"
+    },
+    "references": {
+      "dropObjectTarget": "Faites glisser et déposez des documents ou des liens ici"
+    }
+  },
+  "text": {
+    "font": "Police de caractères",
+    "background": "Arrière-plan",
+    "outline": "Contour",
+    "border": "Cadre",
+    "rotation": "Rotation"
+  },
+  "preferences": {
+    "name": "Préférences",
+    "lineWidth": "Largeur de ligne",
+    "symbolSize": "Taille du symbole",
+    "scheme": {
+      "name": "Schéma de couleurs",
+      "light": "Clair",
+      "medium": "Moyen",
+      "dark": "Foncé"
+    },
+    "simpleStatusModifier": "Affichage simplifié de I'état",
+    "symbolSizeByEchelon": "L'échelle affecte la taille du symbole",
+    "symbolTextSize": "Taille de la police pour les symboles",
+    "labelTextSize": "Taille de la police pour les étiquettes",
+    "useBoldLabelText": "Le texte est 'gras'"
+  },
+  "print": {
+    "name": "Imprimer",
+    "orientation": {
+      "label": "Orientation",
+      "landscape": "Paysage",
+      "portrait": "Portrait"
+    },
+    "paperSize": {
+      "label": "Taille du papier"
+    },
+    "quality": {
+      "label": "Qualité",
+      "fair": "Passable",
+      "good": "Bon",
+      "high": "Haut"
+    },
+    "scale": {
+      "label": "Échelle"
+    },
+    "output": {
+      "label": "Format de sortie",
+      "pdf": "PDF avec annotations",
+      "jpeg": "Image JPEG"
+    },
+    "execute": "Créer {{targetOutputFormat}}"
+  },
+  "travel": {
+    "back": "Retour",
+    "forward": "Avancer",
+    "goto": "Sauter à une coordonnée"
+  }
+}

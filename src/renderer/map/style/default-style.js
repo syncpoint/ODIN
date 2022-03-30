@@ -96,7 +96,7 @@ export const defaultFont = () => `${useBoldLabelText ? 'bold' : ''} ${labelTextS
 export const biggerFont = () => `${useBoldLabelText ? 'bold' : ''} ${labelTextSize + 4}px sans-serif`
 
 const factory = options => write => {
-  const { mode, resolution } = options
+  const { mode } = options
 
   return {
     solidLine: (inGeometry, opts = {}) => {
@@ -210,9 +210,7 @@ const factory = options => write => {
     },
 
     fill: color => fill({ color: color(options) }),
-
-    // roughly 1:150,000
-    showLabels: () => labels && resolution < 62
+    showLabels: () => labels
   }
 }
 

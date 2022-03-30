@@ -41,7 +41,7 @@ import G_T_WD from './G_T_WD'
 import G_T_WL from './G_T_WL'
 import G_T_X from './G_T_X'
 import G_T_Y from './G_T_Y'
-
+import G_T_VRH from './G_T_VRH'
 
 export const style = fn => options => {
   const geometry = options.feature.getGeometry()
@@ -122,6 +122,7 @@ export default {
   'G*T*WD----': style(G_T_WD),
   'G*T*WL----': style(G_T_WL),
   'G*T*X-----': style(G_T_X),
-  'G*T*Y-----': style(G_T_Y)
+  'G*T*Y-----': style(G_T_Y),
+  'G*T*VRH---': style(G_T_VRH)
 
 }

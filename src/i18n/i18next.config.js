@@ -1,11 +1,13 @@
 import german from './de'
 import english from './en'
+import french from './fr'
 
 const i18nextOptions = {
   debug: false,
   resources: {
     en: english,
-    de: german
+    de: german,
+    fr: french,
   },
   interpolation: {
     escapeValue: false
