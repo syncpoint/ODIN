@@ -1,7 +1,7 @@
 const languageMenu = i18n => {
   return {
     label: i18n.t('Language'),
-    submenu: ['de', 'en', 'fr'].map((languageCode) => {
+    submenu: ['de', 'en', 'fr', 'sp'].map((languageCode) => {
       return {
         label: i18n.t(languageCode),
         type: 'radio',

@@ -1,6 +1,7 @@
 import german from './de'
 import english from './en'
 import french from './fr'
+import spanish from './sp'
 
 const i18nextOptions = {
   debug: false,
@@ -8,6 +9,7 @@ const i18nextOptions = {
     en: english,
     de: german,
     fr: french,
+	sp: spanish,
   },
   interpolation: {
     escapeValue: false
