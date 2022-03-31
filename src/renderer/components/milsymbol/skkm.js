@@ -37,19 +37,25 @@ export const skkmIconParts = (iconParts) => {
   }
   iconParts.AT_SKKM_SQUARE = {
     type: 'path',
-    fill: false,
+    fill: '#FFFFFF',
     d: 'M 100,150 h 50 v -100 h -100 v 100 Z',
     stroke: '#FF0000'
   }
   iconParts.AT_SKKM_RECTANGLE = {
     type: 'path',
-    fill: false,
+    fill: '#FFFFFF',
     stroke: '#0000FF',
     d: 'M 50,150 L 50,70 L 150,70 L 150,150 Z'
   }
+  iconParts.AT_SKKM_RECTANGLE_WHITE = {
+    type: 'path',
+    fill: '#FFFFFF',
+    stroke: '#FFFFFF',
+    d: 'M 40,140 L 40,60 L 160,60 L 160,140 Z'
+  }
   iconParts.AT_SKKM_TRIANGLE = {
     type: 'path',
-    fill: false,
+    fill: '#FFFFFF',
     stroke: '#FF0000',
     d: 'M 100,150 h 50 l -50,-100 l -50,100 Z'
   }
@@ -61,25 +67,25 @@ export const skkmIconParts = (iconParts) => {
   }
   iconParts.AT_SKKM_HQ = {
     type: 'path',
-    fill: false,
+    fill: '#FFFFFF',
     stroke: '#0000FF',
     d: 'M 50,150 L 50,50 L 150,50 L 150,120, L 50,120'
   }
   iconParts.AT_SKKM_HOUSE = {
     type: 'path',
-    fill: false,
+    fill: '#FFFFFF',
     stroke: '#0000FF',
     d: 'M 50,150 L 50,70 L 150,70 L 150,150 L 50,150, M 50,70 L 100,50 L 150,70'
   }
   iconParts.AT_SKKM_RHOMBUS_RED = {
     type: 'path',
-    fill: false,
+    fill: '#FFFFFF',
     stroke: '#FF0000',
     d: 'M 100,50 L 150,100 L100,150 L 50,100 Z'
   }
   iconParts.AT_SKKM_RHOMBUS_BLACK = {
     type: 'path',
-    fill: false,
+    fill: '#FFFFFF',
     stroke: '#000000',
     d: 'M 100,50 L 150,100 L100,150 L 50,100 Z'
   }
@@ -101,7 +107,7 @@ export const skkmIconParts = (iconParts) => {
   }
   iconParts.AT_SKKM_CIRCLE_BLACK = {
     type: 'circle',
-    fill: false,
+    fill: '#FFFFFF',
     stroke: '#000000',
     cx: 100,
     cy: 100,
@@ -401,26 +407,33 @@ export const skkmSIDCIcons = (sidc, bbox, iconParts) => {
     iconParts.AT_SKKM_CIRCLE_BLACK
   ]
   sidc['K-G-VM----'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
     iconParts.AT_SKKM_VEHICLE_MOTOR
   ]
   sidc['K-G-VT----'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
     iconParts.AT_SKKM_VEHICLE_TRAILER
   ]
   sidc['K-G-VL----'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
     iconParts.AT_SKKM_VEHICLE_RAIL
   ]
   sidc['K-G-VS----'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
     iconParts.AT_SKKM_VEHICLE_WATERCRAFT
   ]
   sidc['K-G-VF----'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
     iconParts.AT_SKKM_VEHICLE_AIRCRAFT,
     iconParts.AT_SKKM_VEHICLE_AIRCRAFT_FIXED
   ]
   sidc['K-G-VR----'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
     iconParts.AT_SKKM_VEHICLE_AIRCRAFT,
     iconParts.AT_SKKM_VEHICLE_AIRCRAFT_ROTARY
   ]
   sidc['K-G-E-----'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
     iconParts.AT_SKKM_EQUIPMENT_LARGE_SCALE
   ]
 }
