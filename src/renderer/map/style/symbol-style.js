@@ -98,17 +98,6 @@ export const symbolStyle = mode => (feature, resolution) => {
   options.simpleStatusModifier = style.simpleStatusModifier
   options.infoSize = style.symbolTextSize
 
-  if (actualSIDC.startsWith('K')) {
-    // console.log('adding an SKKM symbol')
-    options.dtg = 'SKKM 31mar22'
-    options.direction = 123
-    options.speed = 44
-    options.additionalInformation = 'SKKM additional'
-    options.staffComment = 'SKKM staffComment'
-    options.higherFormation = 'SKKM higher'
-    options.uniqueDesignation = 'SKKM unique'
-    options.frame = false
-  }
   const symbol = new ms.Symbol(actualSIDC, { ...options, ...(properties ? properties.options : {}) })
   if (actualSIDC.startsWith('K')) {
     console.dir(symbol)
