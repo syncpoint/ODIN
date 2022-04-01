@@ -34,13 +34,17 @@ import G_T_L from './G_T_L'
 import G_T_M from './G_T_M'
 import G_T_P from './G_T_P'
 import G_T_R from './G_T_R'
+import G_T_RD from './G_T_RD'
 import G_T_T from './G_T_T'
 import G_T_W from './G_T_W'
 import G_T_WP from './G_T_WP'
 import G_T_WD from './G_T_WD'
 import G_T_WL from './G_T_WL'
+import G_T_WU from './G_T_WU'
 import G_T_X from './G_T_X'
 import G_T_Y from './G_T_Y'
+import G_T_VRH from './G_T_VRH'
+import G_T_VAS from './G_T_VAS'
 
 
 export const style = fn => options => {
@@ -116,12 +120,15 @@ export default {
   'G*T*M-----': style(G_T_M),
   'G*T*P-----': style(G_T_P),
   'G*T*R-----': style(G_T_R),
+  'G*T*RD----': style(G_T_RD),
   'G*T*T-----': style(G_T_T),
   'G*T*W-----': style(G_T_W),
   'G*T*WP----': style(G_T_WP),
   'G*T*WD----': style(G_T_WD),
   'G*T*WL----': style(G_T_WL),
+  'G*T*WU----': style(G_T_WU),
   'G*T*X-----': style(G_T_X),
-  'G*T*Y-----': style(G_T_Y)
-
+  'G*T*Y-----': style(G_T_Y),
+  'G*T*VRH---': style(G_T_VRH),
+  'G*T*VAS---': style(G_T_VAS)
 }

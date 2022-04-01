@@ -2,8 +2,8 @@ import * as TS from '../../ts'
 import { openArrow } from './arrow'
 
 /**
- * TACGRP.TSK.RIP
- * TASKS / RELIEF IN PLACE (RIP)
+ * TACGRP.TSK.DEM
+ * TASKS / DEMONSTRATE
  */
 export default options => {
   const { styles, width, line, point, resolution } = options
@@ -15,7 +15,7 @@ export default options => {
   const [px] = TS.projectCoordinates(width / 4, angle, coords[1])([[0, -orientation]])
   const [p0] = TS.projectCoordinates(width / 2, angle, coords[0])([[0, -orientation]])
   const [p1] = TS.projectCoordinates(width / 2, angle, coords[1])([[0, -orientation]])
-  const [p2] = TS.projectCoordinates(width / 4, angle, coords[0])([[2, -orientation]])
+  const [p2] = TS.projectCoordinates(width / 2, angle, coords[1])([[-0.5, -orientation]])
 
   const arc = TS.difference([
     TS.boundary(TS.pointBuffer(TS.point(px))(width / 4)),
@@ -26,12 +26,11 @@ export default options => {
     styles.solidLine(TS.collect([
       line,
       TS.lineString([p1, p0]),
-      openArrow(resolution, angle, coords[1]),
       openArrow(resolution, angle + Math.PI, p0),
       arc
     ])),
     styles.text(TS.point(p2), {
-      text: 'RIP',
+      text: 'DEM',
       flip: true,
       rotation: Math.PI - angle
     })

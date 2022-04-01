@@ -24,7 +24,7 @@ const menu = (i18n, args) => {
       {
         type: 'checkbox',
         checked: args.labels,
-        label: 'Labels',
+        label: i18n.t('view.labels'),
         click: onclick(browserWindow => browserWindow.send('IPC_TOGGLE_LABELS'))
       },
       { type: 'separator' },

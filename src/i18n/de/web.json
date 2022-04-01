@@ -1,14 +1,14 @@
 {
   "projectManagement": {
     "name": "Projekt",
-    "untitled": "neues Projekt",
+    "untitled": "Neues Projekt",
     "new": "Neu",
     "import": "Importieren",
     "switch": "Wechseln",
     "export": "Exportieren",
     "save": "Sichern",
     "delete": "Löschen",
-    "lastAccess": "zuletzt verwendet: {{date}}",
+    "lastAccess": "Zuletzt verwendet: {{date}}",
     "dangerZone": "Vorsicht",
     "deleteThisProject": "Dieses Projekt löschen",
     "deleteThisProjectDescription": "Ein gelöschtes Projekt kann nicht wiederhergestellt werden!"
@@ -65,14 +65,14 @@
   "palette": {
     "presets": {
       "installation": "Installation",
-      "hostility": "Hostility: Friendly, Hostile, Neutral, Unknown",
-      "status": "Status: Present, Anticipated/Planned"
+      "hostility": "Feindstatus: Freund, Feind, Neutral, Unbekannt",
+      "status": "Status: Aktuell, Voraussichtlich/Geplant"
     },
     "search": {
       "placeholder": "Suche nach unit, radar, missile, ..."
     },
     "featureList": {
-      "noResults": "Keine Ergebnisse. Bitte ändern Sie die Such- bzw. Filterkriterien"
+      "noResults": "Keine Ergebnisse. Bitte ändern Sie die Such- bzw. Filterkriterien."
     }
   },
   "measure": {
@@ -101,9 +101,9 @@
     "symbolSize": "Symbolgröße",
     "scheme": {
       "name": "Farbschema",
-      "light": "hell",
-      "medium": "mittel",
-      "dark": "dunkel"
+      "light": "Hell",
+      "medium": "Mittel",
+      "dark": "Dunkel"
     },
     "simpleStatusModifier": "Vereinfachte Statusanzeige",
     "symbolSizeByEchelon": "Größenordnung beeinflusst Symbolgröße",

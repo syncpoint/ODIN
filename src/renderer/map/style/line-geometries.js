@@ -3,6 +3,8 @@ import * as style from 'ol/style'
 import * as TS from '../ts'
 import echelons from './echelons'
 import * as fences from './fences'
+import { biggerFont } from './default-style'
+import { openArrow } from './corridors/arrow'
 
 const linearTarget = ({ styles, line }) => {
   const coords = TS.coordinates(line)
@@ -1030,7 +1032,7 @@ geometries['G*T*VLR---'] = ({ line, styles, resolution }) => {
   ])))
 }
 
-/* TACGRP.TSK.EXP
+/** TACGRP.TSK.EXP
  * TASKS / EXPLOIT
 */
 geometries['G*T*VAE---'] = ({ styles, line }) => {
@@ -1051,4 +1053,140 @@ geometries['G*T*VAE---'] = ({ styles, line }) => {
     ])),
     styles.dashedLine(TS.lineString(R.props([0, 1, 2], xs)))
   ]
+}
+
+/**
+ * TACGRP.TSK.ESC
+ * TASKS / ESCORT
+ */
+geometries['G*T*VRE---'] = ({ styles, line }) => {
+  const coords = TS.coordinates(line)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const length = segment.getLength()
+  const xs = TS.projectCoordinates(length, angle, coords[0])([
+    [0, 0.12], [0, 0], [0.2, 0], [0.8, 0], [1, 0], [1, 0.12]
+  ])
+
+  const [p1] = TS.projectCoordinates(length, angle, coords[0])([[0.25, 0]])
+  const [p2] = TS.projectCoordinates(length, angle, coords[0])([[0.75, 0]])
+
+  return [
+    styles.solidLine(TS.collect([
+      TS.lineString(R.props([0, 1, 2], xs)),
+      TS.lineString(R.props([3, 4, 5], xs))
+    ])),
+    styles.text(TS.point(p1), {
+      text: 'E',
+      flip: true,
+      rotation: Math.PI - angle
+    }),
+    styles.text(TS.point(p2), {
+      text: 'E',
+      flip: true,
+      rotation: Math.PI - angle
+    })
+  ]
+}
+
+/**
+  * TACGRP.TSK.CSU
+  * TASKS / CONDUCT SURVEILLANCE (AUT ONLY)
+  */
+geometries['G*T*VAC---'] = ({ styles, resolution, line: lineString }) => {
+  const coords = TS.coordinates(lineString)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const center = segment.midPoint()
+  const radius = segment.getLength() / 2
+  const length = segment.getLength()
+
+  const xs = R.range(0, 8)
+    .map(i => Math.PI / 16 * i + angle)
+    .map(angle => TS.projectCoordinate(center)([angle, radius]))
+
+  const xt = R.range(9, 17)
+    .map(i => Math.PI / 16 * i + angle)
+    .map(angle => TS.projectCoordinate(center)([angle, radius]))
+
+  const xv = TS.projectCoordinates(length, angle, coords[0])([
+    [0.1, -0.1], [0, 0], [-0.1, -0.1],
+    [0.9, -0.1], [1, 0], [1.1, -0.1],
+    [0.30, -0.36], [0.5, -0.61], [0.70, -0.36]
+  ])
+
+  return [
+    styles.solidLine(TS.collect([
+      TS.lineString(xs),
+      TS.lineString(xt),
+      TS.lineString(R.props([0, 1, 2], xv)),
+      TS.lineString(R.props([3, 4, 5], xv))
+    ])),
+    styles.filledPolygon(TS.polygon(R.props([6, 7, 8, 6], xv)))
+  ]
+}
+
+/**
+  * TACGRP.TSK.PPS
+  * TASKS / PROVIDE PHYSICAL SECURITY (AUT ONLY)
+*/
+geometries['G*T*VAP---'] = ({ styles, resolution, line: lineString }) => {
+  const coords = TS.coordinates(lineString)
+  const segment = TS.segment(coords)
+  const angle = segment.angle()
+  const center = segment.midPoint()
+  const radius = segment.getLength() / 2
+  const length = segment.getLength()
+  const deg2rad = Math.PI / 180
+
+  const xs = R.range(0, 7)
+    .map(i => Math.PI / 16 * i + angle)
+    .map(angle => TS.projectCoordinate(center)([angle, radius]))
+
+  const xt = R.range(10, 17)
+    .map(i => Math.PI / 16 * i + angle)
+    .map(angle => TS.projectCoordinate(center)([angle, radius]))
+
+  const xv = TS.projectCoordinates(length, angle, coords[0])([
+    [0.1, -0.1], [0, 0], [-0.1, -0.1],
+    [0.9, -0.1], [1, 0], [1.1, -0.1]
+  ])
+
+  const xw = TS.projectCoordinates(length, angle, coords[0])([
+    [0.5, -0.5]
+  ])
+
+  return [
+    styles.solidLine(TS.collect([
+      TS.lineString(xs),
+      TS.lineString(xt),
+      TS.lineString(R.props([0, 1, 2], xv)),
+      TS.lineString(R.props([3, 4, 5], xv))
+    ])),
+    styles.text(TS.point(xw[0]), {
+      font: biggerFont(),
+      flip: true,
+      textAlign: () => 'center',
+      rotation: Math.PI - angle + 360 / 2 * deg2rad,
+      text: 'PSEC'
+    })
+  ]
+}
+
+/**
+  * TACGRP.TSK.PAT
+  * TASKS / PATROL (AUT ONLY)
+*/
+geometries['G*T*VLP---'] = ({ styles, line, resolution }) => {
+  const coords = TS.coordinates(line)
+  const segments = TS.segments(line)
+  const firstSegment = R.head(segments)
+  const lastSegment = R.last(segments)
+  const width = resolution * 2
+
+  return styles.solidLine(TS.collect([
+    line,
+    openArrow(width, firstSegment.angle() + Math.PI, R.head(coords)),
+    openArrow(width, lastSegment.angle(), R.last(coords))
+  ]))
 }

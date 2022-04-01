@@ -2,9 +2,10 @@ import * as TS from '../../ts'
 import { openArrow } from './arrow'
 
 /**
- * TACGRP.TSK.RIP
- * TASKS / RELIEF IN PLACE (RIP)
+ * TACGRP.TSK.PUR
+ * TASKS / PURSUE
  */
+
 export default options => {
   const { styles, width, line, point, resolution } = options
   const coords = TS.coordinates(line)
@@ -12,10 +13,9 @@ export default options => {
   const orientation = segment.orientationIndex(TS.coordinate(point))
   const angle = segment.angle()
 
-  const [px] = TS.projectCoordinates(width / 4, angle, coords[1])([[0, -orientation]])
+  const [px] = TS.projectCoordinates(width / 4, angle, coords[0])([[0, -orientation]])
   const [p0] = TS.projectCoordinates(width / 2, angle, coords[0])([[0, -orientation]])
   const [p1] = TS.projectCoordinates(width / 2, angle, coords[1])([[0, -orientation]])
-  const [p2] = TS.projectCoordinates(width / 4, angle, coords[0])([[2, -orientation]])
 
   const arc = TS.difference([
     TS.boundary(TS.pointBuffer(TS.point(px))(width / 4)),
@@ -25,15 +25,16 @@ export default options => {
   return [
     styles.solidLine(TS.collect([
       line,
-      TS.lineString([p1, p0]),
-      openArrow(resolution, angle, coords[1]),
-      openArrow(resolution, angle + Math.PI, p0),
+      TS.lineString(TS.projectCoordinates(width / 2, angle, p0)([[0, 0.5], [0, -0.5]])),
+      openArrow(resolution, angle, p0),
       arc
     ])),
-    styles.text(TS.point(p2), {
-      text: 'RIP',
+    styles.text(TS.point(segment.midPoint()), {
+      text: 'P',
       flip: true,
       rotation: Math.PI - angle
-    })
+    }),
+    styles.wireFrame(line),
+    ...styles.handles(TS.multiPoint([point, ...TS.linePoints(line)]))
   ]
 }
