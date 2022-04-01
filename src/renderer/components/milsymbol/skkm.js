@@ -1,4 +1,7 @@
-export const skkmIconParts = (iconParts) => {
+export const skkmIconParts = function (iconParts, metadata) {
+
+  const FILL_WHITE = 'rgba(255, 255, 255, 0.8)'
+
   iconParts.AT_SKKM_FIRE = {
     type: 'path',
     fill: false,
@@ -37,21 +40,23 @@ export const skkmIconParts = (iconParts) => {
   }
   iconParts.AT_SKKM_SQUARE = {
     type: 'path',
-    fill: false,
-    d: 'M 100,150 h 50 v -100 h -100 v 100 Z',
+    fill: FILL_WHITE,
+    // d: 'M 100,150 h 50 v -100 h -100 v 100 Z',
+    d: 'M 45,45 L 155,45 L 155,155 L 45,155, Z',
     stroke: '#FF0000'
   }
   iconParts.AT_SKKM_RECTANGLE = {
     type: 'path',
-    fill: false,
+    fill: FILL_WHITE,
     stroke: '#0000FF',
-    d: 'M 50,150 L 50,70 L 150,70 L 150,150 Z'
+    d: 'M 20,45 L 180,45 L 180,155 L 20,155 Z'
   }
   iconParts.AT_SKKM_TRIANGLE = {
     type: 'path',
-    fill: false,
+    fill: FILL_WHITE,
     stroke: '#FF0000',
-    d: 'M 100,150 h 50 l -50,-100 l -50,100 Z'
+    // d: 'M 100,150 h 50 l -50,-100 l -50,100 Z'
+    d: 'M 100,155 L 155,155 L 100,45 L 45,155 Z'
   }
   iconParts.AT_SKKM_TRIANGLE_SMALL_FILLED = {
     type: 'path',
@@ -61,27 +66,28 @@ export const skkmIconParts = (iconParts) => {
   }
   iconParts.AT_SKKM_HQ = {
     type: 'path',
-    fill: false,
+    fill: FILL_WHITE,
     stroke: '#0000FF',
     d: 'M 50,150 L 50,50 L 150,50 L 150,120, L 50,120'
   }
   iconParts.AT_SKKM_HOUSE = {
     type: 'path',
-    fill: false,
+    fill: FILL_WHITE,
     stroke: '#0000FF',
     d: 'M 50,150 L 50,70 L 150,70 L 150,150 L 50,150, M 50,70 L 100,50 L 150,70'
   }
   iconParts.AT_SKKM_RHOMBUS_RED = {
     type: 'path',
-    fill: false,
+    fill: FILL_WHITE,
     stroke: '#FF0000',
-    d: 'M 100,50 L 150,100 L100,150 L 50,100 Z'
+    d: 'M 100,45 L 155,100 L100,155 L 45,100 Z'
   }
   iconParts.AT_SKKM_RHOMBUS_BLACK = {
     type: 'path',
-    fill: false,
+    fill: FILL_WHITE,
     stroke: '#000000',
-    d: 'M 100,50 L 150,100 L100,150 L 50,100 Z'
+    // d: 'M 100,50 L 150,100 L100,150 L 50,100 Z'
+    d: 'M 100,45 L 155,100 L100,155 L 45,100 Z'
   }
   iconParts.AT_SKKM_CIRCLE = {
     type: 'circle',
@@ -101,7 +107,7 @@ export const skkmIconParts = (iconParts) => {
   }
   iconParts.AT_SKKM_CIRCLE_BLACK = {
     type: 'circle',
-    fill: false,
+    fill: FILL_WHITE,
     stroke: '#000000',
     cx: 100,
     cy: 100,
@@ -117,13 +123,13 @@ export const skkmIconParts = (iconParts) => {
     type: 'path',
     fill: false,
     stroke: '#FF0000',
-    d: 'M 73,74 h 51'
+    d: 'M 75,68 h 50'
   }
   iconParts.AT_SKKM_DIAGONAL_LINES = {
     type: 'path',
     fill: false,
     stroke: '#FF0000',
-    d: 'M 105, 156 L 160,100, M 40,100 L 105,35'
+    d: 'M 115,165 L 165,115 M 35,85 L 85,35'
   }
   iconParts.AT_SKKM_CURVED_LINE = {
     type: 'path',
@@ -157,7 +163,7 @@ export const skkmIconParts = (iconParts) => {
   }
   iconParts.AT_SKKM_VEHICLE_MOTOR = {
     type: 'path',
-    fill: false,
+    fill: FILL_WHITE,
     stroke: '#000000',
     d: 'M 60,130 L 60,70 L 140,70 L 140,130 L 60,130 M 80,130 L 80,70'
   }
@@ -193,13 +199,13 @@ export const skkmIconParts = (iconParts) => {
   }
   iconParts.AT_SKKM_VEHICLE_AIRCRAFT_ROTARY = {
     type: 'path',
-    fill: false,
+    fill: FILL_WHITE,
     stroke: '#000000',
     d: 'M 100,100 L 100,125 M 80,125 L 120,125'
   }
   iconParts.AT_SKKM_EQUIPMENT_LARGE_SCALE = {
     type: 'path',
-    fill: false,
+    fill: FILL_WHITE,
     stroke: '#000000',
     d: 'M 75,130 L 75,70 M 60,70 140,70 M 125,70 125,130 M 140,130, 60,130'
   }
@@ -207,7 +213,7 @@ export const skkmIconParts = (iconParts) => {
     type: 'text',
     text: 'G',
     stroke: '#FF0000',
-    x: 80,
+    x: 117,
     y: 130,
     fontsize: 50,
     fontfamily: 'Arial'
@@ -216,7 +222,7 @@ export const skkmIconParts = (iconParts) => {
     type: 'text',
     text: 'C',
     stroke: '#FF0000',
-    x: 80,
+    x: 117,
     y: 130,
     fontsize: 50,
     fontfamily: 'Arial'
@@ -225,7 +231,7 @@ export const skkmIconParts = (iconParts) => {
     type: 'text',
     text: 'EX',
     stroke: '#FF0000',
-    x: 73,
+    x: 124,
     y: 140,
     fontsize: 40,
     fontfamily: 'Arial'
@@ -234,7 +240,7 @@ export const skkmIconParts = (iconParts) => {
     type: 'text',
     text: 'G',
     stroke: '#FF0000',
-    x: 80,
+    x: 117,
     y: 120,
     fontsize: 50,
     fontfamily: 'Arial'
@@ -243,14 +249,16 @@ export const skkmIconParts = (iconParts) => {
     type: 'text',
     text: 'C',
     stroke: '#FF0000',
-    x: 80,
+    x: 117,
     y: 120,
     fontsize: 50,
     fontfamily: 'Arial'
   }
 }
 
-export const skkmSIDCIcons = (sidc, bbox, iconParts) => {
+export const skkmSIDCIcons = function (existingSIDCs, bbox, iconParts) {
+  console.dir(this)
+  const sidc = {}
   sidc['K-G-D-----'] = [
     iconParts.AT_SKKM_TRIANGLE,
     iconParts.AT_SKKM_EXCLAMATION_MARK
@@ -364,45 +372,57 @@ export const skkmSIDCIcons = (sidc, bbox, iconParts) => {
     { type: 'translate', x: -20, y: 0, draw: [iconParts.AT_SKKM_CROSS] },
     { type: 'translate', x: 20, y: 0, draw: [iconParts.AT_SKKM_CROSS] }
   ]
+  // person
   sidc['K-G-P-----'] = [
     iconParts.AT_SKKM_RHOMBUS_BLACK
   ]
+  // person/commander
   sidc['K-G-PC----'] = [
     iconParts.AT_SKKM_RHOMBUS_BLACK,
     iconParts.AT_SKKM_TRIANGLE_SMALL_FILLED
   ]
+  // person - injured
   sidc['K-G-PI----'] = [
     iconParts.AT_SKKM_RHOMBUS_RED,
     iconParts.AT_SKKM_VERTICAL_LINE
   ]
+  // person killed
   sidc['K-G-PK----'] = [
     iconParts.AT_SKKM_RHOMBUS_RED,
     iconParts.AT_SKKM_VERTICAL_LINE,
     iconParts.AT_SKKM_HORIZONTAL_UPPER_LINE
   ]
+  // person in forced pos
   sidc['K-G-PF----'] = [
     iconParts.AT_SKKM_RHOMBUS_RED,
     { type: 'translate', x: 0, y: -24, draw: [iconParts.AT_SKKM_HORIZONTAL_UPPER_LINE] }
   ]
+  // person missing
   sidc['K-G-PM----'] = [
     iconParts.AT_SKKM_RHOMBUS_RED,
     iconParts.AT_SKKM_DIAGONAL_LINES
   ]
+  // formation
   sidc['K-G-FU----'] = [
     iconParts.AT_SKKM_RECTANGLE
   ]
+  // command post / HQ
   sidc['K-G-FH----'] = [
     iconParts.AT_SKKM_HQ
   ]
+  // permanent/fixed facility
   sidc['K-G-FI----'] = [
     iconParts.AT_SKKM_HOUSE
   ]
+  // temporary facility
   sidc['K-G-FS----'] = [
     iconParts.AT_SKKM_CIRCLE_BLACK
   ]
+  // vehicle
   sidc['K-G-VM----'] = [
     iconParts.AT_SKKM_VEHICLE_MOTOR
   ]
+  // trailer
   sidc['K-G-VT----'] = [
     iconParts.AT_SKKM_VEHICLE_TRAILER
   ]
@@ -423,4 +443,111 @@ export const skkmSIDCIcons = (sidc, bbox, iconParts) => {
   sidc['K-G-E-----'] = [
     iconParts.AT_SKKM_EQUIPMENT_LARGE_SCALE
   ]
+
+  for (const [key, value] of Object.entries(sidc)) {
+    bbox[key] = { x1: 20, y1: 45, x2: 180, y2: 155 }
+    existingSIDCs[key] = value
+  }
+}
+
+export const skkmLabels = function (sidc) {
+
+  console.log('SKKM labels', this)
+
+  const incidentLabels = {
+    dtg: { stroke: false, textanchor: 'end', x: 25, y: 80, fontsize: 40 },
+    speed: { stroke: false, textanchor: 'end', x: 25, y: 155, fontsize: 40 },
+    additionalInformation: { stroke: false, textanchor: 'start', x: 180, y: 155, fontsize: 40 },
+    uniqueDesignation: { stroke: false, textanchor: 'end', x: 25, y: 120, fontsize: 40 }
+  }
+
+  const personLabels = {
+    dtg: { stroke: false, textanchor: 'end', x: 25, y: 80, fontsize: 40 },
+    speed: { stroke: false, textanchor: 'end', x: 25, y: 155, fontsize: 40 },
+    additionalInformation: { stroke: false, textanchor: 'start', x: 180, y: 155, fontsize: 40 },
+    higherFormation: { stroke: false, textanchor: 'start', x: 180, y: 120, fontsize: 40 },
+    uniqueDesignation: { stroke: false, textanchor: 'end', x: 25, y: 120, fontsize: 40 }
+  }
+
+  const unitEquipmentLabels = {
+    dtg: { stroke: false, textanchor: 'end', x: 5, y: 80, fontsize: 40 },
+    speed: { stroke: false, textanchor: 'end', x: 5, y: 155, fontsize: 40 },
+    additionalInformation: { stroke: false, textanchor: 'start', x: 195, y: 155, fontsize: 40 },
+    higherFormation: { stroke: false, textanchor: 'start', x: 195, y: 120, fontsize: 40 },
+    uniqueDesignation: { stroke: false, textanchor: 'end', x: 5, y: 120, fontsize: 40 }
+  }
+
+  const facilityLabels = {
+    dtg: { stroke: false, textanchor: 'end', x: 5, y: 80, fontsize: 40 },
+    additionalInformation: { stroke: false, textanchor: 'start', x: 195, y: 155, fontsize: 40 },
+    higherFormation: { stroke: false, textanchor: 'start', x: 195, y: 120, fontsize: 40 },
+    uniqueDesignation: { stroke: false, textanchor: 'end', x: 5, y: 120, fontsize: 40 }
+  }
+
+  const dangerSIDCs = [
+    'K-G-D-----',
+    'K-G-DI----',
+    'K-G-DF----',
+    'K-G-DC----',
+    'K-G-DG----',
+    'K-G-DA----',
+    'K-G-DR----',
+    'K-G-DW----',
+    'K-G-DE----',
+    'K-G-DS----',
+    'K-G-DX----'
+  ]
+
+  const damageSIDCs = [
+    'K-G-H-----',
+    'K-G-HI----',
+    'K-G-HFL---',
+    'K-G-HFM---',
+    'K-G-HFH---',
+    'K-G-HC----',
+    'K-G-HG----',
+    'K-G-HA----',
+    'K-G-HR----',
+    'K-G-HW----',
+    'K-G-HBD---',
+    'K-G-HBP---',
+    'K-G-HBC---',
+    'K-G-HBY---'
+  ]
+
+  const personSIDCs = [
+    'K-G-P-----',
+    'K-G-PC----',
+    'K-G-PI----',
+    'K-G-PK----',
+    'K-G-PF----',
+    'K-G-PM----'
+  ]
+
+  const formationSIDCs = [
+    'K-G-FU----',
+    'K-G-FH----'
+  ]
+
+  const facilitySIDCs = [
+    'K-G-FI----',
+    'K-G-FS----'
+  ]
+
+  const equipmentSIDCs = [
+    'K-G-VM----',
+    'K-G-VT----',
+    'K-G-VL----',
+    'K-G-VF----',
+    'K-G-VS----',
+    'K-G-VR----',
+    'K-G-E-----'
+  ]
+
+  dangerSIDCs.forEach(code => { sidc[code] = incidentLabels })
+  damageSIDCs.forEach(code => { sidc[code] = incidentLabels })
+  personSIDCs.forEach(code => { sidc[code] = personLabels })
+  formationSIDCs.forEach(code => { sidc[code] = unitEquipmentLabels })
+  facilitySIDCs.forEach(code => { sidc[code] = facilityLabels })
+  equipmentSIDCs.forEach(code => { sidc[code] = unitEquipmentLabels })
 }

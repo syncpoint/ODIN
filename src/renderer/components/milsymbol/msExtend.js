@@ -1,6 +1,6 @@
 import ms from 'milsymbol'
 import symbols from './symbols.json'
-import { skkmIconParts, skkmSIDCIcons } from './skkm'
+import { skkmIconParts, skkmSIDCIcons, skkmLabels } from './skkm'
 
 const extendMilsymbols = () => {
   const parts = Object.keys(symbols.iconParts)
@@ -22,8 +22,8 @@ const extendMilsymbols = () => {
   }, 'letter')
 
   ms.addIconParts(skkmIconParts)
-
   ms.addSIDCicons(skkmSIDCIcons, 'letter')
+  ms.addLabelOverrides(skkmLabels, 'letter')
 
   return ms
 }
