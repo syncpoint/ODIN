@@ -51,6 +51,12 @@ export const skkmIconParts = function (iconParts, metadata) {
     stroke: '#0000FF',
     d: 'M 20,45 L 180,45 L 180,155 L 20,155 Z'
   }
+  iconParts.AT_SKKM_RECTANGLE_WHITE = {
+    type: 'path',
+    fill: '#FFFFFF',
+    stroke: '#FFFFFF',
+    d: 'M 40,140 L 40,60 L 160,60 L 160,140 Z'
+  }
   iconParts.AT_SKKM_TRIANGLE = {
     type: 'path',
     fill: FILL_WHITE,
@@ -420,27 +426,34 @@ export const skkmSIDCIcons = function (existingSIDCs, bbox, iconParts) {
   ]
   // vehicle
   sidc['K-G-VM----'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
     iconParts.AT_SKKM_VEHICLE_MOTOR
   ]
   // trailer
   sidc['K-G-VT----'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
     iconParts.AT_SKKM_VEHICLE_TRAILER
   ]
   sidc['K-G-VL----'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
     iconParts.AT_SKKM_VEHICLE_RAIL
   ]
   sidc['K-G-VS----'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
     iconParts.AT_SKKM_VEHICLE_WATERCRAFT
   ]
   sidc['K-G-VF----'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
     iconParts.AT_SKKM_VEHICLE_AIRCRAFT,
     iconParts.AT_SKKM_VEHICLE_AIRCRAFT_FIXED
   ]
   sidc['K-G-VR----'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
     iconParts.AT_SKKM_VEHICLE_AIRCRAFT,
     iconParts.AT_SKKM_VEHICLE_AIRCRAFT_ROTARY
   ]
   sidc['K-G-E-----'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
     iconParts.AT_SKKM_EQUIPMENT_LARGE_SCALE
   ]
 
