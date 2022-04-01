@@ -219,7 +219,7 @@ export const skkmIconParts = function (iconParts, metadata) {
     type: 'text',
     text: 'G',
     stroke: '#FF0000',
-    x: 117,
+    x: 80,
     y: 130,
     fontsize: 50,
     fontfamily: 'Arial'
@@ -228,7 +228,7 @@ export const skkmIconParts = function (iconParts, metadata) {
     type: 'text',
     text: 'C',
     stroke: '#FF0000',
-    x: 117,
+    x: 80,
     y: 130,
     fontsize: 50,
     fontfamily: 'Arial'
@@ -237,7 +237,7 @@ export const skkmIconParts = function (iconParts, metadata) {
     type: 'text',
     text: 'EX',
     stroke: '#FF0000',
-    x: 124,
+    x: 72,
     y: 140,
     fontsize: 40,
     fontfamily: 'Arial'
@@ -246,7 +246,7 @@ export const skkmIconParts = function (iconParts, metadata) {
     type: 'text',
     text: 'G',
     stroke: '#FF0000',
-    x: 117,
+    x: 80,
     y: 120,
     fontsize: 50,
     fontfamily: 'Arial'
@@ -255,7 +255,7 @@ export const skkmIconParts = function (iconParts, metadata) {
     type: 'text',
     text: 'C',
     stroke: '#FF0000',
-    x: 117,
+    x: 80,
     y: 120,
     fontsize: 50,
     fontfamily: 'Arial'
@@ -458,7 +458,7 @@ export const skkmSIDCIcons = function (existingSIDCs, bbox, iconParts) {
   ]
 
   for (const [key, value] of Object.entries(sidc)) {
-    bbox[key] = { x1: 20, y1: 45, x2: 180, y2: 155 }
+    bbox[key] = { x1: 0, y1: 0, x2: 200, y2: 155 }
     existingSIDCs[key] = value
   }
 }
