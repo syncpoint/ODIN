@@ -24560,7 +24560,7 @@
   {
     "standard": "AUT-SKKM",
     "sidc": "K-G-FU---------",
-    "class": "K",
+    "class": "KU",
     "geometry": "Point",
     "hierarchy": [
       "SKKM FORCES",
@@ -24570,7 +24570,7 @@
   {
     "standard": "AUT-SKKM",
     "sidc": "K-G-FH---------",
-    "class": "K",
+    "class": "KU",
     "geometry": "Point",
     "hierarchy": [
       "SKKM FORCES",
