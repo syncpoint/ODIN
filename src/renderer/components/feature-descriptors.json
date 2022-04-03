@@ -24569,16 +24569,6 @@
   },
   {
     "standard": "AUT-SKKM",
-    "sidc": "K-G-FH---------",
-    "class": "KU",
-    "geometry": "Point",
-    "hierarchy": [
-      "SKKM FORCES",
-      "COMMAND POST (AUT ONLY)"
-    ]
-  },
-  {
-    "standard": "AUT-SKKM",
     "sidc": "K-G-FI---------",
     "class": "K",
     "geometry": "Point",

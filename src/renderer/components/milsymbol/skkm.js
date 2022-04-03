@@ -332,7 +332,7 @@ export const skkmSIDCIcons = function (existingSIDCs, bbox, iconParts) {
     { type: 'translate', x: -10, y: 0, draw: [iconParts.AT_SKKM_FIRE] },
     { type: 'translate', x: 10, y: 0, draw: [iconParts.AT_SKKM_FIRE] }
   ]
-  sidc['K-G-HFH---'] = [
+  sidc['K-G-HFC---'] = [
     iconParts.AT_SKKM_SQUARE,
     iconParts.AT_SKKM_FIRE,
     { type: 'translate', x: -20, y: 0, draw: [iconParts.AT_SKKM_FIRE] },
@@ -412,10 +412,6 @@ export const skkmSIDCIcons = function (existingSIDCs, bbox, iconParts) {
   // formation
   sidc['K-G-FU----'] = [
     iconParts.AT_SKKM_RECTANGLE
-  ]
-  // command post / HQ
-  sidc['K-G-FH----'] = [
-    iconParts.AT_SKKM_HQ
   ]
   // permanent/fixed facility
   sidc['K-G-FI----'] = [
@@ -519,7 +515,7 @@ export const skkmLabels = function (sidc) {
     'K-G-HI----',
     'K-G-HFL---',
     'K-G-HFM---',
-    'K-G-HFH---',
+    'K-G-HFC---',
     'K-G-HC----',
     'K-G-HG----',
     'K-G-HA----',
@@ -540,11 +536,6 @@ export const skkmLabels = function (sidc) {
     'K-G-PM----'
   ]
 
-  const formationSIDCs = [
-    'K-G-FU----',
-    'K-G-FH----'
-  ]
-
   const facilitySIDCs = [
     'K-G-FI----',
     'K-G-FS----'
@@ -563,7 +554,7 @@ export const skkmLabels = function (sidc) {
   dangerSIDCs.forEach(code => { sidc[code] = incidentLabels })
   damageSIDCs.forEach(code => { sidc[code] = incidentLabels })
   personSIDCs.forEach(code => { sidc[code] = personLabels })
-  formationSIDCs.forEach(code => { sidc[code] = unitEquipmentLabels })
+  // formationSIDCs.forEach(code => { sidc[code] = unitEquipmentLabels })
   facilitySIDCs.forEach(code => { sidc[code] = facilityLabels })
   equipmentSIDCs.forEach(code => { sidc[code] = unitEquipmentLabels })
 }
