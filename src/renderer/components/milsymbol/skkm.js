@@ -53,9 +53,9 @@ export const skkmIconParts = function (iconParts, metadata) {
   }
   iconParts.AT_SKKM_RECTANGLE_WHITE = {
     type: 'path',
-    fill: '#FFFFFF',
+    fill: FILL_WHITE,
     stroke: '#FFFFFF',
-    d: 'M 40,140 L 40,60 L 160,60 L 160,140 Z'
+    d: 'M 20,45 L 180,45 L 180,155 L 20,155 Z'
   }
   iconParts.AT_SKKM_TRIANGLE = {
     type: 'path',
@@ -171,7 +171,8 @@ export const skkmIconParts = function (iconParts, metadata) {
     type: 'path',
     fill: FILL_WHITE,
     stroke: '#000000',
-    d: 'M 60,130 L 60,70 L 140,70 L 140,130 L 60,130 M 80,130 L 80,70'
+    d: 'M 20,45 L 180,45 L 180,155 L 20,155 Z M 65,45 L 65,155'
+    // d: 'M 55,145 L 55,65 L 145,65 L 145,135 L 55,135 M 75,135 L 75,65'
   }
   iconParts.AT_SKKM_VEHICLE_TRAILER = {
     type: 'path',
@@ -470,31 +471,33 @@ export const skkmLabels = function (sidc) {
   const incidentLabels = {
     dtg: { stroke: false, textanchor: 'end', x: 25, y: 80, fontsize: 40 },
     speed: { stroke: false, textanchor: 'end', x: 25, y: 155, fontsize: 40 },
-    additionalInformation: { stroke: false, textanchor: 'start', x: 180, y: 155, fontsize: 40 },
-    uniqueDesignation: { stroke: false, textanchor: 'end', x: 25, y: 120, fontsize: 40 }
+    uniqueDesignation: { stroke: false, textanchor: 'end', x: 25, y: 120, fontsize: 40 },
+    additionalInformation: { stroke: false, textanchor: 'start', x: 180, y: 155, fontsize: 40 }
   }
 
   const personLabels = {
     dtg: { stroke: false, textanchor: 'end', x: 25, y: 80, fontsize: 40 },
     speed: { stroke: false, textanchor: 'end', x: 25, y: 155, fontsize: 40 },
+    uniqueDesignation: { stroke: false, textanchor: 'end', x: 25, y: 120, fontsize: 40 },
     additionalInformation: { stroke: false, textanchor: 'start', x: 180, y: 155, fontsize: 40 },
     higherFormation: { stroke: false, textanchor: 'start', x: 180, y: 120, fontsize: 40 },
-    uniqueDesignation: { stroke: false, textanchor: 'end', x: 25, y: 120, fontsize: 40 }
+    echelon: { stroke: false, textanchor: 'start', x: 0, y: -40, fontsize: 40 }
   }
 
   const unitEquipmentLabels = {
     dtg: { stroke: false, textanchor: 'end', x: 5, y: 80, fontsize: 40 },
+    uniqueDesignation: { stroke: false, textanchor: 'end', x: 5, y: 120, fontsize: 40 },
     speed: { stroke: false, textanchor: 'end', x: 5, y: 155, fontsize: 40 },
+    specialHeadquarters: { stroke: false, textanchor: 'center', x: 100, y: 140, fontsize: 40 },
     additionalInformation: { stroke: false, textanchor: 'start', x: 195, y: 155, fontsize: 40 },
-    higherFormation: { stroke: false, textanchor: 'start', x: 195, y: 120, fontsize: 40 },
-    uniqueDesignation: { stroke: false, textanchor: 'end', x: 5, y: 120, fontsize: 40 }
+    higherFormation: { stroke: false, textanchor: 'start', x: 195, y: 120, fontsize: 40 }
   }
 
   const facilityLabels = {
     dtg: { stroke: false, textanchor: 'end', x: 5, y: 80, fontsize: 40 },
+    uniqueDesignation: { stroke: false, textanchor: 'end', x: 5, y: 120, fontsize: 40 },
     additionalInformation: { stroke: false, textanchor: 'start', x: 195, y: 155, fontsize: 40 },
-    higherFormation: { stroke: false, textanchor: 'start', x: 195, y: 120, fontsize: 40 },
-    uniqueDesignation: { stroke: false, textanchor: 'end', x: 5, y: 120, fontsize: 40 }
+    higherFormation: { stroke: false, textanchor: 'start', x: 195, y: 120, fontsize: 40 }
   }
 
   const dangerSIDCs = [
