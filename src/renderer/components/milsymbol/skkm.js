@@ -264,7 +264,6 @@ export const skkmIconParts = function (iconParts, metadata) {
 }
 
 export const skkmSIDCIcons = function (existingSIDCs, bbox, iconParts) {
-  console.dir(this)
   const sidc = {}
   sidc['K-G-D-----'] = [
     iconParts.AT_SKKM_TRIANGLE,
@@ -461,8 +460,6 @@ export const skkmSIDCIcons = function (existingSIDCs, bbox, iconParts) {
 }
 
 export const skkmLabels = function (sidc) {
-
-  console.log('SKKM labels', this)
 
   const incidentLabels = {
     dtg: { stroke: false, textanchor: 'end', x: 25, y: 80, fontsize: 40 },

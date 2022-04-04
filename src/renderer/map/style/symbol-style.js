@@ -99,9 +99,6 @@ export const symbolStyle = mode => (feature, resolution) => {
   options.infoSize = style.symbolTextSize
 
   const symbol = new ms.Symbol(actualSIDC, { ...options, ...(properties ? properties.options : {}) })
-  if (actualSIDC.startsWith('K')) {
-    console.dir(symbol)
-  }
   const geometry = feature.getGeometry()
   const pointStyle = () => [new Style({ image: icon(symbol) })]
 
