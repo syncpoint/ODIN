@@ -8,7 +8,7 @@ const useStyles = makeStyles((/* theme */) => ({
   twoColumns: { gridColumn: '1 / span 2' }
 }))
 
-const SKKMDangerProperties = props => {
+const SKKMProperties = props => {
   const classes = useStyles()
   const properties = props.getProperties()
 
@@ -24,9 +24,9 @@ const SKKMDangerProperties = props => {
   )
 }
 
-SKKMDangerProperties.propTypes = {
+SKKMProperties.propTypes = {
   getProperties: PropTypes.func.isRequired,
   update: PropTypes.func.isRequired
 }
 
-export default SKKMDangerProperties
+export default SKKMProperties
