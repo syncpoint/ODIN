@@ -223,7 +223,8 @@ export const skkmIconParts = function (iconParts, metadata) {
     x: 80,
     y: 130,
     fontsize: 50,
-    fontfamily: 'Arial'
+    fontfamily: 'Arial',
+    textanchor: 'start'
   }
   iconParts.AT_SKKM_TEXT_C_TRIANGLE = {
     type: 'text',
@@ -232,7 +233,8 @@ export const skkmIconParts = function (iconParts, metadata) {
     x: 80,
     y: 130,
     fontsize: 50,
-    fontfamily: 'Arial'
+    fontfamily: 'Arial',
+    textanchor: 'start'
   }
   iconParts.AT_SKKM_TEXT_EX_TRIANGLE = {
     type: 'text',
@@ -241,7 +243,8 @@ export const skkmIconParts = function (iconParts, metadata) {
     x: 72,
     y: 140,
     fontsize: 40,
-    fontfamily: 'Arial'
+    fontfamily: 'Arial',
+    textanchor: 'start'
   }
   iconParts.AT_SKKM_TEXT_G = {
     type: 'text',
@@ -250,7 +253,8 @@ export const skkmIconParts = function (iconParts, metadata) {
     x: 80,
     y: 120,
     fontsize: 50,
-    fontfamily: 'Arial'
+    fontfamily: 'Arial',
+    textanchor: 'start'
   }
   iconParts.AT_SKKM_TEXT_C = {
     type: 'text',
@@ -259,7 +263,8 @@ export const skkmIconParts = function (iconParts, metadata) {
     x: 80,
     y: 120,
     fontsize: 50,
-    fontfamily: 'Arial'
+    fontfamily: 'Arial',
+    textanchor: 'start'
   }
 }
 
