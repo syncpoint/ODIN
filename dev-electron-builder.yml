@@ -1,0 +1,31 @@
+directories:
+  output: binaries
+  buildResources: build
+appId: io.syncpoint.odin
+productName: ODIN
+copyright: ${author} https://syncpoint.io
+afterSign: 'scripts/notarize.js'
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: 'build/icon.ico'
+mac:
+   target: default
+   icon: 'build/icon.icns'
+   entitlements: 'build/entitlements.mac.plist'
+   entitlementsInherit: 'build/entitlements.mac.plist'
+linux:
+  target:
+    - target: deb
+    - target: tar.gz
+  icon: 'build/icons'
+  category: 'Office'
+  files:
+    - 'dist'
+publish:
+  provider: s3
+  bucket: odin
+  endpoint: http://localhost:9000
+electronVersion: 16.2.2
