@@ -24510,7 +24510,7 @@
   {
     "standard": "AUT-SKKM",
     "sidc": "K-G-PC---------",
-    "class": "K",
+    "class": "KC",
     "geometry": "Point",
     "hierarchy": [
       "SKKM INDIVIDUAL",
