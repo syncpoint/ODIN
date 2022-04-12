@@ -20,6 +20,7 @@ import SupplementalLineProperties from './SupplementalLineProperties'
 import SupplementalPolygonProperties from './SupplementalPolygonProperties'
 import PlanningToolProperties from './PlanningToolProperties'
 import SKKMUnitProperties from './SKKMUnitProperties'
+import SKKMCommanderProperties from './SKKMCommanderProperties'
 import SKKMProperties from './SKKMProperties'
 import PropertyPanelContent from './PropertyPanelContent'
 
@@ -41,6 +42,7 @@ const panelTypes = {
   SP: (key, props) => <SupplementalPolygonProperties key={key} { ...props }/>,
   PL: (key, props) => <PlanningToolProperties key={key} { ...props }/>,
   KU: (key, props) => <SKKMUnitProperties key={key} { ...props }/>,
+  KC: (key, props) => <SKKMCommanderProperties key={key} { ...props }/>,
   K: (key, props) => <SKKMProperties key={key} { ...props }/>
 }
 
