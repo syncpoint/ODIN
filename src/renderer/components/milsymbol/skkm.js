@@ -80,7 +80,7 @@ export const skkmIconParts = function (iconParts, metadata) {
     type: 'path',
     fill: FILL_WHITE,
     stroke: '#0000FF',
-    d: 'M 30,158 L 30,60 L 170,60 L 170,158 L 30,158, M 30,60 L 100,30 L 170,60'
+    d: 'M 30,155 L 30,60 L 170,60 L 170,155 L 30,155, M 30,60 L 100,30 L 170,60'
   }
   iconParts.AT_SKKM_RHOMBUS_RED = {
     type: 'path',
@@ -117,7 +117,7 @@ export const skkmIconParts = function (iconParts, metadata) {
     stroke: '#0000FF',
     cx: 100,
     cy: 100,
-    r: 58
+    r: 56
   }
   iconParts.AT_SKKM_VERTICAL_LINE = {
     type: 'path',
