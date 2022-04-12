@@ -91,6 +91,11 @@ export const symbolStyle = mode => (feature, resolution) => {
       options.monoColor = color
       options.outlineColor = style.accentColor
     }
+  } else if (sidc && sidc[0] === 'K') {
+    options.frame = false
+    const chars = [...sidc]
+    chars[1] = 'F'
+    actualSIDC = chars.join('')
   }
 
   options.colorMode = style.scheme

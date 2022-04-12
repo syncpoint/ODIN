@@ -94,8 +94,14 @@ export const featureDescriptors = (filter, preset = {}) => {
   )
 
   const updateSIDC = descriptor => {
+    /*
+    HAL@12apr22:
+    classes K and KU are used for Austria's SKKM symbols
+    */
     if (descriptor.class === 'K') {
       return descriptor
+    } else if (descriptor.class === 'KU') {
+      return ({ ...descriptor, sidc: hostilityPart.replace('F')(descriptor.sidc) })
     } else {
       return { ...descriptor, sidc: sidc(descriptor.sidc) }
     }

@@ -49,7 +49,7 @@ export const skkmIconParts = function (iconParts, metadata) {
     type: 'path',
     fill: FILL_WHITE,
     stroke: '#0000FF',
-    d: 'M 20,45 L 180,45 L 180,155 L 20,155 Z'
+    d: 'M 25,45 L 180,45 L 180,150 L 25,150 Z'
   }
   iconParts.AT_SKKM_RECTANGLE_WHITE = {
     type: 'path',
