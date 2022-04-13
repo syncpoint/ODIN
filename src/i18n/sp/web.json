@@ -1,0 +1,145 @@
+{
+  "projectManagement": {
+    "name": "Nombre del proyecto",
+    "untitled": "Nuevo proyecto",
+    "new": "Nuevo",
+    "import": "Importar",
+    "switch": "Cambiar a",
+    "export": "Exportar",
+    "save": "Guardar",
+    "delete": "Borrar",
+    "lastAccess": "Último acceso: {{date}}",
+    "dangerZone": "Precaución",
+    "deleteThisProject": "Eliminar este proyecto",
+    "deleteThisProjectDescription": "Una vez que se elimina un proyecto, ¡no hay vuelta atrás!"
+  },
+  "basemapManagement": {
+    "name": "Mapa base",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Borrar",
+    "nextStep": "Siguiente",
+    "previousStep": "Atrás",
+    "new": "Nuevo",
+    "stepUrl": "Proporcionar URL",
+    "stepOptions": "Seleccionar opciones",
+    "stepPreview": "Comprobar con la vista previa",
+    "stepFinalize": "Elegir nombre y guardar",
+    "descriptorUrl": "URL del mapa",
+    "descriptorName": "Nombre del mapa",
+    "attributions": "Atribuciones",
+    "xyzZoomOptions": "Niveles de zoom mínimo y máximo",
+    "unknownSource": "No se ha podido reconocer el tipo de mapa al comprobar la URL.",
+    "usePreview": "Utilice la vista previa del mapa para verificar el mapa base",
+    "deleteWarning": "Precaución.  Esta acción no se puede deshacer!",
+    "wmts": {
+      "error": "Error",
+      "missingProjections": "Faltan definiciones para estas proyecciones"
+    },
+    "invalidResponse": "El servidor ha enviado datos no válidos. Por favor, verifique la URL!"
+  },
+  "activities": {
+    "tooltips": {
+      "map": "Mapas base",
+      "layers": "Capas",
+      "symbols": "Paleta de símbolos",
+      "tools": "Herramientas",
+      "undo": "Deshacer",
+      "redo": "Rehacer",
+      "cut": "Cortar",
+      "copy": "Copiar",
+      "paste": "Pegar",
+      "exportPNG": "Exportar vista actual como PNG",
+      "print": "Impresión a escala"
+    }
+  },
+  "layers": {
+    "create": "Crear capa",
+    "delete": "Eliminar  capa",
+    "duplicate": "Capa duplicada",
+    "share": "Compartir capa"
+  },
+  "basemaps": {
+    "opacity": "Opacidad"
+  },
+  "palette": {
+    "presets": {
+      "installation": "Instalación",
+      "hostility": "Hostilidad:  Amistosa, Hostil, Neutral, Desconocida",
+      "status": "Estado: Presente, Anticipado/Planificado"
+    },
+    "search": {
+      "placeholder": "Buscar unit, radar, missile, …"
+    },
+    "featureList": {
+      "noResults": "No hay resultados. Por favor, cambie los criterios de búsqueda o filtro."
+    }
+  },
+  "measure": {
+    "length": "Medir la distancia/dirección",
+    "area": "Medir la  área"
+  },
+  "propertyPanel": {
+    "tabs": {
+      "properties": "Propiedades",
+      "references": "Referencias a documentos o enlaces"
+    },
+    "references": {
+      "dropObjectTarget": "Arrastre y suelte aquí los documentos o enlaces"
+    }
+  },
+  "text": {
+    "font": "Fuente",
+    "background": "Fondo",
+    "outline": "Contorno",
+    "border": "Marco",
+    "rotation": "Rotación"
+  },
+  "preferences": {
+    "name": "Preferencias",
+    "lineWidth": "Ancho de línea",
+    "symbolSize": "Tamaño del símbolo",
+    "scheme": {
+      "name": "Esquema de color",
+      "light": "Luz",
+      "medium": "Medio",
+      "dark": "Oscuro"
+    },
+    "simpleStatusModifier": "Visualización simplificada del estado",
+    "symbolSizeByEchelon": "Escala afecta al tamaño del símbolo",
+    "symbolTextSize": "Tamaño del texto de los símbolos",
+    "labelTextSize": "Amaño de fuente para las etiquetas",
+    "useBoldLabelText": "El texto está en 'negrita'"
+  },
+  "print": {
+    "name": "Imprimir",
+    "orientation": {
+      "label": "Orientación",
+      "landscape": "Paisaje",
+      "portrait": "Retrato"
+    },
+    "paperSize": {
+      "label": "Tamaño del papel"
+    },
+    "quality": {
+      "label": "Calidad",
+      "fair": "Suficiente",
+      "good": "Bueno",
+      "high": "Alto"
+    },
+    "scale": {
+      "label": "Escala"
+    },
+    "output": {
+      "label": "Formato de salida",
+      "pdf": "PDF con anotaciones",
+      "jpeg": "Imagen JPEG"
+    },
+    "execute": "Crear {{targetOutputFormat}}"
+  },
+  "travel": {
+    "back": "Atrás",
+    "forward": "Adelante",
+    "goto": "Saltar a la coordenada"
+  }
+}

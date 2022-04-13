@@ -1,0 +1,94 @@
+{
+  "management": {
+    "name": "Gestión",
+    "projects": "Proyectos",
+    "basemaps": "Mapas base"
+  },
+  "Language": "Idioma",
+  "en": "Inglés",
+  "de": "Alemán",
+  "fr": "Francés",
+  "sp": "Español",  
+  "app": {
+    "about": "Sobre  {{name}}",
+    "hide": "Ocultar {{name}} ",
+    "hideOthers": "Ocultar otros",
+    "unhide": "Desocultar {{name}}",
+    "quit": "Salir de {{name}}"
+  },
+  "edit": {
+    "name": "Editar",
+    "undo": "Deshacer",
+    "redo": "Rehacer",
+    "cut": "Cortar",
+    "copy": "Copiar",
+    "paste": "Pegar",
+    "pasteAndMatchStyle": "Estilo de pegado y coincidencia",
+    "delete": "Borrar",
+    "selectAll": "Seleccionar todo",
+    "copyCoordinate": "Copiar coordenadas"
+  },
+  "view": {
+    "name": "Vista",
+    "reload": "Recarga",
+    "forceReload": "Forzar la recarga",
+    "toggleDevTools": "Actiivar/desactivar de las herramientas de desarrollo",
+    "resetZoom": "Tamaño original",
+    "zoomIn": "Aumentar el zoom",
+    "zoomOut": "Alejar el zoom",
+    "grid": {
+      "mgrs": "MGRS rejilla actiivar/desactivar"
+    },
+	"labels": "Etiquetas actiivar/desactivar",
+    "toggleFullscreen": "Actiivar/desactivar del modo de pantalla completa"
+  },
+  "window": {
+    "name": "Ventana",
+    "minimize": "Minimizar",
+    "close": "Cerrar",
+    "zoom": "Zoom"
+  },
+  "help" : {
+    "name": "Ayuda",
+    "onlineUserManual": "Manual de usuario en línea",
+    "onlineSupportSlack": "Soporte en línea vía Slack",
+	  "onlineSupportEMail": "Ayuda en línea por correo electrónico"
+  },
+  "export": {
+    "title": "Exportar {{name}}",
+    "succeeded": "Exportación exitosa",
+    "failed": "Exportación fallida",
+    "clickToOpen": "Abrir: {{path}}"
+  },
+  "importProject": {
+    "title": "Elige un proyecto ODIN para importar",
+    "succeeded": "Importación exitosa",
+    "failed": "La importación desde {{path}} falló",
+    "fileFilterName": "Archivo del proyecto ODIN"
+  },
+  "autoUpdate": {
+    "option": "Buscar nuevas versiones de ODIN",
+    "buttons": {
+      "updateNow": "Descargar y actualizar ahora!",
+      "skipUpdate": "No actualices ahora!"
+    },
+    "updateTitle": "Una nueva versión de ODIN está disponible",
+    "versionMessage": "Actualización disponible de {{currentVersion}} a {{newVersion}}.",
+    "updateMessage": "Si selecciona 'Descargar y actualizar ahora!', se descargará e instalará la nueva versión y se reiniciará ODIN inmediatamente.",
+    "error": "Error de actualización"
+  },
+  "navigationEvent": {
+    "harmful": {
+      "title": "Apertura de la URL impedida",
+      "subtitle": "Abrir la URL podría causar daños"
+    },
+    "ask": {
+      "permit": "Permitir",
+      "decline": "Rechazar",
+      "question": "Desea abrir la siguiente URL?",
+      "permitUntilRestart": "Permitir siempre hasta que se reinicie ODIN"
+    },
+    "succeeded": "Apertura de la URL con éxito",
+    "failed": "No se ha podido abrir la URL"
+  }
+}
