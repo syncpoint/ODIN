@@ -108,7 +108,7 @@
     "simpleStatusModifier": "Visualización simplificada del estado",
     "symbolSizeByEchelon": "Escala afecta al tamaño del símbolo",
     "symbolTextSize": "Tamaño del texto de los símbolos",
-    "labelTextSize": "amaño de fuente para las etiquetas",
+    "labelTextSize": "Amaño de fuente para las etiquetas",
     "useBoldLabelText": "El texto está en 'negrita'"
   },
   "print": {
