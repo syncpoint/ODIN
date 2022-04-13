@@ -73,7 +73,7 @@
       "skipUpdate": "No actualices ahora!"
     },
     "updateTitle": "Una nueva versión de ODIN está disponible",
-    "versionMessage": "Actualización disponible de (currentVersion) a (newVersion).",
+    "versionMessage": "Actualización disponible de {{currentVersion}} a {{newVersion}}.",
     "updateMessage": "Si selecciona 'Descargar y actualizar ahora!', se descargará e instalará la nueva versión y se reiniciará ODIN inmediatamente.",
     "error": "Error de actualización"
   },
