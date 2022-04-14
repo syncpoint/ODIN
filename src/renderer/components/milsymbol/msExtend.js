@@ -1,5 +1,6 @@
 import ms from 'milsymbol'
 import symbols from './symbols.json'
+import { skkmIconParts, skkmSIDCIcons, skkmLabels } from './skkm'
 
 const extendMilsymbols = () => {
   const parts = Object.keys(symbols.iconParts)
@@ -19,6 +20,12 @@ const extendMilsymbols = () => {
       sidc[sidcKey] = parts
     })
   }, 'letter')
+
+  ms.addIconParts(skkmIconParts)
+  ms.addSIDCicons(skkmSIDCIcons, 'letter')
+  ms.addLabelOverrides(skkmLabels, 'letter')
+
+  return ms
 }
 
 const addIconParts = (parent, iconFillColor) => {
@@ -126,4 +133,7 @@ const replaceColor = (colorString, hostilityColor) => {
   return colorString
 }
 
-export default extendMilsymbols
+const extendedMilsymbol = extendMilsymbols()
+
+
+export default extendedMilsymbol
