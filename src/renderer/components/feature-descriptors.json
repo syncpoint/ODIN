@@ -24095,6 +24095,36 @@
       "maxPoints": 2
     }
   },
+  {
+    "standard": "NATO ATP-112",
+    "sidc": "G*T*RD----*****",
+    "scope": "CONTROL",
+    "geometry": "GeometryCollection",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "DEMONSTRATE"
+    ],
+    "parameters": {
+      "layout": "orbit"
+    }
+  },
+  {
+   "standard": "NATO ATP-112",
+   "sidc": "G*T*VRE---*****",
+   "scope": "CONTROL",
+   "geometry": "LineString",
+    "dimension": "TASK",
+   "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "ESCORT"
+   ],
+   "parameters": {
+     "maxPoints": 2
+   }
+  },
   {   
     "standard": "NATO ATP-112",
     "sidc": "G*T*VLE---*****",
@@ -24135,6 +24165,79 @@
     }
   },
   {
+     "standard": "NATO ATP-112",
+     "sidc": "G*T*WU----*****",
+     "scope": "CONTROL",
+     "geometry": "GeometryCollection",
+     "dimension": "TASK",
+     "hierarchy": [
+       "TACTICAL GRAPHICS",
+       "TASKS",
+       "PURSUE"
+     ],
+     "parameters": {
+       "layout": "orbit"
+     }
+   },
+  {
+    "standard": "AUT",
+    "sidc": "G*T*VAC---*****",
+    "scope": "CONTROL",
+    "geometry": "LineString",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "CONDUCT SURVEILLANCE (AUT ONLY)"
+    ],
+    "parameters": {
+      "maxPoints": 2
+    }
+  },
+  {
+    "standard": "AUT",
+    "sidc": "G*T*VRH---*****",
+    "scope": "CONTROL",
+    "geometry": "GeometryCollection",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "HOLD OPEN (AUT ONLY)"
+    ],
+    "parameters": {
+     "layout": "corridor",
+     "maxPoints": 2
+    }
+  },
+  {
+    "standard": "AUT",
+    "sidc": "G*T*VLP---*****",
+    "scope": "CONTROL",
+    "geometry": "LineString",
+    "dimension": "TASK",
+    "hierarchy": [
+     "TACTICAL GRAPHICS",
+     "TASKS",
+     "PATROL (AUT ONLY)"
+   ]
+  },
+  {
+    "standard": "AUT",
+    "sidc": "G*T*VAP---*****",
+    "scope": "CONTROL",
+    "geometry": "LineString",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "PROVIDE PHYSICAL SECURITY (AUT ONLY)"
+    ],
+    "parameters": {
+      "maxPoints": 2
+    }
+  },
+  {
     "standard": "AUT",
     "sidc": "G*T*VLR---*****",
     "geometry": "LineString",
@@ -24145,6 +24248,22 @@
       "RECONNAISSANCE (AUT ONLY)"
     ],
     "parameters": {
+      "maxPoints": 2
+    }
+  },
+  {
+    "standard": "AUT",
+    "sidc": "G*T*VAS---*****",
+    "scope": "CONTROL",
+    "geometry": "GeometryCollection",
+    "dimension": "TASK",
+    "hierarchy": [
+      "TACTICAL GRAPHICS",
+      "TASKS",
+      "SEPARATE (AUT ONLY)"
+    ],
+    "parameters": {
+      "layout": "corridor",
       "maxPoints": 2
     }
   },
