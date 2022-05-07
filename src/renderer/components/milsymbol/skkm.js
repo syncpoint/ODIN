@@ -266,6 +266,42 @@ export const skkmIconParts = function (iconParts, metadata) {
     fontfamily: 'Arial',
     textanchor: 'start'
   }
+  iconParts.AT_OTHER_CULTURAL_FRAME_LARGE = {
+    type: 'path',
+    fill: FILL_WHITE,
+    stroke: '#0000FF',
+    d: 'M 40,30 40,110 100,155 160,110 160,30 40,30'
+  }
+  iconParts.AT_OTHER_CULTURAL_INSIDE_ABOVE_LARGE = {
+    type: 'path',
+    fill: '#0000FF',
+    stroke: '#0000FF',
+    d: 'M 40,30 100,75 158,30 40,30'
+  }
+  iconParts.AT_OTHER_CULTURAL_INSIDE_BOTTOM_LARGE = {
+    type: 'path',
+    fill: '#0000FF',
+    stroke: '#0000FF',
+    d: 'M 40,110 100,75 158,110 100,155 40,110'
+  }
+  iconParts.AT_OTHER_CULTURAL_FRAME_SMALL = {
+    type: 'path',
+    fill: FILL_WHITE,
+    stroke: '#0000FF',
+    d: 'M 40,50 40,80 60,100 80,80 80,50 40,50'
+  }
+  iconParts.AT_OTHER_CULTURAL_INSIDE_ABOVE_SMALL = {
+    type: 'path',
+    fill: '#0000FF',
+    stroke: '#0000FF',
+    d: 'M 40,50 60,70 77,54 40,50'
+  }
+  iconParts.AT_OTHER_CULTURAL_INSIDE_BOTTOM_SMALL = {
+    type: 'path',
+    fill: '#0000FF',
+    stroke: '#0000FF',
+    d: 'M 40,80 60,100 77,80 60,70 40,80'
+  }
 }
 
 export const skkmSIDCIcons = function (existingSIDCs, bbox, iconParts) {
@@ -457,6 +493,30 @@ export const skkmSIDCIcons = function (existingSIDCs, bbox, iconParts) {
     iconParts.AT_SKKM_RECTANGLE_WHITE,
     iconParts.AT_SKKM_EQUIPMENT_LARGE_SCALE
   ]
+  sidc['K-G-CH----'] = [
+    iconParts.AT_OTHER_CULTURAL_FRAME_LARGE,
+    iconParts.AT_OTHER_CULTURAL_INSIDE_ABOVE_LARGE,
+    iconParts.AT_OTHER_CULTURAL_INSIDE_BOTTOM_LARGE
+  ]
+  sidc['K-G-CHSP--'] = [
+    iconParts.AT_OTHER_CULTURAL_FRAME_SMALL,
+    { type: 'translate', x: 90, y: 0, draw: [iconParts.AT_OTHER_CULTURAL_FRAME_SMALL] },
+    { type: 'translate', x: 42, y: 50, draw: [iconParts.AT_OTHER_CULTURAL_FRAME_SMALL] },
+    iconParts.AT_OTHER_CULTURAL_INSIDE_ABOVE_SMALL,
+    { type: 'translate', x: 90, y: 0, draw: [iconParts.AT_OTHER_CULTURAL_INSIDE_ABOVE_SMALL] },
+    { type: 'translate', x: 42, y: 50, draw: [iconParts.AT_OTHER_CULTURAL_INSIDE_ABOVE_SMALL] },
+    iconParts.AT_OTHER_CULTURAL_INSIDE_BOTTOM_SMALL,
+    { type: 'translate', x: 90, y: 0, draw: [iconParts.AT_OTHER_CULTURAL_INSIDE_BOTTOM_SMALL] },
+    { type: 'translate', x: 42, y: 50, draw: [iconParts.AT_OTHER_CULTURAL_INSIDE_BOTTOM_SMALL] }
+  ]
+
+  sidc['K-G-DI----'] = [
+    iconParts.AT_SKKM_TRIANGLE,
+    iconParts.AT_SKKM_CIRCLE_TRIANGLE,
+    { type: 'translate', x: -10, y: 15, draw: [iconParts.AT_SKKM_CIRCLE_TRIANGLE] },
+    { type: 'translate', x: 10, y: 15, draw: [iconParts.AT_SKKM_CIRCLE_TRIANGLE] }
+  ]
+
 
   for (const [key, value] of Object.entries(sidc)) {
     bbox[key] = { x1: 0, y1: 0, x2: 200, y2: 155 }
