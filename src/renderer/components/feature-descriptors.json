@@ -24775,5 +24775,25 @@
       "SKKM EQUIPMENT",
       "LARGE-SCALE EQUIPMENT (AUT ONLY)"
     ]
+  },
+  {
+    "standard": "OTHER SYMBOLS",
+    "sidc": "K-G-CH---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "OTHER SYMBOLS",
+      "CULTURAL HERITAGE (HAAGER CONVENTION)"
+    ]
+  },
+  {
+    "standard": "OTHER SYMBOLS",
+    "sidc": "K-G-CHSP-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "OTHER SYMBOLS",
+      "CULTURAL HERITAGE SPECIAL PROTECTION (HAAGER CONVENTION)"
+    ]
   }
 ]
