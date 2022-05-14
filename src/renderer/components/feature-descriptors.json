@@ -24783,6 +24783,7 @@
     "geometry": "Point",
     "hierarchy": [
       "OTHER SYMBOLS",
+      "PROTECTIVE SIGNS",
       "CULTURAL HERITAGE (HAAGER CONVENTION)"
     ]
   },
@@ -24793,7 +24794,52 @@
     "geometry": "Point",
     "hierarchy": [
       "OTHER SYMBOLS",
+      "PROTECTIVE SIGNS",
       "CULTURAL HERITAGE SPECIAL PROTECTION (HAAGER CONVENTION)"
+    ]
+  },
+  {
+    "standard": "OTHER SYMBOLS",
+    "sidc": "K-G-RCRO-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "OTHER SYMBOLS",
+      "PROTECTIVE SIGNS",
+      "RED CROSS (GENEVA CONVENTIONS)"
+    ]
+  },
+  {
+    "standard": "OTHER SYMBOLS",
+    "sidc": "K-G-RCRY-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "OTHER SYMBOLS",
+      "PROTECTIVE SIGNS",
+      "RED CRYSTAL (GENEVA CONVENTIONS)"
+    ]
+  },
+  {
+    "standard": "OTHER SYMBOLS",
+    "sidc": "K-G-MHSZ-------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "OTHER SYMBOLS",
+      "PROTECTIVE SIGNS",
+      "MARKING FOR HOSPITALS AND SAFTY ZONES (GENEVA CONVENTIONS)"
+    ]
+  },
+  {
+    "standard": "OTHER SYMBOLS",
+    "sidc": "K-G-CD---------",
+    "class": "K",
+    "geometry": "Point",
+    "hierarchy": [
+      "OTHER SYMBOLS",
+      "PROTECTIVE SIGNS",
+      "CIVIL DEFENCE (GENEVA CONVENTIONS)"
     ]
   }
 ]
