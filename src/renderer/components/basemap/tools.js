@@ -1,3 +1,5 @@
+import { Base64 } from 'js-base64'
+
 const MAX_ABSTRACT_LENGTH = 140
 
 export const layerAbstract = layer => {
@@ -7,11 +9,52 @@ export const layerAbstract = layer => {
     : layer.Abstract
 }
 
-
-
-
 export const firstOrDefault = (someArray, defaultValue) => {
   if (!Array.isArray(someArray)) return defaultValue
   if (someArray.length > 0) return someArray[0]
   return defaultValue
+}
+
+export const urlToBasicAuth = url => {
+  const urlObject = new URL(url)
+  if (urlObject.username || urlObject.password) {
+    return {
+      url: `${urlObject.origin}${urlObject.pathname}`,
+      authorization: 'Basic ' + Base64.encode(`${url.username}:${url.password}`)
+    }
+  }
+  return { url, authorization: null }
+}
+
+/**
+ * Fetcher is a wrapper around the fetch API.
+ * Since the fetch API does not allow username:password@ syntax in the url
+ * we remove the credentials from the url an put them into the Authorization header.
+
+ * @param {string} url
+ * @param {*} options
+ * @returns The response of the fetch call
+ */
+export const fetcher = async (url, options = {}) => {
+
+  const mergeAuthHeaderIntoOptions = (options = {}, authorizationValue) => {
+    if (!authorizationValue) return options
+
+    if (!options.headers) {
+      options.headers = {}
+    }
+    options.headers.Authorization = authorizationValue
+
+    return options
+  }
+
+  const { url: fetchUrl, authorization } = urlToBasicAuth(url)
+  const fetchOptions = authorization
+    ? mergeAuthHeaderIntoOptions({ ...options }, authorization)
+    : options
+
+  /* if (!fetchOptions.headers) fetchOptions.headers = {}
+  fetchOptions.headers.Authorization = 'Basic ' + Base64.encode(`${url.username}:${url.password}`)
+  return fetch(`${urlObject.origin}${urlObject.pathname}`, fetchOptions) */
+  return fetch(fetchUrl, fetchOptions)
 }

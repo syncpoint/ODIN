@@ -76,6 +76,7 @@
     "geographiclib": "^1.52.0",
     "i18next": "^21.5.4",
     "jexl": "^2.3.0",
+    "js-base64": "^3.7.2",
     "jspdf": "^2.4.0",
     "jsts": "^2.7.1",
     "lodash.debounce": "^4.0.8",

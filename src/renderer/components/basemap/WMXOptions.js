@@ -5,7 +5,7 @@ import { Card, CardContent, Typography, CircularProgress } from '@material-ui/co
 import WMXLayerTable from './WMXLayerTable'
 
 import { get as getProjection } from 'ol/proj'
-import { firstOrDefault } from './tools'
+import { fetcher, firstOrDefault } from './tools'
 
 import { useTranslation } from 'react-i18next'
 
@@ -29,7 +29,7 @@ const WMXOptions = props => {
       setError(null)
       setCapabilities(null)
       try {
-        const response = await fetch(props.options.url, { signal })
+        const response = await fetcher(props.options.url, { signal })
         if (!response.ok) { throw new Error(response.statusText) }
 
         const content = await response.text()

@@ -6,7 +6,7 @@ import TileWMS from 'ol/source/TileWMS'
 import WMSCapabilities from 'ol/format/WMSCapabilities'
 import WMTSCapabilities from 'ol/format/WMTSCapabilities'
 import { DEVICE_PIXEL_RATIO } from 'ol/has'
-import { URL } from 'url'
+import { fetcher, urlToBasicAuth } from '../../components/basemap/tools'
 
 import '../epsg'
 
@@ -30,6 +30,20 @@ const wmsOptionsFromDescriptor = descriptor => {
   }
 }
 
+const basicAuthTileLoadFunction = (authorizationHeader) => {
+  return function (imageTile, src) {
+    const fetchUrl = new URL(src)
+    const headers = new Headers()
+    headers.set('Authorization', authorizationHeader)
+    fetch(`${fetchUrl.origin}${fetchUrl.pathname}`, { headers })
+      .then(response => response.blob())
+      .then(blob => {
+        const imageUrl = URL.createObjectURL(blob)
+        imageTile.getImage().src = imageUrl
+      })
+  }
+}
+
 /*
   This is a factory function that takes a source descriptor and returns
   a OpenLayer source that can be used with OpenLayers Tile Layers.
@@ -37,21 +51,40 @@ const wmsOptionsFromDescriptor = descriptor => {
 
 const sources = {
   OSM: descriptor => new OSM(descriptor.options),
-  XYZ: descriptor => new XYZ(descriptor.options),
+  XYZ: descriptor => {
+    const options = { ...descriptor.options }
+    const { authorization } = urlToBasicAuth(options.url)
+    if (authorization) {
+      options.tileLoadFunction = basicAuthTileLoadFunction(authorization)
+    }
+    return new XYZ(options)
+  },
   WMTS: async descriptor => {
-    const response = await fetch(descriptor.options.url)
+    const response = await fetcher(descriptor.options.url)
     const capabilities = (new WMTSCapabilities()).read(await response.text())
     const wmtsOptions = optionsFromCapabilities(capabilities, descriptor.options)
     wmtsOptions.tilePixelRatio = (highDPI ? 2 : 1)
     wmtsOptions.crossOrigin = 'anonymous'
     wmtsOptions.attributions = descriptor.options.attributions
+
+    const { authorization } = urlToBasicAuth(descriptor.options.url)
+    if (authorization) {
+      wmtsOptions.tileLoadFunction = basicAuthTileLoadFunction(authorization)
+    }
+
     return new WMTS(wmtsOptions)
   },
   WMS: async descriptor => {
-    const response = await fetch(descriptor.options.url)
+    const response = await fetcher(descriptor.options.url)
     const capabilities = (new WMSCapabilities()).read(await response.text())
     console.dir(capabilities)
     const options = wmsOptionsFromDescriptor(descriptor)
+
+    const { authorization } = urlToBasicAuth(descriptor.options.url)
+    if (authorization) {
+      options.tileLoadFunction = basicAuthTileLoadFunction(authorization)
+    }
+
     return new TileWMS(options)
   }
 }
