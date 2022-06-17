@@ -19,8 +19,8 @@ export const urlToBasicAuth = url => {
   const urlObject = new URL(url)
   if (urlObject.username || urlObject.password) {
     return {
-      url: `${urlObject.origin}${urlObject.pathname}`,
-      authorization: 'Basic ' + Base64.encode(`${url.username}:${url.password}`)
+      url: `${urlObject.origin}${urlObject.pathname}${urlObject.search}`,
+      authorization: 'Basic ' + Base64.encode(`${urlObject.username}:${urlObject.password}`)
     }
   }
   return { url, authorization: null }
@@ -53,8 +53,5 @@ export const fetcher = async (url, options = {}) => {
     ? mergeAuthHeaderIntoOptions({ ...options }, authorization)
     : options
 
-  /* if (!fetchOptions.headers) fetchOptions.headers = {}
-  fetchOptions.headers.Authorization = 'Basic ' + Base64.encode(`${url.username}:${url.password}`)
-  return fetch(`${urlObject.origin}${urlObject.pathname}`, fetchOptions) */
   return fetch(fetchUrl, fetchOptions)
 }

@@ -22,7 +22,7 @@ export const DEFAULT_SOURCE_DESCRIPTOR = Object.freeze({
 const wmsOptionsFromDescriptor = descriptor => {
   const wmsServerUrl = new URL(descriptor.options.url)
   return {
-    url: `${wmsServerUrl.origin}${wmsServerUrl.pathname}`,
+    url: `${wmsServerUrl.origin}${wmsServerUrl.pathname}${wmsServerUrl.search}`,
     params: {
       LAYERS: descriptor.options.layer
     },
@@ -35,7 +35,7 @@ const basicAuthTileLoadFunction = (authorizationHeader) => {
     const fetchUrl = new URL(src)
     const headers = new Headers()
     headers.set('Authorization', authorizationHeader)
-    fetch(`${fetchUrl.origin}${fetchUrl.pathname}`, { headers })
+    fetch(`${fetchUrl.origin}${fetchUrl.pathname}${fetchUrl.search}`, { headers })
       .then(response => response.blob())
       .then(blob => {
         const imageUrl = URL.createObjectURL(blob)
