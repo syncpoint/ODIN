@@ -28,4 +28,4 @@ publish:
   provider: s3
   bucket: odin
   endpoint: http://localhost:9000
-electronVersion: 16.2.2
+electronVersion: 16.2.8
