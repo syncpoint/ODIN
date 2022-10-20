@@ -302,6 +302,42 @@ export const skkmIconParts = function (iconParts, metadata) {
     stroke: '#0000FF',
     d: 'M 40,80 60,100 77,80 60,70 40,80'
   }
+  iconParts.AT_OTHER_RED_CROSS = {
+    type: 'path',
+    fill: '#FF0000',
+    stroke: '#FF0000',
+    d: 'M 85,55 115,55 115,85 145,85 145,115 115,115 115,145 85,145 85,115 55,115 55,85 85,85 85,55'
+  }
+  iconParts.AT_OTHER_RED_CRYSTAL = {
+    type: 'path',
+    fill: '#FF0000',
+    stroke: '#FF0000',
+    d: 'M 100,50 150,100 100,150 50,100 100,50'
+  }
+  iconParts.AT_OTHER_WHITE_CRYSTAL = {
+    type: 'path',
+    fill: FILL_WHITE,
+    stroke: '#FF0000',
+    d: 'M 100,70 130,100 100,130 70,100 100,70'
+  }
+  iconParts.AT_OTHER_SAFTY_ZONES = {
+    type: 'path',
+    fill: '#FF0000',
+    stroke: '#FF0000',
+    d: 'M 25,145 25,150 30,150 180,50 180,45 175,45 25,145'
+  }
+  iconParts.AT_OTHER_CIVIL_DEFENCE_RECTANGLE_ORANGE = {
+    type: 'path',
+    fill: '#ffa500',
+    stroke: '#ffa500',
+    d: 'M 20,45 L 180,45 L 180,155 L 20,155 Z'
+  }
+  iconParts.AT_OTHER_CIVIL_DEFENCE_TRIANGLE_BLUE = {
+    type: 'path',
+    fill: '#0000FF',
+    stroke: '#0000FF',
+    d: 'M 100,70 130,130 70,130 100,70'
+  }
 }
 
 export const skkmSIDCIcons = function (existingSIDCs, bbox, iconParts) {
@@ -509,14 +545,29 @@ export const skkmSIDCIcons = function (existingSIDCs, bbox, iconParts) {
     { type: 'translate', x: 90, y: 0, draw: [iconParts.AT_OTHER_CULTURAL_INSIDE_BOTTOM_SMALL] },
     { type: 'translate', x: 42, y: 50, draw: [iconParts.AT_OTHER_CULTURAL_INSIDE_BOTTOM_SMALL] }
   ]
-
   sidc['K-G-DI----'] = [
     iconParts.AT_SKKM_TRIANGLE,
     iconParts.AT_SKKM_CIRCLE_TRIANGLE,
     { type: 'translate', x: -10, y: 15, draw: [iconParts.AT_SKKM_CIRCLE_TRIANGLE] },
     { type: 'translate', x: 10, y: 15, draw: [iconParts.AT_SKKM_CIRCLE_TRIANGLE] }
   ]
-
+  sidc['K-G-RCRO--'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
+    iconParts.AT_OTHER_RED_CROSS
+  ]
+  sidc['K-G-RCRY--'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
+    iconParts.AT_OTHER_RED_CRYSTAL,
+    iconParts.AT_OTHER_WHITE_CRYSTAL
+  ]
+  sidc['K-G-MHSZ--'] = [
+    iconParts.AT_SKKM_RECTANGLE_WHITE,
+    iconParts.AT_OTHER_SAFTY_ZONES
+  ]
+  sidc['K-G-CD----'] = [
+    iconParts.AT_OTHER_CIVIL_DEFENCE_RECTANGLE_ORANGE,
+    iconParts.AT_OTHER_CIVIL_DEFENCE_TRIANGLE_BLUE
+  ]
 
   for (const [key, value] of Object.entries(sidc)) {
     bbox[key] = { x1: 0, y1: 0, x2: 200, y2: 155 }
