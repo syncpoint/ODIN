@@ -41,7 +41,7 @@
     "acorn": "^8.7.0",
     "babel-loader": "^8.2.2",
     "css-loader": "^5.2.7",
-    "electron": "^16.2.8",
+    "electron": "^18.3.7",
     "electron-builder": "^23.3.3",
     "electron-notarize": "^1.2.1",
     "electron-publish": "^22.14.13",
