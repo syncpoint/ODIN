@@ -1,4 +1,5 @@
-# ODIN - C2IS (Open Source)
+
+# There is exciting news at ODIN - C2IS: We have released the successor to ODIN: [ODINv2](https://github.com/syncpoint/ODINv2)
 
 [![Build Status: Linux](https://travis-ci.org/syncpoint/ODIN.svg?branch=develop)](https://travis-ci.org/syncpoint/ODIN.svg?branch=develop)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
