@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core'
 import Collapse from '@material-ui/core/Collapse'
 import IconButton from '@material-ui/core/IconButton'
+import EditIcon from '@material-ui/icons/Edit'
 import LockIcon from '@material-ui/icons/Lock'
 import LockOpenIcon from '@material-ui/icons/LockOpen'
 import VisibilityIcon from '@material-ui/icons/Visibility'
@@ -66,6 +67,11 @@ export const LayerLineEntry = props => {
 
         <ListItemSecondaryAction>
           <IconButton
+            size='small'
+            onClick={props.editLayerName}>
+            <EditIcon/>
+          </IconButton>
+          <IconButton
             disabled={lockToggleDisabled}
             size='small'
             onClick={toggleLayerLock}
@@ -103,5 +109,6 @@ LayerLineEntry.propTypes = {
   locked: PropTypes.bool, // optional, false if omitted
   hidden: PropTypes.bool, // optional, false if omitted
   expanded: PropTypes.bool, // optional, false if omitted
-  selectLayer: PropTypes.func.isRequired
+  selectLayer: PropTypes.func.isRequired,
+  editLayerName: PropTypes.func.isRequired
 }
