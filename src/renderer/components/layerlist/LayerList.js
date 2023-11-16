@@ -44,6 +44,10 @@ const LayerList = (/* props */) => {
   const reducer = (state, event) => (handlers[event.type] || I)(state, event)
   const [layers, dispatch] = React.useReducer(reducer, {})
 
+  const editLayerName = (layerId) => () => {
+    dispatch({ type: 'editoractivated', layerId: layerId })
+  }
+
   const selectedLayerId = () => {
     const selected = selection.selected(URI.isLayerId)
     return selected.length ? selected[0] : null
@@ -116,6 +120,7 @@ const LayerList = (/* props */) => {
         key={layer.id}
         { ...layer }
         selectLayer={selectLayer(layer.id)}
+        editLayerName={editLayerName(layer.id)}
       />
 
   const sortedLayers = () => Object.values(layers)
